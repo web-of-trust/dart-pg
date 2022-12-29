@@ -14,14 +14,13 @@ abstract class ContainedPacket {
 
   Uint8List toPacketData();
 
-  Uint8List packetEncode({bool oldFormat = true, bool partial = false}) {
+  Uint8List packetEncode({final bool oldFormat = true, final bool partial = false}) {
     final List<int> packetHeader = [];
     final packetBody = toPacketData();
     final bodyLen = packetBody.length;
 
-    var hdr = 0x80;
     if (oldFormat) {
-      hdr |= tag.value << 2;
+      final hdr = 0x80 | (tag.value << 2);
       if (partial) {
         packetHeader.add(hdr | 0x03);
       } else {
@@ -34,7 +33,7 @@ abstract class ContainedPacket {
         }
       }
     } else {
-      packetHeader.add(hdr | tag.value | 0x40);
+      packetHeader.add(0x80 | tag.value | 0x40);
       if (bodyLen < 192) {
         packetHeader.add(bodyLen);
       } else if (bodyLen <= 8383) {

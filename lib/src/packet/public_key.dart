@@ -69,24 +69,24 @@ class PublicKey extends ContainedPacket {
 
     /// A series of values comprising the key material.
     /// This is algorithm-specific and described in section XXXX.
-    final PgpKey key;
+    final PgpKey pgpKey;
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        key = RsaPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        pgpKey = RsaPublicPgpKey.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.elgamal:
-        key = ElGamalPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        pgpKey = ElGamalPublicPgpKey.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.dsa:
-        key = DsaPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        pgpKey = DsaPublicPgpKey.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdh:
-        key = ECDHPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        pgpKey = ECDHPublicPgpKey.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdsa:
-        key = ECDsaPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        pgpKey = ECDsaPublicPgpKey.fromPacketData(bytes.sublist(pos));
         break;
       default:
         throw UnsupportedError('Unknown PGP public key algorithm encountered');
@@ -94,7 +94,7 @@ class PublicKey extends ContainedPacket {
     return PublicKey(
       version,
       creationTime,
-      key,
+      pgpKey,
       expirationDays: expirationDays,
       algorithm: algorithm,
     );
@@ -149,11 +149,11 @@ class PublicKey extends ContainedPacket {
     }
     bytes.add(algorithm.value & 0xff);
 
-    final keyBytes = pgpKey.encode();
+    final keyData = pgpKey.encode();
     if (version == 5) {
-      bytes.addAll(ByteUtils.int32Bytes(keyBytes.length));
+      bytes.addAll(ByteUtils.int32Bytes(keyData.length));
     }
-    bytes.addAll(keyBytes);
+    bytes.addAll(keyData);
 
     return Uint8List.fromList(bytes);
   }
