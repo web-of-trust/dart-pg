@@ -18,8 +18,6 @@ import 'contained_packet.dart';
 /// PublicKey represents an OpenPGP public key.
 /// See RFC 4880, section 5.5.2.
 class PublicKey extends ContainedPacket {
-  static const tag = PacketTag.publicKey;
-
   final int version;
 
   final DateTime creationTime;
@@ -40,6 +38,7 @@ class PublicKey extends ContainedPacket {
     this.pgpKey, {
     this.expirationDays = 0,
     this.algorithm = KeyAlgorithm.rsaEncryptSign,
+    super.tag = PacketTag.publicKey,
   }) {
     _calculateFingerprintAndKeyID();
   }

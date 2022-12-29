@@ -12,8 +12,6 @@ import 'contained_packet.dart';
 /// PublicKeyEncryptedSessionKey represents a public-key encrypted session key.
 /// See RFC 4880, section 5.1.
 class PublicKeyEncryptedSessionKey extends ContainedPacket {
-  static const tag = PacketTag.publicKeyEncryptedSessionKey;
-
   final int version;
 
   final int keyID;
@@ -22,7 +20,13 @@ class PublicKeyEncryptedSessionKey extends ContainedPacket {
 
   final Uint8List encrypted;
 
-  PublicKeyEncryptedSessionKey(this.version, this.keyID, this.keyAlgorithm, this.encrypted);
+  PublicKeyEncryptedSessionKey(
+    this.version,
+    this.keyID,
+    this.keyAlgorithm,
+    this.encrypted, {
+    super.tag = PacketTag.publicKeyEncryptedSessionKey,
+  });
 
   factory PublicKeyEncryptedSessionKey.fromPacketData(final Uint8List bytes) {
     var pos = 0;

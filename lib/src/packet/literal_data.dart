@@ -9,9 +9,9 @@ import '../byte_utils.dart';
 import '../enums.dart';
 import 'contained_packet.dart';
 
+/// LiteralData represents an encrypted file.
+/// See RFC 4880, section 5.9.
 class LiteralData extends ContainedPacket {
-  static const tag = PacketTag.literalData;
-
   final LiteralFormat format;
 
   final DateTime time;
@@ -28,6 +28,7 @@ class LiteralData extends ContainedPacket {
     DateTime? creationTime,
     this.text = '',
     this.filename = '',
+    super.tag = PacketTag.literalData,
   }) : time = creationTime ?? DateTime.now();
 
   factory LiteralData.fromPacketData(final Uint8List bytes) {

@@ -10,8 +10,6 @@ import 'contained_packet.dart';
 /// Implementation of the Symmetrically Encrypted Authenticated Encryption with
 /// Additional Data (AEAD) Protected Data Packet
 class AEADEncryptedData extends ContainedPacket {
-  static const tag = PacketTag.aeadEncryptedData;
-
   final int version;
 
   final SymmetricAlgorithm symmetricAlgorithm;
@@ -30,8 +28,9 @@ class AEADEncryptedData extends ContainedPacket {
     this.aeadAlgorithm,
     this.chunkSizeByte,
     this.iv,
-    this.encrypted,
-  );
+    this.encrypted, {
+    super.tag = PacketTag.aeadEncryptedData,
+  });
 
   factory AEADEncryptedData.fromPacketData(final Uint8List bytes) {
     var pos = 0;

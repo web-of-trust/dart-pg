@@ -11,11 +11,12 @@ import 'contained_packet.dart';
 /// The encrypted contents will consist of more OpenPGP packets.
 /// See RFC 4880, sections 5.7 and 5.13.
 class SymmetricallyEncryptedData extends ContainedPacket {
-  static const tag = PacketTag.symmetricallyEncryptedData;
-
   final Uint8List encrypted;
 
-  SymmetricallyEncryptedData(this.encrypted);
+  SymmetricallyEncryptedData(
+    this.encrypted, {
+    super.tag = PacketTag.symmetricallyEncryptedData,
+  });
 
   factory SymmetricallyEncryptedData.fromPacketData(final Uint8List bytes) => SymmetricallyEncryptedData(bytes);
 

@@ -6,7 +6,12 @@ import '../enums.dart';
 import 'public_key.dart';
 
 class PublicSubkey extends PublicKey {
-  static const tag = PacketTag.publicSubkey;
-
-  PublicSubkey(super.version, super.createdTime, super.key);
+  PublicSubkey(
+    super.version,
+    super.createdTime,
+    super.pgpKey, {
+    super.expirationDays,
+    super.algorithm,
+    super.tag = PacketTag.publicSubkey,
+  });
 }

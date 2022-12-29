@@ -14,13 +14,15 @@ import 'contained_packet.dart';
 /// It is a new feature created for OpenPGP that addresses the problem of detecting a modification to encrypted data.
 /// It is used in combination with a Modification Detection Code packet.
 class SymEncryptedIntegrityProtectedData extends ContainedPacket {
-  static const tag = PacketTag.symEncryptedIntegrityProtectedData;
-
   final int version;
 
   final Uint8List encrypted;
 
-  SymEncryptedIntegrityProtectedData(this.version, this.encrypted);
+  SymEncryptedIntegrityProtectedData(
+    this.version,
+    this.encrypted, {
+    super.tag = PacketTag.symEncryptedIntegrityProtectedData,
+  });
 
   factory SymEncryptedIntegrityProtectedData.fromPacketData(final Uint8List bytes) =>
       SymEncryptedIntegrityProtectedData(bytes[0], bytes.sublist(1));

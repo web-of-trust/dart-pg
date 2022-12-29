@@ -8,11 +8,12 @@ import '../enums.dart';
 import 'contained_packet.dart';
 
 class TrustPacket extends ContainedPacket {
-  static const tag = PacketTag.trust;
-
   final Uint8List levelAndTrustAmount;
 
-  TrustPacket(this.levelAndTrustAmount);
+  TrustPacket(
+    this.levelAndTrustAmount, {
+    super.tag = PacketTag.trust,
+  });
 
   factory TrustPacket.fromTrustCode(final int trustCode) => TrustPacket(Uint8List.fromList([trustCode & 0xff]));
 

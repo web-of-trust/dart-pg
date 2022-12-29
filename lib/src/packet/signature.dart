@@ -13,8 +13,6 @@ import 'subpacket_range.dart';
 /// Signature represents a signature.
 /// See RFC 4880, section 5.2.
 class Signature extends ContainedPacket {
-  static const tag = PacketTag.signature;
-
   final int version;
 
   final SignatureType signatureType;
@@ -100,6 +98,7 @@ class Signature extends ContainedPacket {
     this.signatureTarget,
     this.embeddedSignature,
     this.issuerFingerprint,
+    super.tag = PacketTag.signature,
   });
 
   bool get signatureNeverExpires => signatureExpirationTime == null;

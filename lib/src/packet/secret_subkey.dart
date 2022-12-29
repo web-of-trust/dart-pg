@@ -6,7 +6,13 @@ import '../enums.dart';
 import 'secret_key.dart';
 
 class SecretSubkey extends SecretKey {
-  static const tag = PacketTag.secretSubkey;
-
-  SecretSubkey(super.publicKey, super.symmetricAlgorithm, super.s2kUsage, super.s2k, super.iv, super.keyData);
+  SecretSubkey(
+    super.publicKey,
+    super.symmetricAlgorithm,
+    super.s2kUsage,
+    super.s2k,
+    super.iv,
+    super.keyData, {
+    super.tag = PacketTag.secretSubkey,
+  });
 }

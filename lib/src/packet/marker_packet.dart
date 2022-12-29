@@ -8,10 +8,13 @@ import 'dart:typed_data';
 import '../enums.dart';
 import 'contained_packet.dart';
 
+/// Implementation of the strange "Marker packet" (Tag 10)
 class MarkerPacket extends ContainedPacket {
-  static const tag = PacketTag.marker;
-
   static const marker = 'PGP';
+
+  MarkerPacket({
+    super.tag = PacketTag.marker,
+  });
 
   @override
   Uint8List toPacketData() {

@@ -11,11 +11,12 @@ import 'subpacket_range.dart';
 import 'user_attribute_subpacket.dart';
 
 class UserAttribute extends ContainedPacket {
-  static const tag = PacketTag.userAttribute;
-
   final List<UserAttributeSubpacket> attributes;
 
-  UserAttribute(this.attributes);
+  UserAttribute(
+    this.attributes, {
+    super.tag = PacketTag.userAttribute,
+  });
 
   ImageAttribute? get userImage {
     final attrs = attributes.whereType<ImageAttribute>();

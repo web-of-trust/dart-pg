@@ -8,9 +8,9 @@ import '../byte_utils.dart';
 import '../enums.dart';
 import 'contained_packet.dart';
 
+/// OnePassSignature represents a one-pass signature packet.
+/// See RFC 4880, section 5.4.
 class OnePassSignature extends ContainedPacket {
-  static const tag = PacketTag.onePassSignature;
-
   final int version;
 
   final SignatureType signatureType;
@@ -29,8 +29,9 @@ class OnePassSignature extends ContainedPacket {
     this.hashAlgorithm,
     this.keyAlgorithm,
     this.issuerKeyID,
-    this.nested,
-  );
+    this.nested, {
+    super.tag = PacketTag.onePassSignature,
+  });
 
   factory OnePassSignature.fromPacketData(final Uint8List bytes) {
     var pos = 0;

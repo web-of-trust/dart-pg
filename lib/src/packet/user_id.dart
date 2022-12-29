@@ -9,15 +9,18 @@ import '../enums.dart';
 import 'contained_packet.dart';
 
 class UserID extends ContainedPacket {
-  static const tag = PacketTag.userID;
-
   final String name;
 
   final String email;
 
   final String comment;
 
-  UserID(this.name, this.email, {this.comment = ''});
+  UserID(
+    this.name,
+    this.email, {
+    this.comment = '',
+    super.tag = PacketTag.userID,
+  });
 
   factory UserID.fromPacketData(final Uint8List bytes) {
     final userID = utf8.decode(bytes);
