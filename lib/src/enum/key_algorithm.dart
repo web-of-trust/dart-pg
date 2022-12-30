@@ -2,6 +2,8 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+/// Public-Key Algorithms
+/// See https://tools.ietf.org/html/draft-ietf-openpgp-rfc4880bis-04#section-9.1
 enum KeyAlgorithm {
   rsaEncryptSign(1),
   rsaEncrypt(2),

@@ -18,7 +18,7 @@ class SecretKey extends ContainedPacket {
 
   final S2kUsage s2kUsage;
 
-  final S2K s2k;
+  final S2K? s2k;
 
   final Uint8List iv;
 
@@ -28,25 +28,71 @@ class SecretKey extends ContainedPacket {
     this.publicKey,
     this.symmetricAlgorithm,
     this.s2kUsage,
-    this.s2k,
     this.iv,
     this.keyData, {
+    this.s2k,
     super.tag = PacketTag.secretKey,
   });
 
-  static fromPacketData(final Uint8List bytes) {
+  factory SecretKey.fromPacketData(final Uint8List bytes) {
     final publicKey = PublicKey.fromPacketData(bytes);
     final length = publicKey.toPacketData().length;
+
+    var pos = length;
+    final s2kUsage = S2kUsage.values.firstWhere((usage) => usage.value == bytes[pos++]);
+
+    final S2K? s2k;
+    final SymmetricAlgorithm symmetricAlgorithm;
+    switch (s2kUsage) {
+      case S2kUsage.checksum:
+      case S2kUsage.sha1:
+        symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == bytes[pos++]);
+        s2k = S2K.fromPacketData(bytes.sublist(pos));
+        break;
+      default:
+        symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == s2kUsage.value);
+        s2k = null;
+    }
+    if (s2k != null) {
+      pos += s2k.encode().length;
+    }
+
+    final List<int> iv = [];
+    final List<int> keyData = [];
+    if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
+      if (symmetricAlgorithm.value < 7) {
+        iv.addAll(bytes.sublist(pos, pos + 8));
+        pos += 8;
+      } else {
+        iv.addAll(bytes.sublist(pos, pos + 16));
+        pos += 16;
+      }
+    }
+    keyData.addAll(bytes.sublist(pos));
+
+    return SecretKey(
+      publicKey,
+      symmetricAlgorithm,
+      s2kUsage,
+      Uint8List.fromList(iv),
+      Uint8List.fromList(keyData),
+      s2k: s2k,
+    );
   }
+
+  bool get encrypted => s2kUsage != S2kUsage.none;
+
+  bool get isDummy => s2k != null && s2k!.type == S2kType.gnu;
+
+  void decrypt(String passphrase) {}
 
   @override
   Uint8List toPacketData() {
     final List<int> bytes = [...publicKey.toPacketData(), s2kUsage.value];
-    if (s2kUsage == S2kUsage.checksum || s2kUsage == S2kUsage.sha1) {
-      bytes.addAll([symmetricAlgorithm.value, ...s2k.encode()]);
+    if ((s2kUsage == S2kUsage.checksum || s2kUsage == S2kUsage.sha1) && s2k != null) {
+      bytes.addAll([symmetricAlgorithm.value, ...s2k!.encode()]);
     }
-    bytes.addAll(iv);
-    bytes.addAll(keyData);
+    bytes.addAll([...iv, ...keyData]);
     return Uint8List.fromList(bytes);
   }
 }

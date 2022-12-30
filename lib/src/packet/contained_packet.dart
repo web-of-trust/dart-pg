@@ -33,7 +33,7 @@ abstract class ContainedPacket {
         }
       }
     } else {
-      packetHeader.add(0x80 | tag.value | 0x40);
+      packetHeader.add(0x80 | 0x40 | tag.value);
       if (bodyLen < 192) {
         packetHeader.add(bodyLen);
       } else if (bodyLen <= 8383) {

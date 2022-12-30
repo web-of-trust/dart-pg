@@ -10,9 +10,9 @@ class SecretSubkey extends SecretKey {
     super.publicKey,
     super.symmetricAlgorithm,
     super.s2kUsage,
-    super.s2k,
     super.iv,
     super.keyData, {
+    super.s2k,
     super.tag = PacketTag.secretSubkey,
-  });
+  }) : super();
 }

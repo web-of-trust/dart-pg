@@ -139,8 +139,6 @@ class PublicKey extends ContainedPacket {
 
   int get keyID => _keyID;
 
-  bool get isDecrypted => true;
-
   @override
   Uint8List toPacketData() {
     final List<int> bytes = [version & 0xff, ...ByteUtils.timeToBytes(creationTime)];

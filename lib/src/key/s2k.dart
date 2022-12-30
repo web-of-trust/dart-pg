@@ -3,7 +3,10 @@
 // file that was distributed with this source code.
 
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
+
+import 'package:pointycastle/pointycastle.dart';
 
 import '../enums.dart';
 
@@ -28,7 +31,14 @@ class S2K {
   /// Eight bytes of salt in a binary string.
   final Uint8List salt;
 
-  S2K(this.salt, {this.type = S2kType.iterated, this.hash = HashAlgorithm.sha256, this.itCount = 224});
+  final Digest _digest;
+
+  S2K(
+    this.salt, {
+    this.type = S2kType.iterated,
+    this.hash = HashAlgorithm.sha256,
+    this.itCount = 224,
+  }) : _digest = Digest(hash.digestName);
 
   factory S2K.fromPacketData(Uint8List bytes) {
     var pos = 0;
@@ -63,14 +73,48 @@ class S2K {
         bytes.addAll(salt);
         break;
       case S2kType.iterated:
-        bytes.addAll(salt);
-        bytes.add(itCount);
+        bytes.addAll([...salt, itCount]);
         break;
       case S2kType.gnu:
-        bytes.addAll(utf8.encode('GNU'));
-        bytes.add(1);
+        bytes.addAll([...utf8.encode('GNU'), 1]);
         break;
     }
+    return Uint8List.fromList(bytes);
+  }
+
+  Uint8List produceKey(String passphrase, SymmetricAlgorithm algorithm) {
+    final List<int> bytes = [];
+
+    var rLen = 0;
+    var prefixLen = 0;
+    while (rLen < algorithm.keySize) {
+      final Uint8List toHash;
+      switch (type) {
+        case S2kType.simple:
+          toHash = Uint8List.fromList([prefixLen, ...utf8.encode(passphrase)]);
+          break;
+        case S2kType.salted:
+          toHash = Uint8List.fromList([prefixLen, ...salt, ...utf8.encode(passphrase)]);
+          break;
+        case S2kType.iterated:
+          final data = [...salt, ...utf8.encode(passphrase)];
+          var dataLen = data.length;
+          final count = max(this.count, dataLen);
+          toHash = Uint8List(prefixLen + count);
+          toHash.setAll(prefixLen, data);
+          for (var pos = prefixLen + dataLen; pos < count; pos += dataLen, dataLen *= 2) {
+            toHash.setAll(pos, toHash.sublist(prefixLen, pos));
+          }
+          break;
+        default:
+          toHash = Uint8List.fromList([]);
+      }
+      final result = _digest.process(toHash);
+      bytes.addAll(result);
+      rLen += result.length;
+      prefixLen++;
+    }
+
     return Uint8List.fromList(bytes);
   }
 }

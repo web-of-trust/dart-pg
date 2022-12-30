@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+/// A string to key specifier type
 enum S2kType {
   simple(0),
   salted(1),
