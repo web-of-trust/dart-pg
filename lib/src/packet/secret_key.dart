@@ -4,6 +4,9 @@
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/byte_utils.dart';
+import 'package:pointycastle/pointycastle.dart' as pc;
+
 import '../enums.dart';
 import '../key/s2k.dart';
 import 'contained_packet.dart';
@@ -84,7 +87,40 @@ class SecretKey extends ContainedPacket {
 
   bool get isDummy => s2k != null && s2k!.type == S2kType.gnu;
 
-  void decrypt(String passphrase) {}
+  void decrypt(String passphrase) {
+    final Uint8List clearText;
+    if (encrypted) {
+      final key = s2k!.produceKey(passphrase, symmetricAlgorithm);
+      final cipher = pc.BlockCipher('AES/CFB-128');
+      cipher.init(false, pc.ParametersWithIV(pc.KeyParameter(key), iv));
+      final clearTextWithHash = cipher.process(keyData);
+      final hashLen = 20;
+      clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - hashLen);
+      final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hashLen);
+      final digest = pc.Digest('SHA-1');
+      final hash = digest.process(clearText);
+      if (!ByteUtils.equalsUint8List(hash, hashText)) {
+        throw Exception('Incorrect key passphrase');
+      }
+    } else {
+      clearText = keyData;
+    }
+    switch (publicKey.algorithm) {
+      case KeyAlgorithm.rsaEncryptSign:
+      case KeyAlgorithm.rsaEncrypt:
+      case KeyAlgorithm.rsaSign:
+        break;
+      case KeyAlgorithm.elgamal:
+        break;
+      case KeyAlgorithm.dsa:
+        break;
+      case KeyAlgorithm.ecdh:
+      case KeyAlgorithm.ecdsa:
+        break;
+      default:
+        throw UnsupportedError('Unknown PGP public key algorithm encountered');
+    }
+  }
 
   @override
   Uint8List toPacketData() {

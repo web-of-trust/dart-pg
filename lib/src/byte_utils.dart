@@ -77,4 +77,23 @@ class ByteUtils {
             : result
         : BigInt.zero;
   }
+
+  static bool equalsUint8List(Uint8List expected, Uint8List supplied) {
+    if (expected == supplied) {
+      return true;
+    }
+
+    int len = (expected.length < supplied.length) ? expected.length : supplied.length;
+
+    int nonEqual = expected.length ^ supplied.length;
+
+    for (int i = 0; i != len; i++) {
+      nonEqual |= (expected[i] ^ supplied[i]);
+    }
+    for (int i = len; i < supplied.length; i++) {
+      nonEqual |= (supplied[i] ^ ~supplied[i]);
+    }
+
+    return nonEqual == 0;
+  }
 }
