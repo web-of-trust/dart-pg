@@ -8,6 +8,11 @@ import 'package:dart_pg/src/byte_utils.dart';
 import 'package:pointycastle/pointycastle.dart' as pc;
 
 import '../enums.dart';
+import '../key/dsa_secret_pgp_key.dart';
+import '../key/ec_secret_pgp_key.dart';
+import '../key/elgamal_secret_pgp_key.dart';
+import '../key/pgp_key.dart';
+import '../key/rsa_secret_pgp_key.dart';
 import '../key/s2k.dart';
 import 'contained_packet.dart';
 import 'public_key.dart';
@@ -87,7 +92,7 @@ class SecretKey extends ContainedPacket {
 
   bool get isDummy => s2k != null && s2k!.type == S2kType.gnu;
 
-  void decrypt(String passphrase) {
+  PgpKey decrypt(String passphrase) {
     final Uint8List clearText;
     if (encrypted) {
       final key = s2k!.produceKey(passphrase, symmetricAlgorithm);
@@ -105,21 +110,28 @@ class SecretKey extends ContainedPacket {
     } else {
       clearText = keyData;
     }
+
+    final PgpKey pgpKey;
     switch (publicKey.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
+        pgpKey = RsaSecretBcpgKey.fromPacketData(clearText);
         break;
       case KeyAlgorithm.elgamal:
+        pgpKey = ElGamalSecretPgpKey.fromPacketData(clearText);
         break;
       case KeyAlgorithm.dsa:
+        pgpKey = DsaSecretPgpKey.fromPacketData(clearText);
         break;
       case KeyAlgorithm.ecdh:
       case KeyAlgorithm.ecdsa:
+        pgpKey = ECSecretPgpKey.fromPacketData(clearText);
         break;
       default:
         throw UnsupportedError('Unknown PGP public key algorithm encountered');
     }
+    return pgpKey;
   }
 
   @override
