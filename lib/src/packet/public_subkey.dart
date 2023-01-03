@@ -18,13 +18,13 @@ class PublicSubkey extends PublicKey {
   }) : super();
 
   factory PublicSubkey.fromPacketData(final Uint8List bytes) {
-    final parent = PublicKey.fromPacketData(bytes);
+    final publicKey = PublicKey.fromPacketData(bytes);
     return PublicSubkey(
-      parent.version,
-      parent.creationTime,
-      parent.pgpKey,
-      expirationDays: parent.expirationDays,
-      algorithm: parent.algorithm,
+      publicKey.version,
+      publicKey.creationTime,
+      publicKey.pgpKey,
+      expirationDays: publicKey.expirationDays,
+      algorithm: publicKey.algorithm,
     );
   }
 }

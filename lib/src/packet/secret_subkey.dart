@@ -2,7 +2,10 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:typed_data';
+
 import '../enums.dart';
+import 'public_subkey.dart';
 import 'secret_key.dart';
 
 class SecretSubkey extends SecretKey {
@@ -15,4 +18,23 @@ class SecretSubkey extends SecretKey {
     super.s2k,
     super.tag = PacketTag.secretSubkey,
   }) : super();
+
+  void fromPacketData(final Uint8List bytes) {
+    final secretKey = SecretKey.fromPacketData(bytes);
+    final publicKey = secretKey.publicKey;
+    SecretSubkey(
+      PublicSubkey(
+        publicKey.version,
+        publicKey.creationTime,
+        publicKey.pgpKey,
+        expirationDays: publicKey.expirationDays,
+        algorithm: publicKey.algorithm,
+      ),
+      secretKey.symmetricAlgorithm,
+      secretKey.s2kUsage,
+      secretKey.iv,
+      secretKey.keyData,
+      s2k: secretKey.s2k,
+    );
+  }
 }
