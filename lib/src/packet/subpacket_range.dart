@@ -4,8 +4,10 @@
 
 import 'dart:typed_data';
 
+/// Generic Sub Packet Data Parser function
 class SubpacketRange {
   final int length;
+
   final int offset;
 
   SubpacketRange(this.length, this.offset);

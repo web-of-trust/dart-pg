@@ -19,10 +19,10 @@ class SecretSubkey extends SecretKey {
     super.tag = PacketTag.secretSubkey,
   }) : super();
 
-  void fromPacketData(final Uint8List bytes) {
+  factory SecretSubkey.fromPacketData(final Uint8List bytes) {
     final secretKey = SecretKey.fromPacketData(bytes);
     final publicKey = secretKey.publicKey;
-    SecretSubkey(
+    return SecretSubkey(
       PublicSubkey(
         publicKey.version,
         publicKey.creationTime,

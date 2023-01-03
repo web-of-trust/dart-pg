@@ -17,6 +17,8 @@ class TrustPacket extends ContainedPacket {
 
   factory TrustPacket.fromTrustCode(final int trustCode) => TrustPacket(Uint8List.fromList([trustCode & 0xff]));
 
+  factory TrustPacket.fromPacketData(final Uint8List bytes) => TrustPacket.fromTrustCode(bytes[0]);
+
   @override
   Uint8List toPacketData() {
     return levelAndTrustAmount;
