@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 
 import '../enums.dart';
+import 'aead_encrypted_data.dart';
 import 'compressed_data.dart';
 import 'contained_packet.dart';
 import 'literal_data.dart';
@@ -84,6 +85,9 @@ class PacketList {
           break;
         case PacketTag.symEncryptedIntegrityProtectedData:
           packets.add(SymEncryptedIntegrityProtectedData.fromPacketData(packetData.data));
+          break;
+        case PacketTag.aeadEncryptedData:
+          packets.add(AEADEncryptedData.fromPacketData(packetData.data));
           break;
         default:
       }

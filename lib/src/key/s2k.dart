@@ -19,6 +19,9 @@ class S2K {
   /// Exponent bias, defined in RFC4880
   static const expbias = 6;
 
+  /// Default Iteration Count Byte
+  static const defaultItCount = 224;
+
   /// s2k identifier or 'gnu-dummy'
   final S2kType type;
 
@@ -37,12 +40,12 @@ class S2K {
     this.salt, {
     this.type = S2kType.iterated,
     this.hash = HashAlgorithm.sha256,
-    this.itCount = 224,
+    this.itCount = defaultItCount,
   }) : _digest = Digest(hash.digestName);
 
   factory S2K.fromPacketData(Uint8List bytes) {
     var pos = 0;
-    var itCount = 224;
+    var itCount = defaultItCount;
     final type = S2kType.values.firstWhere((type) => type.value == bytes[pos++]);
     final hash = HashAlgorithm.values.firstWhere((hash) => hash.value == bytes[pos++]);
     final List<int> salt = [];
