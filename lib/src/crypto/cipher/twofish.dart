@@ -767,10 +767,10 @@ class TwofishEngine extends BaseCipher {
       x1 = x1.rotateLeft(1) ^ (t0 + 2 * t1 + _gSubKeys[k++]);
     }
 
-    dst.setAll(dstIndex, (x2 ^ _gSubKeys[_outputWhiten]).toLeBytes());
-    dst.setAll(dstIndex + 4, (x3 ^ _gSubKeys[_outputWhiten + 1]).toLeBytes());
-    dst.setAll(dstIndex + 8, (x0 ^ _gSubKeys[_outputWhiten + 2]).toLeBytes());
-    dst.setAll(dstIndex + 12, (x1 ^ _gSubKeys[_outputWhiten + 3]).toLeBytes());
+    dst.setAll(dstIndex, (x2 ^ _gSubKeys[_outputWhiten]).toLe32Bytes());
+    dst.setAll(dstIndex + 4, (x3 ^ _gSubKeys[_outputWhiten + 1]).toLe32Bytes());
+    dst.setAll(dstIndex + 8, (x0 ^ _gSubKeys[_outputWhiten + 2]).toLe32Bytes());
+    dst.setAll(dstIndex + 12, (x1 ^ _gSubKeys[_outputWhiten + 3]).toLe32Bytes());
   }
 
   /// Decrypt the given input starting at the given offset and place
@@ -798,10 +798,10 @@ class TwofishEngine extends BaseCipher {
       x3 = x3.rotateRight(1);
     }
 
-    dst.setAll(dstIndex, (x0 ^ _gSubKeys[_inputWhiten]).toLeBytes());
-    dst.setAll(dstIndex + 4, (x1 ^ _gSubKeys[_inputWhiten + 1]).toLeBytes());
-    dst.setAll(dstIndex + 8, (x2 ^ _gSubKeys[_inputWhiten + 2]).toLeBytes());
-    dst.setAll(dstIndex + 12, (x3 ^ _gSubKeys[_inputWhiten + 3]).toLeBytes());
+    dst.setAll(dstIndex, (x0 ^ _gSubKeys[_inputWhiten]).toLe32Bytes());
+    dst.setAll(dstIndex + 4, (x1 ^ _gSubKeys[_inputWhiten + 1]).toLe32Bytes());
+    dst.setAll(dstIndex + 8, (x2 ^ _gSubKeys[_inputWhiten + 2]).toLe32Bytes());
+    dst.setAll(dstIndex + 12, (x3 ^ _gSubKeys[_inputWhiten + 3]).toLe32Bytes());
   }
 
   int _f32(final int x, final List<int> k32) {

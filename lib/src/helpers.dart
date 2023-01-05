@@ -37,12 +37,15 @@ extension StringHelper on String {
 extension IntHelper on int {
   Uint8List to16Bytes() => Uint8List(2)..buffer.asByteData().setInt16(0, this);
 
+  Uint8List toLe16Bytes() => Uint8List(2)..buffer.asByteData().setInt16(0, this, Endian.little);
+
   Uint8List to32Bytes() => Uint8List(4)..buffer.asByteData().setInt32(0, this);
+
+  Uint8List toLe32Bytes() => Uint8List(4)..buffer.asByteData().setInt32(0, this, Endian.little);
 
   Uint8List to64Bytes() => Uint8List(8)..buffer.asByteData().setUint64(0, this);
 
-  Uint8List toLeBytes() =>
-      Uint8List.fromList([this & 0x00, (this >>> 8) & 0x00, (this >>> 16) & 0x00, (this >>> 24) & 0x00]);
+  Uint8List toLe64Bytes() => Uint8List(8)..buffer.asByteData().setUint64(0, this, Endian.little);
 
   int rotateLeft(final int distance) => (this << distance) ^ (this >>> -distance);
 
@@ -50,21 +53,17 @@ extension IntHelper on int {
 }
 
 extension Uint8ListHelper on Uint8List {
-  int toIn16() => (this[0] << 8) | this[1];
+  int toIn16() => buffer.asByteData().getInt16(0);
 
-  int toIn32() => (this[0] << 24) | (this[1] << 16) | (this[2] << 8) | this[3];
+  int toLeIn16() => buffer.asByteData().getInt16(0, Endian.little);
 
-  int toInt64() =>
-      (this[0] << 56) |
-      (this[1] << 48) |
-      (this[2] << 40) |
-      (this[3] << 32) |
-      (this[4] << 24) |
-      (this[5] << 16) |
-      (this[6] << 8) |
-      this[7];
+  int toIn32() => buffer.asByteData().getInt32(0);
 
-  int toLeInt32() => (this[3] << 24) | (this[2] << 16) | (this[1] << 8) | this[0];
+  int toLeInt32() => buffer.asByteData().getInt32(0, Endian.little);
+
+  int toInt64() => buffer.asByteData().getInt64(0);
+
+  int toLeInt64() => buffer.asByteData().getInt64(0, Endian.little);
 
   BigInt toBigInt() {
     final negative = isNotEmpty && this[0] & 0x80 == 0x80;
@@ -148,23 +147,4 @@ extension BigIntHelper on BigInt {
 
 extension DateTimeHelper on DateTime {
   Uint8List toBytes() => (millisecondsSinceEpoch ~/ 1000).to32Bytes();
-}
-
-class Pack {
-  static const _mask32 = 0xFFFFFFFF;
-
-  static void pack32(int x, dynamic out, int offset, Endian endian) {
-    assert((x >= 0) && (x <= _mask32));
-    if (out is! ByteData) {
-      out = ByteData.view(out.buffer as ByteBuffer, out.offsetInBytes, out.length);
-    }
-    out.setUint32(offset, x, endian);
-  }
-
-  static int unpack32(dynamic inp, int offset, Endian endian) {
-    if (inp is! ByteData) {
-      inp = ByteData.view(inp.buffer, inp.offsetInBytes, inp.length);
-    }
-    return inp.getUint32(offset, endian);
-  }
 }
