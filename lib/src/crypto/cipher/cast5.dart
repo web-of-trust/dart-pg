@@ -6,7 +6,7 @@ import 'package:pointycastle/api.dart';
 
 import 'dart:typed_data';
 
-import '../../byte_utils.dart';
+import '../../helpers.dart';
 import 'base_cipher.dart';
 
 /// A class that provides CAST key encryption operations, such as encoding data and generating keys.
@@ -2146,8 +2146,8 @@ class CAST5Engine extends BaseCipher {
     if (key.length < 11) {
       _rounds = _redRounds;
     }
-    final z = List.filled(16, 0);
-    final x = List.filled(16, 0);
+    final z = Uint8List(16);
+    final x = Uint8List(16);
 
     int z03, z47, z8B, zCF;
 
@@ -2157,137 +2157,137 @@ class CAST5Engine extends BaseCipher {
       x[i] = key[i] & 0xff;
     }
 
-    x03 = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x0)));
-    x47 = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x4)));
-    x8B = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x8)));
-    xCF = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0xC)));
+    x03 = x.sublist(0x0).toIn32();
+    x47 = x.sublist(0x4).toIn32();
+    x8B = x.sublist(0x8).toIn32();
+    xCF = x.sublist(0xC).toIn32();
     z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
-    z.setAll(0x0, ByteUtils.int32Bytes(z03));
+    z.setAll(0x0, z03.to32Bytes());
     z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
-    z.setAll(0x4, ByteUtils.int32Bytes(z47));
+    z.setAll(0x4, z47.to32Bytes());
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
-    z.setAll(0x4, ByteUtils.int32Bytes(z8B));
+    z.setAll(0x4, z8B.to32Bytes());
     zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    z.setAll(0xC, ByteUtils.int32Bytes(zCF));
+    z.setAll(0xC, zCF.to32Bytes());
     _masking[1] = _sBox5[z[0x8]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0x7]] ^ _sBox8[z[0x6]] ^ _sBox5[z[0x2]];
     _masking[2] = _sBox5[z[0xA]] ^ _sBox6[z[0xB]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox6[z[0x6]];
     _masking[3] = _sBox5[z[0xC]] ^ _sBox6[z[0xD]] ^ _sBox7[z[0x3]] ^ _sBox8[z[0x2]] ^ _sBox7[z[0x9]];
     _masking[4] = _sBox5[z[0xE]] ^ _sBox6[z[0xF]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x0]] ^ _sBox8[z[0xC]];
 
-    z03 = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x0)));
-    z47 = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x4)));
-    z8B = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x8)));
-    zCF = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0xC)));
+    z03 = z.sublist(0x0).toIn32();
+    z47 = z.sublist(0x4).toIn32();
+    z8B = z.sublist(0x8).toIn32();
+    zCF = z.sublist(0xC).toIn32();
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
-    x.setAll(0x0, ByteUtils.int32Bytes(x03));
+    x.setAll(0x0, x03.to32Bytes());
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
-    x.setAll(0x4, ByteUtils.int32Bytes(x47));
+    x.setAll(0x4, x47.to32Bytes());
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
-    x.setAll(0x8, ByteUtils.int32Bytes(x8B));
+    x.setAll(0x8, x8B.to32Bytes());
     xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    x.setAll(0xC, ByteUtils.int32Bytes(xCF));
+    x.setAll(0xC, xCF.to32Bytes());
     _masking[5] = _sBox5[x[0x3]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xD]] ^ _sBox5[x[0x8]];
     _masking[6] = _sBox5[x[0x1]] ^ _sBox6[x[0x0]] ^ _sBox7[x[0xE]] ^ _sBox8[x[0xF]] ^ _sBox6[x[0xD]];
     _masking[7] = _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x8]] ^ _sBox8[x[0x9]] ^ _sBox7[x[0x3]];
     _masking[8] = _sBox5[x[0x5]] ^ _sBox6[x[0x4]] ^ _sBox7[x[0xA]] ^ _sBox8[x[0xB]] ^ _sBox8[x[0x7]];
 
-    x03 = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x0)));
-    x47 = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x4)));
-    x8B = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x8)));
-    xCF = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0xC)));
+    x03 = x.sublist(0x0).toIn32();
+    x47 = x.sublist(0x4).toIn32();
+    x8B = x.sublist(0x8).toIn32();
+    xCF = x.sublist(0xC).toIn32();
     z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
-    z.setAll(0x0, ByteUtils.int32Bytes(z03));
+    z.setAll(0x0, z03.to32Bytes());
     z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
-    z.setAll(0x4, ByteUtils.int32Bytes(z47));
+    z.setAll(0x4, z47.to32Bytes());
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
-    z.setAll(0x8, ByteUtils.int32Bytes(z8B));
+    z.setAll(0x8, z8B.to32Bytes());
     zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    z.setAll(0xC, ByteUtils.int32Bytes(zCF));
+    z.setAll(0xC, zCF.to32Bytes());
     _masking[9] = _sBox5[z[0x3]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0xC]] ^ _sBox8[z[0xD]] ^ _sBox5[z[0x9]];
     _masking[10] = _sBox5[z[0x1]] ^ _sBox6[z[0x0]] ^ _sBox7[z[0xE]] ^ _sBox8[z[0xF]] ^ _sBox6[z[0xc]];
     _masking[11] = _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x8]] ^ _sBox8[z[0x9]] ^ _sBox7[z[0x2]];
     _masking[12] = _sBox5[z[0x5]] ^ _sBox6[z[0x4]] ^ _sBox7[z[0xA]] ^ _sBox8[z[0xB]] ^ _sBox8[z[0x6]];
 
-    z03 = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x0)));
-    z47 = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x4)));
-    z8B = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x8)));
-    zCF = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0xC)));
+    z03 = z.sublist(0x0).toIn32();
+    z47 = z.sublist(0x4).toIn32();
+    z8B = z.sublist(0x8).toIn32();
+    zCF = z.sublist(0xC).toIn32();
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
-    x.setAll(0x0, ByteUtils.int32Bytes(x03));
+    x.setAll(0x0, x03.to32Bytes());
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
-    x.setAll(0x4, ByteUtils.int32Bytes(x47));
+    x.setAll(0x4, x47.to32Bytes());
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
-    x.setAll(0x8, ByteUtils.int32Bytes(x8B));
+    x.setAll(0x8, x8B.to32Bytes());
     xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    x.setAll(0xC, ByteUtils.int32Bytes(xCF));
+    x.setAll(0xC, xCF.to32Bytes());
     _masking[13] = _sBox5[x[0x8]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0x7]] ^ _sBox8[x[0x6]] ^ _sBox5[x[0x3]];
     _masking[14] = _sBox5[x[0xA]] ^ _sBox6[x[0xB]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox6[x[0x7]];
     _masking[15] = _sBox5[x[0xC]] ^ _sBox6[x[0xD]] ^ _sBox7[x[0x3]] ^ _sBox8[x[0x2]] ^ _sBox7[x[0x8]];
     _masking[16] = _sBox5[x[0xE]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x0]] ^ _sBox8[x[0xD]];
 
-    x03 = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x0)));
-    x47 = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x4)));
-    x8B = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x8)));
-    xCF = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0xC)));
+    x03 = x.sublist(0x0).toIn32();
+    x47 = x.sublist(0x4).toIn32();
+    x8B = x.sublist(0x8).toIn32();
+    xCF = x.sublist(0xC).toIn32();
     z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
-    z.setAll(0x0, ByteUtils.int32Bytes(z03));
+    z.setAll(0x0, z03.to32Bytes());
     z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
-    z.setAll(0x4, ByteUtils.int32Bytes(z47));
+    z.setAll(0x4, z47.to32Bytes());
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
-    z.setAll(0x8, ByteUtils.int32Bytes(z8B));
+    z.setAll(0x8, z8B.to32Bytes());
     zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    z.setAll(0xC, ByteUtils.int32Bytes(zCF));
+    z.setAll(0xC, zCF.to32Bytes());
     _rotating[1] = (_sBox5[z[0x8]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0x7]] ^ _sBox8[z[0x6]] ^ _sBox5[z[0x2]]) & 0x1f;
     _rotating[2] = (_sBox5[z[0xA]] ^ _sBox6[z[0xB]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox6[z[0x6]]) & 0x1f;
     _rotating[3] = (_sBox5[z[0xC]] ^ _sBox6[z[0xD]] ^ _sBox7[z[0x3]] ^ _sBox8[z[0x2]] ^ _sBox7[z[0x9]]) & 0x1f;
     _rotating[4] = (_sBox5[z[0xE]] ^ _sBox6[z[0xF]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x0]] ^ _sBox8[z[0xC]]) & 0x1f;
 
-    z03 = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x0)));
-    z47 = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x4)));
-    z8B = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x8)));
-    zCF = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0xC)));
+    z03 = z.sublist(0x0).toIn32();
+    z47 = z.sublist(0x4).toIn32();
+    z8B = z.sublist(0x8).toIn32();
+    zCF = z.sublist(0xC).toIn32();
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
-    x.setAll(0x0, ByteUtils.int32Bytes(x03));
+    x.setAll(0x0, x03.to32Bytes());
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
-    x.setAll(0x4, ByteUtils.int32Bytes(x47));
+    x.setAll(0x4, x47.to32Bytes());
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
-    x.setAll(0x8, ByteUtils.int32Bytes(x8B));
+    x.setAll(0x8, x8B.to32Bytes());
     xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    x.setAll(0xC, ByteUtils.int32Bytes(xCF));
+    x.setAll(0xC, xCF.to32Bytes());
     _rotating[5] = (_sBox5[x[0x3]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xD]] ^ _sBox5[x[0x8]]) & 0x1f;
     _rotating[6] = (_sBox5[x[0x1]] ^ _sBox6[x[0x0]] ^ _sBox7[x[0xE]] ^ _sBox8[x[0xF]] ^ _sBox6[x[0xD]]) & 0x1f;
     _rotating[7] = (_sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x8]] ^ _sBox8[x[0x9]] ^ _sBox7[x[0x3]]) & 0x1f;
     _rotating[8] = (_sBox5[x[0x5]] ^ _sBox6[x[0x4]] ^ _sBox7[x[0xA]] ^ _sBox8[x[0xB]] ^ _sBox8[x[0x7]]) & 0x1f;
 
-    x03 = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x0)));
-    x47 = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x4)));
-    x8B = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0x8)));
-    xCF = ByteUtils.bytesToIn32(Uint8List.fromList(x.sublist(0xC)));
+    x03 = x.sublist(0x0).toIn32();
+    x47 = x.sublist(0x4).toIn32();
+    x8B = x.sublist(0x8).toIn32();
+    xCF = x.sublist(0xC).toIn32();
     z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
-    z.setAll(0x0, ByteUtils.int32Bytes(z03));
+    z.setAll(0x0, z03.to32Bytes());
     z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
-    z.setAll(0x4, ByteUtils.int32Bytes(z47));
+    z.setAll(0x4, z47.to32Bytes());
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
-    z.setAll(0x8, ByteUtils.int32Bytes(z8B));
+    z.setAll(0x8, z8B.to32Bytes());
     zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    z.setAll(0xC, ByteUtils.int32Bytes(zCF));
+    z.setAll(0xC, zCF.to32Bytes());
     _rotating[9] = (_sBox5[z[0x3]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0xC]] ^ _sBox8[z[0xD]] ^ _sBox5[z[0x9]]) & 0x1f;
     _rotating[10] = (_sBox5[z[0x1]] ^ _sBox6[z[0x0]] ^ _sBox7[z[0xE]] ^ _sBox8[z[0xF]] ^ _sBox6[z[0xc]]) & 0x1f;
     _rotating[11] = (_sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x8]] ^ _sBox8[z[0x9]] ^ _sBox7[z[0x2]]) & 0x1f;
     _rotating[12] = (_sBox5[z[0x5]] ^ _sBox6[z[0x4]] ^ _sBox7[z[0xA]] ^ _sBox8[z[0xB]] ^ _sBox8[z[0x6]]) & 0x1f;
 
-    z03 = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x0)));
-    z47 = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x4)));
-    z8B = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0x8)));
-    zCF = ByteUtils.bytesToIn32(Uint8List.fromList(z.sublist(0xC)));
+    z03 = z.sublist(0x0).toIn32();
+    z47 = z.sublist(0x4).toIn32();
+    z8B = z.sublist(0x8).toIn32();
+    zCF = z.sublist(0xC).toIn32();
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
-    x.setAll(0x0, ByteUtils.int32Bytes(x03));
+    x.setAll(0x0, x03.to32Bytes());
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
-    x.setAll(0x4, ByteUtils.int32Bytes(x47));
+    x.setAll(0x4, x47.to32Bytes());
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
-    x.setAll(0x8, ByteUtils.int32Bytes(x8B));
+    x.setAll(0x8, x8B.to32Bytes());
     xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    x.setAll(0xC, ByteUtils.int32Bytes(xCF));
+    x.setAll(0xC, xCF.to32Bytes());
     _rotating[13] = (_sBox5[x[0x8]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0x7]] ^ _sBox8[x[0x6]] ^ _sBox5[x[0x3]]) & 0x1f;
     _rotating[14] = (_sBox5[x[0xA]] ^ _sBox6[x[0xB]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox6[x[0x7]]) & 0x1f;
     _rotating[15] = (_sBox5[x[0xC]] ^ _sBox6[x[0xD]] ^ _sBox7[x[0x3]] ^ _sBox8[x[0x2]] ^ _sBox7[x[0x8]]) & 0x1f;
@@ -2297,13 +2297,13 @@ class CAST5Engine extends BaseCipher {
   int _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
     final result = List.filled(2, 0);
 
-    final l0 = ByteUtils.bytesToIn32(src.sublist(srcIndex));
-    final r0 = ByteUtils.bytesToIn32(src.sublist(srcIndex + 4));
+    final l0 = src.sublist(srcIndex).toIn32();
+    final r0 = src.sublist(srcIndex + 4).toIn32();
 
     _encipher(l0, r0, result);
 
-    dst.setAll(dstIndex, ByteUtils.int32Bytes(result[0]));
-    dst.setAll(dstIndex + 4, ByteUtils.int32Bytes(result[1]));
+    dst.setAll(dstIndex, result[0].to32Bytes());
+    dst.setAll(dstIndex + 4, result[1].to32Bytes());
 
     return blockSize;
   }
@@ -2311,13 +2311,13 @@ class CAST5Engine extends BaseCipher {
   int _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
     final result = List.filled(2, 0);
 
-    final l16 = ByteUtils.bytesToIn32(src.sublist(srcIndex));
-    final r16 = ByteUtils.bytesToIn32(src.sublist(srcIndex + 4));
+    final l16 = src.sublist(srcIndex).toIn32();
+    final r16 = src.sublist(srcIndex + 4).toIn32();
 
     _decipher(l16, r16, result);
 
-    dst.setAll(dstIndex, ByteUtils.int32Bytes(result[0]));
-    dst.setAll(dstIndex + 4, ByteUtils.int32Bytes(result[1]));
+    dst.setAll(dstIndex, result[0].to32Bytes());
+    dst.setAll(dstIndex + 4, result[1].to32Bytes());
 
     return blockSize;
   }

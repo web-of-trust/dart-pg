@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../byte_utils.dart';
 import '../enums.dart';
+import '../helpers.dart';
 
 export 'signature/embedded_signature.dart';
 export 'signature/exportable_certification.dart';
@@ -44,14 +44,14 @@ class SignatureSubpacket {
     final bodyLen = data.length + 1;
 
     if (isLongLength) {
-      bytes.addAll([0xff, ...ByteUtils.int32Bytes(bodyLen)]);
+      bytes.addAll([0xff, ...bodyLen.to32Bytes()]);
     } else {
       if (bodyLen < 192) {
         bytes.add(bodyLen);
       } else if (bodyLen <= 8383) {
         bytes.addAll([(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192]);
       } else {
-        bytes.addAll([0xff, ...ByteUtils.int32Bytes(bodyLen)]);
+        bytes.addAll([0xff, ...bodyLen.to32Bytes()]);
       }
     }
 

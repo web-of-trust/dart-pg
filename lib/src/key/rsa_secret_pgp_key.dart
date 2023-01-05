@@ -5,7 +5,7 @@
 import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
-import '../byte_utils.dart';
+import '../helpers.dart';
 import 'pgp_key.dart';
 
 class RsaSecretBcpgKey extends PgpKey {
@@ -27,24 +27,24 @@ class RsaSecretBcpgKey extends PgpKey {
 
   factory RsaSecretBcpgKey.fromPacketData(Uint8List bytes) {
     var pos = 0;
-    var bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final privateExponent = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final privateExponent = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     pos += (bitLength + 7) % 8;
-    bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final primeP = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final primeP = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     pos += (bitLength + 7) % 8;
-    bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final primeQ = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final primeQ = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     pos += (bitLength + 7) % 8;
-    bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final qInv = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final qInv = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     return RsaSecretBcpgKey(RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ), qInv: qInv);
   }
@@ -53,17 +53,17 @@ class RsaSecretBcpgKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(ByteUtils.int16Bytes(privateExponent!.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(privateExponent));
+    bytes.addAll(privateExponent!.bitLength.to16Bytes());
+    bytes.addAll(privateExponent!.toBytes());
 
-    bytes.addAll(ByteUtils.int16Bytes(primeP!.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(primeP));
+    bytes.addAll(primeP!.bitLength.to16Bytes());
+    bytes.addAll(primeP!.toBytes());
 
-    bytes.addAll(ByteUtils.int16Bytes(primeQ!.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(primeQ));
+    bytes.addAll(primeQ!.bitLength.to16Bytes());
+    bytes.addAll(primeQ!.toBytes());
 
-    bytes.addAll(ByteUtils.int16Bytes(qInv.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(qInv));
+    bytes.addAll(qInv.bitLength.to16Bytes());
+    bytes.addAll(qInv.toBytes());
 
     return Uint8List.fromList(bytes);
   }

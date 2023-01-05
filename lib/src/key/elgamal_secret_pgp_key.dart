@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../byte_utils.dart';
+import '../helpers.dart';
 import 'pgp_key.dart';
 
 class ElGamalSecretPgpKey extends PgpKey {
@@ -14,9 +14,9 @@ class ElGamalSecretPgpKey extends PgpKey {
 
   factory ElGamalSecretPgpKey.fromPacketData(Uint8List bytes) {
     var pos = 0;
-    var bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final x = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final x = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
     return ElGamalSecretPgpKey(x);
   }
 
@@ -24,8 +24,8 @@ class ElGamalSecretPgpKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(ByteUtils.int16Bytes(x.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(x));
+    bytes.addAll(x.bitLength.to16Bytes());
+    bytes.addAll(x.toBytes());
 
     return Uint8List.fromList(bytes);
   }

@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../byte_utils.dart';
 import '../enums.dart';
+import '../helpers.dart';
 import 'contained_packet.dart';
 
 /// OnePassSignature represents a one-pass signature packet.
@@ -39,7 +39,7 @@ class OnePassSignature extends ContainedPacket {
     final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos++]);
     final hashAlgorithm = HashAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
     final keyAlgorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
-    final issuerKeyID = ByteUtils.bytesToInt64(bytes.sublist(pos, pos + 8));
+    final issuerKeyID = bytes.sublist(pos, pos + 8).toInt64();
     return OnePassSignature(version, signatureType, hashAlgorithm, keyAlgorithm, issuerKeyID, bytes[pos + 8]);
   }
 
@@ -50,7 +50,7 @@ class OnePassSignature extends ContainedPacket {
       signatureType.value,
       hashAlgorithm.value,
       keyAlgorithm.value,
-      ...ByteUtils.int64Bytes(issuerKeyID),
+      ...issuerKeyID.to64Bytes(),
       nested,
     ]);
   }

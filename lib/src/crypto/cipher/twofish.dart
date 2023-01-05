@@ -6,7 +6,7 @@ import 'package:pointycastle/api.dart';
 
 import 'dart:typed_data';
 
-import '../../byte_utils.dart';
+import '../../helpers.dart';
 import 'base_cipher.dart';
 
 /// A class that provides Twofish encryption operations.
@@ -631,7 +631,7 @@ class TwofishEngine extends BaseCipher {
       _workingKey = params.key;
       final keyBits = _workingKey.length * 8;
       if (!(keyBits == 128 || keyBits == 192 || keyBits == 256)) {
-        throw ArgumentError("Key length not 128/192/256 bits.");
+        throw ArgumentError('Key length not 128/192/256 bits.');
       }
       _k64Cnt = (_workingKey.length / 8) as int;
       _setKey(_workingKey);
@@ -672,8 +672,8 @@ class TwofishEngine extends BaseCipher {
 
     for (var i = 0; i < _k64Cnt; i++) {
       final p = i * 8;
-      k32e[i] = ByteUtils.bytesToIn32(key.sublist(p));
-      k32o[i] = ByteUtils.bytesToIn32(key.sublist(p + 4));
+      k32e[i] = key.sublist(p).toIn32();
+      k32o[i] = key.sublist(p + 4).toIn32();
 
       sBoxKeys[_k64Cnt - 1 - i] = _rsMdsEncode(k32e[i], k32o[i]);
     }
@@ -683,11 +683,11 @@ class TwofishEngine extends BaseCipher {
       final q = i * _skStep;
       A = _f32(q, k32e);
       B = _f32(q + _skBump, k32o);
-      B = BaseCipher.intRotateLeft(B, 8);
+      B = B.rotateLeft(8);
       A += B;
       _gSubKeys[i * 2] = A;
       A += B;
-      _gSubKeys[i * 2 + 1] = BaseCipher.intRotateLeft(A, _skRotl);
+      _gSubKeys[i * 2 + 1] = A.rotateLeft(_skRotl);
     }
 
     final k0 = sBoxKeys[0];
@@ -746,10 +746,10 @@ class TwofishEngine extends BaseCipher {
   /// the result in the provided buffer starting at the given offset.
   /// The input will be an exact multiple of our blocksize.
   void _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
-    var x0 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex)) ^ _gSubKeys[_inputWhiten];
-    var x1 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 4)) ^ _gSubKeys[_inputWhiten + 1];
-    var x2 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 8)) ^ _gSubKeys[_inputWhiten + 2];
-    var x3 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 12)) ^ _gSubKeys[_inputWhiten + 3];
+    var x0 = src.sublist(srcIndex).toLeInt32() ^ _gSubKeys[_inputWhiten];
+    var x1 = src.sublist(srcIndex + 4).toLeInt32() ^ _gSubKeys[_inputWhiten + 1];
+    var x2 = src.sublist(srcIndex + 8).toLeInt32() ^ _gSubKeys[_inputWhiten + 2];
+    var x3 = src.sublist(srcIndex + 12).toLeInt32() ^ _gSubKeys[_inputWhiten + 3];
 
     var k = _roundSubkeys;
     int t0, t1;
@@ -757,30 +757,30 @@ class TwofishEngine extends BaseCipher {
       t0 = _fe32_0(x0);
       t1 = _fe32_3(x1);
       x2 ^= t0 + t1 + _gSubKeys[k++];
-      x2 = BaseCipher.intRotateRight(x2, 1);
-      x3 = BaseCipher.intRotateLeft(x3, 1) ^ (t0 + 2 * t1 + _gSubKeys[k++]);
+      x2 = x2.rotateRight(1);
+      x3 = x3.rotateLeft(1) ^ (t0 + 2 * t1 + _gSubKeys[k++]);
 
       t0 = _fe32_0(x2);
       t1 = _fe32_3(x3);
       x0 ^= t0 + t1 + _gSubKeys[k++];
-      x0 = BaseCipher.intRotateRight(x0, 1);
-      x1 = BaseCipher.intRotateLeft(x1, 1) ^ (t0 + 2 * t1 + _gSubKeys[k++]);
+      x0 = x0.rotateRight(1);
+      x1 = x1.rotateLeft(1) ^ (t0 + 2 * t1 + _gSubKeys[k++]);
     }
 
-    dst.setAll(dstIndex, ByteUtils.int32ToLittleEndian(x2 ^ _gSubKeys[_outputWhiten]));
-    dst.setAll(dstIndex + 4, ByteUtils.int32ToLittleEndian(x3 ^ _gSubKeys[_outputWhiten + 1]));
-    dst.setAll(dstIndex + 8, ByteUtils.int32ToLittleEndian(x0 ^ _gSubKeys[_outputWhiten + 2]));
-    dst.setAll(dstIndex + 12, ByteUtils.int32ToLittleEndian(x1 ^ _gSubKeys[_outputWhiten + 3]));
+    dst.setAll(dstIndex, (x2 ^ _gSubKeys[_outputWhiten]).toLeBytes());
+    dst.setAll(dstIndex + 4, (x3 ^ _gSubKeys[_outputWhiten + 1]).toLeBytes());
+    dst.setAll(dstIndex + 8, (x0 ^ _gSubKeys[_outputWhiten + 2]).toLeBytes());
+    dst.setAll(dstIndex + 12, (x1 ^ _gSubKeys[_outputWhiten + 3]).toLeBytes());
   }
 
   /// Decrypt the given input starting at the given offset and place
   /// the result in the provided buffer starting at the given offset.
   /// The input will be an exact multiple of our blocksize.
   void _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
-    var x2 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex)) ^ _gSubKeys[_outputWhiten];
-    var x3 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 4)) ^ _gSubKeys[_outputWhiten + 1];
-    var x0 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 8)) ^ _gSubKeys[_outputWhiten + 2];
-    var x1 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 12)) ^ _gSubKeys[_outputWhiten + 3];
+    var x2 = src.sublist(srcIndex).toLeInt32() ^ _gSubKeys[_outputWhiten];
+    var x3 = src.sublist(srcIndex + 4).toLeInt32() ^ _gSubKeys[_outputWhiten + 1];
+    var x0 = src.sublist(srcIndex + 8).toLeInt32() ^ _gSubKeys[_outputWhiten + 2];
+    var x1 = src.sublist(srcIndex + 12).toLeInt32() ^ _gSubKeys[_outputWhiten + 3];
 
     var k = _roundSubkeys + 2 * _rounds - 1;
     int t0, t1;
@@ -788,20 +788,20 @@ class TwofishEngine extends BaseCipher {
       t0 = _fe32_0(x2);
       t1 = _fe32_3(x3);
       x1 ^= t0 + 2 * t1 + _gSubKeys[k--];
-      x0 = BaseCipher.intRotateLeft(x0, 1) ^ (t0 + t1 + _gSubKeys[k--]);
-      x1 = BaseCipher.intRotateRight(x1, 1);
+      x0 = x0.rotateLeft(1) ^ (t0 + t1 + _gSubKeys[k--]);
+      x1 = x1.rotateRight(1);
 
       t0 = _fe32_0(x0);
       t1 = _fe32_3(x1);
       x3 ^= t0 + 2 * t1 + _gSubKeys[k--];
-      x2 = BaseCipher.intRotateLeft(x2, 1) ^ (t0 + t1 + _gSubKeys[k--]);
-      x3 = BaseCipher.intRotateRight(x3, 1);
+      x2 = x2.rotateLeft(1) ^ (t0 + t1 + _gSubKeys[k--]);
+      x3 = x3.rotateRight(1);
     }
 
-    dst.setAll(dstIndex, ByteUtils.int32ToLittleEndian(x0 ^ _gSubKeys[_inputWhiten]));
-    dst.setAll(dstIndex + 4, ByteUtils.int32ToLittleEndian(x1 ^ _gSubKeys[_inputWhiten + 1]));
-    dst.setAll(dstIndex + 8, ByteUtils.int32ToLittleEndian(x2 ^ _gSubKeys[_inputWhiten + 2]));
-    dst.setAll(dstIndex + 12, ByteUtils.int32ToLittleEndian(x3 ^ _gSubKeys[_inputWhiten + 3]));
+    dst.setAll(dstIndex, (x0 ^ _gSubKeys[_inputWhiten]).toLeBytes());
+    dst.setAll(dstIndex + 4, (x1 ^ _gSubKeys[_inputWhiten + 1]).toLeBytes());
+    dst.setAll(dstIndex + 8, (x2 ^ _gSubKeys[_inputWhiten + 2]).toLeBytes());
+    dst.setAll(dstIndex + 12, (x3 ^ _gSubKeys[_inputWhiten + 3]).toLeBytes());
   }
 
   int _f32(final int x, final List<int> k32) {

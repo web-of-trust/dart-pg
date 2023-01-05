@@ -5,8 +5,8 @@
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 
-import '../byte_utils.dart';
 import '../enums.dart';
+import '../helpers.dart';
 import '../key/dsa_public_pgp_key.dart';
 import '../key/ecdh_public_pgp_key.dart';
 import '../key/ecdsa_public_pgp_key.dart';
@@ -50,12 +50,12 @@ class PublicKey extends ContainedPacket {
     final version = bytes[pos++];
 
     /// A four-octet number denoting the time that the key was created.
-    final creationTime = ByteUtils.bytesToTime(bytes.sublist(pos, pos + 4));
+    final creationTime = bytes.sublist(pos, pos + 4).toDateTime();
     pos += 4;
 
     /// A two-octet number denoting the time in days that this key is valid.
     /// If this number is zero, then it does not expire.
-    final expirationDays = (version == 3) ? ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2)) : 0;
+    final expirationDays = (version == 3) ? bytes.sublist(pos, pos + 2).toIn16() : 0;
     if (version == 3) {
       pos += 2;
     }
@@ -105,29 +105,29 @@ class PublicKey extends ContainedPacket {
     final List<int> toHash = [];
     if (version <= 3) {
       final pk = pgpKey as RsaPublicPgpKey;
-      final bytes = ByteUtils.bigIntBytes(pk.modulus);
+      final bytes = pk.modulus!.toBytes();
 
       toHash.addAll(bytes);
-      toHash.addAll(ByteUtils.bigIntBytes(pk.publicExponent));
+      toHash.addAll(pk.publicExponent!.toBytes());
 
       _fingerprint = Uint8List.fromList(md5.convert(toHash).bytes);
-      _keyID = ByteUtils.bytesToInt64(bytes.sublist(bytes.length - 8));
+      _keyID = bytes.sublist(bytes.length - 8).toInt64();
     } else {
       final bytes = toPacketData();
       if (version == 5) {
         toHash.add(0x9A);
-        toHash.addAll(ByteUtils.int32Bytes(bytes.length));
+        toHash.addAll(bytes.length.to32Bytes());
         toHash.addAll(bytes);
 
         _fingerprint = Uint8List.fromList(sha256.convert(toHash).bytes);
-        _keyID = ByteUtils.bytesToInt64(_fingerprint.sublist(0, 8));
+        _keyID = _fingerprint.sublist(0, 8).toInt64();
       } else if (version == 4) {
         toHash.add(0x99);
-        toHash.addAll(ByteUtils.int16Bytes(bytes.length));
+        toHash.addAll(bytes.length.to16Bytes());
         toHash.addAll(bytes);
 
         _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
-        _keyID = ByteUtils.bytesToInt64(_fingerprint.sublist(12, 20));
+        _keyID = _fingerprint.sublist(12, 20).toInt64();
       } else {
         _fingerprint = Uint8List.fromList([]);
         _keyID = 0;
@@ -141,15 +141,15 @@ class PublicKey extends ContainedPacket {
 
   @override
   Uint8List toPacketData() {
-    final List<int> bytes = [version & 0xff, ...ByteUtils.timeToBytes(creationTime)];
+    final List<int> bytes = [version & 0xff, ...creationTime.toBytes()];
     if (version <= 3) {
-      bytes.addAll(ByteUtils.int16Bytes(expirationDays));
+      bytes.addAll(expirationDays.to16Bytes());
     }
     bytes.add(algorithm.value & 0xff);
 
     final keyData = pgpKey.encode();
     if (version == 5) {
-      bytes.addAll(ByteUtils.int32Bytes(keyData.length));
+      bytes.addAll(keyData.length.to32Bytes());
     }
     bytes.addAll(keyData);
 

@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../byte_utils.dart';
+import '../helpers.dart';
 import 'pgp_key.dart';
 
 class DsaPublicPgpKey extends PgpKey {
@@ -17,24 +17,24 @@ class DsaPublicPgpKey extends PgpKey {
 
   factory DsaPublicPgpKey.fromPacketData(Uint8List bytes) {
     var pos = 0;
-    var bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final p = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final p = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     pos += (bitLength + 7) % 8;
-    bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final q = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final q = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     pos += (bitLength + 7) % 8;
-    bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final g = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final g = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     pos += (bitLength + 7) % 8;
-    bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final y = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final y = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     return DsaPublicPgpKey(p, q, g, y);
   }
@@ -43,17 +43,17 @@ class DsaPublicPgpKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(ByteUtils.int16Bytes(p.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(p));
+    bytes.addAll(p.bitLength.to16Bytes());
+    bytes.addAll(p.toBytes());
 
-    bytes.addAll(ByteUtils.int16Bytes(q.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(q));
+    bytes.addAll(q.bitLength.to16Bytes());
+    bytes.addAll(q.toBytes());
 
-    bytes.addAll(ByteUtils.int16Bytes(g.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(g));
+    bytes.addAll(g.bitLength.to16Bytes());
+    bytes.addAll(g.toBytes());
 
-    bytes.addAll(ByteUtils.int16Bytes(y.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(y));
+    bytes.addAll(y.bitLength.to16Bytes());
+    bytes.addAll(y.toBytes());
 
     return Uint8List.fromList(bytes);
   }

@@ -4,10 +4,10 @@
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/byte_utils.dart';
 import 'package:pointycastle/pointycastle.dart' as pc;
 
 import '../enums.dart';
+import '../helpers.dart';
 import '../key/dsa_secret_pgp_key.dart';
 import '../key/ec_secret_pgp_key.dart';
 import '../key/elgamal_secret_pgp_key.dart';
@@ -104,7 +104,7 @@ class SecretKey extends ContainedPacket {
       final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hashLen);
       final digest = pc.Digest('SHA-1');
       final hash = digest.process(clearText);
-      if (!ByteUtils.equalsUint8List(hash, hashText)) {
+      if (!hash.equals(hashText)) {
         throw Exception('Incorrect key passphrase');
       }
     } else {

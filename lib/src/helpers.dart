@@ -41,8 +41,12 @@ extension IntHelper on int {
 
   Uint8List to64Bytes() => Uint8List(8)..buffer.asByteData().setUint64(0, this);
 
-  Uint8List toLittleEndian() =>
+  Uint8List toLeBytes() =>
       Uint8List.fromList([this & 0x00, (this >>> 8) & 0x00, (this >>> 16) & 0x00, (this >>> 24) & 0x00]);
+
+  int rotateLeft(final int distance) => (this << distance) ^ (this >>> -distance);
+
+  int rotateRight(final int distance) => (this >> distance) ^ (this << -distance);
 }
 
 extension Uint8ListHelper on Uint8List {
@@ -144,4 +148,23 @@ extension BigIntHelper on BigInt {
 
 extension DateTimeHelper on DateTime {
   Uint8List toBytes() => (millisecondsSinceEpoch ~/ 1000).to32Bytes();
+}
+
+class Pack {
+  static const _mask32 = 0xFFFFFFFF;
+
+  static void pack32(int x, dynamic out, int offset, Endian endian) {
+    assert((x >= 0) && (x <= _mask32));
+    if (out is! ByteData) {
+      out = ByteData.view(out.buffer as ByteBuffer, out.offsetInBytes, out.length);
+    }
+    out.setUint32(offset, x, endian);
+  }
+
+  static int unpack32(dynamic inp, int offset, Endian endian) {
+    if (inp is! ByteData) {
+      inp = ByteData.view(inp.buffer, inp.offsetInBytes, inp.length);
+    }
+    return inp.getUint32(offset, endian);
+  }
 }

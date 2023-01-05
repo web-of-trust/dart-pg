@@ -5,7 +5,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../byte_utils.dart';
+import '../helpers.dart';
 
 class Crc24 {
   static const _crc24Init = 0xb704ce;
@@ -26,6 +26,6 @@ class Crc24 {
   }
 
   static String base64Calculate(final Uint8List data) {
-    return base64.encode(ByteUtils.int32Bytes(calculate(data)).sublist(1));
+    return base64.encode(calculate(data).to32Bytes().sublist(1));
   }
 }

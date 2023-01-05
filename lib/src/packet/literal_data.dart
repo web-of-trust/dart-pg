@@ -5,8 +5,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../byte_utils.dart';
 import '../enums.dart';
+import '../helpers.dart';
 import 'contained_packet.dart';
 
 /// LiteralData represents an encrypted file.
@@ -38,7 +38,7 @@ class LiteralData extends ContainedPacket {
     final filename = utf8.decode(bytes.sublist(pos, pos + length));
 
     pos += length;
-    final time = ByteUtils.bytesToTime(bytes.sublist(pos, pos + 4));
+    final time = bytes.sublist(pos, pos + 4).toDateTime();
 
     pos += 4;
     final data = bytes.sublist(pos);
@@ -58,7 +58,7 @@ class LiteralData extends ContainedPacket {
       format.value,
       filename.length,
       ...utf8.encode(filename),
-      ...ByteUtils.timeToBytes(time),
+      ...time.toBytes(),
     ];
 
     if (data.isNotEmpty) {

@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../byte_utils.dart';
+import '../helpers.dart';
 
 class UserAttributeSubpacket {
   final int type;
@@ -23,7 +23,7 @@ class UserAttributeSubpacket {
     } else if (bodyLen <= 8383 && !longLength) {
       bytes.addAll([(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192]);
     } else {
-      bytes.addAll([0xff, ...ByteUtils.int32Bytes(bodyLen)]);
+      bytes.addAll([0xff, ...bodyLen.to32Bytes()]);
     }
     bytes.addAll([type, ...data]);
     return Uint8List.fromList(bytes);

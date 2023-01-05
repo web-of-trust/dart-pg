@@ -4,6 +4,8 @@
 
 import 'dart:typed_data';
 
+import '../helpers.dart';
+
 /// Generic Sub Packet Data Parser function
 class SubpacketRange {
   final int length;
@@ -19,7 +21,7 @@ class SubpacketRange {
     } else if (type < 255) {
       return SubpacketRange(((type - 192) << 8) + (bytes[1]) + 192, 2);
     } else if (type == 255) {
-      return SubpacketRange((bytes[1] << 24) | (bytes[2] << 16) | (bytes[3] << 8) | bytes[4], 5);
+      return SubpacketRange(bytes.sublist(1).toIn32(), 5);
     }
     return SubpacketRange(0, 0);
   }

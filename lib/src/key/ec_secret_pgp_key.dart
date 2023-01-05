@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/pointycastle.dart';
 
-import '../byte_utils.dart';
+import '../helpers.dart';
 import 'pgp_key.dart';
 
 class ECSecretPgpKey extends PgpKey {
@@ -16,9 +16,9 @@ class ECSecretPgpKey extends PgpKey {
 
   factory ECSecretPgpKey.fromPacketData(Uint8List bytes) {
     var pos = 0;
-    var bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final d = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final d = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
     return ECSecretPgpKey(ECPrivateKey(d, null));
   }
 
@@ -26,8 +26,8 @@ class ECSecretPgpKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(ByteUtils.int16Bytes(privateKey.d!.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(privateKey.d));
+    bytes.addAll(privateKey.d!.bitLength.to16Bytes());
+    bytes.addAll(privateKey.d!.toBytes());
 
     return Uint8List.fromList(bytes);
   }

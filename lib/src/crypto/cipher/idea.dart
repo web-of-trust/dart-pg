@@ -6,7 +6,7 @@ import 'package:pointycastle/api.dart';
 
 import 'dart:typed_data';
 
-import '../../byte_utils.dart';
+import '../../helpers.dart';
 import 'base_cipher.dart';
 
 /// A class that provides a basic International Data Encryption Algorithm (IDEA) engine.
@@ -72,7 +72,7 @@ class IDEAEngine extends BaseCipher {
     }
 
     for (var i = 0; i < 8; i++) {
-      key[i] = ByteUtils.bytesToIn16(tmpKey.sublist(i * 2));
+      key[i] = tmpKey.sublist(i * 2).toIn16();
     }
     for (var i = 8; i < 52; i++) {
       if ((i & 7) < 6) {
@@ -168,10 +168,10 @@ class IDEAEngine extends BaseCipher {
     int x0, x1, x2, x3, t0, t1;
     var keyOff = 0;
 
-    x0 = ByteUtils.bytesToIn16(inp.sublist(inpOff));
-    x1 = ByteUtils.bytesToIn16(inp.sublist(inpOff + 2));
-    x2 = ByteUtils.bytesToIn16(inp.sublist(inpOff + 4));
-    x3 = ByteUtils.bytesToIn16(inp.sublist(inpOff + 6));
+    x0 = inp.sublist(inpOff).toIn16();
+    x1 = inp.sublist(inpOff + 2).toIn16();
+    x2 = inp.sublist(inpOff + 4).toIn16();
+    x3 = inp.sublist(inpOff + 6).toIn16();
 
     for (var round = 0; round < 8; round++) {
       x0 = _mul(x0, workingKey[keyOff++]);
@@ -200,10 +200,10 @@ class IDEAEngine extends BaseCipher {
       x2 ^= t0;
     }
 
-    out.setAll(outOff, ByteUtils.int16Bytes(_mul(x0, workingKey[keyOff++])));
-    out.setAll(outOff + 2, ByteUtils.int16Bytes(x2 + workingKey[keyOff++]));
-    out.setAll(outOff + 4, ByteUtils.int16Bytes(x1 + workingKey[keyOff++]));
-    out.setAll(outOff + 6, ByteUtils.int16Bytes(_mul(x3, workingKey[keyOff])));
+    out.setAll(outOff, _mul(x0, workingKey[keyOff++]).to16Bytes());
+    out.setAll(outOff + 2, (x2 + workingKey[keyOff++]).to16Bytes());
+    out.setAll(outOff + 4, (x1 + workingKey[keyOff++]).to16Bytes());
+    out.setAll(outOff + 6, _mul(x3, workingKey[keyOff]).to16Bytes());
   }
 
   int _mul(int x, int y) {

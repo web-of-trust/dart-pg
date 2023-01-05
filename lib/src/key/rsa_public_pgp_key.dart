@@ -3,9 +3,9 @@
 // file that was distributed with this source code.
 
 import 'dart:typed_data';
-import 'package:dart_pg/src/byte_utils.dart';
 import 'package:pointycastle/pointycastle.dart';
 
+import '../helpers.dart';
 import 'pgp_key.dart';
 
 class RsaPublicPgpKey extends PgpKey {
@@ -15,14 +15,14 @@ class RsaPublicPgpKey extends PgpKey {
 
   factory RsaPublicPgpKey.fromPacketData(Uint8List bytes) {
     var pos = 0;
-    var bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final modulus = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final modulus = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     pos += (bitLength + 7) % 8;
-    bitLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+    bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final publicExponent = ByteUtils.bytesToBigInt(bytes.sublist(pos, (bitLength + 7) % 8));
+    final publicExponent = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
     return RsaPublicPgpKey(RSAPublicKey(modulus, publicExponent));
   }
@@ -35,11 +35,11 @@ class RsaPublicPgpKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(ByteUtils.int16Bytes(modulus!.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(modulus));
+    bytes.addAll(modulus!.bitLength.to16Bytes());
+    bytes.addAll(modulus!.toBytes());
 
-    bytes.addAll(ByteUtils.int16Bytes(publicExponent!.bitLength));
-    bytes.addAll(ByteUtils.bigIntBytes(publicExponent));
+    bytes.addAll(publicExponent!.bitLength.to16Bytes());
+    bytes.addAll(publicExponent!.toBytes());
 
     return Uint8List.fromList(bytes);
   }

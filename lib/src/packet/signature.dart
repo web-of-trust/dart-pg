@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../byte_utils.dart';
 import '../enums.dart';
+import '../helpers.dart';
 import 'contained_packet.dart';
 import 'signature_subpacket.dart';
 import 'subpacket_range.dart';
@@ -115,11 +115,11 @@ class Signature extends ContainedPacket {
       final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos++]);
 
       /// Four-octet creation time.
-      final creationTime = SignatureCreationTime.fromTime(ByteUtils.bytesToTime(bytes.sublist(pos, pos + 4)));
+      final creationTime = SignatureCreationTime.fromTime(bytes.sublist(pos, pos + 4).toDateTime());
       pos += 4;
 
       /// Eight-octet Key ID of signer.
-      final issuerKeyID = IssuerKeyID.fromKeyID(ByteUtils.bytesToInt64(bytes.sublist(pos, pos + 8)));
+      final issuerKeyID = IssuerKeyID.fromKeyID(bytes.sublist(pos, pos + 8).toInt64());
       pos += 8;
 
       /// One-octet public-key algorithm.
@@ -147,12 +147,12 @@ class Signature extends ContainedPacket {
       final keyAlgorithm = KeyAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos++]);
       final hashAlgorithm = HashAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos++]);
 
-      final hashedLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+      final hashedLength = bytes.sublist(pos, pos + 2).toIn16();
       pos += 2;
       final hashedSubpackets = _readSubpackets(bytes.sublist(pos, pos + hashedLength));
 
       pos += hashedLength;
-      final unhashedLength = ByteUtils.bytesToIn16(bytes.sublist(pos, pos + 2));
+      final unhashedLength = bytes.sublist(pos, pos + 2).toIn16();
       pos += 2;
       final unhashedSubpackets = _readSubpackets(bytes.sublist(pos, pos + unhashedLength));
       pos += hashedLength;
@@ -321,13 +321,13 @@ class Signature extends ContainedPacket {
     } else if (version == 4 || version == 5) {
       bytes.addAll([signatureType.value, keyAlgorithm.value, hashAlgorithm.value]);
 
-      bytes.addAll(ByteUtils.int16Bytes(hashedSubpackets.length));
+      bytes.addAll(hashedSubpackets.length.to16Bytes());
       for (final packet in hashedSubpackets) {
         bytes.addAll(packet.write());
       }
 
       if (unhashedSubpackets.isNotEmpty) {
-        bytes.addAll(ByteUtils.int16Bytes(unhashedSubpackets.length));
+        bytes.addAll(unhashedSubpackets.length.to16Bytes());
         for (final packet in unhashedSubpackets) {
           bytes.addAll(packet.write());
         }

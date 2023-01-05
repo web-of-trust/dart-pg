@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 
 import '../enums.dart';
+import '../helpers.dart';
 
 /// Generic Packet Data Parser function
 class PacketData {
@@ -43,7 +44,8 @@ class PacketData {
           packetLength = (bytes[pos++] << 8) | bytes[pos++];
           break;
         case 2:
-          packetLength = (bytes[pos++] << 24) | (bytes[pos++] << 16) | (bytes[pos++] << 8) | bytes[pos++];
+          packetLength = bytes.sublist(pos, pos + 4).toIn32();
+          pos += 4;
           break;
       }
     } else {
@@ -75,10 +77,10 @@ class PacketData {
             break;
           } else {
             partialPos++;
-            final partialLen = (bytes[partialPos++] << 24) |
-                (bytes[partialPos++] << 16) |
-                (bytes[partialPos++] << 8) |
-                bytes[partialPos++];
+
+            final partialLen = bytes.sublist(partialPos, partialPos + 4).toIn32();
+            partialPos += 4;
+
             bodyData.addAll(bytes.sublist(partialPos, partialPos + partialLen));
             packetLength += partialLen;
             partialPos += partialLen;
@@ -87,7 +89,8 @@ class PacketData {
         realRacketLength = partialPos - pos;
       } else {
         pos++;
-        packetLength = (bytes[pos++] << 24) | (bytes[pos++] << 16) | (bytes[pos++] << 8) | bytes[pos++];
+        packetLength = bytes.sublist(pos, pos + 4).toIn32();
+        pos += 4;
       }
     }
 

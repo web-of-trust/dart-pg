@@ -5,7 +5,7 @@
 import 'package:pointycastle/api.dart';
 import 'dart:typed_data';
 
-import '../../byte_utils.dart';
+import '../../helpers.dart';
 import 'base_cipher.dart';
 
 /// A class that provides Blowfish key encryption operations, such as encoding data and generating keys.
@@ -1183,8 +1183,8 @@ class BlowfishEngine extends BaseCipher {
   }
 
   void _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
-    var xl = ByteUtils.bytesToIn32(src.sublist(srcIndex));
-    var xr = ByteUtils.bytesToIn32(src.sublist(srcIndex + 4));
+    var xl = src.sublist(srcIndex).toIn32();
+    var xr = src.sublist(srcIndex + 4).toIn32();
 
     xl ^= _p[0];
 
@@ -1194,13 +1194,13 @@ class BlowfishEngine extends BaseCipher {
     }
     xr ^= _p[_rounds + 1];
 
-    dst.setAll(dstIndex, ByteUtils.int32Bytes(xr));
-    dst.setAll(dstIndex + 4, ByteUtils.int32Bytes(xl));
+    dst.setAll(dstIndex, xr.to32Bytes());
+    dst.setAll(dstIndex + 4, xl.to32Bytes());
   }
 
   void _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
-    var xl = ByteUtils.bytesToIn32(src.sublist(srcIndex));
-    var xr = ByteUtils.bytesToIn32(src.sublist(srcIndex + 4));
+    var xl = src.sublist(srcIndex).toIn32();
+    var xr = src.sublist(srcIndex + 4).toIn32();
 
     xl ^= _p[_rounds + 1];
 
@@ -1210,7 +1210,7 @@ class BlowfishEngine extends BaseCipher {
     }
 
     xr ^= _p[0];
-    dst.setAll(dstIndex, ByteUtils.int32Bytes(xr));
-    dst.setAll(dstIndex + 4, ByteUtils.int32Bytes(xr));
+    dst.setAll(dstIndex, xr.to32Bytes());
+    dst.setAll(dstIndex + 4, xl.to32Bytes());
   }
 }

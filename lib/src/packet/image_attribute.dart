@@ -14,10 +14,14 @@ class ImageAttribute extends UserAttributeSubpacket {
   ImageAttribute(final Uint8List data, {super.longLength}) : super(1, data);
 
   factory ImageAttribute.fromImageData(final Uint8List imageData, {final int imageType = jpeg}) {
-    final List<int> data = [0x10, 0x00, 0x01, imageType & 0xff];
-    data.addAll(_zeroes);
-    data.addAll(imageData);
-    return ImageAttribute(Uint8List.fromList(data));
+    return ImageAttribute(Uint8List.fromList([
+      0x10,
+      0x00,
+      0x01,
+      imageType & 0xff,
+      ..._zeroes,
+      ...imageData,
+    ]));
   }
 
   int get hdrLength => (data[1] << 8) | data[0];

@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import '../enums.dart';
+import '../helpers.dart';
 import '../openpgp.dart';
 import 'crc24.dart';
 
@@ -198,21 +199,4 @@ class Armor {
   static String _crc24CheckSum(final Uint8List data) {
     return Crc24.base64Calculate(data);
   }
-}
-
-extension _StringExt on String {
-  List<String> chunk(final int chunkSize) {
-    assert(chunkSize > 0);
-    final chunkCount = (length / chunkSize).ceil();
-    return List<String>.generate(chunkCount, (index) {
-      final sliceStart = index * chunkSize;
-      final sliceEnd = sliceStart + chunkSize;
-      return substring(
-        sliceStart,
-        (sliceEnd < length) ? sliceEnd : length,
-      );
-    });
-  }
-
-  bool hasMatch(final String text) => RegExp(this).hasMatch(text);
 }

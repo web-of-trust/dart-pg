@@ -6,7 +6,7 @@ import 'package:pointycastle/api.dart';
 
 import 'dart:typed_data';
 
-import '../../byte_utils.dart';
+import '../../helpers.dart';
 import 'base_cipher.dart';
 
 /// A class that provides a basic DES engine.
@@ -797,8 +797,8 @@ class DESEngine extends BaseCipher {
     final Uint8List out,
     final int outOff,
   ) {
-    var left = ByteUtils.bytesToIn32(inp.sublist(inpOff));
-    var right = ByteUtils.bytesToIn32(inp.sublist(inpOff + 4));
+    var left = inp.sublist(inpOff).toIn32();
+    var right = inp.sublist(inpOff + 4).toIn32();
 
     var work = ((left >>> 4) ^ right) & 0x0f0f0f0f;
     right ^= work;
@@ -865,7 +865,7 @@ class DESEngine extends BaseCipher {
     left ^= work;
     right ^= (work << 4);
 
-    out.setAll(outOff, ByteUtils.int32Bytes(right));
-    out.setAll(outOff + 4, ByteUtils.int32Bytes(left));
+    out.setAll(outOff, right.to32Bytes());
+    out.setAll(outOff + 4, left.to32Bytes());
   }
 }
