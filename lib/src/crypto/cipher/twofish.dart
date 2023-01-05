@@ -1,6 +1,6 @@
-/// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
-/// For the full copyright and license information, please view the LICENSE
-/// file that was distributed with this source code.
+// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// For the full copyright and license information, please view the LICENSE
+// file that was distributed with this source code.
 
 import 'package:pointycastle/api.dart';
 
@@ -636,7 +636,9 @@ class TwofishEngine extends BaseCipher {
       _k64Cnt = _workingKey.length % 8;
       _setKey(_workingKey);
     }
-    throw ArgumentError('Invalid parameter passed to CAST5 init - ${params.runtimeType}');
+    else {
+      throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
+    }
   }
 
   @override
@@ -645,10 +647,10 @@ class TwofishEngine extends BaseCipher {
       throw StateError('$algorithmName not initialised');
     }
     if ((inpOff + blockSize) > inp.length) {
-      throw ArgumentError("input buffer too short");
+      throw ArgumentError('input buffer too short');
     }
     if ((outOff + blockSize) > out.length) {
-      throw ArgumentError("output buffer too short");
+      throw ArgumentError('output buffer too short');
     }
 
     if (_forEncryption) {
@@ -879,9 +881,9 @@ class TwofishEngine extends BaseCipher {
   /// g(x) = x^4 + (a+1/a)x^3 + ax^2 + (a+1/a)x + 1
   /// where a = primitive root of field generator 0x14D
   int _rsRem(int x) {
-    int b = ((x >> 24) & 0xff);
+    int b = ((x >>> 24) & 0xff);
     int g2 = ((b << 1) ^ ((b & 0x80) != 0 ? _rsGfFdbk : 0)) & 0xff;
-    int g3 = ((b >> 1) ^ ((b & 0x01) != 0 ? (_rsGfFdbk >> 1) : 0)) ^ g2;
+    int g3 = ((b >>> 1) ^ ((b & 0x01) != 0 ? (_rsGfFdbk >>> 1) : 0)) ^ g2;
     return ((x << 8) ^ (g3 << 24) ^ (g2 << 16) ^ (g3 << 8) ^ b);
   }
 

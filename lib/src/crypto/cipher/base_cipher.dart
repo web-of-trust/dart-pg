@@ -18,7 +18,7 @@ abstract class BaseCipher implements BlockCipher {
   }
 
   static int intRotateLeft(int i, int distance) {
-    return (i << distance) ^ (i >> -distance);
+    return (i << distance) ^ (i >>> -distance);
   }
 
   static int intRotateRight(int i, int distance) {

@@ -1,6 +1,6 @@
-/// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
-/// For the full copyright and license information, please view the LICENSE
-/// file that was distributed with this source code.
+// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// For the full copyright and license information, please view the LICENSE
+// file that was distributed with this source code.
 
 import 'package:pointycastle/api.dart';
 
@@ -2119,7 +2119,9 @@ class CAST5Engine extends BaseCipher {
       _workingKey = params.key;
       _setKey(_workingKey);
     }
-    throw ArgumentError('Invalid parameter passed to CAST5 init - ${params.runtimeType}');
+    else {
+      throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
+    }
   }
 
   @override
@@ -2128,10 +2130,10 @@ class CAST5Engine extends BaseCipher {
       throw StateError('$algorithmName not initialised');
     }
     if ((inpOff + blockSize) > inp.length) {
-      throw ArgumentError("input buffer too short");
+      throw ArgumentError('input buffer too short');
     }
     if ((outOff + blockSize) > out.length) {
-      throw ArgumentError("output buffer too short");
+      throw ArgumentError('output buffer too short');
     }
 
     if (_forEncryption) {

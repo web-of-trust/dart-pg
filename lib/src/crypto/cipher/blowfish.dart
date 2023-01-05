@@ -1,8 +1,8 @@
-/// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
-/// For the full copyright and license information, please view the LICENSE
-/// file that was distributed with this source code.
+// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// For the full copyright and license information, please view the LICENSE
+// file that was distributed with this source code.
 
-import 'package:pointycastle/pointycastle.dart';
+import 'package:pointycastle/api.dart';
 import 'dart:typed_data';
 
 import '../../byte_utils.dart';
@@ -1102,7 +1102,9 @@ class BlowfishEngine extends BaseCipher {
       _workingKey = params.key;
       _setKey(_workingKey);
     }
-    throw ArgumentError('Invalid parameter passed to Blowfish init - ${params.runtimeType}');
+    else {
+      throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
+    }
   }
 
   @override
@@ -1127,7 +1129,7 @@ class BlowfishEngine extends BaseCipher {
   }
 
   int _f(int x) {
-    return (((_s0[x >> 24] + _s1[(x >> 16) & 0xff]) ^ _s2[(x >> 8) & 0xff]) + _s3[x & 0xff]);
+    return (((_s0[x >>> 24] + _s1[(x >>> 16) & 0xff]) ^ _s2[(x >>> 8) & 0xff]) + _s3[x & 0xff]);
   }
 
   /// apply the encryption cycle to each value pair in the table.
