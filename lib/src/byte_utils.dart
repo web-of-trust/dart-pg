@@ -19,9 +19,8 @@ class ByteUtils {
   static int littleEndianToIn32(final Uint8List bytes) =>
       (bytes[3] << 24) | (bytes[2] << 16) | (bytes[1] << 8) | bytes[0];
 
-  static Uint8List int32ToLittleEndian(final int number) {
-    return Uint8List.fromList([number & 0x00, (number >>> 8) & 0x00, (number >>> 16) & 0x00, (number >>> 24) & 0x00]);
-  }
+  static Uint8List int32ToLittleEndian(final int number) =>
+      Uint8List.fromList([number & 0x00, (number >>> 8) & 0x00, (number >>> 16) & 0x00, (number >>> 24) & 0x00]);
 
   static Uint8List int64Bytes(final int number) => Uint8List(8)..buffer.asByteData().setUint64(0, number);
 
