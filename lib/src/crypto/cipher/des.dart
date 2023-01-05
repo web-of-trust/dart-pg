@@ -745,9 +745,8 @@ class DESEngine extends BaseCipher {
       final n = m + 1;
       newKey[m] = newKey[n] = 0;
 
-      int l;
       for (var j = 0; j < 28; j++) {
-        l = j + _totrot[i];
+        final l = j + _totrot[i];
         if (l < 28) {
           pcr[j] = pc1m[l];
         } else {
@@ -756,7 +755,7 @@ class DESEngine extends BaseCipher {
       }
 
       for (var j = 28; j < 56; j++) {
-        l = j + _totrot[i];
+        final l = j + _totrot[i];
         if (l < 56) {
           pcr[j] = pc1m[l];
         } else {
