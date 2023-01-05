@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../../byte_utils.dart';
 import '../../enums.dart';
+import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
 /// packet giving the issuer key ID.
@@ -13,7 +13,7 @@ class IssuerKeyID extends SignatureSubpacket {
   IssuerKeyID(Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.issuerKeyID, data);
 
   factory IssuerKeyID.fromKeyID(int keyID, {bool critical = false}) =>
-      IssuerKeyID(ByteUtils.int64Bytes(keyID), critical: critical);
+      IssuerKeyID(keyID.to64Bytes(), critical: critical);
 
-  int get keyID => ByteUtils.bytesToInt64(data);
+  int get keyID => data.toInt64();
 }

@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../../byte_utils.dart';
 import '../../enums.dart';
+import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
 class SignatureCreationTime extends SignatureSubpacket {
@@ -13,7 +13,7 @@ class SignatureCreationTime extends SignatureSubpacket {
       : super(SignatureSubpacketType.signatureCreationTime, data);
 
   factory SignatureCreationTime.fromTime(DateTime time, {bool critical = false}) =>
-      SignatureCreationTime(ByteUtils.timeToBytes(time), critical: critical);
+      SignatureCreationTime(time.toBytes(), critical: critical);
 
-  DateTime get creationTime => ByteUtils.bytesToTime(data);
+  DateTime get creationTime => data.toDateTime();
 }

@@ -4,9 +4,8 @@
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/byte_utils.dart';
-
 import '../enums.dart';
+import '../helpers.dart';
 import 'contained_packet.dart';
 
 /// PublicKeyEncryptedSessionKey represents a public-key encrypted session key.
@@ -31,7 +30,7 @@ class PublicKeyEncryptedSessionKey extends ContainedPacket {
   factory PublicKeyEncryptedSessionKey.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
-    final keyID = ByteUtils.bytesToInt64(bytes.sublist(pos, pos + 8));
+    final keyID = bytes.sublist(pos, pos + 8).toInt64();
 
     pos += 8;
     final keyAlgorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
@@ -42,7 +41,7 @@ class PublicKeyEncryptedSessionKey extends ContainedPacket {
   Uint8List toPacketData() {
     return Uint8List.fromList([
       version,
-      ...ByteUtils.int64Bytes(keyID),
+      ...keyID.to64Bytes(),
       keyAlgorithm.value,
       ...encrypted,
     ]);

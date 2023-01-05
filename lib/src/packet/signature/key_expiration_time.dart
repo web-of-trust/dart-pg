@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../../byte_utils.dart';
 import '../../enums.dart';
+import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
 /// packet giving time after creation at which the key expires.
@@ -14,8 +14,8 @@ class KeyExpirationTime extends SignatureSubpacket {
       : super(SignatureSubpacketType.keyExpirationTime, data);
 
   factory KeyExpirationTime.fromTime(int seconds, {bool critical = false}) =>
-      KeyExpirationTime(ByteUtils.int32Bytes(seconds), critical: critical);
+      KeyExpirationTime(seconds.to32Bytes(), critical: critical);
 
   /// Return the number of seconds after creation time a key is valid for.
-  int get time => ByteUtils.bytesToIn32(data);
+  int get time => data.toIn32();
 }
