@@ -2113,19 +2113,18 @@ class CAST5Engine extends BaseCipher {
   }
 
   @override
-  void init(bool forEncryption, CipherParameters? params) {
+  void init(final bool forEncryption, final CipherParameters? params) {
     if (params is KeyParameter) {
       _forEncryption = forEncryption;
       _workingKey = params.key;
       _setKey(_workingKey);
-    }
-    else {
+    } else {
       throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
     }
   }
 
   @override
-  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) {
+  int processBlock(final Uint8List inp, final int inpOff, final Uint8List out, final int outOff) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
@@ -2295,7 +2294,7 @@ class CAST5Engine extends BaseCipher {
     _rotating[16] = (_sBox5[x[0xE]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x0]] ^ _sBox8[x[0xD]]) & 0x1f;
   }
 
-  int _encryptBlock(Uint8List src, int srcIndex, Uint8List dst, int dstIndex) {
+  int _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
     final result = List.filled(2, 0);
 
     final l0 = ByteUtils.bytesToIn32(src.sublist(srcIndex));
@@ -2309,7 +2308,7 @@ class CAST5Engine extends BaseCipher {
     return blockSize;
   }
 
-  int _decryptBlock(Uint8List src, int srcIndex, Uint8List dst, int dstIndex) {
+  int _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
     final result = List.filled(2, 0);
 
     final l16 = ByteUtils.bytesToIn32(src.sublist(srcIndex));
@@ -2323,25 +2322,25 @@ class CAST5Engine extends BaseCipher {
     return blockSize;
   }
 
-  int _f1(int d, int kmi, int kri) {
+  int _f1(final int d, final int kmi, final int kri) {
     var i = kmi + d;
     i = i << kmi | i >>> (32 - kri);
     return ((_sBox1[(i >>> 24) & 0xff] ^ _sBox2[(i >>> 16) & 0xff]) - _sBox3[(i >>> 8) & 0xff]) + _sBox4[i & 0xff];
   }
 
-  int _f2(int d, int kmi, int kri) {
+  int _f2(final int d, final int kmi, final int kri) {
     var i = kmi ^ d;
     i = i << kri | i >>> (32 - kri);
     return ((_sBox1[(i >>> 24) & 0xff] - _sBox2[(i >>> 16) & 0xff]) + _sBox3[(i >>> 8) & 0xff]) ^ _sBox4[i & 0xff];
   }
 
-  int _f3(int d, int kmi, int kri) {
+  int _f3(final int d, final int kmi, final int kri) {
     var i = kmi - d;
     i = i << kri | i >>> (32 - kri);
     return ((_sBox1[(i >>> 24) & 0xff] + _sBox2[(i >>> 16) & 0xff]) ^ _sBox3[(i >>> 8) & 0xff]) - _sBox4[i & 0xff];
   }
 
-  void _encipher(int l0, int r0, List<int> result) {
+  void _encipher(final int l0, final int r0, final List<int> result) {
     var lp = l0;
     var rp = r0;
     var li = l0;
@@ -2384,7 +2383,7 @@ class CAST5Engine extends BaseCipher {
     }
   }
 
-  void _decipher(int l16, int r16, List<int> result) {
+  void _decipher(final int l16, final int r16, final List<int> result) {
     var lp = l16;
     var rp = r16;
 

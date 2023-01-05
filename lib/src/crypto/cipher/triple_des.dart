@@ -26,7 +26,7 @@ class TripleDES extends DESEngine {
   int get blockSize => _blockSize;
 
   @override
-  void init(bool forEncryption, CipherParameters? params) {
+  void init(final bool forEncryption, final CipherParameters? params) {
     if (params is! KeyParameter) {
       throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
     }
@@ -51,7 +51,7 @@ class TripleDES extends DESEngine {
   }
 
   @override
-  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) {
+  int processBlock(final Uint8List inp, final int inpOff, final Uint8List out, final int outOff) {
     if (_workingKey1.isEmpty) {
       throw StateError('$algorithmName engine not initialised');
     }

@@ -8,23 +8,24 @@ final _byteMask = BigInt.from(0xff);
 final _negativeFlag = BigInt.from(0x80);
 
 class ByteUtils {
-  static Uint8List int16Bytes(int number) => Uint8List(2)..buffer.asByteData().setInt16(0, number);
+  static Uint8List int16Bytes(final int number) => Uint8List(2)..buffer.asByteData().setInt16(0, number);
 
-  static int bytesToIn16(Uint8List bytes) => (bytes[0] << 8) | bytes[1];
+  static int bytesToIn16(final Uint8List bytes) => (bytes[0] << 8) | bytes[1];
 
-  static Uint8List int32Bytes(int number) => Uint8List(4)..buffer.asByteData().setUint32(0, number);
+  static Uint8List int32Bytes(final int number) => Uint8List(4)..buffer.asByteData().setUint32(0, number);
 
-  static int bytesToIn32(Uint8List bytes) => (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+  static int bytesToIn32(final Uint8List bytes) => (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
 
-  static int littleEndianToIn32(Uint8List bytes) => (bytes[3] << 24) | (bytes[2] << 16) | (bytes[1] << 8) | bytes[0];
+  static int littleEndianToIn32(final Uint8List bytes) =>
+      (bytes[3] << 24) | (bytes[2] << 16) | (bytes[1] << 8) | bytes[0];
 
-  static Uint8List int32ToLittleEndian(int number) {
+  static Uint8List int32ToLittleEndian(final int number) {
     return Uint8List.fromList([number & 0x00, (number >>> 8) & 0x00, (number >>> 16) & 0x00, (number >>> 24) & 0x00]);
   }
 
-  static Uint8List int64Bytes(int number) => Uint8List(8)..buffer.asByteData().setUint64(0, number);
+  static Uint8List int64Bytes(final int number) => Uint8List(8)..buffer.asByteData().setUint64(0, number);
 
-  static int bytesToInt64(Uint8List bytes) =>
+  static int bytesToInt64(final Uint8List bytes) =>
       (bytes[0] << 56) |
       (bytes[1] << 48) |
       (bytes[2] << 40) |
@@ -34,11 +35,11 @@ class ByteUtils {
       (bytes[6] << 8) |
       bytes[7];
 
-  static Uint8List timeToBytes(DateTime time) {
+  static Uint8List timeToBytes(final DateTime time) {
     return int32Bytes(time.millisecondsSinceEpoch ~/ 1000);
   }
 
-  static DateTime bytesToTime(Uint8List bytes) => DateTime.fromMillisecondsSinceEpoch(bytesToIn32(bytes) * 1000);
+  static DateTime bytesToTime(final Uint8List bytes) => DateTime.fromMillisecondsSinceEpoch(bytesToIn32(bytes) * 1000);
 
   static Uint8List bigIntBytes(BigInt? number) {
     if (number == BigInt.zero) {
@@ -65,7 +66,7 @@ class ByteUtils {
     return result;
   }
 
-  static BigInt bytesToBigInt(Uint8List bytes) {
+  static BigInt bytesToBigInt(final Uint8List bytes) {
     final negative = bytes.isNotEmpty && bytes[0] & 0x80 == 0x80;
     BigInt result;
     if (bytes.length == 1) {
@@ -84,19 +85,18 @@ class ByteUtils {
         : BigInt.zero;
   }
 
-  static bool equalsUint8List(Uint8List expected, Uint8List supplied) {
+  static bool equalsUint8List(final Uint8List expected, final Uint8List supplied) {
     if (expected == supplied) {
       return true;
     }
 
-    int len = (expected.length < supplied.length) ? expected.length : supplied.length;
+    final len = (expected.length < supplied.length) ? expected.length : supplied.length;
+    var nonEqual = expected.length ^ supplied.length;
 
-    int nonEqual = expected.length ^ supplied.length;
-
-    for (int i = 0; i != len; i++) {
+    for (var i = 0; i != len; i++) {
       nonEqual |= (expected[i] ^ supplied[i]);
     }
-    for (int i = len; i < supplied.length; i++) {
+    for (var i = len; i < supplied.length; i++) {
       nonEqual |= (supplied[i] ^ ~supplied[i]);
     }
 

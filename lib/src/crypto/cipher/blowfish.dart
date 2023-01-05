@@ -1096,19 +1096,18 @@ class BlowfishEngine extends BaseCipher {
   void reset() {}
 
   @override
-  void init(bool forEncryption, CipherParameters? params) {
+  void init(final bool forEncryption, final CipherParameters? params) {
     if (params is KeyParameter) {
       _forEncryption = forEncryption;
       _workingKey = params.key;
       _setKey(_workingKey);
-    }
-    else {
+    } else {
       throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
     }
   }
 
   @override
-  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) {
+  int processBlock(final Uint8List inp, final int inpOff, final Uint8List out, final int outOff) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
@@ -1128,12 +1127,12 @@ class BlowfishEngine extends BaseCipher {
     return _blockSize;
   }
 
-  int _f(int x) {
+  int _f(final int x) {
     return (((_s0[x >>> 24] + _s1[(x >>> 16) & 0xff]) ^ _s2[(x >>> 8) & 0xff]) + _s3[x & 0xff]);
   }
 
   /// apply the encryption cycle to each value pair in the table.
-  void _processTable(int xl, int xr, List<int> table) {
+  void _processTable(int xl, int xr, final List<int> table) {
     final size = table.length;
     for (var s = 0; s < size; s += 2) {
       xl ^= _p[0];
@@ -1151,7 +1150,7 @@ class BlowfishEngine extends BaseCipher {
     }
   }
 
-  void _setKey(Uint8List key) {
+  void _setKey(final Uint8List key) {
     if (key.length < 4 || key.length > 56) {
       throw ArgumentError('key length must be in range 32 to 448 bits');
     }
@@ -1183,7 +1182,7 @@ class BlowfishEngine extends BaseCipher {
     _processTable(_s2[_sBoxSK - 2], _s2[_sBoxSK - 1], _s3);
   }
 
-  void _encryptBlock(Uint8List src, int srcIndex, Uint8List dst, int dstIndex) {
+  void _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
     var xl = ByteUtils.bytesToIn32(src.sublist(srcIndex));
     var xr = ByteUtils.bytesToIn32(src.sublist(srcIndex + 4));
 
@@ -1199,7 +1198,7 @@ class BlowfishEngine extends BaseCipher {
     dst.setAll(dstIndex + 4, ByteUtils.int32Bytes(xl));
   }
 
-  void _decryptBlock(Uint8List src, int srcIndex, Uint8List dst, int dstIndex) {
+  void _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
     var xl = ByteUtils.bytesToIn32(src.sublist(srcIndex));
     var xr = ByteUtils.bytesToIn32(src.sublist(srcIndex + 4));
 

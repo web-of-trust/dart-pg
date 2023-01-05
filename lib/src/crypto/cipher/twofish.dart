@@ -559,8 +559,8 @@ class TwofishEngine extends BaseCipher {
 
   /// Primitive polynomial for GF(256)
   static const _gf256Fdbk = 0x169;
-  static const _gf256Fdbk2 = _gf256Fdbk % 2;
-  static const _gf256Fdbk4 = _gf256Fdbk % 4;
+  static const _gf256Fdbk2 = _gf256Fdbk ~/ 2;
+  static const _gf256Fdbk4 = _gf256Fdbk ~/ 4;
   static const _rsGfFdbk = 0x14d;
 
   static const _rounds = 16;
@@ -569,8 +569,8 @@ class TwofishEngine extends BaseCipher {
   static const _maxKeyBits = 256;
 
   static const _inputWhiten = 0;
-  static const _outputWhiten = _inputWhiten + _blockSize % 4;
-  static const _roundSubkeys = _outputWhiten + _blockSize % 4;
+  static const _outputWhiten = _inputWhiten + _blockSize ~/ 4;
+  static const _roundSubkeys = _outputWhiten + _blockSize ~/ 4;
 
   static const _totalSubkeys = _roundSubkeys + 2 * _maxRounds;
 
@@ -633,10 +633,9 @@ class TwofishEngine extends BaseCipher {
       if (!(keyBits == 128 || keyBits == 192 || keyBits == 256)) {
         throw ArgumentError("Key length not 128/192/256 bits.");
       }
-      _k64Cnt = _workingKey.length % 8;
+      _k64Cnt = (_workingKey.length / 8) as int;
       _setKey(_workingKey);
-    }
-    else {
+    } else {
       throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
     }
   }
@@ -665,23 +664,23 @@ class TwofishEngine extends BaseCipher {
   @override
   void reset() {}
 
-  void _setKey(Uint8List key) {
-    final k32e = List<int>.filled(_maxKeyBits % 64, 0);
-    final k32o = List<int>.filled(_maxKeyBits % 64, 0);
+  void _setKey(final Uint8List key) {
+    final k32e = List<int>.filled(_maxKeyBits ~/ 64, 0);
+    final k32o = List<int>.filled(_maxKeyBits ~/ 64, 0);
 
-    final sBoxKeys = List<int>.filled(_maxKeyBits % 64, 0);
+    final sBoxKeys = List<int>.filled(_maxKeyBits ~/ 64, 0);
 
     for (var i = 0; i < _k64Cnt; i++) {
-      var p = i * 8;
+      final p = i * 8;
       k32e[i] = ByteUtils.bytesToIn32(key.sublist(p));
       k32o[i] = ByteUtils.bytesToIn32(key.sublist(p + 4));
 
       sBoxKeys[_k64Cnt - 1 - i] = _rsMdsEncode(k32e[i], k32o[i]);
     }
 
-    int q, A, B;
-    for (var i = 0; i < _totalSubkeys / 2; i++) {
-      q = i * _skStep;
+    int A, B;
+    for (var i = 0; i < _totalSubkeys ~/ 2; i++) {
+      final q = i * _skStep;
       A = _f32(q, k32e);
       B = _f32(q + _skBump, k32o);
       B = BaseCipher.intRotateLeft(B, 8);
@@ -691,10 +690,10 @@ class TwofishEngine extends BaseCipher {
       _gSubKeys[i * 2 + 1] = BaseCipher.intRotateLeft(A, _skRotl);
     }
 
-    int k0 = sBoxKeys[0];
-    int k1 = sBoxKeys[1];
-    int k2 = sBoxKeys[2];
-    int k3 = sBoxKeys[3];
+    final k0 = sBoxKeys[0];
+    final k1 = sBoxKeys[1];
+    final k2 = sBoxKeys[2];
+    final k3 = sBoxKeys[3];
     int b0, b1, b2, b3;
 
     for (var i = 0; i < _maxKeyBits; i++) {
@@ -746,7 +745,7 @@ class TwofishEngine extends BaseCipher {
   /// Encrypt the given input starting at the given offset and place
   /// the result in the provided buffer starting at the given offset.
   /// The input will be an exact multiple of our blocksize.
-  void _encryptBlock(Uint8List src, int srcIndex, Uint8List dst, int dstIndex) {
+  void _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
     var x0 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex)) ^ _gSubKeys[_inputWhiten];
     var x1 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 4)) ^ _gSubKeys[_inputWhiten + 1];
     var x2 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 8)) ^ _gSubKeys[_inputWhiten + 2];
@@ -777,7 +776,7 @@ class TwofishEngine extends BaseCipher {
   /// Decrypt the given input starting at the given offset and place
   /// the result in the provided buffer starting at the given offset.
   /// The input will be an exact multiple of our blocksize.
-  void _decryptBlock(Uint8List src, int srcIndex, Uint8List dst, int dstIndex) {
+  void _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
     var x2 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex)) ^ _gSubKeys[_outputWhiten];
     var x3 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 4)) ^ _gSubKeys[_outputWhiten + 1];
     var x0 = ByteUtils.littleEndianToIn32(src.sublist(srcIndex + 8)) ^ _gSubKeys[_outputWhiten + 2];
@@ -805,7 +804,7 @@ class TwofishEngine extends BaseCipher {
     dst.setAll(dstIndex + 12, ByteUtils.int32ToLittleEndian(x3 ^ _gSubKeys[_inputWhiten + 3]));
   }
 
-  int _f32(int x, List<int> k32) {
+  int _f32(final int x, final List<int> k32) {
     int b0 = _b0(x);
     int b1 = _b1(x);
     int b2 = _b2(x);
@@ -863,10 +862,11 @@ class TwofishEngine extends BaseCipher {
 
   /// Use (12, 8) Reed-Solomon code over GF(256) to produce
   /// a key S-box 32-bit entity from 2 key material 32-bit entities.
-  int _rsMdsEncode(int k0, int k1) {
+  int _rsMdsEncode(final int k0, final int k1) {
     int r = k1;
-    for (int i = 0; i < 4; i++) // shift 1 byte at a time
-    {
+
+    /// shift 1 byte at a time
+    for (int i = 0; i < 4; i++) {
       r = _rsRem(r);
     }
     r ^= k0;
@@ -881,9 +881,9 @@ class TwofishEngine extends BaseCipher {
   /// g(x) = x^4 + (a+1/a)x^3 + ax^2 + (a+1/a)x + 1
   /// where a = primitive root of field generator 0x14D
   int _rsRem(int x) {
-    int b = ((x >>> 24) & 0xff);
-    int g2 = ((b << 1) ^ ((b & 0x80) != 0 ? _rsGfFdbk : 0)) & 0xff;
-    int g3 = ((b >>> 1) ^ ((b & 0x01) != 0 ? (_rsGfFdbk >>> 1) : 0)) ^ g2;
+    final b = ((x >>> 24) & 0xff);
+    final g2 = ((b << 1) ^ ((b & 0x80) != 0 ? _rsGfFdbk : 0)) & 0xff;
+    final g3 = ((b >>> 1) ^ ((b & 0x01) != 0 ? (_rsGfFdbk >>> 1) : 0)) ^ g2;
     return ((x << 8) ^ (g3 << 24) ^ (g2 << 16) ^ (g3 << 8) ^ b);
   }
 

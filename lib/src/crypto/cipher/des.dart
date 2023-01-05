@@ -699,7 +699,7 @@ class DESEngine extends BaseCipher {
   int get blockSize => _blockSize;
 
   @override
-  void init(bool forEncryption, CipherParameters? params) {
+  void init(final bool forEncryption, final CipherParameters? params) {
     if (params is KeyParameter) {
       if ((params).key.length > 8) {
         throw ArgumentError('DES key too long - should be 8 bytes');
@@ -711,7 +711,7 @@ class DESEngine extends BaseCipher {
   }
 
   @override
-  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) {
+  int processBlock(final Uint8List inp, final int inpOff, final Uint8List out, final int outOff) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName engine not initialised');
     }
@@ -730,7 +730,7 @@ class DESEngine extends BaseCipher {
   @override
   void reset() {}
 
-  Uint8List generateWorkingKey(bool forEncryption, Uint8List key) {
+  Uint8List generateWorkingKey(final bool forEncryption, final Uint8List key) {
     final newKey = List.filled(32, 0);
     final pc1m = List.filled(56, false);
     final pcr = List.filled(56, false);
@@ -741,16 +741,11 @@ class DESEngine extends BaseCipher {
     }
 
     for (var i = 0; i < 16; i++) {
-      int l, m, n;
-      if (forEncryption) {
-        m = i << 1;
-      } else {
-        m = (15 - i) << 1;
-      }
-
-      n = m + 1;
+      final m = forEncryption ? i << 1 : (15 - i) << 1;
+      final n = m + 1;
       newKey[m] = newKey[n] = 0;
 
+      int l;
       for (var j = 0; j < 28; j++) {
         l = j + _totrot[i];
         if (l < 28) {
@@ -781,11 +776,9 @@ class DESEngine extends BaseCipher {
     }
 
     /// store the processed key
-    for (int i = 0; i != 32; i += 2) {
-      int i1, i2;
-
-      i1 = newKey[i];
-      i2 = newKey[i + 1];
+    for (var i = 0; i != 32; i += 2) {
+      final i1 = newKey[i];
+      final i2 = newKey[i + 1];
 
       newKey[i] =
           ((i1 & 0x00fc0000) << 6) | ((i1 & 0x00000fc0) << 10) | ((i2 & 0x00fc0000) >>> 10) | ((i2 & 0x00000fc0) >>> 6);
@@ -797,13 +790,17 @@ class DESEngine extends BaseCipher {
     return Uint8List.fromList(newKey);
   }
 
-  void desFunc(Uint8List workingKey, Uint8List inp, int inpOff, Uint8List out, int outOff) {
-    int work, right, left;
+  void desFunc(
+    final Uint8List workingKey,
+    final Uint8List inp,
+    final int inpOff,
+    final Uint8List out,
+    final int outOff,
+  ) {
+    var left = ByteUtils.bytesToIn32(inp.sublist(inpOff));
+    var right = ByteUtils.bytesToIn32(inp.sublist(inpOff + 4));
 
-    left = ByteUtils.bytesToIn32(inp.sublist(inpOff));
-    right = ByteUtils.bytesToIn32(inp.sublist(inpOff + 4));
-
-    work = ((left >>> 4) ^ right) & 0x0f0f0f0f;
+    var work = ((left >>> 4) ^ right) & 0x0f0f0f0f;
     right ^= work;
     left ^= (work << 4);
     work = ((left >>> 16) ^ right) & 0x0000ffff;
