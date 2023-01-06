@@ -44,7 +44,7 @@ class PacketData {
           packetLength = (bytes[pos++] << 8) | bytes[pos++];
           break;
         case 2:
-          packetLength = bytes.sublist(pos, pos + 4).toIn32();
+          packetLength = bytes.sublist(pos, pos + 4).toInt32();
           pos += 4;
           break;
       }
@@ -78,7 +78,7 @@ class PacketData {
           } else {
             partialPos++;
 
-            final partialLen = bytes.sublist(partialPos, partialPos + 4).toIn32();
+            final partialLen = bytes.sublist(partialPos, partialPos + 4).toInt32();
             partialPos += 4;
 
             bodyData.addAll(bytes.sublist(partialPos, partialPos + partialLen));
@@ -89,7 +89,7 @@ class PacketData {
         realRacketLength = partialPos - pos;
       } else {
         pos++;
-        packetLength = bytes.sublist(pos, pos + 4).toIn32();
+        packetLength = bytes.sublist(pos, pos + 4).toInt32();
         pos += 4;
       }
     }

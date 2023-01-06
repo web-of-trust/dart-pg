@@ -672,8 +672,8 @@ class TwofishEngine extends BaseCipher {
 
     for (var i = 0; i < _k64Cnt; i++) {
       final p = i * 8;
-      k32e[i] = key.sublist(p).toIn32();
-      k32o[i] = key.sublist(p + 4).toIn32();
+      k32e[i] = key.sublist(p).toInt32();
+      k32o[i] = key.sublist(p + 4).toInt32();
 
       sBoxKeys[_k64Cnt - 1 - i] = _rsMdsEncode(k32e[i], k32o[i]);
     }

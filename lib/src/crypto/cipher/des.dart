@@ -11,7 +11,7 @@ import 'base_cipher.dart';
 
 /// A class that provides a basic DES engine.
 class DESEngine extends BaseCipher {
-  static const _bytebit = [0200, 0100, 040, 020, 010, 04, 02, 01];
+  static const _bytebit = [128, 64, 32, 16, 8, 4, 2, 1];
 
   static const _bigbyte = [
     0x800000,
@@ -40,6 +40,9 @@ class DESEngine extends BaseCipher {
     0x1,
   ];
 
+  static const _totrot = [1, 2, 4, 6, 8, 10, 12, 14, 15, 17, 19, 21, 23, 25, 27, 28];
+
+  /// Permutation and translation tables for DES
   static const _pc1 = [
     56,
     48,
@@ -99,9 +102,8 @@ class DESEngine extends BaseCipher {
     3,
   ];
 
-  static const _totrot = [1, 2, 4, 6, 8, 10, 12, 14, 15, 17, 19, 21, 23, 25, 27, 28];
-
-  static const _pc2 = [
+  /// Permuted choice key (table 2)
+  static final _pc2 = [
     13,
     16,
     10,
@@ -690,7 +692,7 @@ class DESEngine extends BaseCipher {
 
   static const _blockSize = 8;
 
-  late Uint8List _workingKey;
+  List<int> _workingKey = [];
 
   @override
   String get algorithmName => 'DES';
@@ -701,7 +703,7 @@ class DESEngine extends BaseCipher {
   @override
   void init(final bool forEncryption, final CipherParameters? params) {
     if (params is KeyParameter) {
-      if ((params).key.length > 8) {
+      if (params.key.length > 8) {
         throw ArgumentError('DES key too long - should be 8 bytes');
       }
       _workingKey = generateWorkingKey(forEncryption, params.key);
@@ -715,29 +717,29 @@ class DESEngine extends BaseCipher {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName engine not initialised');
     }
-    if ((inpOff + blockSize) > inp.length) {
+    if ((inpOff + _blockSize) > inp.length) {
       throw ArgumentError('input buffer too short');
     }
 
-    if ((outOff + blockSize) > out.length) {
+    if ((outOff + _blockSize) > out.length) {
       throw ArgumentError('output buffer too short');
     }
 
     desFunc(_workingKey, inp, inpOff, out, outOff);
-    return blockSize;
+    return _blockSize;
   }
 
   @override
   void reset() {}
 
-  Uint8List generateWorkingKey(final bool forEncryption, final Uint8List key) {
+  List<int> generateWorkingKey(final bool forEncryption, final Uint8List key) {
     final newKey = List.filled(32, 0);
-    final pc1m = List.filled(56, false);
-    final pcr = List.filled(56, false);
+    final pc1m = List<bool>.generate(56, (_) => false, growable: false);
+    final pcr = List<bool>.generate(56, (_) => false, growable: false);
 
     for (var j = 0; j < 56; j++) {
       final l = _pc1[j];
-      pc1m[j] = ((key[l >>> 3] & _bytebit[l & 07]) != 0);
+      pc1m[j] = ((key[l >> 3] & _bytebit[l & 07]) != 0);
     }
 
     for (var i = 0; i < 16; i++) {
@@ -780,87 +782,90 @@ class DESEngine extends BaseCipher {
       final i2 = newKey[i + 1];
 
       newKey[i] =
-          ((i1 & 0x00fc0000) << 6) | ((i1 & 0x00000fc0) << 10) | ((i2 & 0x00fc0000) >>> 10) | ((i2 & 0x00000fc0) >>> 6);
+          ((i1 & 0x00fc0000) << 6) | ((i1 & 0x00000fc0) << 10) | ((i2 & 0x00fc0000) >> 10) | ((i2 & 0x00000fc0) >> 6);
 
       newKey[i + 1] =
-          ((i1 & 0x0003f000) << 12) | ((i1 & 0x0000003f) << 16) | ((i2 & 0x0003f000) >>> 4) | (i2 & 0x0000003f);
+          ((i1 & 0x0003f000) << 12) | ((i1 & 0x0000003f) << 16) | ((i2 & 0x0003f000) >> 4) | (i2 & 0x0000003f);
     }
 
-    return Uint8List.fromList(newKey);
+    return newKey;
   }
 
   void desFunc(
-    final Uint8List workingKey,
+    final List<int> workingKey,
     final Uint8List inp,
     final int inpOff,
     final Uint8List out,
     final int outOff,
   ) {
-    var left = inp.sublist(inpOff).toIn32();
-    var right = inp.sublist(inpOff + 4).toIn32();
+    var left = inp.sublist(inpOff).toInt32();
+    var right = inp.sublist(inpOff + 4).toInt32();
 
-    var work = ((left >>> 4) ^ right) & 0x0f0f0f0f;
+    var work = ((left >> 4) ^ right) & 0x0f0f0f0f;
     right ^= work;
     left ^= (work << 4);
-    work = ((left >>> 16) ^ right) & 0x0000ffff;
+    work = ((left >> 16) ^ right) & 0x0000ffff;
     right ^= work;
     left ^= (work << 16);
-    work = ((right >>> 2) ^ left) & 0x33333333;
+    work = ((right >> 2) ^ left) & 0x33333333;
     left ^= work;
     right ^= (work << 2);
-    work = ((right >>> 8) ^ left) & 0x00ff00ff;
+    work = ((right >> 8) ^ left) & 0x00ff00ff;
     left ^= work;
     right ^= (work << 8);
-    right = (right << 1) | (right >>> 31);
+    right = (right << 1) | (right >> 31);
     work = (left ^ right) & 0xaaaaaaaa;
     left ^= work;
     right ^= work;
-    left = (left << 1) | (left >>> 31);
+    left = (left << 1) | (left >> 31);
 
     for (var round = 0; round < 8; round++) {
       int fval;
 
-      work = (right << 28) | (right >>> 4);
+      work = (right << 28) | (right >> 4);
       work ^= workingKey[round * 4 + 0];
       fval = _sp7[work & 0x3f];
-      fval |= _sp5[(work >>> 8) & 0x3f];
-      fval |= _sp3[(work >>> 16) & 0x3f];
-      fval |= _sp1[(work >>> 24) & 0x3f];
+      fval |= _sp5[(work >> 8) & 0x3f];
+      fval |= _sp3[(work >> 16) & 0x3f];
+      fval |= _sp1[(work >> 24) & 0x3f];
+
       work = right ^ workingKey[round * 4 + 1];
       fval |= _sp8[work & 0x3f];
-      fval |= _sp6[(work >>> 8) & 0x3f];
-      fval |= _sp4[(work >>> 16) & 0x3f];
-      fval |= _sp2[(work >>> 24) & 0x3f];
+      fval |= _sp6[(work >> 8) & 0x3f];
+      fval |= _sp4[(work >> 16) & 0x3f];
+      fval |= _sp2[(work >> 24) & 0x3f];
       left ^= fval;
-      work = (left << 28) | (left >>> 4);
+
+      work = (left << 28) | (left >> 4);
       work ^= workingKey[round * 4 + 2];
       fval = _sp7[work & 0x3f];
-      fval |= _sp5[(work >>> 8) & 0x3f];
-      fval |= _sp3[(work >>> 16) & 0x3f];
-      fval |= _sp1[(work >>> 24) & 0x3f];
+      fval |= _sp5[(work >> 8) & 0x3f];
+      fval |= _sp3[(work >> 16) & 0x3f];
+      fval |= _sp1[(work >> 24) & 0x3f];
+
       work = left ^ workingKey[round * 4 + 3];
       fval |= _sp8[work & 0x3f];
-      fval |= _sp6[(work >>> 8) & 0x3f];
-      fval |= _sp4[(work >>> 16) & 0x3f];
-      fval |= _sp2[(work >>> 24) & 0x3f];
+      fval |= _sp6[(work >> 8) & 0x3f];
+      fval |= _sp4[(work >> 16) & 0x3f];
+      fval |= _sp2[(work >> 24) & 0x3f];
       right ^= fval;
     }
 
-    right = (right << 31) | (right >>> 1);
+    right = (right << 31) | (right >> 1);
     work = (left ^ right) & 0xaaaaaaaa;
     left ^= work;
     right ^= work;
-    left = (left << 31) | (left >>> 1);
-    work = ((left >>> 8) ^ right) & 0x00ff00ff;
+    left = (left << 31) | (left >> 1);
+    work = ((left >> 8) ^ right) & 0x00ff00ff;
     right ^= work;
     left ^= (work << 8);
-    work = ((left >>> 2) ^ right) & 0x33333333;
+    work = ((left >> 2) ^ right) & 0x33333333;
     right ^= work;
     left ^= (work << 2);
-    work = ((right >>> 16) ^ left) & 0x0000ffff;
+    work = ((right >> 16) ^ left) & 0x0000ffff;
     left ^= work;
     right ^= (work << 16);
-    work = ((right >>> 4) ^ left) & 0x0f0f0f0f;
+    work = ((right >> 4) ^ left) & 0x0f0f0f0f;
     left ^= work;
     right ^= (work << 4);
 

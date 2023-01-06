@@ -35,13 +35,13 @@ extension StringHelper on String {
 }
 
 extension IntHelper on int {
-  Uint8List to16Bytes() => Uint8List(2)..buffer.asByteData().setInt16(0, this);
+  Uint8List to16Bytes() => Uint8List(2)..buffer.asByteData().setUint16(0, this);
 
   Uint8List toLe16Bytes() => Uint8List(2)..buffer.asByteData().setInt16(0, this, Endian.little);
 
-  Uint8List to32Bytes() => Uint8List(4)..buffer.asByteData().setInt32(0, this);
+  Uint8List to32Bytes() => Uint8List(4)..buffer.asByteData().setUint32(0, this);
 
-  Uint8List toLe32Bytes() => Uint8List(4)..buffer.asByteData().setInt32(0, this, Endian.little);
+  Uint8List toLe32Bytes() => Uint8List(4)..buffer.asByteData().setUint32(0, this, Endian.little);
 
   Uint8List to64Bytes() => Uint8List(8)..buffer.asByteData().setUint64(0, this);
 
@@ -53,15 +53,15 @@ extension IntHelper on int {
 }
 
 extension Uint8ListHelper on Uint8List {
-  int toIn16() => buffer.asByteData().getInt16(0);
+  int toIn16() => buffer.asByteData().getUint16(0);
 
-  int toLeIn16() => buffer.asByteData().getInt16(0, Endian.little);
+  int toLeIn16() => buffer.asByteData().getUint16(0, Endian.little);
 
-  int toIn32() => buffer.asByteData().getInt32(0);
+  int toInt32() => buffer.asByteData().getUint32(0);
 
-  int toLeInt32() => buffer.asByteData().getInt32(0, Endian.little);
+  int toLeInt32() => buffer.asByteData().getUint32(0, Endian.little);
 
-  int toInt64() => buffer.asByteData().getInt64(0);
+  int toInt64() => buffer.asByteData().getUint64(0);
 
   int toLeInt64() => buffer.asByteData().getInt64(0, Endian.little);
 
@@ -84,7 +84,7 @@ extension Uint8ListHelper on Uint8List {
         : BigInt.zero;
   }
 
-  DateTime toDateTime() => DateTime.fromMillisecondsSinceEpoch(toIn32() * 1000);
+  DateTime toDateTime() => DateTime.fromMillisecondsSinceEpoch(toInt32() * 1000);
 
   String toHexadecimal() {
     final result = StringBuffer();

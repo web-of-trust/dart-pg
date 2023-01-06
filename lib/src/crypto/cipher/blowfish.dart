@@ -1183,8 +1183,8 @@ class BlowfishEngine extends BaseCipher {
   }
 
   void _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
-    var xl = src.sublist(srcIndex).toIn32();
-    var xr = src.sublist(srcIndex + 4).toIn32();
+    var xl = src.sublist(srcIndex).toInt32();
+    var xr = src.sublist(srcIndex + 4).toInt32();
 
     xl ^= _p[0];
 
@@ -1199,8 +1199,8 @@ class BlowfishEngine extends BaseCipher {
   }
 
   void _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
-    var xl = src.sublist(srcIndex).toIn32();
-    var xr = src.sublist(srcIndex + 4).toIn32();
+    var xl = src.sublist(srcIndex).toInt32();
+    var xr = src.sublist(srcIndex + 4).toInt32();
 
     xl ^= _p[_rounds + 1];
 

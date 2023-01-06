@@ -13,11 +13,11 @@ class TripleDES extends DESEngine {
 
   bool _forEncryption = false;
 
-  late Uint8List _workingKey1;
+  late List<int> _workingKey1;
 
-  late Uint8List _workingKey2;
+  late List<int> _workingKey2;
 
-  late Uint8List _workingKey3;
+  late List<int> _workingKey3;
 
   @override
   String get algorithmName => 'TripleDES';
