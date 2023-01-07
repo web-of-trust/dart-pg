@@ -733,7 +733,7 @@ class DESEngine extends BaseCipher {
   void reset() {}
 
   List<int> generateWorkingKey(final bool forEncryption, final Uint8List key) {
-    final newKey = List.filled(32, 0);
+    final newKey = List<int>.generate(32, (_) => 0, growable: false);
     final pc1m = List<bool>.generate(56, (_) => false, growable: false);
     final pcr = List<bool>.generate(56, (_) => false, growable: false);
 
@@ -782,10 +782,10 @@ class DESEngine extends BaseCipher {
       final i2 = newKey[i + 1];
 
       newKey[i] =
-          ((i1 & 0x00fc0000) << 6) | ((i1 & 0x00000fc0) << 10) | ((i2 & 0x00fc0000) >> 10) | ((i2 & 0x00000fc0) >> 6);
+          (((i1 & 0x00fc0000) << 6) | ((i1 & 0x00000fc0) << 10) | ((i2 & 0x00fc0000) >> 10) | ((i2 & 0x00000fc0) >> 6));
 
       newKey[i + 1] =
-          ((i1 & 0x0003f000) << 12) | ((i1 & 0x0000003f) << 16) | ((i2 & 0x0003f000) >> 4) | (i2 & 0x0000003f);
+          (((i1 & 0x0003f000) << 12) | ((i1 & 0x0000003f) << 16) | ((i2 & 0x0003f000) >> 4) | (i2 & 0x0000003f));
     }
 
     return newKey;
