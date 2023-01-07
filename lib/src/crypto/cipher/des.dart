@@ -739,7 +739,7 @@ class DESEngine extends BaseCipher {
 
     for (var j = 0; j < 56; j++) {
       final l = _pc1[j];
-      pc1m[j] = ((key[l >> 3] & _bytebit[l & 07]) != 0);
+      pc1m[j] = ((key[l >>> 3] & _bytebit[l & 07]) != 0);
     }
 
     for (var i = 0; i < 16; i++) {
@@ -782,17 +782,17 @@ class DESEngine extends BaseCipher {
       final i2 = newKey[i + 1];
 
       newKey[i] =
-          (((i1 & 0x00fc0000) << 6) | ((i1 & 0x00000fc0) << 10) | ((i2 & 0x00fc0000) >> 10) | ((i2 & 0x00000fc0) >> 6));
+          ((i1 & 0x00fc0000) << 6) | ((i1 & 0x00000fc0) << 10) | ((i2 & 0x00fc0000) >>> 10) | ((i2 & 0x00000fc0) >>> 6);
 
       newKey[i + 1] =
-          (((i1 & 0x0003f000) << 12) | ((i1 & 0x0000003f) << 16) | ((i2 & 0x0003f000) >> 4) | (i2 & 0x0000003f));
+          ((i1 & 0x0003f000) << 12) | ((i1 & 0x0000003f) << 16) | ((i2 & 0x0003f000) >>> 4) | (i2 & 0x0000003f);
     }
 
     return newKey;
   }
 
   void desFunc(
-    final List<int> workingKey,
+    final List<int> wKey,
     final Uint8List inp,
     final int inpOff,
     final Uint8List out,
@@ -801,71 +801,68 @@ class DESEngine extends BaseCipher {
     var left = inp.sublist(inpOff).toInt32();
     var right = inp.sublist(inpOff + 4).toInt32();
 
-    var work = ((left >> 4) ^ right) & 0x0f0f0f0f;
+    var work = ((left >>> 4) ^ right) & 0x0f0f0f0f;
     right ^= work;
     left ^= (work << 4);
-    work = ((left >> 16) ^ right) & 0x0000ffff;
+    work = ((left >>> 16) ^ right) & 0x0000ffff;
     right ^= work;
     left ^= (work << 16);
-    work = ((right >> 2) ^ left) & 0x33333333;
+    work = ((right >>> 2) ^ left) & 0x33333333;
     left ^= work;
     right ^= (work << 2);
-    work = ((right >> 8) ^ left) & 0x00ff00ff;
+    work = ((right >>> 8) ^ left) & 0x00ff00ff;
     left ^= work;
     right ^= (work << 8);
-    right = (right << 1) | (right >> 31);
+    right = (right << 1) | (right >>> 31);
     work = (left ^ right) & 0xaaaaaaaa;
     left ^= work;
     right ^= work;
-    left = (left << 1) | (left >> 31);
+    left = (left << 1) | (left >>> 31);
 
     for (var round = 0; round < 8; round++) {
       int fval;
 
-      work = (right << 28) | (right >> 4);
-      work ^= workingKey[round * 4 + 0];
+      work = (right << 28) | (right >>> 4);
+      work ^= wKey[round * 4 + 0];
       fval = _sp7[work & 0x3f];
-      fval |= _sp5[(work >> 8) & 0x3f];
-      fval |= _sp3[(work >> 16) & 0x3f];
-      fval |= _sp1[(work >> 24) & 0x3f];
-
-      work = right ^ workingKey[round * 4 + 1];
+      fval |= _sp5[(work >>> 8) & 0x3f];
+      fval |= _sp3[(work >>> 16) & 0x3f];
+      fval |= _sp1[(work >>> 24) & 0x3f];
+      work = right ^ wKey[round * 4 + 1];
       fval |= _sp8[work & 0x3f];
-      fval |= _sp6[(work >> 8) & 0x3f];
-      fval |= _sp4[(work >> 16) & 0x3f];
-      fval |= _sp2[(work >> 24) & 0x3f];
+      fval |= _sp6[(work >>> 8) & 0x3f];
+      fval |= _sp4[(work >>> 16) & 0x3f];
+      fval |= _sp2[(work >>> 24) & 0x3f];
       left ^= fval;
-
-      work = (left << 28) | (left >> 4);
-      work ^= workingKey[round * 4 + 2];
+      work = (left << 28) | (left >>> 4);
+      work ^= wKey[round * 4 + 2];
       fval = _sp7[work & 0x3f];
-      fval |= _sp5[(work >> 8) & 0x3f];
-      fval |= _sp3[(work >> 16) & 0x3f];
-      fval |= _sp1[(work >> 24) & 0x3f];
-
-      work = left ^ workingKey[round * 4 + 3];
+      fval |= _sp5[(work >>> 8) & 0x3f];
+      fval |= _sp3[(work >>> 16) & 0x3f];
+      fval |= _sp1[(work >>> 24) & 0x3f];
+      work = left ^ wKey[round * 4 + 3];
       fval |= _sp8[work & 0x3f];
-      fval |= _sp6[(work >> 8) & 0x3f];
-      fval |= _sp4[(work >> 16) & 0x3f];
-      fval |= _sp2[(work >> 24) & 0x3f];
+      fval |= _sp6[(work >>> 8) & 0x3f];
+      fval |= _sp4[(work >>> 16) & 0x3f];
+      fval |= _sp2[(work >>> 24) & 0x3f];
       right ^= fval;
     }
 
-    right = (right << 31) | (right >> 1);
+    right = (right << 31) | (right >>> 1);
     work = (left ^ right) & 0xaaaaaaaa;
     left ^= work;
     right ^= work;
-    left = (left << 31) | (left >> 1);
-    work = ((left >> 8) ^ right) & 0x00ff00ff;
+    left = (left << 31) | (left >>> 1);
+    work = ((left >>> 8) ^ right) & 0x00ff00ff;
     right ^= work;
     left ^= (work << 8);
-    work = ((left >> 2) ^ right) & 0x33333333;
+    work = ((left >>> 2) ^ right) & 0x33333333;
     right ^= work;
     left ^= (work << 2);
-    work = ((right >> 16) ^ left) & 0x0000ffff;
+    work = ((right >>> 16) ^ left) & 0x0000ffff;
     left ^= work;
     right ^= (work << 16);
-    work = ((right >> 4) ^ left) & 0x0f0f0f0f;
+    work = ((right >>> 4) ^ left) & 0x0f0f0f0f;
     left ^= work;
     right ^= (work << 4);
 
