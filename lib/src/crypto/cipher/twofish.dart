@@ -641,21 +641,21 @@ class TwofishEngine extends BaseCipher {
   }
 
   @override
-  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) {
+  int processBlock(Uint8List input, int inOff, Uint8List output, int outOff) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
-    if ((inpOff + blockSize) > inp.length) {
-      throw ArgumentError('input buffer too short');
+    if ((inOff + blockSize) > input.length) {
+      throw ArgumentError('input buffer too short for $algorithmName engine');
     }
-    if ((outOff + blockSize) > out.length) {
-      throw ArgumentError('output buffer too short');
+    if ((outOff + blockSize) > output.length) {
+      throw ArgumentError('output buffer too short for $algorithmName engine');
     }
 
     if (_forEncryption) {
-      _encryptBlock(inp, inpOff, out, outOff);
+      _encryptBlock(input, inOff, output, outOff);
     } else {
-      _decryptBlock(inp, inpOff, out, outOff);
+      _decryptBlock(input, inOff, output, outOff);
     }
 
     return blockSize;

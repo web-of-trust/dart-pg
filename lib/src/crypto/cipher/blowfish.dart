@@ -1107,21 +1107,21 @@ class BlowfishEngine extends BaseCipher {
   }
 
   @override
-  int processBlock(final Uint8List inp, final int inpOff, final Uint8List out, final int outOff) {
+  int processBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
-    if ((inpOff + _blockSize) > inp.length) {
-      throw ArgumentError('input buffer too short');
+    if ((inOff + _blockSize) > input.length) {
+      throw ArgumentError('input buffer too short for $algorithmName engine');
     }
-    if ((outOff + _blockSize) > out.length) {
-      throw ArgumentError('output buffer too short');
+    if ((outOff + _blockSize) > output.length) {
+      throw ArgumentError('output buffer too short for $algorithmName engine');
     }
 
     if (_forEncryption) {
-      _encryptBlock(inp, inpOff, out, outOff);
+      _encryptBlock(input, inOff, output, outOff);
     } else {
-      _decryptBlock(inp, inpOff, out, outOff);
+      _decryptBlock(input, inOff, output, outOff);
     }
 
     return _blockSize;

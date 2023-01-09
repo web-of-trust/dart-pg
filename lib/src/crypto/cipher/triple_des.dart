@@ -51,27 +51,27 @@ class TripleDES extends DESEngine {
   }
 
   @override
-  int processBlock(final Uint8List inp, final int inpOff, final Uint8List out, final int outOff) {
+  int processBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
     if (_workingKey1.isEmpty) {
       throw StateError('$algorithmName engine not initialised');
     }
-    if ((inpOff + _blockSize) > inp.length) {
-      throw ArgumentError('input buffer too short');
+    if ((inOff + _blockSize) > input.length) {
+      throw ArgumentError('input buffer too short for $algorithmName engine');
     }
-    if ((outOff + _blockSize) > out.length) {
-      throw ArgumentError('output buffer too short');
+    if ((outOff + _blockSize) > output.length) {
+      throw ArgumentError('output buffer too short for $algorithmName engine');
     }
 
     final temp = Uint8List(_blockSize);
 
     if (_forEncryption) {
-      desFunc(_workingKey1, inp, inpOff, temp, 0);
+      desFunc(_workingKey1, input, inOff, temp, 0);
       desFunc(_workingKey2, temp, 0, temp, 0);
-      desFunc(_workingKey3, temp, 0, out, outOff);
+      desFunc(_workingKey3, temp, 0, output, outOff);
     } else {
-      desFunc(_workingKey3, inp, inpOff, temp, 0);
+      desFunc(_workingKey3, input, inOff, temp, 0);
       desFunc(_workingKey2, temp, 0, temp, 0);
-      desFunc(_workingKey1, temp, 0, out, outOff);
+      desFunc(_workingKey1, temp, 0, output, outOff);
     }
     return _blockSize;
   }

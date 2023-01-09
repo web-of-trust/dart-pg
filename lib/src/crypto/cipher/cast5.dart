@@ -2124,21 +2124,21 @@ class CAST5Engine extends BaseCipher {
   }
 
   @override
-  int processBlock(final Uint8List inp, final int inpOff, final Uint8List out, final int outOff) {
+  int processBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
-    if ((inpOff + blockSize) > inp.length) {
-      throw ArgumentError('input buffer too short');
+    if ((inOff + blockSize) > input.length) {
+      throw ArgumentError('input buffer too short for $algorithmName engine');
     }
-    if ((outOff + blockSize) > out.length) {
-      throw ArgumentError('output buffer too short');
+    if ((outOff + blockSize) > output.length) {
+      throw ArgumentError('output buffer too short for $algorithmName engine');
     }
 
     if (_forEncryption) {
-      return _encryptBlock(inp, inpOff, out, outOff);
+      return _encryptBlock(input, inOff, output, outOff);
     } else {
-      return _decryptBlock(inp, inpOff, out, outOff);
+      return _decryptBlock(input, inOff, output, outOff);
     }
   }
 

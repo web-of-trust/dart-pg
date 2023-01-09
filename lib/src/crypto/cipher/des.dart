@@ -713,19 +713,19 @@ class DESEngine extends BaseCipher {
   }
 
   @override
-  int processBlock(final Uint8List inp, final int inpOff, final Uint8List out, final int outOff) {
+  int processBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName engine not initialised');
     }
-    if ((inpOff + _blockSize) > inp.length) {
-      throw ArgumentError('input buffer too short');
+    if ((inOff + _blockSize) > input.length) {
+      throw ArgumentError('input buffer too short for $algorithmName engine');
     }
 
-    if ((outOff + _blockSize) > out.length) {
-      throw ArgumentError('output buffer too short');
+    if ((outOff + _blockSize) > output.length) {
+      throw ArgumentError('output buffer too short for $algorithmName engine');
     }
 
-    desFunc(_workingKey, inp, inpOff, out, outOff);
+    desFunc(_workingKey, input, inOff, output, outOff);
     return _blockSize;
   }
 
@@ -733,7 +733,7 @@ class DESEngine extends BaseCipher {
   void reset() {}
 
   List<int> generateWorkingKey(final bool forEncryption, final Uint8List key) {
-    final newKey = List<int>.generate(32, (_) => 0, growable: false);
+    final neworkingKey = List<int>.generate(32, (_) => 0, growable: false);
     final pc1m = List<bool>.generate(56, (_) => false, growable: false);
     final pcr = List<bool>.generate(56, (_) => false, growable: false);
 
@@ -745,7 +745,7 @@ class DESEngine extends BaseCipher {
     for (var i = 0; i < 16; i++) {
       final m = forEncryption ? i << 1 : (15 - i) << 1;
       final n = m + 1;
-      newKey[m] = newKey[n] = 0;
+      neworkingKey[m] = neworkingKey[n] = 0;
 
       for (var j = 0; j < 28; j++) {
         final l = j + _totrot[i];
@@ -767,39 +767,39 @@ class DESEngine extends BaseCipher {
 
       for (var j = 0; j < 24; j++) {
         if (pcr[_pc2[j]]) {
-          newKey[m] |= _bigbyte[j];
+          neworkingKey[m] |= _bigbyte[j];
         }
 
         if (pcr[_pc2[j + 24]]) {
-          newKey[n] |= _bigbyte[j];
+          neworkingKey[n] |= _bigbyte[j];
         }
       }
     }
 
     /// store the processed key
     for (var i = 0; i != 32; i += 2) {
-      final i1 = newKey[i];
-      final i2 = newKey[i + 1];
+      final i1 = neworkingKey[i];
+      final i2 = neworkingKey[i + 1];
 
-      newKey[i] =
+      neworkingKey[i] =
           ((i1 & 0x00fc0000) << 6) | ((i1 & 0x00000fc0) << 10) | ((i2 & 0x00fc0000) >>> 10) | ((i2 & 0x00000fc0) >>> 6);
 
-      newKey[i + 1] =
+      neworkingKey[i + 1] =
           ((i1 & 0x0003f000) << 12) | ((i1 & 0x0000003f) << 16) | ((i2 & 0x0003f000) >>> 4) | (i2 & 0x0000003f);
     }
 
-    return newKey;
+    return neworkingKey;
   }
 
   void desFunc(
-    final List<int> wKey,
-    final Uint8List inp,
-    final int inpOff,
-    final Uint8List out,
+    final List<int> workingKey,
+    final Uint8List input,
+    final int inOff,
+    final Uint8List output,
     final int outOff,
   ) {
-    var left = inp.sublist(inpOff).toInt32();
-    var right = inp.sublist(inpOff + 4).toInt32();
+    var left = input.sublist(inOff).toInt32();
+    var right = input.sublist(inOff + 4).toInt32();
 
     var work = ((left >>> 4) ^ right) & 0x0f0f0f0f;
     right ^= work;
@@ -823,24 +823,24 @@ class DESEngine extends BaseCipher {
       int fval;
 
       work = (right << 28) | (right >>> 4);
-      work ^= wKey[round * 4 + 0];
+      work ^= workingKey[round * 4 + 0];
       fval = _sp7[work & 0x3f];
       fval |= _sp5[(work >>> 8) & 0x3f];
       fval |= _sp3[(work >>> 16) & 0x3f];
       fval |= _sp1[(work >>> 24) & 0x3f];
-      work = right ^ wKey[round * 4 + 1];
+      work = right ^ workingKey[round * 4 + 1];
       fval |= _sp8[work & 0x3f];
       fval |= _sp6[(work >>> 8) & 0x3f];
       fval |= _sp4[(work >>> 16) & 0x3f];
       fval |= _sp2[(work >>> 24) & 0x3f];
       left ^= fval;
       work = (left << 28) | (left >>> 4);
-      work ^= wKey[round * 4 + 2];
+      work ^= workingKey[round * 4 + 2];
       fval = _sp7[work & 0x3f];
       fval |= _sp5[(work >>> 8) & 0x3f];
       fval |= _sp3[(work >>> 16) & 0x3f];
       fval |= _sp1[(work >>> 24) & 0x3f];
-      work = left ^ wKey[round * 4 + 3];
+      work = left ^ workingKey[round * 4 + 3];
       fval |= _sp8[work & 0x3f];
       fval |= _sp6[(work >>> 8) & 0x3f];
       fval |= _sp4[(work >>> 16) & 0x3f];
@@ -866,7 +866,7 @@ class DESEngine extends BaseCipher {
     left ^= work;
     right ^= (work << 4);
 
-    out.setAll(outOff, right.to32Bytes());
-    out.setAll(outOff + 4, left.to32Bytes());
+    output.setAll(outOff, right.to32Bytes());
+    output.setAll(outOff + 4, left.to32Bytes());
   }
 }
