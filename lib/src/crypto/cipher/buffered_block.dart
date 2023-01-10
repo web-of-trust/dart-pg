@@ -19,6 +19,8 @@ class BufferedBlock {
 
   BlockCipher get underlyingCipher => _underlyingCipher;
 
+  String get algorithmName => _underlyingCipher.algorithmName;
+
   /// return the size of the output buffer required for an update
   /// an input of len bytes.
   int getUpdateOutputSize(int length) {
