@@ -55,10 +55,10 @@ class TripleDES extends DESEngine {
     if (_workingKey1.isEmpty) {
       throw StateError('$algorithmName engine not initialised');
     }
-    if ((inOff + _blockSize) > input.length) {
+    if ((inOff + _blockSize) > input.lengthInBytes) {
       throw ArgumentError('input buffer too short for $algorithmName engine');
     }
-    if ((outOff + _blockSize) > output.length) {
+    if ((outOff + _blockSize) > output.lengthInBytes) {
       throw ArgumentError('output buffer too short for $algorithmName engine');
     }
 

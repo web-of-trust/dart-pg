@@ -41,53 +41,90 @@ class BufferedBlock {
 
   /// process a single byte, producing an output block if necessary.
   int processByte(int input, Uint8List output, int outOff) {
-    _buffer[_bufOff++] = input;
+    _buffer[_bufOff++] = input & 0xff;
     if (_bufOff == _buffer.length) {
+      if ((outOff + _buffer.length) > output.length) {
+        throw ArgumentError('output buffer too short');
+      }
+
       _bufOff = 0;
       return _underlyingCipher.processBlock(_buffer, 0, output, outOff);
     }
     return 0;
   }
 
+  /// process a single byte, producing an output block if necessary.
+  Uint8List processInputByte(int input) {
+    final outLength = getUpdateOutputSize(1);
+    final outBytes = Uint8List(outLength);
+
+    final pos = processByte(input, outBytes, 0);
+
+    if (outLength > 0 && pos < outLength) {
+      return outBytes.sublist(0, pos);
+    }
+
+    return outBytes;
+  }
+
   /// process an array of bytes, producing output if necessary.
-  int processBytes(Uint8List input, int inOff, int len, Uint8List output, int outOff) {
-    if (len < 0) {
-      throw ArgumentError("Can't have a negative input length!");
+  int processBytes(Uint8List input, int inOff, int length, Uint8List output, int outOff) {
+    if (length < 1) {
+      if (length < 0) {
+        throw ArgumentError("Can't have a negative input length!");
+      }
+      return 0;
     }
 
     final blockSize = _underlyingCipher.blockSize;
-    final length = getUpdateOutputSize(len);
-    if (length > 0 && ((outOff + length) > output.length)) {
+    final outLength = getUpdateOutputSize(length);
+    if (outLength > 0 && ((outOff + outLength) > output.length)) {
       throw ArgumentError('output buffer too short');
     }
 
     var resultLen = 0;
-    final gapLen = _buffer.length - _bufOff;
-    if (len > gapLen) {
-      _buffer.setAll(_bufOff, input.sublist(inOff, gapLen));
+    final gapLen = _buffer.lengthInBytes - _bufOff;
+    if (length > gapLen) {
+      _buffer.setRange(_bufOff, _bufOff + gapLen, Uint8List.view(input.buffer, inOff, gapLen));
       resultLen += _underlyingCipher.processBlock(_buffer, 0, output, outOff);
 
       _bufOff = 0;
-      len -= gapLen;
+      length -= gapLen;
       inOff += gapLen;
 
-      while (len > _buffer.length) {
+      while (length > _buffer.lengthInBytes) {
         resultLen += _underlyingCipher.processBlock(input, inOff, output, outOff + resultLen);
 
-        len -= blockSize;
+        length -= blockSize;
         inOff += blockSize;
       }
     }
 
-    _buffer.setAll(_bufOff, input.sublist(inOff, len));
-    _bufOff += len;
+    _buffer.setRange(_bufOff, _bufOff + length, Uint8List.view(input.buffer, inOff, length));
+    _bufOff += length;
 
-    if (_bufOff == _buffer.length) {
+    if (_bufOff == _buffer.lengthInBytes) {
       resultLen += _underlyingCipher.processBlock(_buffer, 0, output, outOff + resultLen);
       _bufOff = 0;
     }
 
     return resultLen;
+  }
+
+  Uint8List processInputBytes(Uint8List input, int inOff, int length) {
+    if (length < 1) {
+      return Uint8List(0);
+    }
+
+    final outLength = getUpdateOutputSize(length);
+    final outBytes = Uint8List(outLength);
+
+    final pos = processBytes(input, inOff, length, outBytes, 0);
+    if (outLength > 0 && pos < outLength) {
+      return outBytes.sublist(0, pos);
+    }
+
+    return outBytes;
   }
 
   /// Process the last block in the buffer.
@@ -111,9 +148,7 @@ class BufferedBlock {
   /// Reset the buffer and cipher. After resetting the object is in the same
   /// state as it was after the last init (if there was one).
   void reset() {
-    for (int i = 0; i < _buffer.length; i++) {
-      _buffer[i] = 0;
-    }
+    _buffer.fillRange(0, _buffer.length, 0);
 
     _bufOff = 0;
     _underlyingCipher.reset();

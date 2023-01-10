@@ -35,35 +35,51 @@ extension StringHelper on String {
 }
 
 extension IntHelper on int {
-  Uint8List to16Bytes() => Uint8List(2)..buffer.asByteData().setUint16(0, this);
+  Uint8List to16Bytes() => Uint8List(2)..buffer.asByteData().setInt16(0, this);
 
   Uint8List toLe16Bytes() => Uint8List(2)..buffer.asByteData().setInt16(0, this, Endian.little);
 
-  Uint8List to32Bytes() => Uint8List(4)..buffer.asByteData().setUint32(0, this);
+  Uint8List to32Bytes() => Uint8List(4)..buffer.asByteData().setInt32(0, this);
 
-  Uint8List toLe32Bytes() => Uint8List(4)..buffer.asByteData().setUint32(0, this, Endian.little);
+  Uint8List toLe32Bytes() => Uint8List(4)..buffer.asByteData().setInt32(0, this, Endian.little);
 
-  Uint8List to64Bytes() => Uint8List(8)..buffer.asByteData().setUint64(0, this);
+  Uint8List to64Bytes() => Uint8List(8)..buffer.asByteData().setInt64(0, this);
 
-  Uint8List toLe64Bytes() => Uint8List(8)..buffer.asByteData().setUint64(0, this, Endian.little);
+  Uint8List toLe64Bytes() => Uint8List(8)..buffer.asByteData().setInt64(0, this, Endian.little);
 
   int rotateLeft(final int distance) => (this << distance) ^ (this >>> -distance);
 
   int rotateRight(final int distance) => (this >> distance) ^ (this << -distance);
+
+  int rightShift32(int n) => ((this & 0xffffffff) >> n).toSigned(32);
+
+  int leftShift32(int n) => ((this & 0xffffffff) << n).toSigned(32);
 }
 
 extension Uint8ListHelper on Uint8List {
-  int toIn16() => buffer.asByteData().getUint16(0);
+  int toIn16() => buffer.asByteData().getInt16(0);
 
-  int toLeIn16() => buffer.asByteData().getUint16(0, Endian.little);
+  int toUint16() => buffer.asByteData().getUint16(0);
 
-  int toInt32() => buffer.asByteData().getUint32(0);
+  int toLeIn16() => buffer.asByteData().getInt16(0, Endian.little);
 
-  int toLeInt32() => buffer.asByteData().getUint32(0, Endian.little);
+  int toLeUint16() => buffer.asByteData().getUint16(0, Endian.little);
 
-  int toInt64() => buffer.asByteData().getUint64(0);
+  int toInt32() => buffer.asByteData().getInt32(0);
+
+  int toUint32() => buffer.asByteData().getUint32(0);
+
+  int toLeInt32() => buffer.asByteData().getInt32(0, Endian.little);
+
+  int toLeUint32() => buffer.asByteData().getUint32(0, Endian.little);
+
+  int toInt64() => buffer.asByteData().getInt64(0);
+
+  int toUint64() => buffer.asByteData().getUint64(0);
 
   int toLeInt64() => buffer.asByteData().getInt64(0, Endian.little);
+
+  int toLeUint64() => buffer.asByteData().getUint64(0, Endian.little);
 
   BigInt toBigInt() {
     final negative = isNotEmpty && this[0] & 0x80 == 0x80;

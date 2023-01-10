@@ -645,10 +645,10 @@ class TwofishEngine extends BaseCipher {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
-    if ((inOff + blockSize) > input.length) {
+    if ((inOff + blockSize) > input.lengthInBytes) {
       throw ArgumentError('input buffer too short for $algorithmName engine');
     }
-    if ((outOff + blockSize) > output.length) {
+    if ((outOff + blockSize) > output.lengthInBytes) {
       throw ArgumentError('output buffer too short for $algorithmName engine');
     }
 
