@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/crypto/cipher/blowfish.dart';
 import 'package:dart_pg/src/crypto/cipher/buffered_cipher.dart';
 import 'package:dart_pg/src/crypto/cipher/triple_des.dart';
 import 'package:pointycastle/export.dart';
@@ -50,7 +51,71 @@ void main() {
 
     test('CAST5 test', (() {}));
 
-    test('Blowfish test', (() {}));
+    test('Blowfish test', (() {
+      _blockCipherVectorTest(
+        0,
+        BlowfishEngine(),
+        _kp('0000000000000000'),
+        '0000000000000000',
+        '4ef997456198dd78',
+      );
+
+      _blockCipherVectorTest(
+        1,
+        BlowfishEngine(),
+        _kp('ffffffffffffffff'),
+        'ffffffffffffffff',
+        '51866fd5b85ecb8a',
+      );
+
+      _blockCipherVectorTest(
+        2,
+        BlowfishEngine(),
+        _kp('3000000000000000'),
+        '1000000000000001',
+        '7d856f9a613063f2',
+      );
+
+      _blockCipherVectorTest(
+        3,
+        BlowfishEngine(),
+        _kp('1111111111111111'),
+        '1111111111111111',
+        '2466dd878b963c9d',
+      );
+
+      _blockCipherVectorTest(
+        4,
+        BlowfishEngine(),
+        _kp('0123456789abcdef'),
+        '1111111111111111',
+        '61f9c3802281b096',
+      );
+
+      _blockCipherVectorTest(
+        5,
+        BlowfishEngine(),
+        _kp('fedcba9876543210'),
+        '0123456789abcdef',
+        '0aceab0fc6a0a28d',
+      );
+
+      _blockCipherVectorTest(
+        6,
+        BlowfishEngine(),
+        _kp('7ca110454a1a6e57'),
+        '01a1d6d039776742',
+        '59c68245eb05282b',
+      );
+
+      _blockCipherVectorTest(
+        7,
+        BlowfishEngine(),
+        _kp('0131d9619dc1376e'),
+        '5cd54ca83def57da',
+        'b1b8cc0b250f09a0',
+      );
+    }));
 
     /// DES tester - vectors from <a href=https://www.itl.nist.gov/fipspubs/fip81.htm>FIPS 81</a>
     test('DES test', (() {

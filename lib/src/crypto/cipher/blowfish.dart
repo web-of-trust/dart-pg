@@ -1084,7 +1084,7 @@ class BlowfishEngine extends BaseCipher {
   final _s3 = List<int>.filled(_sBoxSK, 0);
 
   /// the p-array
-  final _p = List<int>.filled(_sBoxSK, 0);
+  final _p = List<int>.filled(_pSZ, 0);
 
   @override
   String get algorithmName => 'Blowfish';
@@ -1128,7 +1128,7 @@ class BlowfishEngine extends BaseCipher {
   }
 
   int _f(final int x) {
-    return (((_s0[x >>> 24] + _s1[(x >>> 16) & 0xff]) ^ _s2[(x >>> 8) & 0xff]) + _s3[x & 0xff]);
+    return (((_s0[(x >> 24) & 0xff] + _s1[(x >> 16) & 0xff]) ^ _s2[(x >> 8) & 0xff]) + _s3[x & 0xff]);
   }
 
   /// apply the encryption cycle to each value pair in the table.
@@ -1136,7 +1136,7 @@ class BlowfishEngine extends BaseCipher {
     final size = table.length;
     for (var s = 0; s < size; s += 2) {
       xl ^= _p[0];
-      for (int i = 1; i < _rounds; i += 2) {
+      for (var i = 1; i < _rounds; i += 2) {
         xr ^= _f(xl) ^ _p[i];
         xl ^= _f(xr) ^ _p[i + 1];
       }
@@ -1154,12 +1154,12 @@ class BlowfishEngine extends BaseCipher {
     if (key.length < 4 || key.length > 56) {
       throw ArgumentError('key length must be in range 32 to 448 bits');
     }
-    _s0.addAll(_sBox0.sublist(0, _sBoxSK));
-    _s1.addAll(_sBox1.sublist(0, _sBoxSK));
-    _s2.addAll(_sBox2.sublist(0, _sBoxSK));
-    _s3.addAll(_sBox3.sublist(0, _sBoxSK));
+    _s0.setAll(0, _sBox0.sublist(0, _sBoxSK));
+    _s1.setAll(0, _sBox1.sublist(0, _sBoxSK));
+    _s2.setAll(0, _sBox2.sublist(0, _sBoxSK));
+    _s3.setAll(0, _sBox3.sublist(0, _sBoxSK));
 
-    _p.addAll(_kp.sublist(0, _pSZ));
+    _p.setAll(0, _kp.sublist(0, _pSZ));
 
     final keyLength = key.length;
     var keyIndex = 0;
