@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dart_pg/src/crypto/cipher/blowfish.dart';
 import 'package:dart_pg/src/crypto/cipher/buffered_cipher.dart';
 import 'package:dart_pg/src/crypto/cipher/triple_des.dart';
+// import 'package:dart_pg/src/crypto/cipher/twofish.dart';
 import 'package:pointycastle/export.dart';
 import 'package:test/test.dart';
 import 'package:dart_pg/src/helpers.dart';
@@ -188,30 +189,64 @@ void main() {
       );
     }));
 
-    test('Twofish test', (() {}));
+    test('Twofish test', (() {
+      // final input = '000102030405060708090a0b0c0d0e0f';
+
+      // _blockCipherVectorTest(
+      //   1,
+      //   CBCBlockCipher(TwofishEngine()),
+      //   _kpWithIV('0123456789abcdef1234567890abcdef', '1234567890abcdef0123456789abcdef'),
+      //   input,
+      //   'f30d228df76da331e0bca11cc99491183f9d39eaff843729192b9f5beee87863',
+      // );
+
+      // _blockCipherVectorTest(
+      //   0,
+      //   TwofishEngine(),
+      //   _kp('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f'),
+      //   input,
+      //   '8ef0272c42db838bcf7b07af0ec30f38',
+      // );
+
+      // _blockCipherVectorTest(
+      //   1,
+      //   TwofishEngine(),
+      //   _kp('000102030405060708090a0b0c0d0e0f1011121314151617'),
+      //   input,
+      //   '95accc625366547617f8be4373d10cd7',
+      // );
+
+      // _blockCipherVectorTest(
+      //   2,
+      //   TwofishEngine(),
+      //   _kp('000102030405060708090a0b0c0d0e0f'),
+      //   input,
+      //   '9fb63337151be9c71306d159ea7afaa4',
+      // );
+    }));
   }));
 }
 
-KeyParameter _kp(String src) {
-  return KeyParameter(src.hexToBytes());
+KeyParameter _kp(String key) {
+  return KeyParameter(key.hexToBytes());
 }
 
-ParametersWithIV<KeyParameter> _kpWithIV(String src, String iv) {
-  return ParametersWithIV(KeyParameter(src.hexToBytes()), iv.hexToBytes());
+ParametersWithIV<KeyParameter> _kpWithIV(String key, String iv) {
+  return ParametersWithIV(_kp(key), iv.hexToBytes());
 }
 
-void _blockCipherVectorTest(int id, BlockCipher engine, CipherParameters parameters, String input, String output) {
+void _blockCipherVectorTest(int id, BlockCipher engine, CipherParameters params, String input, String output) {
   final inBytes = input.hexToBytes();
   final outBytes = output.hexToBytes();
   var out = Uint8List(inBytes.length);
 
   final cipher = BufferedCipher(engine);
-  cipher.init(true, parameters);
+  cipher.init(true, params);
   final len1 = cipher.processBytes(inBytes, 0, inBytes.length, out, 0);
   cipher.doFinal(out, len1);
   expect(outBytes, equals(out), reason: '${cipher.algorithmName} test $id did not match output');
 
-  cipher.init(false, parameters);
+  cipher.init(false, params);
   final len2 = cipher.processBytes(outBytes, 0, out.length, out, 0);
   cipher.doFinal(out, len2);
   expect(inBytes, equals(out), reason: '${cipher.algorithmName} test $id did not match input');

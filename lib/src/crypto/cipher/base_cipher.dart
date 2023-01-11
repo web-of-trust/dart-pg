@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/pointycastle.dart';
+import 'package:pointycastle/api.dart';
 
 /// Base implementation of [BlockCipher] which provides shared methods.
 abstract class BaseCipher implements BlockCipher {

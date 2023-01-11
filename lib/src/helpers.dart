@@ -47,9 +47,9 @@ extension IntHelper on int {
 
   Uint8List toLe64Bytes() => Uint8List(8)..buffer.asByteData().setInt64(0, this, Endian.little);
 
-  int rotateLeft(final int distance) => (this << distance) ^ (this >>> -distance);
+  int rotateLeft(final int distance) => (this << distance) | (this >> (64 - distance));
 
-  int rotateRight(final int distance) => (this >> distance) ^ (this << -distance);
+  int rotateRight(final int distance) => (this >> distance) | (this << (64 - distance));
 
   int rightShift32(int n) => ((this & 0xffffffff) >> n).toSigned(32);
 
