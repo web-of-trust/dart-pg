@@ -22,7 +22,7 @@ void main() {
       final input1 = utf8.encoder.convert('Now is the time for all ').toHexadecimal();
       final input2 = utf8.encoder.convert('Now is the').toHexadecimal();
 
-      // final input3 = '4e6f7720697320746865aabbcc';
+      final input3 = '4e6f7720697320746865aabbcc';
       final key = '0123456789abcdef';
       final iv = '1234567890abcdef';
 
@@ -42,29 +42,50 @@ void main() {
         'e5c7cdde872bf27c43e934008c389c0f683788499a7c05f6',
       );
 
+      /// Test with 8 bit CBC mode
       _blockCipherVectorTest(
         2,
-        CFBBlockCipher(DESEngine(), 8),
+        CFBBlockCipher(DESEngine(), 1),
         _kpWithIV(key, iv),
         input2,
         'f31fda07011462ee187f',
       );
 
-      // _blockCipherVectorTest(
-      //   3,
-      //   CFBBlockCipher(DESEngine(), 64),
-      //   _kpWithIV(key, iv),
-      //   input1,
-      //   'f3096249c7f46e51a69e839b1a92f78403467133898ea622',
-      // );
+      /// Test with 64 bit CBC mode
+      _blockCipherVectorTest(
+        3,
+        CFBBlockCipher(DESEngine(), 64 ~/ 8),
+        _kpWithIV(key, iv),
+        input1,
+        'f3096249c7f46e51a69e839b1a92f78403467133898ea622',
+      );
 
-      // _blockCipherVectorTest(
-      //   4,
-      //   OFBBlockCipher(DESEngine(), 8),
-      //   _kpWithIV(key, iv),
-      //   input2,
-      //   'f34a2850c9c64985d684',
-      // );
+      /// Test with 8 bit OFB mode
+      _blockCipherVectorTest(
+        4,
+        OFBBlockCipher(DESEngine(), 1),
+        _kpWithIV(key, iv),
+        input2,
+        'f34a2850c9c64985d684',
+      );
+
+      /// Test with 64 bit OFB mode
+      _blockCipherVectorTest(
+        3,
+        CFBBlockCipher(DESEngine(), 64 ~/ 8),
+        _kpWithIV(key, iv),
+        input3,
+        'f3096249c7f46e51a69e0954bf',
+      );
+
+      /// Test with 64 bit OFB mode
+      _blockCipherVectorTest(
+        4,
+        OFBBlockCipher(DESEngine(), 64 ~/ 8),
+        _kpWithIV(key, iv),
+        input3,
+        'f3096249c7f46e5135f2c0eb8b',
+      );
     }));
 
     test('Twofish test', (() {}));
@@ -87,8 +108,6 @@ void _blockCipherVectorTest(int id, BlockCipher engine, CipherParameters paramet
   final cipher = BufferedCipher(engine);
   cipher.init(true, parameters);
   final len1 = cipher.processBytes(inBytes, 0, inBytes.length, out, 0);
-  // print(inBytes.length);
-  // print(len1);
   cipher.doFinal(out, len1);
   expect(outBytes, equals(out), reason: '${cipher.algorithmName} test $id did not match output');
 
