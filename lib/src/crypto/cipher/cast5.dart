@@ -2162,13 +2162,13 @@ class CAST5Engine extends BaseCipher {
     x8B = x.sublist(0x8).toInt32();
     xCF = x.sublist(0xC).toInt32();
     z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
-    z.setAll(0x0, z03.to32Bytes());
+    z.setAll(0x0, z03.unpack32());
     z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
-    z.setAll(0x4, z47.to32Bytes());
+    z.setAll(0x4, z47.unpack32());
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
-    z.setAll(0x4, z8B.to32Bytes());
+    z.setAll(0x4, z8B.unpack32());
     zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    z.setAll(0xC, zCF.to32Bytes());
+    z.setAll(0xC, zCF.unpack32());
     _masking[1] = _sBox5[z[0x8]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0x7]] ^ _sBox8[z[0x6]] ^ _sBox5[z[0x2]];
     _masking[2] = _sBox5[z[0xA]] ^ _sBox6[z[0xB]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox6[z[0x6]];
     _masking[3] = _sBox5[z[0xC]] ^ _sBox6[z[0xD]] ^ _sBox7[z[0x3]] ^ _sBox8[z[0x2]] ^ _sBox7[z[0x9]];
@@ -2179,13 +2179,13 @@ class CAST5Engine extends BaseCipher {
     z8B = z.sublist(0x8).toInt32();
     zCF = z.sublist(0xC).toInt32();
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
-    x.setAll(0x0, x03.to32Bytes());
+    x.setAll(0x0, x03.unpack32());
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
-    x.setAll(0x4, x47.to32Bytes());
+    x.setAll(0x4, x47.unpack32());
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
-    x.setAll(0x8, x8B.to32Bytes());
+    x.setAll(0x8, x8B.unpack32());
     xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    x.setAll(0xC, xCF.to32Bytes());
+    x.setAll(0xC, xCF.unpack32());
     _masking[5] = _sBox5[x[0x3]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xD]] ^ _sBox5[x[0x8]];
     _masking[6] = _sBox5[x[0x1]] ^ _sBox6[x[0x0]] ^ _sBox7[x[0xE]] ^ _sBox8[x[0xF]] ^ _sBox6[x[0xD]];
     _masking[7] = _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x8]] ^ _sBox8[x[0x9]] ^ _sBox7[x[0x3]];
@@ -2196,13 +2196,13 @@ class CAST5Engine extends BaseCipher {
     x8B = x.sublist(0x8).toInt32();
     xCF = x.sublist(0xC).toInt32();
     z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
-    z.setAll(0x0, z03.to32Bytes());
+    z.setAll(0x0, z03.unpack32());
     z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
-    z.setAll(0x4, z47.to32Bytes());
+    z.setAll(0x4, z47.unpack32());
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
-    z.setAll(0x8, z8B.to32Bytes());
+    z.setAll(0x8, z8B.unpack32());
     zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    z.setAll(0xC, zCF.to32Bytes());
+    z.setAll(0xC, zCF.unpack32());
     _masking[9] = _sBox5[z[0x3]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0xC]] ^ _sBox8[z[0xD]] ^ _sBox5[z[0x9]];
     _masking[10] = _sBox5[z[0x1]] ^ _sBox6[z[0x0]] ^ _sBox7[z[0xE]] ^ _sBox8[z[0xF]] ^ _sBox6[z[0xc]];
     _masking[11] = _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x8]] ^ _sBox8[z[0x9]] ^ _sBox7[z[0x2]];
@@ -2213,13 +2213,13 @@ class CAST5Engine extends BaseCipher {
     z8B = z.sublist(0x8).toInt32();
     zCF = z.sublist(0xC).toInt32();
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
-    x.setAll(0x0, x03.to32Bytes());
+    x.setAll(0x0, x03.unpack32());
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
-    x.setAll(0x4, x47.to32Bytes());
+    x.setAll(0x4, x47.unpack32());
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
-    x.setAll(0x8, x8B.to32Bytes());
+    x.setAll(0x8, x8B.unpack32());
     xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    x.setAll(0xC, xCF.to32Bytes());
+    x.setAll(0xC, xCF.unpack32());
     _masking[13] = _sBox5[x[0x8]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0x7]] ^ _sBox8[x[0x6]] ^ _sBox5[x[0x3]];
     _masking[14] = _sBox5[x[0xA]] ^ _sBox6[x[0xB]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox6[x[0x7]];
     _masking[15] = _sBox5[x[0xC]] ^ _sBox6[x[0xD]] ^ _sBox7[x[0x3]] ^ _sBox8[x[0x2]] ^ _sBox7[x[0x8]];
@@ -2230,13 +2230,13 @@ class CAST5Engine extends BaseCipher {
     x8B = x.sublist(0x8).toInt32();
     xCF = x.sublist(0xC).toInt32();
     z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
-    z.setAll(0x0, z03.to32Bytes());
+    z.setAll(0x0, z03.unpack32());
     z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
-    z.setAll(0x4, z47.to32Bytes());
+    z.setAll(0x4, z47.unpack32());
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
-    z.setAll(0x8, z8B.to32Bytes());
+    z.setAll(0x8, z8B.unpack32());
     zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    z.setAll(0xC, zCF.to32Bytes());
+    z.setAll(0xC, zCF.unpack32());
     _rotating[1] = (_sBox5[z[0x8]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0x7]] ^ _sBox8[z[0x6]] ^ _sBox5[z[0x2]]) & 0x1f;
     _rotating[2] = (_sBox5[z[0xA]] ^ _sBox6[z[0xB]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox6[z[0x6]]) & 0x1f;
     _rotating[3] = (_sBox5[z[0xC]] ^ _sBox6[z[0xD]] ^ _sBox7[z[0x3]] ^ _sBox8[z[0x2]] ^ _sBox7[z[0x9]]) & 0x1f;
@@ -2247,13 +2247,13 @@ class CAST5Engine extends BaseCipher {
     z8B = z.sublist(0x8).toInt32();
     zCF = z.sublist(0xC).toInt32();
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
-    x.setAll(0x0, x03.to32Bytes());
+    x.setAll(0x0, x03.unpack32());
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
-    x.setAll(0x4, x47.to32Bytes());
+    x.setAll(0x4, x47.unpack32());
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
-    x.setAll(0x8, x8B.to32Bytes());
+    x.setAll(0x8, x8B.unpack32());
     xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    x.setAll(0xC, xCF.to32Bytes());
+    x.setAll(0xC, xCF.unpack32());
     _rotating[5] = (_sBox5[x[0x3]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xD]] ^ _sBox5[x[0x8]]) & 0x1f;
     _rotating[6] = (_sBox5[x[0x1]] ^ _sBox6[x[0x0]] ^ _sBox7[x[0xE]] ^ _sBox8[x[0xF]] ^ _sBox6[x[0xD]]) & 0x1f;
     _rotating[7] = (_sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x8]] ^ _sBox8[x[0x9]] ^ _sBox7[x[0x3]]) & 0x1f;
@@ -2264,13 +2264,13 @@ class CAST5Engine extends BaseCipher {
     x8B = x.sublist(0x8).toInt32();
     xCF = x.sublist(0xC).toInt32();
     z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
-    z.setAll(0x0, z03.to32Bytes());
+    z.setAll(0x0, z03.unpack32());
     z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
-    z.setAll(0x4, z47.to32Bytes());
+    z.setAll(0x4, z47.unpack32());
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
-    z.setAll(0x8, z8B.to32Bytes());
+    z.setAll(0x8, z8B.unpack32());
     zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    z.setAll(0xC, zCF.to32Bytes());
+    z.setAll(0xC, zCF.unpack32());
     _rotating[9] = (_sBox5[z[0x3]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0xC]] ^ _sBox8[z[0xD]] ^ _sBox5[z[0x9]]) & 0x1f;
     _rotating[10] = (_sBox5[z[0x1]] ^ _sBox6[z[0x0]] ^ _sBox7[z[0xE]] ^ _sBox8[z[0xF]] ^ _sBox6[z[0xc]]) & 0x1f;
     _rotating[11] = (_sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x8]] ^ _sBox8[z[0x9]] ^ _sBox7[z[0x2]]) & 0x1f;
@@ -2281,13 +2281,13 @@ class CAST5Engine extends BaseCipher {
     z8B = z.sublist(0x8).toInt32();
     zCF = z.sublist(0xC).toInt32();
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
-    x.setAll(0x0, x03.to32Bytes());
+    x.setAll(0x0, x03.unpack32());
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
-    x.setAll(0x4, x47.to32Bytes());
+    x.setAll(0x4, x47.unpack32());
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
-    x.setAll(0x8, x8B.to32Bytes());
+    x.setAll(0x8, x8B.unpack32());
     xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    x.setAll(0xC, xCF.to32Bytes());
+    x.setAll(0xC, xCF.unpack32());
     _rotating[13] = (_sBox5[x[0x8]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0x7]] ^ _sBox8[x[0x6]] ^ _sBox5[x[0x3]]) & 0x1f;
     _rotating[14] = (_sBox5[x[0xA]] ^ _sBox6[x[0xB]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox6[x[0x7]]) & 0x1f;
     _rotating[15] = (_sBox5[x[0xC]] ^ _sBox6[x[0xD]] ^ _sBox7[x[0x3]] ^ _sBox8[x[0x2]] ^ _sBox7[x[0x8]]) & 0x1f;
@@ -2302,8 +2302,8 @@ class CAST5Engine extends BaseCipher {
 
     _encipher(l0, r0, result);
 
-    dst.setAll(dstIndex, result[0].to32Bytes());
-    dst.setAll(dstIndex + 4, result[1].to32Bytes());
+    dst.setAll(dstIndex, result[0].unpack32());
+    dst.setAll(dstIndex + 4, result[1].unpack32());
 
     return blockSize;
   }
@@ -2316,8 +2316,8 @@ class CAST5Engine extends BaseCipher {
 
     _decipher(l16, r16, result);
 
-    dst.setAll(dstIndex, result[0].to32Bytes());
-    dst.setAll(dstIndex + 4, result[1].to32Bytes());
+    dst.setAll(dstIndex, result[0].unpack32());
+    dst.setAll(dstIndex + 4, result[1].unpack32());
 
     return blockSize;
   }

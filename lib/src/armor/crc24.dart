@@ -26,6 +26,6 @@ class Crc24 {
   }
 
   static String base64Calculate(final Uint8List data) {
-    return base64.encode(calculate(data).to32Bytes().sublist(1));
+    return base64.encode(calculate(data).unpack32().sublist(1));
   }
 }

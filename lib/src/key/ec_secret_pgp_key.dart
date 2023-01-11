@@ -26,7 +26,7 @@ class ECSecretPgpKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(privateKey.d!.bitLength.to16Bytes());
+    bytes.addAll(privateKey.d!.bitLength.unpack16());
     bytes.addAll(privateKey.d!.toBytes());
 
     return Uint8List.fromList(bytes);

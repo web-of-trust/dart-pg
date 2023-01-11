@@ -37,13 +37,13 @@ class ElGamalPublicPgpKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(p.bitLength.to16Bytes());
+    bytes.addAll(p.bitLength.unpack16());
     bytes.addAll(p.toBytes());
 
-    bytes.addAll(g.bitLength.to16Bytes());
+    bytes.addAll(g.bitLength.unpack16());
     bytes.addAll(g.toBytes());
 
-    bytes.addAll(y.bitLength.to16Bytes());
+    bytes.addAll(y.bitLength.unpack16());
     bytes.addAll(y.toBytes());
 
     return Uint8List.fromList(bytes);

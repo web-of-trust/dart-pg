@@ -1194,8 +1194,8 @@ class BlowfishEngine extends BaseCipher {
     }
     xr ^= _p[_rounds + 1];
 
-    dst.setAll(dstIndex, xr.to32Bytes());
-    dst.setAll(dstIndex + 4, xl.to32Bytes());
+    dst.setAll(dstIndex, xr.unpack32());
+    dst.setAll(dstIndex + 4, xl.unpack32());
   }
 
   void _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
@@ -1210,7 +1210,7 @@ class BlowfishEngine extends BaseCipher {
     }
 
     xr ^= _p[0];
-    dst.setAll(dstIndex, xr.to32Bytes());
-    dst.setAll(dstIndex + 4, xl.to32Bytes());
+    dst.setAll(dstIndex, xr.unpack32());
+    dst.setAll(dstIndex + 4, xl.unpack32());
   }
 }

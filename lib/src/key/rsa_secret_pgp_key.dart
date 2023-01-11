@@ -53,16 +53,16 @@ class RsaSecretBcpgKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(privateExponent!.bitLength.to16Bytes());
+    bytes.addAll(privateExponent!.bitLength.unpack16());
     bytes.addAll(privateExponent!.toBytes());
 
-    bytes.addAll(primeP!.bitLength.to16Bytes());
+    bytes.addAll(primeP!.bitLength.unpack16());
     bytes.addAll(primeP!.toBytes());
 
-    bytes.addAll(primeQ!.bitLength.to16Bytes());
+    bytes.addAll(primeQ!.bitLength.unpack16());
     bytes.addAll(primeQ!.toBytes());
 
-    bytes.addAll(qInv.bitLength.to16Bytes());
+    bytes.addAll(qInv.bitLength.unpack16());
     bytes.addAll(qInv.toBytes());
 
     return Uint8List.fromList(bytes);

@@ -35,10 +35,10 @@ class RsaPublicPgpKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(modulus!.bitLength.to16Bytes());
+    bytes.addAll(modulus!.bitLength.unpack16());
     bytes.addAll(modulus!.toBytes());
 
-    bytes.addAll(publicExponent!.bitLength.to16Bytes());
+    bytes.addAll(publicExponent!.bitLength.unpack16());
     bytes.addAll(publicExponent!.toBytes());
 
     return Uint8List.fromList(bytes);
