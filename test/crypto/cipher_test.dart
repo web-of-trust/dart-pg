@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dart_pg/src/crypto/cipher/buffered_cipher.dart';
+import 'package:dart_pg/src/crypto/cipher/triple_des.dart';
 import 'package:pointycastle/export.dart';
 import 'package:test/test.dart';
 import 'package:dart_pg/src/helpers.dart';
@@ -11,7 +12,41 @@ void main() {
   group('cipher tests', (() {
     test('IDEA test', (() {}));
 
-    test('Triple DES test', (() {}));
+    test('Triple DES test', (() {
+      final input = '4e6f77206973207468652074696d6520666f7220616c6c20';
+
+      _blockCipherVectorTest(
+        0,
+        TripleDES(),
+        _kp('0123456789abcdef0123456789abcdef'),
+        input,
+        '3fa40e8a984d48156a271787ab8883f9893d51ec4b563b53',
+      );
+
+      _blockCipherVectorTest(
+        1,
+        TripleDES(),
+        _kp('0123456789abcdeffedcba9876543210'),
+        input,
+        'd80a0d8b2bae5e4e6a0094171abcfc2775d2235a706e232c',
+      );
+
+      _blockCipherVectorTest(
+        2,
+        TripleDES(),
+        _kp('0123456789abcdef0123456789abcdef0123456789abcdef'),
+        input,
+        '3fa40e8a984d48156a271787ab8883f9893d51ec4b563b53',
+      );
+
+      _blockCipherVectorTest(
+        3,
+        TripleDES(),
+        _kp('0123456789abcdeffedcba98765432100123456789abcdef'),
+        input,
+        'd80a0d8b2bae5e4e6a0094171abcfc2775d2235a706e232c',
+      );
+    }));
 
     test('CAST5 test', (() {}));
 
