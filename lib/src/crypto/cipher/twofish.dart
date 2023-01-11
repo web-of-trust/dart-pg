@@ -1572,7 +1572,7 @@ class TwofishEngine extends BaseCipher {
   ];
 
   /// The Key Schedule List
-  final List<int> _subKeys = [];
+  final List<int> _subKey = [];
 
   /// The Key depended S-Table 0
   final _sTable0 = List.filled(256, 0);
@@ -1590,7 +1590,7 @@ class TwofishEngine extends BaseCipher {
 
   bool _forEncryption = false;
 
-  late Uint8List _workingKey;
+  Uint8List _workingKey = Uint8List(0);
 
   @override
   String get algorithmName => 'Twofish';
@@ -1635,7 +1635,11 @@ class TwofishEngine extends BaseCipher {
   }
 
   @override
-  void reset() {}
+  void reset() {
+    if (_workingKey.isNotEmpty) {
+      _setupKey(_workingKey);
+    }
+  }
 
   void _setupKey(final Uint8List key) {
     switch (key.length) {
@@ -1654,9 +1658,9 @@ class TwofishEngine extends BaseCipher {
               _m3[_q1[_q1[j] ^ key[15]] ^ key[7]];
           b = (b << 8) | (b >> 24 & 0xff);
           a += b;
-          _subKeys.add(a);
+          _subKey.add(a);
           a += b;
-          _subKeys.add(a << 9 | a >> 23 & 0x1ff);
+          _subKey.add(a << 9 | a >> 23 & 0x1ff);
         }
 
         for (var i = 0; i < 256; ++i) {
@@ -1683,9 +1687,9 @@ class TwofishEngine extends BaseCipher {
 
           b = (b << 8) | (b >> 24 & 0xff);
           a += b;
-          _subKeys.add(a);
+          _subKey.add(a);
           a += b;
-          _subKeys.add(a << 9 | a >> 23 & 0x1ff);
+          _subKey.add(a << 9 | a >> 23 & 0x1ff);
         }
 
         for (var i = 0; i < 256; ++i) {
@@ -1712,9 +1716,9 @@ class TwofishEngine extends BaseCipher {
               _m3[_q1[_q1[_q0[_q1[j] ^ key[31]] ^ key[23]] ^ key[15]] ^ key[7]];
           b = (b << 8) | (b >> 24 & 0xff);
           a = a + b;
-          _subKeys.add(a);
+          _subKey.add(a);
           a = a + b;
-          _subKeys.add(a << 9 | a >> 23 & 0x1ff);
+          _subKey.add(a << 9 | a >> 23 & 0x1ff);
         }
 
         for (var i = 0; i < 256; ++i) {
@@ -1732,10 +1736,10 @@ class TwofishEngine extends BaseCipher {
   /// the result in the provided buffer starting at the given offset.
   /// The input will be an exact multiple of our blocksize.
   void _encryptBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
-    var r0 = input.sublist(inOff).toLeInt32() ^ _subKeys[0];
-    var r1 = input.sublist(inOff + 4).toLeInt32() ^ _subKeys[1];
-    var r2 = input.sublist(inOff + 8).toLeInt32() ^ _subKeys[2];
-    var r3 = input.sublist(inOff + 12).toLeInt32() ^ _subKeys[3];
+    var r0 = input.sublist(inOff).toLeInt32() ^ _subKey[0];
+    var r1 = input.sublist(inOff + 4).toLeInt32() ^ _subKey[1];
+    var r2 = input.sublist(inOff + 8).toLeInt32() ^ _subKey[2];
+    var r3 = input.sublist(inOff + 12).toLeInt32() ^ _subKey[3];
 
     var ki = 7;
     while (ki < 39) {
@@ -1744,54 +1748,54 @@ class TwofishEngine extends BaseCipher {
       var t1 =
           _sTable0[(r1 >> 24) & 0xff] ^ _sTable1[r1 & 0xff] ^ _sTable2[(r1 >> 8) & 0xff] ^ _sTable3[(r1 >> 16) & 0xff];
 
-      r2 ^= t0 + t1 + _subKeys[++ki];
+      r2 ^= t0 + t1 + _subKey[++ki];
       r2 = (r2 >> 1 & 0x7fffffff) | (r2 << 31);
-      r3 = (((r3 >> 31) & 1) | (r3 << 1)) ^ (t0 + (t1 << 1) + _subKeys[++ki]);
+      r3 = (((r3 >> 31) & 1) | (r3 << 1)) ^ (t0 + (t1 << 1) + _subKey[++ki]);
 
       t0 = _sTable0[r2 & 0xff] ^ _sTable1[(r2 >> 8) & 0xff] ^ _sTable2[(r2 >> 16) & 0xff] ^ _sTable3[(r2 >> 24) & 0xff];
       t1 = _sTable0[(r3 >> 24) & 0xff] ^ _sTable1[r3 & 0xff] ^ _sTable2[(r3 >> 8) & 0xff] ^ _sTable3[(r3 >> 16) & 0xff];
 
-      r0 ^= t0 + t1 + _subKeys[++ki];
+      r0 ^= t0 + t1 + _subKey[++ki];
       r0 = (r0 >> 1 & 0x7fffffff) | (r0 << 31);
-      r1 = (((r1 >> 31) & 1) | (r1 << 1)) ^ (t0 + (t1 << 1) + _subKeys[++ki]);
+      r1 = (((r1 >> 31) & 1) | (r1 << 1)) ^ (t0 + (t1 << 1) + _subKey[++ki]);
     }
 
-    output.setAll(outOff, (r2 ^ _subKeys[4]).unpack32Le());
-    output.setAll(outOff + 4, (r3 ^ _subKeys[5]).unpack32Le());
-    output.setAll(outOff + 8, (r0 ^ _subKeys[6]).unpack32Le());
-    output.setAll(outOff + 12, (r1 ^ _subKeys[7]).unpack32Le());
+    output.setAll(outOff, (r2 ^ _subKey[4]).unpack32Le());
+    output.setAll(outOff + 4, (r3 ^ _subKey[5]).unpack32Le());
+    output.setAll(outOff + 8, (r0 ^ _subKey[6]).unpack32Le());
+    output.setAll(outOff + 12, (r1 ^ _subKey[7]).unpack32Le());
   }
 
   /// Decrypt the given input starting at the given offset and place
   /// the result in the provided buffer starting at the given offset.
   /// The input will be an exact multiple of our blocksize.
   void _decryptBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
-    var r0 = _subKeys[4] ^ input.sublist(inOff).toLeInt32();
-    var r1 = _subKeys[5] ^ input.sublist(inOff + 4).toLeInt32();
-    var r2 = _subKeys[6] ^ input.sublist(inOff + 8).toLeInt32();
-    var r3 = _subKeys[7] ^ input.sublist(inOff + 12).toLeInt32();
+    var r0 = _subKey[4] ^ input.sublist(inOff).toLeInt32();
+    var r1 = _subKey[5] ^ input.sublist(inOff + 4).toLeInt32();
+    var r2 = _subKey[6] ^ input.sublist(inOff + 8).toLeInt32();
+    var r3 = _subKey[7] ^ input.sublist(inOff + 12).toLeInt32();
 
     var ki = 40;
     while (ki > 8) {
       var t0 = _sTable0[r0 & 0xff] ^ _sTable1[r0 >> 8 & 0xff] ^ _sTable2[r0 >> 16 & 0xff] ^ _sTable3[r0 >> 24 & 0xff];
       var t1 = _sTable0[r1 >> 24 & 0xff] ^ _sTable1[r1 & 0xff] ^ _sTable2[r1 >> 8 & 0xff] ^ _sTable3[r1 >> 16 & 0xff];
 
-      r3 ^= t0 + (t1 << 1) + _subKeys[--ki];
+      r3 ^= t0 + (t1 << 1) + _subKey[--ki];
       r3 = r3 >> 1 & 0x7fffffff | r3 << 31;
-      r2 = (r2 >> 31 & 0x1 | r2 << 1) ^ (t0 + t1 + _subKeys[--ki]);
+      r2 = (r2 >> 31 & 0x1 | r2 << 1) ^ (t0 + t1 + _subKey[--ki]);
 
       t0 = _sTable0[r2 & 0xff] ^ _sTable1[r2 >> 8 & 0xff] ^ _sTable2[r2 >> 16 & 0xff] ^ _sTable3[r2 >> 24 & 0xff];
       t1 = _sTable0[r3 >> 24 & 0xff] ^ _sTable1[r3 & 0xff] ^ _sTable2[r3 >> 8 & 0xff] ^ _sTable3[r3 >> 16 & 0xff];
 
-      r1 ^= t0 + (t1 << 1) + _subKeys[--ki];
+      r1 ^= t0 + (t1 << 1) + _subKey[--ki];
       r1 = r1 >> 1 & 0x7fffffff | r1 << 31;
-      r0 = (r0 >> 31 & 0x1 | r0 << 1) ^ (t0 + t1 + _subKeys[--ki]);
+      r0 = (r0 >> 31 & 0x1 | r0 << 1) ^ (t0 + t1 + _subKey[--ki]);
     }
 
-    output.setAll(outOff, (r2 ^ _subKeys[0]).unpack32Le());
-    output.setAll(outOff + 4, (r3 ^ _subKeys[1]).unpack32Le());
-    output.setAll(outOff + 8, (r0 ^ _subKeys[2]).unpack32Le());
-    output.setAll(outOff + 12, (r1 ^ _subKeys[3]).unpack32Le());
+    output.setAll(outOff, (r2 ^ _subKey[0]).unpack32Le());
+    output.setAll(outOff + 4, (r3 ^ _subKey[1]).unpack32Le());
+    output.setAll(outOff + 8, (r0 ^ _subKey[2]).unpack32Le());
+    output.setAll(outOff + 12, (r1 ^ _subKey[3]).unpack32Le());
   }
 
   List<int> _mdsrem(final int x, final int y) {
