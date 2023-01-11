@@ -6,16 +6,14 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
 
-class BufferedBlock {
+class BufferedCipher {
   final BlockCipher _underlyingCipher;
 
-  late final Uint8List _buffer;
+  final Uint8List _buffer;
 
   int _bufOff = 0;
 
-  BufferedBlock(this._underlyingCipher) {
-    _buffer = Uint8List(_underlyingCipher.blockSize);
-  }
+  BufferedCipher(this._underlyingCipher) : _buffer = Uint8List(_underlyingCipher.blockSize);
 
   BlockCipher get underlyingCipher => _underlyingCipher;
 
@@ -55,20 +53,6 @@ class BufferedBlock {
     return 0;
   }
 
-  /// process a single byte, producing an output block if necessary.
-  Uint8List processInputByte(int input) {
-    final outLength = getUpdateOutputSize(1);
-    final outBytes = Uint8List(outLength);
-
-    final pos = processByte(input, outBytes, 0);
-
-    if (outLength > 0 && pos < outLength) {
-      return outBytes.sublist(0, pos);
-    }
-
-    return outBytes;
-  }
-
   /// process an array of bytes, producing output if necessary.
   int processBytes(Uint8List input, int inOff, int length, Uint8List output, int outOff) {
     if (length < 1) {
@@ -85,16 +69,16 @@ class BufferedBlock {
     }
 
     var resultLen = 0;
-    final gapLen = _buffer.lengthInBytes - _bufOff;
+    final gapLen = _buffer.length - _bufOff;
     if (length > gapLen) {
-      _buffer.setRange(_bufOff, _bufOff + gapLen, Uint8List.view(input.buffer, inOff, gapLen));
+      _buffer.setRange(_bufOff, _bufOff + gapLen, input.sublist(inOff, inOff + gapLen));
       resultLen += _underlyingCipher.processBlock(_buffer, 0, output, outOff);
 
       _bufOff = 0;
       length -= gapLen;
       inOff += gapLen;
 
-      while (length > _buffer.lengthInBytes) {
+      while (length > _buffer.length) {
         resultLen += _underlyingCipher.processBlock(input, inOff, output, outOff + resultLen);
 
         length -= blockSize;
@@ -102,31 +86,15 @@ class BufferedBlock {
       }
     }
 
-    _buffer.setRange(_bufOff, _bufOff + length, Uint8List.view(input.buffer, inOff, length));
+    _buffer.setRange(_bufOff, _bufOff + length, input.sublist(inOff, inOff + length));
     _bufOff += length;
 
-    if (_bufOff == _buffer.lengthInBytes) {
+    if (_bufOff == _buffer.length) {
       resultLen += _underlyingCipher.processBlock(_buffer, 0, output, outOff + resultLen);
       _bufOff = 0;
     }
 
     return resultLen;
-  }
-
-  Uint8List processInputBytes(Uint8List input, int inOff, int length) {
-    if (length < 1) {
-      return Uint8List(0);
-    }
-
-    final outLength = getUpdateOutputSize(length);
-    final outBytes = Uint8List(outLength);
-
-    final pos = processBytes(input, inOff, length, outBytes, 0);
-    if (outLength > 0 && pos < outLength) {
-      return outBytes.sublist(0, pos);
-    }
-
-    return outBytes;
   }
 
   /// Process the last block in the buffer.
@@ -140,11 +108,24 @@ class BufferedBlock {
       _underlyingCipher.processBlock(_buffer, 0, _buffer, 0);
       resultLen = _bufOff;
       _bufOff = 0;
-      output.setAll(outOff, _buffer.sublist(0, resultLen));
+      output.setRange(outOff, outOff + resultLen, _buffer.sublist(0, resultLen));
     }
 
     reset();
     return resultLen;
+  }
+
+  Uint8List doInputFinal(Uint8List input, int inOff, int inLen) {
+    final length = getOutputSize(inLen);
+    if (length > 0) {
+      final outBytes = Uint8List(length);
+      var pos = (inLen > 0) ? processBytes(input, inOff, inLen, outBytes, 0) : 0;
+      pos += doFinal(outBytes, pos);
+      return (pos < outBytes.length) ? outBytes.sublist(0, pos) : outBytes;
+    } else {
+      reset();
+    }
+    return Uint8List(0);
   }
 
   /// Reset the buffer and cipher. After resetting the object is in the same

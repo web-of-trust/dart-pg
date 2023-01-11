@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/crypto/cipher/buffered_block.dart';
+import 'package:dart_pg/src/crypto/cipher/buffered_cipher.dart';
 import 'package:pointycastle/export.dart';
 import 'package:test/test.dart';
 import 'package:dart_pg/src/helpers.dart';
@@ -82,11 +82,13 @@ ParametersWithIV<KeyParameter> _kpWithIV(String src, String iv) {
 void _blockCipherVectorTest(int id, BlockCipher engine, CipherParameters parameters, String input, String output) {
   final inBytes = input.hexToBytes();
   final outBytes = output.hexToBytes();
-  var out = Uint8List(inBytes.lengthInBytes);
+  var out = Uint8List(inBytes.length);
 
-  final cipher = BufferedBlock(engine);
+  final cipher = BufferedCipher(engine);
   cipher.init(true, parameters);
   final len1 = cipher.processBytes(inBytes, 0, inBytes.length, out, 0);
+  // print(inBytes.length);
+  // print(len1);
   cipher.doFinal(out, len1);
   expect(outBytes, equals(out), reason: '${cipher.algorithmName} test $id did not match output');
 
