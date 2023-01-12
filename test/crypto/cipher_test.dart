@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dart_pg/src/crypto/cipher/blowfish.dart';
 import 'package:dart_pg/src/crypto/cipher/buffered_cipher.dart';
+import 'package:dart_pg/src/crypto/cipher/cast5.dart';
 import 'package:dart_pg/src/crypto/cipher/idea.dart';
 import 'package:dart_pg/src/crypto/cipher/triple_des.dart';
 import 'package:dart_pg/src/crypto/cipher/twofish.dart';
@@ -67,7 +68,31 @@ void main() {
       );
     }));
 
-    test('CAST5 test', (() {}));
+    test('CAST5 test', (() {
+      _blockCipherVectorTest(
+        0,
+        CAST5Engine(),
+        _kp('0123456712345678234567893456789a'),
+        '0123456789abcdef',
+        '238b4fe5847e44b2',
+      );
+
+      _blockCipherVectorTest(
+        1,
+        CAST5Engine(),
+        _kp('01234567123456782345'),
+        '0123456789abcdef',
+        'eb6a711a2c02271b',
+      );
+
+      _blockCipherVectorTest(
+        2,
+        CAST5Engine(),
+        _kp('0123456712'),
+        '0123456789abcdef',
+        '7ac816d16e9b302e',
+      );
+    }));
 
     test('Blowfish test', (() {
       _blockCipherVectorTest(
