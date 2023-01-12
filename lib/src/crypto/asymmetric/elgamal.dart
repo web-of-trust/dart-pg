@@ -129,9 +129,11 @@ class ElGamalPublicKey extends ElGamalAsymmetricKey implements PublicKey {
 
 class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
   final BigInt x;
-  ElGamalPrivateKey(this.x, super.p, super.g, [super.limit]);
 
-  ElGamalPublicKey get publicKey => ElGamalPublicKey(g.modPow(x, p), p, g, limit);
+  final ElGamalPublicKey publicKey;
+
+  ElGamalPrivateKey(this.x, super.p, super.g, [super.limit])
+      : publicKey = ElGamalPublicKey(g.modPow(x, p), p, g, limit);
 }
 
 class ElGamalKeyParameters extends AsymmetricKeyParameter {
