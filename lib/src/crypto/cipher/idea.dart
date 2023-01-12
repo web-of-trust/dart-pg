@@ -167,10 +167,10 @@ class IDEAEngine extends BaseCipher {
       x2 ^= t0;
     }
 
-    output.setAll(outOff, _mul(x0, workingKey[keyOff++]).unpack16());
-    output.setAll(outOff + 2, (x2 + workingKey[keyOff++]).unpack16());
-    output.setAll(outOff + 4, (x1 + workingKey[keyOff++]).unpack16());
-    output.setAll(outOff + 6, _mul(x3, workingKey[keyOff]).unpack16());
+    output.setAll(outOff, _mul(x0, workingKey[keyOff++]).pack16());
+    output.setAll(outOff + 2, (x2 + workingKey[keyOff++]).pack16());
+    output.setAll(outOff + 4, (x1 + workingKey[keyOff++]).pack16());
+    output.setAll(outOff + 6, _mul(x3, workingKey[keyOff]).pack16());
   }
 
   int _mulInv(int x) {

@@ -44,14 +44,14 @@ class SignatureSubpacket {
     final bodyLen = data.length + 1;
 
     if (isLongLength) {
-      bytes.addAll([0xff, ...bodyLen.unpack32()]);
+      bytes.addAll([0xff, ...bodyLen.pack32()]);
     } else {
       if (bodyLen < 192) {
         bytes.add(bodyLen);
       } else if (bodyLen <= 8383) {
         bytes.addAll([(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192]);
       } else {
-        bytes.addAll([0xff, ...bodyLen.unpack32()]);
+        bytes.addAll([0xff, ...bodyLen.pack32()]);
       }
     }
 

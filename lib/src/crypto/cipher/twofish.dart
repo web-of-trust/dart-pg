@@ -1760,10 +1760,10 @@ class TwofishEngine extends BaseCipher {
       r1 = (((r1 >> 31) & 1) | (r1 << 1)) ^ (t0 + (t1 << 1) + _subKey[++ki]);
     }
 
-    output.setAll(outOff, (r2 ^ _subKey[4]).unpack32Le());
-    output.setAll(outOff + 4, (r3 ^ _subKey[5]).unpack32Le());
-    output.setAll(outOff + 8, (r0 ^ _subKey[6]).unpack32Le());
-    output.setAll(outOff + 12, (r1 ^ _subKey[7]).unpack32Le());
+    output.setAll(outOff, (r2 ^ _subKey[4]).pack32Le());
+    output.setAll(outOff + 4, (r3 ^ _subKey[5]).pack32Le());
+    output.setAll(outOff + 8, (r0 ^ _subKey[6]).pack32Le());
+    output.setAll(outOff + 12, (r1 ^ _subKey[7]).pack32Le());
   }
 
   /// Decrypt the given input starting at the given offset and place
@@ -1792,10 +1792,10 @@ class TwofishEngine extends BaseCipher {
       r0 = (r0 >> 31 & 0x1 | r0 << 1) ^ (t0 + t1 + _subKey[--ki]);
     }
 
-    output.setAll(outOff, (r2 ^ _subKey[0]).unpack32Le());
-    output.setAll(outOff + 4, (r3 ^ _subKey[1]).unpack32Le());
-    output.setAll(outOff + 8, (r0 ^ _subKey[2]).unpack32Le());
-    output.setAll(outOff + 12, (r1 ^ _subKey[3]).unpack32Le());
+    output.setAll(outOff, (r2 ^ _subKey[0]).pack32Le());
+    output.setAll(outOff + 4, (r3 ^ _subKey[1]).pack32Le());
+    output.setAll(outOff + 8, (r0 ^ _subKey[2]).pack32Le());
+    output.setAll(outOff + 12, (r1 ^ _subKey[3]).pack32Le());
   }
 
   List<int> _mdsrem(final int x, final int y) {

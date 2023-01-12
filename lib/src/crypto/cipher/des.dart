@@ -870,6 +870,6 @@ class DESEngine extends BaseCipher {
     right ^= work;
     left ^= (work << 4);
 
-    output.setRange(outOff, outOff + _blockSize, [...left.unpack32(), ...right.unpack32()]);
+    output.setRange(outOff, outOff + _blockSize, [...left.pack32(), ...right.pack32()]);
   }
 }

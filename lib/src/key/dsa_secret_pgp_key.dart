@@ -24,7 +24,7 @@ class DsaSecretPgpKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(x.bitLength.unpack16());
+    bytes.addAll(x.bitLength.pack16());
     bytes.addAll(x.toBytes());
 
     return Uint8List.fromList(bytes);

@@ -50,7 +50,7 @@ class OnePassSignature extends ContainedPacket {
       signatureType.value,
       hashAlgorithm.value,
       keyAlgorithm.value,
-      ...issuerKeyID.unpack64(),
+      ...issuerKeyID.pack64(),
       nested,
     ]);
   }

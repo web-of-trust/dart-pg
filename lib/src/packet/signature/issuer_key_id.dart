@@ -13,7 +13,7 @@ class IssuerKeyID extends SignatureSubpacket {
   IssuerKeyID(Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.issuerKeyID, data);
 
   factory IssuerKeyID.fromKeyID(int keyID, {bool critical = false}) =>
-      IssuerKeyID(keyID.unpack64(), critical: critical);
+      IssuerKeyID(keyID.pack64(), critical: critical);
 
   int get keyID => data.toInt64();
 }

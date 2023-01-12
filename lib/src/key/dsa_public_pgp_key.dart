@@ -43,16 +43,16 @@ class DsaPublicPgpKey extends PgpKey {
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(p.bitLength.unpack16());
+    bytes.addAll(p.bitLength.pack16());
     bytes.addAll(p.toBytes());
 
-    bytes.addAll(q.bitLength.unpack16());
+    bytes.addAll(q.bitLength.pack16());
     bytes.addAll(q.toBytes());
 
-    bytes.addAll(g.bitLength.unpack16());
+    bytes.addAll(g.bitLength.pack16());
     bytes.addAll(g.toBytes());
 
-    bytes.addAll(y.bitLength.unpack16());
+    bytes.addAll(y.bitLength.pack16());
     bytes.addAll(y.toBytes());
 
     return Uint8List.fromList(bytes);

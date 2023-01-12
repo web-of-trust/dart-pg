@@ -321,13 +321,13 @@ class Signature extends ContainedPacket {
     } else if (version == 4 || version == 5) {
       bytes.addAll([signatureType.value, keyAlgorithm.value, hashAlgorithm.value]);
 
-      bytes.addAll(hashedSubpackets.length.unpack16());
+      bytes.addAll(hashedSubpackets.length.pack16());
       for (final packet in hashedSubpackets) {
         bytes.addAll(packet.write());
       }
 
       if (unhashedSubpackets.isNotEmpty) {
-        bytes.addAll(unhashedSubpackets.length.unpack16());
+        bytes.addAll(unhashedSubpackets.length.pack16());
         for (final packet in unhashedSubpackets) {
           bytes.addAll(packet.write());
         }

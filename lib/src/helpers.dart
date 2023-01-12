@@ -35,17 +35,17 @@ extension StringHelper on String {
 }
 
 extension IntHelper on int {
-  Uint8List unpack16() => Uint8List(2)..buffer.asByteData().setInt16(0, this);
+  Uint8List pack16() => Uint8List(2)..buffer.asByteData().setInt16(0, this);
 
-  Uint8List unpack16Le() => Uint8List(2)..buffer.asByteData().setInt16(0, this, Endian.little);
+  Uint8List pack16Le() => Uint8List(2)..buffer.asByteData().setInt16(0, this, Endian.little);
 
-  Uint8List unpack32() => Uint8List(4)..buffer.asByteData().setInt32(0, this);
+  Uint8List pack32() => Uint8List(4)..buffer.asByteData().setInt32(0, this);
 
-  Uint8List unpack32Le() => Uint8List(4)..buffer.asByteData().setInt32(0, this, Endian.little);
+  Uint8List pack32Le() => Uint8List(4)..buffer.asByteData().setInt32(0, this, Endian.little);
 
-  Uint8List unpack64() => Uint8List(8)..buffer.asByteData().setInt64(0, this);
+  Uint8List pack64() => Uint8List(8)..buffer.asByteData().setInt64(0, this);
 
-  Uint8List unpack64Le() => Uint8List(8)..buffer.asByteData().setInt64(0, this, Endian.little);
+  Uint8List pack64Le() => Uint8List(8)..buffer.asByteData().setInt64(0, this, Endian.little);
 }
 
 extension Uint8ListHelper on Uint8List {
@@ -154,5 +154,5 @@ extension BigIntHelper on BigInt {
 }
 
 extension DateTimeHelper on DateTime {
-  Uint8List toBytes() => (millisecondsSinceEpoch ~/ 1000).unpack32();
+  Uint8List toBytes() => (millisecondsSinceEpoch ~/ 1000).pack32();
 }

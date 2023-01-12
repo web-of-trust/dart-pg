@@ -2334,8 +2334,8 @@ class CAST5Engine extends BaseCipher {
 
     _encipher(l0, r0, result);
 
-    dst.setAll(dstIndex, result[0].unpack32());
-    dst.setAll(dstIndex + 4, result[1].unpack32());
+    dst.setAll(dstIndex, result[0].pack32());
+    dst.setAll(dstIndex + 4, result[1].pack32());
 
     _bits32ToBytes(result[0], dst, dstIndex);
     _bits32ToBytes(result[1], dst, dstIndex + 4);

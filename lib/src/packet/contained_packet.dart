@@ -27,9 +27,9 @@ abstract class ContainedPacket {
         if (bodyLen <= 0xff) {
           packetHeader.addAll([hdr, bodyLen]);
         } else if (bodyLen <= 0xffff) {
-          packetHeader.addAll([hdr | 0x01, ...bodyLen.unpack16()]);
+          packetHeader.addAll([hdr | 0x01, ...bodyLen.pack16()]);
         } else {
-          packetHeader.addAll([hdr | 0x02, ...bodyLen.unpack32()]);
+          packetHeader.addAll([hdr | 0x02, ...bodyLen.pack32()]);
         }
       }
     } else {
@@ -39,7 +39,7 @@ abstract class ContainedPacket {
       } else if (bodyLen <= 8383) {
         packetHeader.addAll([(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192]);
       } else {
-        packetHeader.addAll([0xff, ...bodyLen.unpack32()]);
+        packetHeader.addAll([0xff, ...bodyLen.pack32()]);
       }
     }
     return Uint8List.fromList([...packetHeader, ...packetBody]);

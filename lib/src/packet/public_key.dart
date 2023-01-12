@@ -116,14 +116,14 @@ class PublicKey extends ContainedPacket {
       final bytes = toPacketData();
       if (version == 5) {
         toHash.add(0x9A);
-        toHash.addAll(bytes.length.unpack32());
+        toHash.addAll(bytes.length.pack32());
         toHash.addAll(bytes);
 
         _fingerprint = Uint8List.fromList(sha256.convert(toHash).bytes);
         _keyID = _fingerprint.sublist(0, 8).toInt64();
       } else if (version == 4) {
         toHash.add(0x99);
-        toHash.addAll(bytes.length.unpack16());
+        toHash.addAll(bytes.length.pack16());
         toHash.addAll(bytes);
 
         _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
@@ -143,13 +143,13 @@ class PublicKey extends ContainedPacket {
   Uint8List toPacketData() {
     final List<int> bytes = [version & 0xff, ...creationTime.toBytes()];
     if (version <= 3) {
-      bytes.addAll(expirationDays.unpack16());
+      bytes.addAll(expirationDays.pack16());
     }
     bytes.add(algorithm.value & 0xff);
 
     final keyData = pgpKey.encode();
     if (version == 5) {
-      bytes.addAll(keyData.length.unpack32());
+      bytes.addAll(keyData.length.pack32());
     }
     bytes.addAll(keyData);
 

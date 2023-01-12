@@ -41,7 +41,7 @@ class PublicKeyEncryptedSessionKey extends ContainedPacket {
   Uint8List toPacketData() {
     return Uint8List.fromList([
       version,
-      ...keyID.unpack64(),
+      ...keyID.pack64(),
       keyAlgorithm.value,
       ...encrypted,
     ]);
