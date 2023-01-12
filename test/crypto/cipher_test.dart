@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/crypto/cipher/blowfish.dart';
-import 'package:dart_pg/src/crypto/cipher/buffered_cipher.dart';
-import 'package:dart_pg/src/crypto/cipher/cast5.dart';
-import 'package:dart_pg/src/crypto/cipher/idea.dart';
-import 'package:dart_pg/src/crypto/cipher/triple_des.dart';
-import 'package:dart_pg/src/crypto/cipher/twofish.dart';
+import 'package:dart_pg/src/crypto/symmetric/blowfish.dart';
+import 'package:dart_pg/src/crypto/symmetric/buffered_cipher.dart';
+import 'package:dart_pg/src/crypto/symmetric/cast5.dart';
+import 'package:dart_pg/src/crypto/symmetric/idea.dart';
+import 'package:dart_pg/src/crypto/symmetric/triple_des.dart';
+import 'package:dart_pg/src/crypto/symmetric/twofish.dart';
 import 'package:pointycastle/export.dart';
 import 'package:test/test.dart';
 import 'package:dart_pg/src/helpers.dart';
-import 'package:dart_pg/src/crypto/cipher/des.dart';
+import 'package:dart_pg/src/crypto/symmetric/des.dart';
 
 void main() {
   group('cipher tests', (() {
