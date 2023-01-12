@@ -3,8 +3,8 @@
 // file that was distributed with this source code.
 
 enum RevocationKeyTag {
-  classDefault(0x80),
-  classSensitive(0x40);
+  classDefault(128),
+  classSensitive(64);
 
   final int value;
   const RevocationKeyTag(this.value);

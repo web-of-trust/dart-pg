@@ -3,9 +3,9 @@
 // file that was distributed with this source code.
 
 enum SupportFeature {
-  modificationDetection(0x01),
-  aeadEncryptedData(0x02),
-  version5PublicKey(0x04);
+  modificationDetection(1),
+  aeadEncryptedData(2),
+  version5PublicKey(4);
 
   final int value;
 
