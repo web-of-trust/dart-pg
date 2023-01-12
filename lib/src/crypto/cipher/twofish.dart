@@ -1618,10 +1618,10 @@ class TwofishEngine extends BaseCipher {
     if (_workingKey.isEmpty) {
       throw StateError('algorithmName not initialised');
     }
-    if ((inOff + blockSize) > input.lengthInBytes) {
+    if ((inOff + _blockSize) > input.lengthInBytes) {
       throw ArgumentError('input buffer too short for algorithmName engine');
     }
-    if ((outOff + blockSize) > output.lengthInBytes) {
+    if ((outOff + _blockSize) > output.lengthInBytes) {
       throw ArgumentError('output buffer too short for algorithmName engine');
     }
 

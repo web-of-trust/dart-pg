@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dart_pg/src/crypto/cipher/blowfish.dart';
 import 'package:dart_pg/src/crypto/cipher/buffered_cipher.dart';
+import 'package:dart_pg/src/crypto/cipher/idea.dart';
 import 'package:dart_pg/src/crypto/cipher/triple_des.dart';
 import 'package:dart_pg/src/crypto/cipher/twofish.dart';
 import 'package:pointycastle/export.dart';
@@ -12,7 +13,23 @@ import 'package:dart_pg/src/crypto/cipher/des.dart';
 
 void main() {
   group('cipher tests', (() {
-    test('IDEA test', (() {}));
+    test('IDEA test', (() {
+      _blockCipherVectorTest(
+        0,
+        IDEAEngine(),
+        _kp('00112233445566778899aabbccddeeff'),
+        '000102030405060708090a0b0c0d0e0f',
+        'ed732271a7b39f475b4b2b6719f194bf',
+      );
+
+      _blockCipherVectorTest(
+        1,
+        IDEAEngine(),
+        _kp('00112233445566778899aabbccddeeff'),
+        'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff',
+        'b8bc6ed5c899265d2bcfad1fc6d4287d',
+      );
+    }));
 
     test('Triple DES test', (() {
       final input = '4e6f77206973207468652074696d6520666f7220616c6c20';

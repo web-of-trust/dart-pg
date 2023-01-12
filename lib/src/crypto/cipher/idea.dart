@@ -16,7 +16,7 @@ class IDEAEngine extends BaseCipher {
 
   static const _blockSize = 8;
 
-  late Uint8List _workingKey;
+  late List<int> _workingKey;
 
   @override
   String get algorithmName => 'IDEA';
@@ -38,10 +38,10 @@ class IDEAEngine extends BaseCipher {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
-    if ((inOff + blockSize) > input.lengthInBytes) {
+    if ((inOff + _blockSize) > input.lengthInBytes) {
       throw ArgumentError('input buffer too short for $algorithmName engine');
     }
-    if ((outOff + blockSize) > output.lengthInBytes) {
+    if ((outOff + _blockSize) > output.lengthInBytes) {
       throw ArgumentError('output buffer too short for $algorithmName engine');
     }
 
@@ -53,7 +53,7 @@ class IDEAEngine extends BaseCipher {
   @override
   void reset() {}
 
-  Uint8List _generateWorkingKey(bool forEncryption, Uint8List key) {
+  List<int> _generateWorkingKey(bool forEncryption, Uint8List key) {
     if (forEncryption) {
       return _expandKey(key);
     } else {
@@ -61,8 +61,7 @@ class IDEAEngine extends BaseCipher {
     }
   }
 
-  Uint8List _expandKey(Uint8List uKey) {
-    final key = List.filled(52, 0);
+  List<int> _expandKey(Uint8List uKey) {
     final Uint8List tmpKey;
     if (uKey.length < 16) {
       tmpKey = Uint8List(16);
@@ -71,8 +70,9 @@ class IDEAEngine extends BaseCipher {
       tmpKey = uKey;
     }
 
+    final key = List.filled(52, 0);
     for (var i = 0; i < 8; i++) {
-      key[i] = tmpKey.sublist(i * 2).toIn16();
+      key[i] = tmpKey.sublist(i * 2).toUint16();
     }
     for (var i = 8; i < 52; i++) {
       if ((i & 7) < 6) {
@@ -83,19 +83,18 @@ class IDEAEngine extends BaseCipher {
         key[i] = ((key[i - 15] & 127) << 9 | key[i - 14] >> 7) & _mask;
       }
     }
-    return Uint8List.fromList(key);
+    return key;
   }
 
-  Uint8List _invertKey(Uint8List inKey) {
-    int t1, t2, t3, t4;
+  List<int> _invertKey(List<int> inKey) {
     var p = 52;
-    final key = List.filled(52, 0);
     var inOff = 0;
+    final key = List.filled(p, 0);
 
-    t1 = _mulInv(inKey[inOff++]);
-    t2 = _addInv(inKey[inOff++]);
-    t3 = _addInv(inKey[inOff++]);
-    t4 = _mulInv(inKey[inOff++]);
+    var t1 = _mulInv(inKey[inOff++]);
+    var t2 = _addInv(inKey[inOff++]);
+    var t3 = _addInv(inKey[inOff++]);
+    var t4 = _mulInv(inKey[inOff++]);
     key[--p] = t4;
     key[--p] = t3;
     key[--p] = t2;
@@ -131,48 +130,16 @@ class IDEAEngine extends BaseCipher {
     key[--p] = t2;
     key[--p] = t1;
 
-    return Uint8List.fromList(key);
+    return key;
   }
 
-  int _mulInv(int x) {
-    int t0, t1, q, y;
+  void _ideaFunc(List<int> workingKey, Uint8List input, int inOff, Uint8List output, int outOff) {
+    var x0 = input.sublist(inOff).toUint16();
+    var x1 = input.sublist(inOff + 2).toUint16();
+    var x2 = input.sublist(inOff + 4).toUint16();
+    var x3 = input.sublist(inOff + 6).toUint16();
 
-    if (x < 2) {
-      return x;
-    }
-
-    t0 = 1;
-    t1 = _base ~/ x;
-    y = _base % x;
-
-    while (y != 1) {
-      q = (x / y) as int;
-      x = x % y;
-      t0 = (t0 + (t1 * q)) & _mask;
-      if (x == 1) {
-        return t0;
-      }
-      q = (y / x) as int;
-      y = y % x;
-      t1 = (t1 + (t0 * q)) & _mask;
-    }
-
-    return (1 - t1) & _mask;
-  }
-
-  int _addInv(int x) {
-    return (0 - x) & _mask;
-  }
-
-  void _ideaFunc(Uint8List workingKey, Uint8List input, int inOff, Uint8List output, int outOff) {
-    int x0, x1, x2, x3, t0, t1;
     var keyOff = 0;
-
-    x0 = input.sublist(inOff).toIn16();
-    x1 = input.sublist(inOff + 2).toIn16();
-    x2 = input.sublist(inOff + 4).toIn16();
-    x3 = input.sublist(inOff + 6).toIn16();
-
     for (var round = 0; round < 8; round++) {
       x0 = _mul(x0, workingKey[keyOff++]);
       x1 += workingKey[keyOff++];
@@ -181,8 +148,8 @@ class IDEAEngine extends BaseCipher {
       x2 &= _mask;
       x3 = _mul(x3, workingKey[keyOff++]);
 
-      t0 = x1;
-      t1 = x2;
+      final t0 = x1;
+      final t1 = x2;
       x2 ^= x0;
       x1 ^= x3;
 
@@ -206,16 +173,45 @@ class IDEAEngine extends BaseCipher {
     output.setAll(outOff + 6, _mul(x3, workingKey[keyOff]).unpack16());
   }
 
+  int _mulInv(int x) {
+    if (x < 2) {
+      return x;
+    }
+    int t0, t1, q, y;
+
+    t0 = 1;
+    t1 = _base ~/ x;
+    y = _base % x;
+
+    while (y != 1) {
+      q = x ~/ y;
+      x = x % y;
+      t0 = (t0 + (t1 * q)) & _mask;
+      if (x == 1) {
+        return t0;
+      }
+      q = y ~/ x;
+      y = y % x;
+      t1 = (t1 + (t0 * q)) & _mask;
+    }
+
+    return (1 - t1) & _mask;
+  }
+
+  int _addInv(int x) {
+    return (0 - x) & _mask;
+  }
+
   int _mul(int x, int y) {
     if (x == 0) {
       x = (_base - y);
     } else if (y == 0) {
       x = (_base - x);
     } else {
-      int p = x * y;
+      final p = x * y;
 
       y = p & _mask;
-      x = p >>> 16;
+      x = p >> 16;
       x = y - x + ((y < x) ? 1 : 0);
     }
 
