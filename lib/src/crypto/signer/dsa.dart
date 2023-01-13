@@ -63,9 +63,9 @@ class DSASigner implements Signer {
     final pri = _key as DSAPrivateKey;
     final q = pri.q;
     final e = _calculateE(q, message);
-    final k = _calculateK(q);
+    final k = _calculateK(q) + _getRandomizer(q);
 
-    final r = pri.g.modPow(k + _getRandomizer(q), pri.p) % q;
+    final r = pri.g.modPow(k, pri.p) % q;
     final s = (k.modInverse(q) * (e + (pri.x * r))) % q;
 
     return DSASignature(r, s);
