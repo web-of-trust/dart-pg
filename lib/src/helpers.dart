@@ -92,6 +92,33 @@ extension Uint8ListHelper on Uint8List {
         : BigInt.zero;
   }
 
+  BigInt toBigIntWithSign(int sign) {
+    if (sign == 0) {
+      return BigInt.zero;
+    }
+
+    BigInt result;
+
+    if (length == 1) {
+      result = BigInt.from(this[0]);
+    } else {
+      result = BigInt.from(0);
+      for (var i = 0; i < length; i++) {
+        var item = this[length - i - 1];
+        result |= (BigInt.from(item) << (8 * i));
+      }
+    }
+
+    if (result != BigInt.zero) {
+      if (sign < 0) {
+        result = result.toSigned(result.bitLength);
+      } else {
+        result = result.toUnsigned(result.bitLength);
+      }
+    }
+    return result;
+  }
+
   DateTime toDateTime() => DateTime.fromMillisecondsSinceEpoch(toInt32() * 1000);
 
   String toHexadecimal() {

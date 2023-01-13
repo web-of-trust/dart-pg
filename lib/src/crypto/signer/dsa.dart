@@ -62,11 +62,11 @@ class DSASigner implements Signer {
 
     final pri = _key as DSAPrivateKey;
     final q = pri.q;
-    final m = _calculateE(q, message);
-    final k = _random.nextBigInteger(q.bitLength);
+    final e = _calculateE(q, message);
+    final k = _calculateK(q);
 
     final r = pri.g.modPow(k + _getRandomizer(q), pri.p) % q;
-    final s = (q.modInverse(k) * (m + (pri.x * r))) % q;
+    final s = (k.modInverse(q) * (e + (pri.x * r))) % q;
 
     return DSASignature(r, s);
   }
@@ -75,37 +75,49 @@ class DSASigner implements Signer {
   bool verifySignature(Uint8List message, covariant DSASignature signature) {
     final pub = _key as DSAPublicKey;
     final q = pub.q;
-    if ((signature.r < BigInt.zero) || q.compareTo(signature.r) <= 0) {
+
+    if (signature.r.compareTo(BigInt.one) < 0 || signature.r.compareTo(q) >= 0) {
       return false;
     }
-    if ((signature.s < BigInt.zero) || q.compareTo(signature.s) <= 0) {
+    if (signature.s.compareTo(BigInt.one) < 0 || signature.s.compareTo(q) >= 0) {
       return false;
     }
+
     message = _hashMessageIfNeeded(message);
 
-    final m = _calculateE(q, message);
-    final w = q.modInverse(signature.s);
+    final e = _calculateE(q, message);
+    final c = signature.s.modInverse(q);
 
-    var u1 = (m * w) % q;
-    var u2 = (signature.r * w) % q;
+    var u1 = (e * c) % q;
+    var u2 = (signature.r * c) % q;
     u1 = pub.g.modPow(u1, pub.p);
     u2 = pub.y.modPow(u2, pub.p);
 
     final v = ((u1 * u2) % pub.p) % q;
 
-    return v.compareTo(signature.r) == 0;
+    return v == signature.r;
   }
 
   BigInt _calculateE(BigInt n, Uint8List message) {
-    if (n.bitLength >= message.length * 8) {
-      return message.toBigInt();
+    final log2n = n.bitLength;
+    final messageBitLength = message.length * 8;
+    if (log2n >= messageBitLength) {
+      return message.toBigIntWithSign(1);
     } else {
-      return message.sublist(0, n.bitLength ~/ 8).toBigInt();
+      return message.toBigIntWithSign(1) >> (messageBitLength - log2n);
     }
   }
 
   BigInt _getRandomizer(BigInt q) {
     return (_random.nextBigInteger(7) + BigInt.from(128)) * q;
+  }
+
+  BigInt _calculateK(BigInt n) {
+    BigInt k;
+    do {
+      k = _random.nextBigInteger(n.bitLength);
+    } while (k == BigInt.zero || k >= n);
+    return k;
   }
 
   Uint8List _hashMessageIfNeeded(Uint8List message) {
