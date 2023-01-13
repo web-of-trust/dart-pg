@@ -11,6 +11,7 @@ import '../../helpers.dart';
 
 class ElGamalEngine implements AsymmetricBlockCipher {
   late final ElGamalAsymmetricKey? _key;
+
   late final SecureRandom _random;
 
   bool _forEncryption = false;
