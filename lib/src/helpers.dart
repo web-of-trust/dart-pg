@@ -178,6 +178,21 @@ extension BigIntHelper on BigInt {
     }
     return result;
   }
+
+  Uint8List toUnsignedBytes() {
+    if (this == BigInt.zero) {
+      return Uint8List.fromList([0]);
+    }
+    final byteMask = BigInt.from(0xff);
+    final size = bitLength + (isNegative ? 8 : 7) >> 3;
+    var result = Uint8List(size);
+    var number = this;
+    for (var i = 0; i < size; i++) {
+      result[size - i - 1] = (number & byteMask).toInt();
+      number = number >> 8;
+    }
+    return result;
+  }
 }
 
 extension DateTimeHelper on DateTime {

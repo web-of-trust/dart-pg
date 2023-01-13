@@ -74,15 +74,12 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
     if (_key is ElGamalPrivateKey) {
       /// decryption
-      final in1 = Uint8List.fromList(input.sublist(0, inLen ~/ 2));
-      final in2 = Uint8List.fromList(input.sublist(inLen ~/ 2));
-
-      final gamma = in1.toBigInt();
-      final phi = in2.toBigInt();
+      final gamma = input.sublist(0, inLen ~/ 2).toBigIntWithSign(1);
+      final phi = input.sublist(inLen ~/ 2).toBigIntWithSign(1);
 
       final priv = _key as ElGamalPrivateKey;
       final m = (gamma.modPow(p - (BigInt.one + priv.x), p) * phi) % p;
-      output.setAll(outOff, m.toBytes());
+      output.setAll(outOff, m.toUnsignedBytes());
     } else {
       /// encryption
       final block = (inOff != 0 || inLen != input.length) ? input.sublist(0, inLen) : input;
@@ -92,19 +89,15 @@ class ElGamalEngine implements AsymmetricBlockCipher {
         throw ArgumentError('input too large for $algorithmName cipher.');
       }
 
-      var k = _random.nextBigInteger(p.bitLength);
-      while (k == BigInt.zero || k.compareTo(p - BigInt.two) > 0) {
-        k = _random.nextBigInteger(p.bitLength);
-      }
+      final k = _generateK(p);
 
       final pub = _key as ElGamalPublicKey;
-      final g = _key!.g;
-      final gamma = g.modPow(k, p);
+      final gamma = pub.g.modPow(k, p);
       final phi = (inp * (pub.y.modPow(k, p))) % p;
 
       output.setAll(outOff, [
-        ...gamma.toBytes().sublist(0, outputBlockSize ~/ 2),
-        ...phi.toBytes().sublist(0, outputBlockSize ~/ 2),
+        ...gamma.toUnsignedBytes().sublist(0, outputBlockSize ~/ 2),
+        ...phi.toUnsignedBytes().sublist(0, outputBlockSize ~/ 2),
       ]);
     }
 
@@ -113,6 +106,15 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
   @override
   void reset() {}
+
+  BigInt _generateK(BigInt n) {
+    var nBitLength = n.bitLength;
+    BigInt k;
+    do {
+      k = _random.nextBigInteger(nBitLength);
+    } while ((k == BigInt.zero) || (k.compareTo(n) >= 0));
+    return k;
+  }
 }
 
 abstract class ElGamalAsymmetricKey implements AsymmetricKey {
