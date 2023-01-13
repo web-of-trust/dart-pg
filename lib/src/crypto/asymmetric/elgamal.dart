@@ -115,25 +115,32 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 }
 
 abstract class ElGamalAsymmetricKey implements AsymmetricKey {
+  /// prime
   final BigInt p;
-  final BigInt g;
-  final int limit;
 
-  ElGamalAsymmetricKey(this.p, this.g, [this.limit = 0]);
+  /// group generator
+  final BigInt g;
+
+  ElGamalAsymmetricKey(this.p, this.g);
 }
 
 class ElGamalPublicKey extends ElGamalAsymmetricKey implements PublicKey {
+  /// g^x mod p
   final BigInt y;
-  ElGamalPublicKey(this.y, super.p, super.g, [super.limit]);
+
+  ElGamalPublicKey(this.y, super.p, super.g);
 }
 
 class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
+  /// secret exponent
   final BigInt x;
 
+  /// public key
   final ElGamalPublicKey publicKey;
 
-  ElGamalPrivateKey(this.x, super.p, super.g, [super.limit])
-      : publicKey = ElGamalPublicKey(g.modPow(x, p), p, g, limit);
+  ElGamalPrivateKey(this.x, super.p, super.g) : publicKey = ElGamalPublicKey(g.modPow(x, p), p, g);
+
+  BigInt get y => publicKey.y;
 }
 
 class ElGamalKeyParameters extends AsymmetricKeyParameter {
