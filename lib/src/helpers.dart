@@ -4,6 +4,42 @@
 
 import 'dart:typed_data';
 
+const _mask32HiBits = [
+  0xffffffff,
+  0x7fffffff,
+  0x3fffffff,
+  0x1fffffff,
+  0x0fffffff,
+  0x07ffffff,
+  0x03ffffff,
+  0x01ffffff,
+  0x00ffffff,
+  0x007fffff,
+  0x003fffff,
+  0x001fffff,
+  0x000fffff,
+  0x0007ffff,
+  0x0003ffff,
+  0x0001ffff,
+  0x0000ffff,
+  0x00007fff,
+  0x00003fff,
+  0x00001fff,
+  0x00000fff,
+  0x000007ff,
+  0x000003ff,
+  0x000001ff,
+  0x000000ff,
+  0x0000007f,
+  0x0000003f,
+  0x0000001f,
+  0x0000000f,
+  0x00000007,
+  0x00000003,
+  0x00000001,
+  0x00000000
+];
+
 extension StringHelper on String {
   List<String> chunk(final int chunkSize) {
     assert(chunkSize > 0);
@@ -46,6 +82,27 @@ extension IntHelper on int {
   Uint8List pack64() => Uint8List(8)..buffer.asByteData().setInt64(0, this);
 
   Uint8List pack64Le() => Uint8List(8)..buffer.asByteData().setInt64(0, this, Endian.little);
+
+  int shiftLeft32(int n) {
+    assert((this >= 0) && (this <= 0xffffffff));
+    n &= 0x1F;
+    final num = this & _mask32HiBits[n];
+    return ((num << n) & 0xffffffff);
+  }
+
+  int rotateLeft32(int n) {
+    assert(n >= 0);
+    assert((this >= 0) && (this <= 0xffffffff));
+    n &= 0x1F;
+    return shiftLeft32(n) | (this >> (32 - n));
+  }
+
+  int rotateRight32(int n) {
+    assert(n >= 0);
+    assert((this >= 0) && (this <= 0xffffffff));
+    n &= 0x1F;
+    return ((this >> n) | (shiftLeft32(32 - n)));
+  }
 }
 
 extension Uint8ListHelper on Uint8List {

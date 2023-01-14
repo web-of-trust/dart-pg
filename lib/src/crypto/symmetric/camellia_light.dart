@@ -6,6 +6,7 @@ import 'package:pointycastle/api.dart';
 
 import 'dart:typed_data';
 
+import '../../helpers.dart';
 import 'base_cipher.dart';
 
 /// Camellia - based on RFC 3713
@@ -342,19 +343,11 @@ class CamelliaLightEngine extends BaseCipher {
   @override
   void reset() {}
 
-  int _rightRotate(int x, int s) {
-    return (((x) >> (s)) + ((x) << (32 - s)));
-  }
-
-  int _leftRotate(int x, int s) {
-    return ((x) << (s)) + ((x) >> (32 - s));
-  }
-
   void _roldq(int rot, List<int> ki, int ioff, List<int> ko, int ooff) {
-    ko[0 + ooff] = (ki[0 + ioff] << rot) | (ki[1 + ioff] >> (32 - rot));
-    ko[1 + ooff] = (ki[1 + ioff] << rot) | (ki[2 + ioff] >> (32 - rot));
-    ko[2 + ooff] = (ki[2 + ioff] << rot) | (ki[3 + ioff] >> (32 - rot));
-    ko[3 + ooff] = (ki[3 + ioff] << rot) | (ki[0 + ioff] >> (32 - rot));
+    ko[0 + ooff] = ki[0 + ioff].toUnsigned(32).shiftLeft32(rot) | (ki[1 + ioff] >> (32 - rot));
+    ko[1 + ooff] = ki[1 + ioff].toUnsigned(32).shiftLeft32(rot) | (ki[2 + ioff] >> (32 - rot));
+    ko[2 + ooff] = ki[2 + ioff].toUnsigned(32).shiftLeft32(rot) | (ki[3 + ioff] >> (32 - rot));
+    ko[3 + ooff] = ki[3 + ioff].toUnsigned(32).shiftLeft32(rot) | (ki[0 + ioff] >> (32 - rot));
     ki[0 + ioff] = ko[0 + ooff];
     ki[1 + ioff] = ko[1 + ooff];
     ki[2 + ioff] = ko[2 + ooff];
@@ -362,10 +355,10 @@ class CamelliaLightEngine extends BaseCipher {
   }
 
   void _decroldq(int rot, List<int> ki, int ioff, List<int> ko, int ooff) {
-    ko[2 + ooff] = (ki[0 + ioff] << rot) | (ki[1 + ioff] >> (32 - rot));
-    ko[3 + ooff] = (ki[1 + ioff] << rot) | (ki[2 + ioff] >> (32 - rot));
-    ko[0 + ooff] = (ki[2 + ioff] << rot) | (ki[3 + ioff] >> (32 - rot));
-    ko[1 + ooff] = (ki[3 + ioff] << rot) | (ki[0 + ioff] >> (32 - rot));
+    ko[2 + ooff] = (ki[0 + ioff].toUnsigned(32).shiftLeft32(rot)) | (ki[1 + ioff] >> (32 - rot));
+    ko[3 + ooff] = (ki[1 + ioff].toUnsigned(32).shiftLeft32(rot)) | (ki[2 + ioff] >> (32 - rot));
+    ko[0 + ooff] = (ki[2 + ioff].toUnsigned(32).shiftLeft32(rot)) | (ki[3 + ioff] >> (32 - rot));
+    ko[1 + ooff] = (ki[3 + ioff].toUnsigned(32).shiftLeft32(rot)) | (ki[0 + ioff] >> (32 - rot));
     ki[0 + ioff] = ko[2 + ooff];
     ki[1 + ioff] = ko[3 + ooff];
     ki[2 + ioff] = ko[0 + ooff];
@@ -439,12 +432,12 @@ class CamelliaLightEngine extends BaseCipher {
     v |= (_sbox3(((t2 >> 16) & _mask8)) << 16);
     v |= (_sbox2(((t2 >> 24) & _mask8)) << 24);
 
-    v = _leftRotate(v, 8);
+    v = v.toUnsigned(32).rotateLeft32(8);
     u ^= v;
-    v = _leftRotate(v, 8) ^ u;
-    u = _rightRotate(u, 8) ^ v;
-    s[2] ^= _leftRotate(v, 16) ^ u;
-    s[3] ^= _leftRotate(u, 8);
+    v = v.toUnsigned(32).rotateLeft32(8) ^ u;
+    u = u.toUnsigned(32).rotateRight32(8) ^ v;
+    s[2] ^= v.toUnsigned(32).rotateLeft32(16) ^ u;
+    s[3] ^= u.toUnsigned(32).rotateLeft32(8);
 
     t1 = s[2] ^ skey[2 + keyoff];
     u = _sbox4((t1 & _mask8));
@@ -458,20 +451,20 @@ class CamelliaLightEngine extends BaseCipher {
     v |= _sbox3(((t2 >> 16) & _mask8)) << 16;
     v |= _sbox2(((t2 >> 24) & _mask8)) << 24;
 
-    v = _leftRotate(v, 8);
+    v = v.toUnsigned(32).rotateLeft32(8);
     u ^= v;
-    v = _leftRotate(v, 8) ^ u;
-    u = _rightRotate(u, 8) ^ v;
-    s[0] ^= _leftRotate(v, 16) ^ u;
-    s[1] ^= _leftRotate(u, 8);
+    v = v.toUnsigned(32).rotateLeft32(8) ^ u;
+    u = u.toUnsigned(32).rotateRight32(8) ^ v;
+    s[0] ^= v.toUnsigned(32).rotateLeft32(16) ^ u;
+    s[1] ^= u.toUnsigned(32).rotateLeft32(8);
   }
 
   void _camelliaFLs(List<int> s, List<int> fkey, int keyoff) {
-    s[1] ^= _leftRotate(s[0] & fkey[0 + keyoff], 1);
+    s[1] ^= (s[0] & fkey[0 + keyoff]).toUnsigned(32).rotateLeft32(1);
     s[0] ^= fkey[1 + keyoff] | s[1];
 
     s[2] ^= fkey[3 + keyoff] | s[3];
-    s[3] ^= _leftRotate(fkey[2 + keyoff] & s[2], 1);
+    s[3] ^= (fkey[2 + keyoff] & s[2]).toUnsigned(32).rotateLeft32(1);
   }
 
   void _setKey(bool forEncryption, Uint8List key) {

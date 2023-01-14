@@ -17,42 +17,6 @@ import 'base_cipher.dart';
 ///
 /// and implement a simplified cryptography interface.
 class CAST5Engine extends BaseCipher {
-  static const _mask32HiBits = [
-    0xffffffff,
-    0x7fffffff,
-    0x3fffffff,
-    0x1fffffff,
-    0x0fffffff,
-    0x07ffffff,
-    0x03ffffff,
-    0x01ffffff,
-    0x00ffffff,
-    0x007fffff,
-    0x003fffff,
-    0x001fffff,
-    0x000fffff,
-    0x0007ffff,
-    0x0003ffff,
-    0x0001ffff,
-    0x0000ffff,
-    0x00007fff,
-    0x00003fff,
-    0x00001fff,
-    0x00000fff,
-    0x000007ff,
-    0x000003ff,
-    0x000001ff,
-    0x000000ff,
-    0x0000007f,
-    0x0000003f,
-    0x0000001f,
-    0x0000000f,
-    0x00000007,
-    0x00000003,
-    0x00000001,
-    0x00000000
-  ];
-
   static const _sBox1 = [
     0x30fb40d4,
     0x9fa0ff0b,
@@ -2192,138 +2156,138 @@ class CAST5Engine extends BaseCipher {
     var x03 = _intsTo32bits(x, 0x0);
     var x47 = _intsTo32bits(x, 0x4);
     var x8B = _intsTo32bits(x, 0x8);
-    var xCF = _intsTo32bits(x, 0xC);
-    var z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
+    var xCF = _intsTo32bits(x, 0xc);
+    var z03 = x03 ^ _sBox5[x[0xd]] ^ _sBox6[x[0xf]] ^ _sBox7[x[0xc]] ^ _sBox8[x[0xe]] ^ _sBox7[x[0x8]];
     _bits32ToInts(z03, z, 0x0);
-    var z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
+    var z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xa]];
     _bits32ToInts(z47, z, 0x4);
     var z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
     _bits32ToInts(z8B, z, 0x8);
-    var zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    _bits32ToInts(zCF, z, 0xC);
+    var zCF = x47 ^ _sBox5[z[0xa]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xb]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xb]];
+    _bits32ToInts(zCF, z, 0xc);
     _masking[1] = _sBox5[z[0x8]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0x7]] ^ _sBox8[z[0x6]] ^ _sBox5[z[0x2]];
-    _masking[2] = _sBox5[z[0xA]] ^ _sBox6[z[0xB]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox6[z[0x6]];
-    _masking[3] = _sBox5[z[0xC]] ^ _sBox6[z[0xD]] ^ _sBox7[z[0x3]] ^ _sBox8[z[0x2]] ^ _sBox7[z[0x9]];
-    _masking[4] = _sBox5[z[0xE]] ^ _sBox6[z[0xF]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x0]] ^ _sBox8[z[0xC]];
+    _masking[2] = _sBox5[z[0xa]] ^ _sBox6[z[0xb]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox6[z[0x6]];
+    _masking[3] = _sBox5[z[0xc]] ^ _sBox6[z[0xd]] ^ _sBox7[z[0x3]] ^ _sBox8[z[0x2]] ^ _sBox7[z[0x9]];
+    _masking[4] = _sBox5[z[0xe]] ^ _sBox6[z[0xf]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x0]] ^ _sBox8[z[0xc]];
 
     z03 = _intsTo32bits(z, 0x0);
     z47 = _intsTo32bits(z, 0x4);
     z8B = _intsTo32bits(z, 0x8);
-    zCF = _intsTo32bits(z, 0xC);
+    zCF = _intsTo32bits(z, 0xc);
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
     _bits32ToInts(x03, x, 0x0);
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
     _bits32ToInts(x47, x, 0x4);
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
     _bits32ToInts(x8B, x, 0x8);
-    xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    _bits32ToInts(xCF, x, 0xC);
-    _masking[5] = _sBox5[x[0x3]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xD]] ^ _sBox5[x[0x8]];
-    _masking[6] = _sBox5[x[0x1]] ^ _sBox6[x[0x0]] ^ _sBox7[x[0xE]] ^ _sBox8[x[0xF]] ^ _sBox6[x[0xD]];
+    xCF = zCF ^ _sBox5[x[0xa]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xb]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
+    _bits32ToInts(xCF, x, 0xc);
+    _masking[5] = _sBox5[x[0x3]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0xc]] ^ _sBox8[x[0xd]] ^ _sBox5[x[0x8]];
+    _masking[6] = _sBox5[x[0x1]] ^ _sBox6[x[0x0]] ^ _sBox7[x[0xe]] ^ _sBox8[x[0xf]] ^ _sBox6[x[0xd]];
     _masking[7] = _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x8]] ^ _sBox8[x[0x9]] ^ _sBox7[x[0x3]];
-    _masking[8] = _sBox5[x[0x5]] ^ _sBox6[x[0x4]] ^ _sBox7[x[0xA]] ^ _sBox8[x[0xB]] ^ _sBox8[x[0x7]];
+    _masking[8] = _sBox5[x[0x5]] ^ _sBox6[x[0x4]] ^ _sBox7[x[0xa]] ^ _sBox8[x[0xb]] ^ _sBox8[x[0x7]];
 
     x03 = _intsTo32bits(x, 0x0);
     x47 = _intsTo32bits(x, 0x4);
     x8B = _intsTo32bits(x, 0x8);
-    xCF = _intsTo32bits(x, 0xC);
-    z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
+    xCF = _intsTo32bits(x, 0xc);
+    z03 = x03 ^ _sBox5[x[0xd]] ^ _sBox6[x[0xf]] ^ _sBox7[x[0xc]] ^ _sBox8[x[0xe]] ^ _sBox7[x[0x8]];
     _bits32ToInts(z03, z, 0x0);
-    z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
+    z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xa]];
     _bits32ToInts(z47, z, 0x4);
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
     _bits32ToInts(z8B, z, 0x8);
-    zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    _bits32ToInts(zCF, z, 0xC);
-    _masking[9] = _sBox5[z[0x3]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0xC]] ^ _sBox8[z[0xD]] ^ _sBox5[z[0x9]];
-    _masking[10] = _sBox5[z[0x1]] ^ _sBox6[z[0x0]] ^ _sBox7[z[0xE]] ^ _sBox8[z[0xF]] ^ _sBox6[z[0xc]];
+    zCF = x47 ^ _sBox5[z[0xa]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xb]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xb]];
+    _bits32ToInts(zCF, z, 0xc);
+    _masking[9] = _sBox5[z[0x3]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0xc]] ^ _sBox8[z[0xd]] ^ _sBox5[z[0x9]];
+    _masking[10] = _sBox5[z[0x1]] ^ _sBox6[z[0x0]] ^ _sBox7[z[0xe]] ^ _sBox8[z[0xf]] ^ _sBox6[z[0xc]];
     _masking[11] = _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x8]] ^ _sBox8[z[0x9]] ^ _sBox7[z[0x2]];
-    _masking[12] = _sBox5[z[0x5]] ^ _sBox6[z[0x4]] ^ _sBox7[z[0xA]] ^ _sBox8[z[0xB]] ^ _sBox8[z[0x6]];
+    _masking[12] = _sBox5[z[0x5]] ^ _sBox6[z[0x4]] ^ _sBox7[z[0xa]] ^ _sBox8[z[0xb]] ^ _sBox8[z[0x6]];
 
     z03 = _intsTo32bits(z, 0x0);
     z47 = _intsTo32bits(z, 0x4);
     z8B = _intsTo32bits(z, 0x8);
-    zCF = _intsTo32bits(z, 0xC);
+    zCF = _intsTo32bits(z, 0xc);
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
     _bits32ToInts(x03, x, 0x0);
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
     _bits32ToInts(x47, x, 0x4);
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
     _bits32ToInts(x8B, x, 0x8);
-    xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    _bits32ToInts(xCF, x, 0xC);
+    xCF = zCF ^ _sBox5[x[0xa]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xb]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
+    _bits32ToInts(xCF, x, 0xc);
     _masking[13] = _sBox5[x[0x8]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0x7]] ^ _sBox8[x[0x6]] ^ _sBox5[x[0x3]];
-    _masking[14] = _sBox5[x[0xA]] ^ _sBox6[x[0xB]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox6[x[0x7]];
-    _masking[15] = _sBox5[x[0xC]] ^ _sBox6[x[0xD]] ^ _sBox7[x[0x3]] ^ _sBox8[x[0x2]] ^ _sBox7[x[0x8]];
-    _masking[16] = _sBox5[x[0xE]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x0]] ^ _sBox8[x[0xD]];
+    _masking[14] = _sBox5[x[0xa]] ^ _sBox6[x[0xb]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox6[x[0x7]];
+    _masking[15] = _sBox5[x[0xc]] ^ _sBox6[x[0xd]] ^ _sBox7[x[0x3]] ^ _sBox8[x[0x2]] ^ _sBox7[x[0x8]];
+    _masking[16] = _sBox5[x[0xe]] ^ _sBox6[x[0xf]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x0]] ^ _sBox8[x[0xd]];
 
     x03 = _intsTo32bits(x, 0x0);
     x47 = _intsTo32bits(x, 0x4);
     x8B = _intsTo32bits(x, 0x8);
-    xCF = _intsTo32bits(x, 0xC);
-    z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
+    xCF = _intsTo32bits(x, 0xc);
+    z03 = x03 ^ _sBox5[x[0xd]] ^ _sBox6[x[0xf]] ^ _sBox7[x[0xc]] ^ _sBox8[x[0xe]] ^ _sBox7[x[0x8]];
     _bits32ToInts(z03, z, 0x0);
-    z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
+    z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xa]];
     _bits32ToInts(z47, z, 0x4);
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
     _bits32ToInts(z8B, z, 0x8);
-    zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    _bits32ToInts(zCF, z, 0xC);
+    zCF = x47 ^ _sBox5[z[0xa]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xb]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xb]];
+    _bits32ToInts(zCF, z, 0xc);
     _rotating[1] = (_sBox5[z[0x8]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0x7]] ^ _sBox8[z[0x6]] ^ _sBox5[z[0x2]]) & 0x1f;
-    _rotating[2] = (_sBox5[z[0xA]] ^ _sBox6[z[0xB]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox6[z[0x6]]) & 0x1f;
-    _rotating[3] = (_sBox5[z[0xC]] ^ _sBox6[z[0xD]] ^ _sBox7[z[0x3]] ^ _sBox8[z[0x2]] ^ _sBox7[z[0x9]]) & 0x1f;
-    _rotating[4] = (_sBox5[z[0xE]] ^ _sBox6[z[0xF]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x0]] ^ _sBox8[z[0xC]]) & 0x1f;
+    _rotating[2] = (_sBox5[z[0xa]] ^ _sBox6[z[0xb]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox6[z[0x6]]) & 0x1f;
+    _rotating[3] = (_sBox5[z[0xc]] ^ _sBox6[z[0xd]] ^ _sBox7[z[0x3]] ^ _sBox8[z[0x2]] ^ _sBox7[z[0x9]]) & 0x1f;
+    _rotating[4] = (_sBox5[z[0xe]] ^ _sBox6[z[0xf]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x0]] ^ _sBox8[z[0xc]]) & 0x1f;
 
     z03 = _intsTo32bits(z, 0x0);
     z47 = _intsTo32bits(z, 0x4);
     z8B = _intsTo32bits(z, 0x8);
-    zCF = _intsTo32bits(z, 0xC);
+    zCF = _intsTo32bits(z, 0xc);
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
     _bits32ToInts(x03, x, 0x0);
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
     _bits32ToInts(x47, x, 0x4);
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
     _bits32ToInts(x8B, x, 0x8);
-    xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    _bits32ToInts(xCF, x, 0xC);
-    _rotating[5] = (_sBox5[x[0x3]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xD]] ^ _sBox5[x[0x8]]) & 0x1f;
-    _rotating[6] = (_sBox5[x[0x1]] ^ _sBox6[x[0x0]] ^ _sBox7[x[0xE]] ^ _sBox8[x[0xF]] ^ _sBox6[x[0xD]]) & 0x1f;
+    xCF = zCF ^ _sBox5[x[0xa]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xb]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
+    _bits32ToInts(xCF, x, 0xc);
+    _rotating[5] = (_sBox5[x[0x3]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0xc]] ^ _sBox8[x[0xd]] ^ _sBox5[x[0x8]]) & 0x1f;
+    _rotating[6] = (_sBox5[x[0x1]] ^ _sBox6[x[0x0]] ^ _sBox7[x[0xe]] ^ _sBox8[x[0xf]] ^ _sBox6[x[0xd]]) & 0x1f;
     _rotating[7] = (_sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x8]] ^ _sBox8[x[0x9]] ^ _sBox7[x[0x3]]) & 0x1f;
-    _rotating[8] = (_sBox5[x[0x5]] ^ _sBox6[x[0x4]] ^ _sBox7[x[0xA]] ^ _sBox8[x[0xB]] ^ _sBox8[x[0x7]]) & 0x1f;
+    _rotating[8] = (_sBox5[x[0x5]] ^ _sBox6[x[0x4]] ^ _sBox7[x[0xa]] ^ _sBox8[x[0xb]] ^ _sBox8[x[0x7]]) & 0x1f;
 
     x03 = _intsTo32bits(x, 0x0);
     x47 = _intsTo32bits(x, 0x4);
     x8B = _intsTo32bits(x, 0x8);
-    xCF = _intsTo32bits(x, 0xC);
-    z03 = x03 ^ _sBox5[x[0xD]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0xC]] ^ _sBox8[x[0xE]] ^ _sBox7[x[0x8]];
+    xCF = _intsTo32bits(x, 0xc);
+    z03 = x03 ^ _sBox5[x[0xd]] ^ _sBox6[x[0xf]] ^ _sBox7[x[0xc]] ^ _sBox8[x[0xe]] ^ _sBox7[x[0x8]];
     _bits32ToInts(z03, z, 0x0);
-    z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xA]];
+    z47 = x8B ^ _sBox5[z[0x0]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0x1]] ^ _sBox8[z[0x3]] ^ _sBox8[x[0xa]];
     _bits32ToInts(z47, z, 0x4);
     z8B = xCF ^ _sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x5]] ^ _sBox8[z[0x4]] ^ _sBox5[x[0x9]];
     _bits32ToInts(z8B, z, 0x8);
-    zCF = x47 ^ _sBox5[z[0xA]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xB]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xB]];
-    _bits32ToInts(zCF, z, 0xC);
-    _rotating[9] = (_sBox5[z[0x3]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0xC]] ^ _sBox8[z[0xD]] ^ _sBox5[z[0x9]]) & 0x1f;
-    _rotating[10] = (_sBox5[z[0x1]] ^ _sBox6[z[0x0]] ^ _sBox7[z[0xE]] ^ _sBox8[z[0xF]] ^ _sBox6[z[0xc]]) & 0x1f;
+    zCF = x47 ^ _sBox5[z[0xa]] ^ _sBox6[z[0x9]] ^ _sBox7[z[0xb]] ^ _sBox8[z[0x8]] ^ _sBox6[x[0xb]];
+    _bits32ToInts(zCF, z, 0xc);
+    _rotating[9] = (_sBox5[z[0x3]] ^ _sBox6[z[0x2]] ^ _sBox7[z[0xc]] ^ _sBox8[z[0xd]] ^ _sBox5[z[0x9]]) & 0x1f;
+    _rotating[10] = (_sBox5[z[0x1]] ^ _sBox6[z[0x0]] ^ _sBox7[z[0xe]] ^ _sBox8[z[0xf]] ^ _sBox6[z[0xc]]) & 0x1f;
     _rotating[11] = (_sBox5[z[0x7]] ^ _sBox6[z[0x6]] ^ _sBox7[z[0x8]] ^ _sBox8[z[0x9]] ^ _sBox7[z[0x2]]) & 0x1f;
-    _rotating[12] = (_sBox5[z[0x5]] ^ _sBox6[z[0x4]] ^ _sBox7[z[0xA]] ^ _sBox8[z[0xB]] ^ _sBox8[z[0x6]]) & 0x1f;
+    _rotating[12] = (_sBox5[z[0x5]] ^ _sBox6[z[0x4]] ^ _sBox7[z[0xa]] ^ _sBox8[z[0xb]] ^ _sBox8[z[0x6]]) & 0x1f;
 
     z03 = _intsTo32bits(z, 0x0);
     z47 = _intsTo32bits(z, 0x4);
     z8B = _intsTo32bits(z, 0x8);
-    zCF = _intsTo32bits(z, 0xC);
+    zCF = _intsTo32bits(z, 0xc);
     x03 = z8B ^ _sBox5[z[0x5]] ^ _sBox6[z[0x7]] ^ _sBox7[z[0x4]] ^ _sBox8[z[0x6]] ^ _sBox7[z[0x0]];
     _bits32ToInts(x03, x, 0x0);
     x47 = z03 ^ _sBox5[x[0x0]] ^ _sBox6[x[0x2]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x3]] ^ _sBox8[z[0x2]];
     _bits32ToInts(x47, x, 0x4);
     x8B = z47 ^ _sBox5[x[0x7]] ^ _sBox6[x[0x6]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox5[z[0x1]];
     _bits32ToInts(x8B, x, 0x8);
-    xCF = zCF ^ _sBox5[x[0xA]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xB]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
-    _bits32ToInts(xCF, x, 0xC);
+    xCF = zCF ^ _sBox5[x[0xa]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0xb]] ^ _sBox8[x[0x8]] ^ _sBox6[z[0x3]];
+    _bits32ToInts(xCF, x, 0xc);
     _rotating[13] = (_sBox5[x[0x8]] ^ _sBox6[x[0x9]] ^ _sBox7[x[0x7]] ^ _sBox8[x[0x6]] ^ _sBox5[x[0x3]]) & 0x1f;
-    _rotating[14] = (_sBox5[x[0xA]] ^ _sBox6[x[0xB]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox6[x[0x7]]) & 0x1f;
-    _rotating[15] = (_sBox5[x[0xC]] ^ _sBox6[x[0xD]] ^ _sBox7[x[0x3]] ^ _sBox8[x[0x2]] ^ _sBox7[x[0x8]]) & 0x1f;
-    _rotating[16] = (_sBox5[x[0xE]] ^ _sBox6[x[0xF]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x0]] ^ _sBox8[x[0xD]]) & 0x1f;
+    _rotating[14] = (_sBox5[x[0xa]] ^ _sBox6[x[0xb]] ^ _sBox7[x[0x5]] ^ _sBox8[x[0x4]] ^ _sBox6[x[0x7]]) & 0x1f;
+    _rotating[15] = (_sBox5[x[0xc]] ^ _sBox6[x[0xd]] ^ _sBox7[x[0x3]] ^ _sBox8[x[0x2]] ^ _sBox7[x[0x8]]) & 0x1f;
+    _rotating[16] = (_sBox5[x[0xe]] ^ _sBox6[x[0xf]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x0]] ^ _sBox8[x[0xd]]) & 0x1f;
   }
 
   int _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
@@ -2357,35 +2321,21 @@ class CAST5Engine extends BaseCipher {
     return _blockSize;
   }
 
-  int _shiftLeft32(int x, int n) {
-    assert((x >= 0) && (x <= 0xFFFFFFFF));
-    n &= 0x1F;
-    x &= _mask32HiBits[n];
-    return ((x << n) & 0xFFFFFFFF);
-  }
-
-  int _rotLeft32(int x, int n) {
-    assert(n >= 0);
-    assert((x >= 0) && (x <= 0xFFFFFFFF));
-    n &= 0x1F;
-    return _shiftLeft32(x, n) | (x >> (32 - n));
-  }
-
   int _f1(final int d, final int kmi, final int kri) {
     var i = kmi + d;
-    i = _rotLeft32(i.toUnsigned(32), kri);
+    i = i.toUnsigned(32).rotateLeft32(kri);
     return ((_sBox1[(i >> 24) & 0xff] ^ _sBox2[(i >> 16) & 0xff]) - _sBox3[(i >> 8) & 0xff]) + _sBox4[i & 0xff];
   }
 
   int _f2(final int d, final int kmi, final int kri) {
     var i = kmi ^ d;
-    i = _rotLeft32(i.toUnsigned(32), kri);
+    i = i.toUnsigned(32).rotateLeft32(kri);
     return ((_sBox1[(i >> 24) & 0xff] - _sBox2[(i >> 16) & 0xff]) + _sBox3[(i >> 8) & 0xff]) ^ _sBox4[i & 0xff];
   }
 
   int _f3(final int d, final int kmi, final int kri) {
     var i = kmi - d;
-    i = _rotLeft32(i.toUnsigned(32), kri);
+    i = i.toUnsigned(32).rotateLeft32(kri);
     return ((_sBox1[(i >> 24) & 0xff] + _sBox2[(i >> 16) & 0xff]) ^ _sBox3[(i >> 8) & 0xff]) - _sBox4[i & 0xff];
   }
 

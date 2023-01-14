@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dart_pg/src/crypto/symmetric/blowfish.dart';
 import 'package:dart_pg/src/crypto/symmetric/buffered_cipher.dart';
+import 'package:dart_pg/src/crypto/symmetric/camellia_light.dart';
 import 'package:dart_pg/src/crypto/symmetric/cast5.dart';
 import 'package:dart_pg/src/crypto/symmetric/idea.dart';
 import 'package:dart_pg/src/crypto/symmetric/triple_des.dart';
@@ -265,6 +266,82 @@ void main() {
         input,
         'd6bfdbb2090562e960273783127e2658',
       );
+    }));
+
+    test('Camellia light test', (() {
+      _blockCipherVectorTest(
+        0,
+        CamelliaLightEngine(),
+        _kp('00000000000000000000000000000000'),
+        '80000000000000000000000000000000',
+        '07923a39eb0a817d1c4d87bdb82d1f1c',
+      );
+
+      _blockCipherVectorTest(
+        1,
+        CamelliaLightEngine(),
+        _kp('80000000000000000000000000000000'),
+        '00000000000000000000000000000000',
+        '6c227f749319a3aa7da235a9bba05a2c',
+      );
+
+      _blockCipherVectorTest(
+        2,
+        CamelliaLightEngine(),
+        _kp('0123456789abcdeffedcba9876543210'),
+        '0123456789abcdeffedcba9876543210',
+        '67673138549669730857065648eabe43',
+      );
+
+      /// 192 bit
+      // _blockCipherVectorTest(
+      //   3,
+      //   CamelliaLightEngine(),
+      //   _kp('0123456789abcdeffedcba98765432100011223344556677'),
+      //   '0123456789abcdeffedcba9876543210',
+      //   'b4993401b3e996f84ee5cee7d79b09b9',
+      // );
+
+      // _blockCipherVectorTest(
+      //   4,
+      //   CamelliaLightEngine(),
+      //   _kp('000000000000000000000000000000000000000000000000'),
+      //   '00040000000000000000000000000000',
+      //   '9BCA6C88B928C1B0F57F99866583A9BC',
+      // );
+
+      // _blockCipherVectorTest(
+      //   5,
+      //   CamelliaLightEngine(),
+      //   _kp('949494949494949494949494949494949494949494949494'),
+      //   '636eb22d84b006381235641bcf0308d2',
+      //   '94949494949494949494949494949494',
+      // );
+
+      /// 256 bit
+      // _blockCipherVectorTest(
+      //   6,
+      //   CamelliaLightEngine(),
+      //   _kp('0123456789abcdeffedcba987654321000112233445566778899aabbccddeeff'),
+      //   '0123456789abcdeffedcba9876543210',
+      //   '9acc237dff16d76c20ef7c919e3a7509',
+      // );
+
+      // _blockCipherVectorTest(
+      //   7,
+      //   CamelliaLightEngine(),
+      //   _kp('4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A4A'),
+      //   '057764fe3a500edbd988c5c3b56cba9a',
+      //   '4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a',
+      // );
+
+      // _blockCipherVectorTest(
+      //   8,
+      //   CamelliaLightEngine(),
+      //   _kp('0303030303030303030303030303030303030303030303030303030303030303'),
+      //   '7968b08aba92193f2295121ef8d75c8a',
+      //   '03030303030303030303030303030303',
+      // );
     }));
   }));
 }
