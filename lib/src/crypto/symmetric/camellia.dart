@@ -1124,14 +1124,14 @@ class CamelliaEngine extends BaseCipher {
     return (Int64(x) >> s).toInt().toUnsigned(32);
   }
 
-  static int _rightRotate(int x, int s) {
-    final num = Int64(x);
-    return ((num >> s) + (num << (32 - s))).toInt().toUnsigned(32);
-  }
-
   static int _leftRotate(int x, int s) {
     var num = Int64(x);
     return ((num << s) + (num >> (32 - s))).toInt().toUnsigned(32);
+  }
+
+  static int _rightRotate(int x, int s) {
+    final num = Int64(x);
+    return ((num >> s) + (num << (32 - s))).toInt().toUnsigned(32);
   }
 
   static void _roldq(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
