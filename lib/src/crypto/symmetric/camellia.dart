@@ -1129,7 +1129,7 @@ class CamelliaEngine extends BaseCipher {
   }
 
   static int _leftRotate(int x, int s) {
-    var num = Int64(x);
+    final num = Int64(x);
     return ((num << s) + (num >> (32 - s))).toInt().toUnsigned(32);
   }
 
@@ -1191,15 +1191,14 @@ class CamelliaEngine extends BaseCipher {
   }
 
   static void _camelliaF2(List<int> s, List<int> skey, int keyoff) {
-    int t1, t2, u, v;
-
-    t1 = s[0] ^ skey[0 + keyoff];
-    u = _sbox4_4404[t1 & _mask8];
+    var t1 = s[0] ^ skey[0 + keyoff];
+    var u = _sbox4_4404[t1 & _mask8];
     u ^= _sbox3_3033[(t1 >> 8) & _mask8];
     u ^= _sbox2_0222[(t1 >> 16) & _mask8];
     u ^= _sbox1_1110[(t1 >> 24) & _mask8];
-    t2 = s[1] ^ skey[1 + keyoff];
-    v = _sbox1_1110[t2 & _mask8];
+
+    var t2 = s[1] ^ skey[1 + keyoff];
+    var v = _sbox1_1110[t2 & _mask8];
     v ^= _sbox4_4404[(t2 >> 8) & _mask8];
     v ^= _sbox3_3033[(t2 >> 16) & _mask8];
     v ^= _sbox2_0222[(t2 >> 24) & _mask8];
