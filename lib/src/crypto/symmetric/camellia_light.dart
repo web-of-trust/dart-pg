@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'package:fixnum/fixnum.dart';
 import 'package:pointycastle/api.dart';
 
 import 'dart:typed_data';
@@ -322,72 +323,111 @@ class CamelliaLightEngine extends BaseCipher {
   }
 
   @override
-  int processBlock(Uint8List input, int inOff, Uint8List out, int outOff) {
+  int processBlock(Uint8List input, int inOff, Uint8List output, int outOff) {
     if (!_initialised) {
       throw Exception('Camellia is not initialized');
     }
     if ((inOff + _blockSize) > input.length) {
       throw Exception('input buffer too short');
     }
-    if ((outOff + _blockSize) > out.length) {
+    if ((outOff + _blockSize) > output.length) {
       throw Exception('output buffer too short');
     }
 
     if (_keyIs128) {
-      return _processBlock128(input, inOff, out, outOff);
+      return _processBlock128(input, inOff, output, outOff);
     } else {
-      return _processBlock192or256(input, inOff, out, outOff);
+      return _processBlock192or256(input, inOff, output, outOff);
     }
   }
 
   @override
   void reset() {}
 
-  void _roldq(int rot, List<int> ki, int ioff, List<int> ko, int ooff) {
-    ko[0 + ooff] = ki[0 + ioff].toUnsigned(32).shiftLeft32(rot) | (ki[1 + ioff] >> (32 - rot));
-    ko[1 + ooff] = ki[1 + ioff].toUnsigned(32).shiftLeft32(rot) | (ki[2 + ioff] >> (32 - rot));
-    ko[2 + ooff] = ki[2 + ioff].toUnsigned(32).shiftLeft32(rot) | (ki[3 + ioff] >> (32 - rot));
-    ko[3 + ooff] = ki[3 + ioff].toUnsigned(32).shiftLeft32(rot) | (ki[0 + ioff] >> (32 - rot));
-    ki[0 + ioff] = ko[0 + ooff];
-    ki[1 + ioff] = ko[1 + ooff];
-    ki[2 + ioff] = ko[2 + ooff];
-    ki[3 + ioff] = ko[3 + ooff];
+  int _leftRotate(int x, int s) {
+    return (x << s) + (x >> (32 - s));
   }
 
-  void _decroldq(int rot, List<int> ki, int ioff, List<int> ko, int ooff) {
-    ko[2 + ooff] = (ki[0 + ioff].toUnsigned(32).shiftLeft32(rot)) | (ki[1 + ioff] >> (32 - rot));
-    ko[3 + ooff] = (ki[1 + ioff].toUnsigned(32).shiftLeft32(rot)) | (ki[2 + ioff] >> (32 - rot));
-    ko[0 + ooff] = (ki[2 + ioff].toUnsigned(32).shiftLeft32(rot)) | (ki[3 + ioff] >> (32 - rot));
-    ko[1 + ooff] = (ki[3 + ioff].toUnsigned(32).shiftLeft32(rot)) | (ki[0 + ioff] >> (32 - rot));
-    ki[0 + ioff] = ko[2 + ooff];
-    ki[1 + ioff] = ko[3 + ooff];
-    ki[2 + ioff] = ko[0 + ooff];
-    ki[3 + ioff] = ko[1 + ooff];
+  // int _leftRotate(int x, int s) {
+  //   var num = Int64(x);
+  //   num << 5;
+  //   return ((num << s) + (num >> (32 - s))).toInt();
+  // return (x << s) + (x >> (32 - s));
+  // }
+
+  void _roldq(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+    if (_keyIs128) {
+      ko[0 + outOff] = ki[0 + inOff].shiftLeft32(rot) | (ki[1 + inOff] >> (32 - rot));
+      ko[1 + outOff] = ki[1 + inOff].shiftLeft32(rot) | (ki[2 + inOff] >> (32 - rot));
+      ko[2 + outOff] = ki[2 + inOff].shiftLeft32(rot) | (ki[3 + inOff] >> (32 - rot));
+      ko[3 + outOff] = ki[3 + inOff].shiftLeft32(rot) | (ki[0 + inOff] >> (32 - rot));
+    } else {
+      ko[0 + outOff] = (ki[0 + inOff] << rot) | (ki[1 + inOff] >> (32 - rot));
+      ko[1 + outOff] = (ki[1 + inOff] << rot) | (ki[2 + inOff] >> (32 - rot));
+      ko[2 + outOff] = (ki[2 + inOff] << rot) | (ki[3 + inOff] >> (32 - rot));
+      ko[3 + outOff] = (ki[3 + inOff] << rot) | (ki[0 + inOff] >> (32 - rot));
+    }
+    ki[0 + inOff] = ko[0 + outOff];
+    ki[1 + inOff] = ko[1 + outOff];
+    ki[2 + inOff] = ko[2 + outOff];
+    ki[3 + inOff] = ko[3 + outOff];
   }
 
-  void _roldqo32(int rot, List<int> ki, int ioff, List<int> ko, int ooff) {
-    ko[0 + ooff] = (ki[1 + ioff] << (rot - 32)) | (ki[2 + ioff] >> (64 - rot));
-    ko[1 + ooff] = (ki[2 + ioff] << (rot - 32)) | (ki[3 + ioff] >> (64 - rot));
-    ko[2 + ooff] = (ki[3 + ioff] << (rot - 32)) | (ki[0 + ioff] >> (64 - rot));
-    ko[3 + ooff] = (ki[0 + ioff] << (rot - 32)) | (ki[1 + ioff] >> (64 - rot));
-    ki[0 + ioff] = ko[0 + ooff];
-    ki[1 + ioff] = ko[1 + ooff];
-    ki[2 + ioff] = ko[2 + ooff];
-    ki[3 + ioff] = ko[3 + ooff];
+  void _decroldq(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+    if (_keyIs128) {
+      ko[2 + outOff] = (ki[0 + inOff].shiftLeft32(rot)) | (ki[1 + inOff] >> (32 - rot));
+      ko[3 + outOff] = (ki[1 + inOff].shiftLeft32(rot)) | (ki[2 + inOff] >> (32 - rot));
+      ko[0 + outOff] = (ki[2 + inOff].shiftLeft32(rot)) | (ki[3 + inOff] >> (32 - rot));
+      ko[1 + outOff] = (ki[3 + inOff].shiftLeft32(rot)) | (ki[0 + inOff] >> (32 - rot));
+    } else {
+      ko[2 + outOff] = (ki[0 + inOff] << rot) | (ki[1 + inOff] >> (32 - rot));
+      ko[3 + outOff] = (ki[1 + inOff] << rot) | (ki[2 + inOff] >> (32 - rot));
+      ko[0 + outOff] = (ki[2 + inOff] << rot) | (ki[3 + inOff] >> (32 - rot));
+      ko[1 + outOff] = (ki[3 + inOff] << rot) | (ki[0 + inOff] >> (32 - rot));
+    }
+    ki[0 + inOff] = ko[2 + outOff];
+    ki[1 + inOff] = ko[3 + outOff];
+    ki[2 + inOff] = ko[0 + outOff];
+    ki[3 + inOff] = ko[1 + outOff];
   }
 
-  void _decroldqo32(int rot, List<int> ki, int ioff, List<int> ko, int ooff) {
-    ko[2 + ooff] = (ki[1 + ioff] << (rot - 32)) | (ki[2 + ioff] >> (64 - rot));
-    ko[3 + ooff] = (ki[2 + ioff] << (rot - 32)) | (ki[3 + ioff] >> (64 - rot));
-    ko[0 + ooff] = (ki[3 + ioff] << (rot - 32)) | (ki[0 + ioff] >> (64 - rot));
-    ko[1 + ooff] = (ki[0 + ioff] << (rot - 32)) | (ki[1 + ioff] >> (64 - rot));
-    ki[0 + ioff] = ko[2 + ooff];
-    ki[1 + ioff] = ko[3 + ooff];
-    ki[2 + ioff] = ko[0 + ooff];
-    ki[3 + ioff] = ko[1 + ooff];
+  void _roldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+    if (_keyIs128) {
+      ko[0 + outOff] = ki[1 + inOff].shiftLeft32(rot - 32) | (ki[2 + inOff] >> (64 - rot));
+      ko[1 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) | (ki[3 + inOff] >> (64 - rot));
+      ko[2 + outOff] = ki[3 + inOff].shiftLeft32(rot - 32) | (ki[0 + inOff] >> (64 - rot));
+      ko[3 + outOff] = ki[0 + inOff].shiftLeft32(rot - 32) | (ki[1 + inOff] >> (64 - rot));
+    } else {
+      ko[0 + outOff] = (ki[1 + inOff] << (rot - 32)) | (ki[2 + inOff] >> (64 - rot));
+      ko[1 + outOff] = (ki[2 + inOff] << (rot - 32)) | (ki[3 + inOff] >> (64 - rot));
+      ko[2 + outOff] = (ki[3 + inOff] << (rot - 32)) | (ki[0 + inOff] >> (64 - rot));
+      ko[3 + outOff] = (ki[0 + inOff] << (rot - 32)) | (ki[1 + inOff] >> (64 - rot));
+    }
+    ki[0 + inOff] = ko[0 + outOff];
+    ki[1 + inOff] = ko[1 + outOff];
+    ki[2 + inOff] = ko[2 + outOff];
+    ki[3 + inOff] = ko[3 + outOff];
   }
 
-  int _bytes2int(Uint8List src, int offset) {
+  void _decroldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+    if (_keyIs128) {
+      ko[2 + outOff] = ki[1 + inOff].shiftLeft32(rot - 32) | (ki[2 + inOff] >> (64 - rot));
+      ko[3 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) | (ki[3 + inOff] >> (64 - rot));
+      ko[0 + outOff] = ki[3 + inOff].shiftLeft32(rot - 32) | (ki[0 + inOff] >> (64 - rot));
+      ko[1 + outOff] = ki[0 + inOff].shiftLeft32(rot - 32) | (ki[1 + inOff] >> (64 - rot));
+    } else {
+      ko[2 + outOff] = (ki[1 + inOff] << (rot - 32)) | (ki[2 + inOff] >> (64 - rot));
+      ko[3 + outOff] = (ki[2 + inOff] << (rot - 32)) | (ki[3 + inOff] >> (64 - rot));
+      ko[0 + outOff] = (ki[3 + inOff] << (rot - 32)) | (ki[0 + inOff] >> (64 - rot));
+      ko[1 + outOff] = (ki[0 + inOff] << (rot - 32)) | (ki[1 + inOff] >> (64 - rot));
+    }
+    ki[0 + inOff] = ko[2 + outOff];
+    ki[1 + inOff] = ko[3 + outOff];
+    ki[2 + inOff] = ko[0 + outOff];
+    ki[3 + inOff] = ko[1 + outOff];
+  }
+
+  int _bytes2uint(Uint8List src, int offset) {
     int word = 0;
 
     for (var i = 0; i < 4; i++) {
@@ -396,27 +436,23 @@ class CamelliaLightEngine extends BaseCipher {
     return word;
   }
 
-  void _int2bytes(int word, Uint8List dst, int offset) {
+  void _uint2bytes(int word, Uint8List dst, int offset) {
     for (var i = 0; i < 4; i++) {
       dst[(3 - i) + offset] = word;
       word >>= 8;
     }
   }
 
-  int _lRot8(int v, int rot) {
-    return ((v << rot) | ((v & _mask8) >> (8 - rot))) & _mask8;
-  }
-
   int _sbox2(int x) {
-    return (_lRot8(_sbox[x], 1) & _mask8);
+    return _sbox[x].rotateLeft8(1) & _mask8;
   }
 
   int _sbox3(int x) {
-    return (_lRot8(_sbox[x], 7) & _mask8);
+    return _sbox[x].rotateLeft8(7) & _mask8;
   }
 
   int _sbox4(int x) {
-    return (_sbox[(_lRot8(x, 1) & _mask8)] & _mask8);
+    return _sbox[x.rotateLeft8(1)] & _mask8;
   }
 
   void _camelliaF2(List<int> s, List<int> skey, int keyoff) {
@@ -432,12 +468,12 @@ class CamelliaLightEngine extends BaseCipher {
     v |= (_sbox3(((t2 >> 16) & _mask8)) << 16);
     v |= (_sbox2(((t2 >> 24) & _mask8)) << 24);
 
-    v = v.toUnsigned(32).rotateLeft32(8);
+    v = v.rotateLeft32(8);
     u ^= v;
-    v = v.toUnsigned(32).rotateLeft32(8) ^ u;
-    u = u.toUnsigned(32).rotateRight32(8) ^ v;
-    s[2] ^= v.toUnsigned(32).rotateLeft32(16) ^ u;
-    s[3] ^= u.toUnsigned(32).rotateLeft32(8);
+    v = v.rotateLeft32(8) ^ u;
+    u = u.rotateRight32(8) ^ v;
+    s[2] ^= v.rotateLeft32(16) ^ u;
+    s[3] ^= u.rotateLeft32(8);
 
     t1 = s[2] ^ skey[2 + keyoff];
     u = _sbox4((t1 & _mask8));
@@ -451,20 +487,28 @@ class CamelliaLightEngine extends BaseCipher {
     v |= _sbox3(((t2 >> 16) & _mask8)) << 16;
     v |= _sbox2(((t2 >> 24) & _mask8)) << 24;
 
-    v = v.toUnsigned(32).rotateLeft32(8);
+    v = v.rotateLeft32(8);
     u ^= v;
-    v = v.toUnsigned(32).rotateLeft32(8) ^ u;
-    u = u.toUnsigned(32).rotateRight32(8) ^ v;
-    s[0] ^= v.toUnsigned(32).rotateLeft32(16) ^ u;
-    s[1] ^= u.toUnsigned(32).rotateLeft32(8);
+    v = v.rotateLeft32(8) ^ u;
+    u = u.rotateRight32(8) ^ v;
+    s[0] ^= v.rotateLeft32(16) ^ u;
+    s[1] ^= u.rotateLeft32(8);
   }
 
   void _camelliaFLs(List<int> s, List<int> fkey, int keyoff) {
-    s[1] ^= (s[0] & fkey[0 + keyoff]).toUnsigned(32).rotateLeft32(1);
-    s[0] ^= fkey[1 + keyoff] | s[1];
+    if (_keyIs128) {
+      s[1] ^= (s[0] & fkey[0 + keyoff]).rotateLeft32(1);
+      s[0] ^= fkey[1 + keyoff] | s[1];
 
-    s[2] ^= fkey[3 + keyoff] | s[3];
-    s[3] ^= (fkey[2 + keyoff] & s[2]).toUnsigned(32).rotateLeft32(1);
+      s[2] ^= fkey[3 + keyoff] | s[3];
+      s[3] ^= (fkey[2 + keyoff] & s[2]).rotateLeft32(1);
+    } else {
+      s[1] ^= _leftRotate(s[0] & fkey[0 + keyoff], 1);
+      s[0] ^= fkey[1 + keyoff] | s[1];
+
+      s[2] ^= fkey[3 + keyoff] | s[3];
+      s[3] ^= _leftRotate(fkey[2 + keyoff] & s[2], 1);
+    }
   }
 
   void _setKey(bool forEncryption, Uint8List key) {
@@ -476,32 +520,32 @@ class CamelliaLightEngine extends BaseCipher {
     switch (key.length) {
       case 16:
         _keyIs128 = true;
-        k[0] = _bytes2int(key, 0);
-        k[1] = _bytes2int(key, 4);
-        k[2] = _bytes2int(key, 8);
-        k[3] = _bytes2int(key, 12);
+        k[0] = _bytes2uint(key, 0);
+        k[1] = _bytes2uint(key, 4);
+        k[2] = _bytes2uint(key, 8);
+        k[3] = _bytes2uint(key, 12);
         k[4] = k[5] = k[6] = k[7] = 0;
         break;
       case 24:
-        k[0] = _bytes2int(key, 0);
-        k[1] = _bytes2int(key, 4);
-        k[2] = _bytes2int(key, 8);
-        k[3] = _bytes2int(key, 12);
-        k[4] = _bytes2int(key, 16);
-        k[5] = _bytes2int(key, 20);
+        k[0] = _bytes2uint(key, 0);
+        k[1] = _bytes2uint(key, 4);
+        k[2] = _bytes2uint(key, 8);
+        k[3] = _bytes2uint(key, 12);
+        k[4] = _bytes2uint(key, 16);
+        k[5] = _bytes2uint(key, 20);
         k[6] = ~k[4];
         k[7] = ~k[5];
         _keyIs128 = false;
         break;
       case 32:
-        k[0] = _bytes2int(key, 0);
-        k[1] = _bytes2int(key, 4);
-        k[2] = _bytes2int(key, 8);
-        k[3] = _bytes2int(key, 12);
-        k[4] = _bytes2int(key, 16);
-        k[5] = _bytes2int(key, 20);
-        k[6] = _bytes2int(key, 24);
-        k[7] = _bytes2int(key, 28);
+        k[0] = _bytes2uint(key, 0);
+        k[1] = _bytes2uint(key, 4);
+        k[2] = _bytes2uint(key, 8);
+        k[3] = _bytes2uint(key, 12);
+        k[4] = _bytes2uint(key, 16);
+        k[5] = _bytes2uint(key, 20);
+        k[6] = _bytes2uint(key, 24);
+        k[7] = _bytes2uint(key, 28);
         _keyIs128 = false;
         break;
       default:
@@ -656,7 +700,7 @@ class CamelliaLightEngine extends BaseCipher {
 
   int _processBlock128(Uint8List input, int inOff, Uint8List output, int outOff) {
     for (var i = 0; i < 4; i++) {
-      _state[i] = _bytes2int(input, inOff + (i * 4));
+      _state[i] = _bytes2uint(input, inOff + (i * 4));
       _state[i] ^= _kw[i];
     }
 
@@ -677,17 +721,17 @@ class CamelliaLightEngine extends BaseCipher {
     _state[0] ^= _kw[6];
     _state[1] ^= _kw[7];
 
-    _int2bytes(_state[2], output, outOff);
-    _int2bytes(_state[3], output, outOff + 4);
-    _int2bytes(_state[0], output, outOff + 8);
-    _int2bytes(_state[1], output, outOff + 12);
+    _uint2bytes(_state[2], output, outOff);
+    _uint2bytes(_state[3], output, outOff + 4);
+    _uint2bytes(_state[0], output, outOff + 8);
+    _uint2bytes(_state[1], output, outOff + 12);
 
     return _blockSize;
   }
 
   int _processBlock192or256(Uint8List input, int inOff, Uint8List output, int outOff) {
     for (var i = 0; i < 4; i++) {
-      _state[i] = _bytes2int(input, inOff + (i * 4));
+      _state[i] = _bytes2uint(input, inOff + (i * 4));
       _state[i] ^= _kw[i];
     }
 
@@ -712,10 +756,10 @@ class CamelliaLightEngine extends BaseCipher {
     _state[0] ^= _kw[6];
     _state[1] ^= _kw[7];
 
-    _int2bytes(_state[2], output, outOff);
-    _int2bytes(_state[3], output, outOff + 4);
-    _int2bytes(_state[0], output, outOff + 8);
-    _int2bytes(_state[1], output, outOff + 12);
+    _uint2bytes(_state[2], output, outOff);
+    _uint2bytes(_state[3], output, outOff + 4);
+    _uint2bytes(_state[0], output, outOff + 8);
+    _uint2bytes(_state[1], output, outOff + 12);
     return _blockSize;
   }
 }

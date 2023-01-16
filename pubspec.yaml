@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   crypto: ^3.0.2
+  fixnum: ^1.0.1
   pointycastle: ^3.6.2
 
 dev_dependencies:
