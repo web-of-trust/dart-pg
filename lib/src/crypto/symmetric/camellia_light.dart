@@ -2,10 +2,10 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:typed_data';
+
 import 'package:fixnum/fixnum.dart';
 import 'package:pointycastle/api.dart';
-
-import 'dart:typed_data';
 
 import '../../helpers.dart';
 import 'base_cipher.dart';
@@ -345,15 +345,9 @@ class CamelliaLightEngine extends BaseCipher {
   void reset() {}
 
   int _leftRotate(int x, int s) {
-    return (x << s) + (x >> (32 - s));
+    var num = Int64(x);
+    return ((num << s) + (num >> (32 - s))).toInt().toUnsigned(32);
   }
-
-  // int _leftRotate(int x, int s) {
-  //   var num = Int64(x);
-  //   num << 5;
-  //   return ((num << s) + (num >> (32 - s))).toInt();
-  // return (x << s) + (x >> (32 - s));
-  // }
 
   void _roldq(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
     if (_keyIs128) {
@@ -427,35 +421,27 @@ class CamelliaLightEngine extends BaseCipher {
     ki[3 + inOff] = ko[1 + outOff];
   }
 
-  int _bytes2uint(Uint8List src, int offset) {
-    int word = 0;
-
-    for (var i = 0; i < 4; i++) {
-      word = (word << 8) + (src[i + offset] & _mask8);
-    }
-    return word;
+  static int _bytes2uint(Uint8List src, int offset) {
+    return src.sublist(offset, offset + 4).toUint32();
   }
 
-  void _uint2bytes(int word, Uint8List dst, int offset) {
-    for (var i = 0; i < 4; i++) {
-      dst[(3 - i) + offset] = word;
-      word >>= 8;
-    }
+  static void _uint2bytes(int word, Uint8List dst, int offset) {
+    dst.setRange(offset, offset + 4, word.toUnsigned(32).pack32());
   }
 
-  int _sbox2(int x) {
+  static int _sbox2(int x) {
     return _sbox[x].rotateLeft8(1) & _mask8;
   }
 
-  int _sbox3(int x) {
+  static int _sbox3(int x) {
     return _sbox[x].rotateLeft8(7) & _mask8;
   }
 
-  int _sbox4(int x) {
+  static int _sbox4(int x) {
     return _sbox[x.rotateLeft8(1)] & _mask8;
   }
 
-  void _camelliaF2(List<int> s, List<int> skey, int keyoff) {
+  static void _camelliaF2(List<int> s, List<int> skey, int keyoff) {
     var t1 = s[0] ^ skey[0 + keyoff];
     var u = _sbox4((t1 & _mask8));
     u |= (_sbox3(((t1 >> 8) & _mask8)) << 8);
