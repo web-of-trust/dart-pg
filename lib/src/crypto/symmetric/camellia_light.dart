@@ -487,7 +487,6 @@ class CamelliaLightEngine extends BaseCipher {
         k[1] = _bytes2uint(key, 4);
         k[2] = _bytes2uint(key, 8);
         k[3] = _bytes2uint(key, 12);
-        k[4] = k[5] = k[6] = k[7] = 0;
         break;
       case 24:
         k[0] = _bytes2uint(key, 0);
@@ -515,12 +514,12 @@ class CamelliaLightEngine extends BaseCipher {
         throw Exception('key sizes are only 16/24/32 bytes.');
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (var i = 0; i < 4; i++) {
       ka[i] = k[i] ^ k[i + 4];
     }
     /* compute KA */
     _camelliaF2(ka, _sigma, 0);
-    for (int i = 0; i < 4; i++) {
+    for (var i = 0; i < 4; i++) {
       ka[i] ^= k[i];
     }
     _camelliaF2(ka, _sigma, 4);
@@ -585,7 +584,7 @@ class CamelliaLightEngine extends BaseCipher {
     } else {
       // 192bit or 256bit
       /* compute KB */
-      for (int i = 0; i < 4; i++) {
+      for (var i = 0; i < 4; i++) {
         kb[i] = ka[i] ^ k[i + 4];
       }
       _camelliaF2(kb, _sigma, 8);
