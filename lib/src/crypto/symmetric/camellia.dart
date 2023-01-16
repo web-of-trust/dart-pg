@@ -1444,7 +1444,7 @@ class CamelliaEngine extends BaseCipher {
   }
 
   int _processBlock192or256(Uint8List input, int inOff, Uint8List output, int outOff) {
-    for (int i = 0; i < 4; i++) {
+    for (var i = 0; i < 4; i++) {
       _state[i] = _bytes2uint(input, inOff + (i * 4));
       _state[i] ^= _kw[i];
     }

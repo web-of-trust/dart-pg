@@ -295,13 +295,13 @@ void main() {
       );
 
       /// 192 bit
-      // _blockCipherVectorTest(
-      //   3,
-      //   CamelliaEngine(),
-      //   _kp('0123456789abcdeffedcba98765432100011223344556677'),
-      //   '0123456789abcdeffedcba9876543210',
-      //   'b4993401b3e996f84ee5cee7d79b09b9',
-      // );
+      _blockCipherVectorTest(
+        3,
+        CamelliaEngine(),
+        _kp('0123456789abcdeffedcba98765432100011223344556677'),
+        '0123456789abcdeffedcba9876543210',
+        'b4993401b3e996f84ee5cee7d79b09b9',
+      );
 
       // _blockCipherVectorTest(
       //   4,
