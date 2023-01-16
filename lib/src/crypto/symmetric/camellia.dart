@@ -1113,7 +1113,7 @@ class CamelliaEngine extends BaseCipher {
     if (_keyIs128) {
       return _processBlock128(input, inOff, output, outOff);
     } else {
-      return _processBlock192or256(input, inOff, output, outOff);
+      return _processBlock256(input, inOff, output, outOff);
     }
   }
 
@@ -1446,7 +1446,7 @@ class CamelliaEngine extends BaseCipher {
     return _blockSize;
   }
 
-  int _processBlock192or256(Uint8List input, int inOff, Uint8List output, int outOff) {
+  int _processBlock256(Uint8List input, int inOff, Uint8List output, int outOff) {
     for (var i = 0; i < 4; i++) {
       _state[i] = _bytes2uint(input, inOff + (i * 4));
       _state[i] ^= _kw[i];
