@@ -345,21 +345,21 @@ class CamelliaLightEngine extends BaseCipher {
   void reset() {}
 
   static int _leftShift(int x, int s) {
-    return (Int64(x) << s).toInt().toUnsigned(32);
+    return (Int64(x.toUnsigned(32)) << s).toInt();
   }
 
   static int _rightShift(int x, int s) {
-    return (Int64(x) >> s).toInt().toUnsigned(32);
+    return (Int64(x.toUnsigned(32)) >> s).toInt();
   }
 
   static int _leftRotate(int x, int s) {
-    final num = Int64(x);
-    return ((num << s) + (num >> (32 - s))).toInt().toUnsigned(32);
+    final num = Int64(x.toUnsigned(32));
+    return ((num << s) + (num >> (32 - s))).toInt();
   }
 
   static int _rightRotate(int x, int s) {
-    final num = Int64(x);
-    return ((num >> s) + (num << (32 - s))).toInt().toUnsigned(32);
+    final num = Int64(x.toUnsigned(32));
+    return ((num >> s) + (num << (32 - s))).toInt();
   }
 
   static void _roldq(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {

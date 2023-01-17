@@ -10,6 +10,7 @@ import 'package:pointycastle/api.dart';
 import '../../helpers.dart';
 import 'base_cipher.dart';
 
+/// Camellia - based on RFC 3713.
 class CamelliaEngine extends BaseCipher {
   static const _blockSize = 16;
 
@@ -1121,51 +1122,51 @@ class CamelliaEngine extends BaseCipher {
   void reset() {}
 
   static int _leftShift(int x, int s) {
-    return (Int64(x) << s).toInt().toUnsigned(32);
+    return (Int64(x.toUnsigned(32)) << s).toInt();
   }
 
   static int _rightShift(int x, int s) {
-    return (Int64(x) >> s).toInt().toUnsigned(32);
+    return (Int64(x.toUnsigned(32)) >> s).toInt();
   }
 
   static int _leftRotate(int x, int s) {
-    final num = Int64(x);
-    return ((num << s) + (num >> (32 - s))).toInt().toUnsigned(32);
+    final num = Int64(x.toUnsigned(32));
+    return ((num << s) + (num >> (32 - s))).toInt();
   }
 
   static int _rightRotate(int x, int s) {
-    final num = Int64(x);
-    return ((num >> s) + (num << (32 - s))).toInt().toUnsigned(32);
+    final num = Int64(x.toUnsigned(32));
+    return ((num >> s) + (num << (32 - s))).toInt();
   }
 
   static void _roldq(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
-    ko[0 + outOff] = _leftShift(ki[0 + inOff], rot) | _rightShift(ki[1 + inOff], 32 - rot);
+    ko[outOff] = _leftShift(ki[inOff], rot) | _rightShift(ki[1 + inOff], 32 - rot);
     ko[1 + outOff] = _leftShift(ki[1 + inOff], rot) | _rightShift(ki[2 + inOff], 32 - rot);
     ko[2 + outOff] = _leftShift(ki[2 + inOff], rot) | _rightShift(ki[3 + inOff], 32 - rot);
-    ko[3 + outOff] = _leftShift(ki[3 + inOff], rot) | _rightShift(ki[0 + inOff], 32 - rot);
-    ki[0 + inOff] = ko[0 + outOff];
+    ko[3 + outOff] = _leftShift(ki[3 + inOff], rot) | _rightShift(ki[inOff], 32 - rot);
+    ki[inOff] = ko[outOff];
     ki[1 + inOff] = ko[1 + outOff];
     ki[2 + inOff] = ko[2 + outOff];
     ki[3 + inOff] = ko[3 + outOff];
   }
 
   static void _decroldq(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
-    ko[2 + outOff] = _leftShift(ki[0 + inOff], rot) | _rightShift(ki[1 + inOff], 32 - rot);
+    ko[2 + outOff] = _leftShift(ki[inOff], rot) | _rightShift(ki[1 + inOff], 32 - rot);
     ko[3 + outOff] = _leftShift(ki[1 + inOff], rot) | _rightShift(ki[2 + inOff], 32 - rot);
-    ko[0 + outOff] = _leftShift(ki[2 + inOff], rot) | _rightShift(ki[3 + inOff], 32 - rot);
-    ko[1 + outOff] = _leftShift(ki[3 + inOff], rot) | _rightShift(ki[0 + inOff], 32 - rot);
-    ki[0 + inOff] = ko[2 + outOff];
+    ko[outOff] = _leftShift(ki[2 + inOff], rot) | _rightShift(ki[3 + inOff], 32 - rot);
+    ko[1 + outOff] = _leftShift(ki[3 + inOff], rot) | _rightShift(ki[inOff], 32 - rot);
+    ki[inOff] = ko[2 + outOff];
     ki[1 + inOff] = ko[3 + outOff];
-    ki[2 + inOff] = ko[0 + outOff];
+    ki[2 + inOff] = ko[outOff];
     ki[3 + inOff] = ko[1 + outOff];
   }
 
   void _roldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
-    ko[0 + outOff] = _leftShift(ki[1 + inOff], rot - 32) | _rightShift(ki[2 + inOff], 64 - rot);
+    ko[outOff] = _leftShift(ki[1 + inOff], rot - 32) | _rightShift(ki[2 + inOff], 64 - rot);
     ko[1 + outOff] = _leftShift(ki[2 + inOff], rot - 32) | _rightShift(ki[3 + inOff], 64 - rot);
-    ko[2 + outOff] = _leftShift(ki[3 + inOff], rot - 32) | _rightShift(ki[0 + inOff], 64 - rot);
-    ko[3 + outOff] = _leftShift(ki[0 + inOff], rot - 32) | _rightShift(ki[1 + inOff], 64 - rot);
-    ki[0 + inOff] = ko[0 + outOff];
+    ko[2 + outOff] = _leftShift(ki[3 + inOff], rot - 32) | _rightShift(ki[inOff], 64 - rot);
+    ko[3 + outOff] = _leftShift(ki[inOff], rot - 32) | _rightShift(ki[1 + inOff], 64 - rot);
+    ki[inOff] = ko[outOff];
     ki[1 + inOff] = ko[1 + outOff];
     ki[2 + inOff] = ko[2 + outOff];
     ki[3 + inOff] = ko[3 + outOff];
@@ -1174,11 +1175,11 @@ class CamelliaEngine extends BaseCipher {
   void _decroldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
     ko[2 + outOff] = _leftShift(ki[1 + inOff], rot - 32) | _rightShift(ki[2 + inOff], 64 - rot);
     ko[3 + outOff] = _leftShift(ki[2 + inOff], rot - 32) | _rightShift(ki[3 + inOff], 64 - rot);
-    ko[0 + outOff] = _leftShift(ki[3 + inOff], rot - 32) | _rightShift(ki[0 + inOff], 64 - rot);
-    ko[1 + outOff] = _leftShift(ki[0 + inOff], rot - 32) | _rightShift(ki[1 + inOff], 64 - rot);
-    ki[0 + inOff] = ko[2 + outOff];
+    ko[outOff] = _leftShift(ki[3 + inOff], rot - 32) | _rightShift(ki[inOff], 64 - rot);
+    ko[1 + outOff] = _leftShift(ki[inOff], rot - 32) | _rightShift(ki[1 + inOff], 64 - rot);
+    ki[inOff] = ko[2 + outOff];
     ki[1 + inOff] = ko[3 + outOff];
-    ki[2 + inOff] = ko[0 + outOff];
+    ki[2 + inOff] = ko[outOff];
     ki[3 + inOff] = ko[1 + outOff];
   }
 
@@ -1191,7 +1192,7 @@ class CamelliaEngine extends BaseCipher {
   }
 
   static void _camelliaF2(List<int> s, List<int> skey, int keyoff) {
-    var t1 = s[0] ^ skey[0 + keyoff];
+    var t1 = s[0] ^ skey[keyoff];
     var u = _sbox4_4404[t1 & _mask8];
     u ^= _sbox3_3033[(t1 >> 8) & _mask8];
     u ^= _sbox2_0222[(t1 >> 16) & _mask8];
@@ -1222,7 +1223,7 @@ class CamelliaEngine extends BaseCipher {
   }
 
   static void _camelliaFLs(List<int> s, List<int> fkey, int keyoff) {
-    s[1] ^= _leftRotate(s[0] & fkey[0 + keyoff], 1);
+    s[1] ^= _leftRotate(s[0] & fkey[keyoff], 1);
     s[0] ^= fkey[1 + keyoff] | s[1];
 
     s[2] ^= fkey[3 + keyoff] | s[3];
