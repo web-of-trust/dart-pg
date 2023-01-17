@@ -1142,7 +1142,7 @@ class CamelliaEngine extends BaseCipher {
     ki[3 + inOff] = ko[1 + outOff];
   }
 
-  void _roldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+  static void _roldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
     ko[outOff] = ki[1 + inOff].shiftLeft32(rot - 32) | ki[2 + inOff].shiftRight32(64 - rot);
     ko[1 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) | ki[3 + inOff].shiftRight32(64 - rot);
     ko[2 + outOff] = ki[3 + inOff].shiftLeft32(rot - 32) | ki[inOff].shiftRight32(64 - rot);
@@ -1153,7 +1153,7 @@ class CamelliaEngine extends BaseCipher {
     ki[3 + inOff] = ko[3 + outOff];
   }
 
-  void _decroldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+  static void _decroldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
     ko[2 + outOff] = ki[1 + inOff].shiftLeft32(rot - 32) | ki[2 + inOff].shiftRight32(64 - rot);
     ko[3 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) | ki[3 + inOff].shiftRight32(64 - rot);
     ko[outOff] = ki[3 + inOff].shiftLeft32(rot - 32) | ki[inOff].shiftRight32(64 - rot);
