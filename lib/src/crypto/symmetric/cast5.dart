@@ -2323,19 +2323,19 @@ class CAST5Engine extends BaseCipher {
 
   int _f1(final int d, final int kmi, final int kri) {
     var i = kmi + d;
-    i = i.toUnsigned(32).rotateLeft32(kri);
+    i = i.rotateLeft32(kri);
     return ((_sBox1[(i >> 24) & 0xff] ^ _sBox2[(i >> 16) & 0xff]) - _sBox3[(i >> 8) & 0xff]) + _sBox4[i & 0xff];
   }
 
   int _f2(final int d, final int kmi, final int kri) {
     var i = kmi ^ d;
-    i = i.toUnsigned(32).rotateLeft32(kri);
+    i = i.rotateLeft32(kri);
     return ((_sBox1[(i >> 24) & 0xff] - _sBox2[(i >> 16) & 0xff]) + _sBox3[(i >> 8) & 0xff]) ^ _sBox4[i & 0xff];
   }
 
   int _f3(final int d, final int kmi, final int kri) {
     var i = kmi - d;
-    i = i.toUnsigned(32).rotateLeft32(kri);
+    i = i.rotateLeft32(kri);
     return ((_sBox1[(i >> 24) & 0xff] + _sBox2[(i >> 16) & 0xff]) ^ _sBox3[(i >> 8) & 0xff]) - _sBox4[i & 0xff];
   }
 

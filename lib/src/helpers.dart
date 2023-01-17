@@ -4,48 +4,7 @@
 
 import 'dart:typed_data';
 
-const _mask3 = 0x07;
-const _mask5 = 0x1f;
-// const _mask6 = 0x3f;
-const _mask8 = 0xff;
-// const _mask16 = 0xffff;
-const _mask32 = 0xffffffff;
-
-const _mask32HiBits = [
-  0xffffffff,
-  0x7fffffff,
-  0x3fffffff,
-  0x1fffffff,
-  0x0fffffff,
-  0x07ffffff,
-  0x03ffffff,
-  0x01ffffff,
-  0x00ffffff,
-  0x007fffff,
-  0x003fffff,
-  0x001fffff,
-  0x000fffff,
-  0x0007ffff,
-  0x0003ffff,
-  0x0001ffff,
-  0x0000ffff,
-  0x00007fff,
-  0x00003fff,
-  0x00001fff,
-  0x00000fff,
-  0x000007ff,
-  0x000003ff,
-  0x000001ff,
-  0x000000ff,
-  0x0000007f,
-  0x0000003f,
-  0x0000001f,
-  0x0000000f,
-  0x00000007,
-  0x00000003,
-  0x00000001,
-  0x00000000
-];
+import 'package:fixnum/fixnum.dart';
 
 extension StringHelper on String {
   List<String> chunk(final int chunkSize) {
@@ -92,30 +51,27 @@ extension IntHelper on int {
 
   int rotateLeft8(int n) {
     assert(n >= 0);
-    assert((this >= 0) && (this <= _mask8));
-    n &= _mask3;
-    return ((this << n) & _mask8) | (this >> (8 - n));
+    assert((this >= 0) && (this <= 0xff));
+    n &= 0x07;
+    return ((this << n) & 0xff) | (this >> (8 - n));
   }
 
   int shiftLeft32(int n) {
-    assert((this >= 0) && (this <= _mask32));
-    n &= _mask5;
-    final num = this & _mask32HiBits[n];
-    return ((num << n) & _mask32);
+    return (Int64(toUnsigned(32)) << n).toInt();
+  }
+
+  int shiftRight32(int n) {
+    return (Int64(toUnsigned(32)) >> n).toInt();
   }
 
   int rotateLeft32(int n) {
-    assert(n >= 0);
-    assert((this >= 0) && (this <= _mask32));
-    n &= _mask5;
-    return shiftLeft32(n) | (this >> (32 - n));
+    final num = Int64(toUnsigned(32));
+    return ((num << n) + (num >> (32 - n))).toInt();
   }
 
   int rotateRight32(int n) {
-    assert(n >= 0);
-    assert((this >= 0) && (this <= _mask32));
-    n &= _mask5;
-    return (this >> n) | shiftLeft32(32 - n);
+    final num = Int64(toUnsigned(32));
+    return ((num >> n) + (num << (32 - n))).toInt();
   }
 }
 
