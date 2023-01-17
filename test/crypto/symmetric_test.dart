@@ -15,7 +15,7 @@ import 'package:dart_pg/src/helpers.dart';
 import 'package:dart_pg/src/crypto/symmetric/des.dart';
 
 void main() {
-  group('cipher tests', (() {
+  group('Block cipher tests', (() {
     test('IDEA test', (() {
       _blockCipherVectorTest(
         0,
