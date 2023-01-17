@@ -60,8 +60,6 @@ void _elGamalEncryptionTest(BigInt p, BigInt g, int size) {
 
   expect(engine.outputBlockSize, (size ~/ 8) - 1, reason: "$size outputBlockSize on decryption failed.");
   expect(message, equals(plainText), reason: '$size bit test failed');
-
-  print(plainText.toHexadecimal());
 }
 
 BigInt _dhCalculatePrivateKey(BigInt p) {
