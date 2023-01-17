@@ -35,11 +35,11 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
       if (_forEncryption) {
         if (_key is! ElGamalPublicKey) {
-          throw ArgumentError('ElGamalPublicKey are required for encryption.');
+          throw ArgumentError('Encryption requires public key.');
         }
       } else {
         if (_key is! ElGamalPrivateKey) {
-          throw ArgumentError('ElGamalPrivateKey are required for decryption.');
+          throw ArgumentError('Decryption requires private key.');
         }
       }
     } else {
@@ -55,8 +55,8 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
   @override
   Uint8List process(Uint8List data) {
-    var out = Uint8List(outputBlockSize);
-    var len = processBlock(data, 0, data.length, out, 0);
+    final out = Uint8List(outputBlockSize);
+    final len = processBlock(data, 0, data.length, out, 0);
     return out.sublist(0, len);
   }
 
@@ -66,7 +66,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
       throw StateError('$algorithmName not initialised');
     }
 
-    int maxLength = _forEncryption ? (_bitSize - 1 + 7) ~/ 8 : inputBlockSize;
+    final maxLength = _forEncryption ? (_bitSize - 1 + 7) ~/ 8 : inputBlockSize;
     if (inLen > maxLength) {
       throw ArgumentError('input too large for $algorithmName cipher.');
     }
@@ -108,10 +108,9 @@ class ElGamalEngine implements AsymmetricBlockCipher {
   void reset() {}
 
   BigInt _generateK(BigInt n) {
-    var nBitLength = n.bitLength;
     BigInt k;
     do {
-      k = _random.nextBigInteger(nBitLength);
+      k = _random.nextBigInteger(n.bitLength);
     } while ((k == BigInt.zero) || (k.compareTo(n) >= 0));
     return k;
   }

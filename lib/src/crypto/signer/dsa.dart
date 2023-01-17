@@ -34,10 +34,14 @@ class DSASigner implements Signer {
     if (params is DSAKeyParameters) {
       _key = params.getKey;
 
-      if (_forSigning && _key is! DSAPrivateKey) {
-        throw ArgumentError('Signing Requires Private Key.');
-      } else if (_key is! DSAPublicKey) {
-        throw ArgumentError('Verification Requires Public Key.');
+      if (_forSigning) {
+        if (_key is! DSAPrivateKey) {
+          throw ArgumentError('Signing requires private key.');
+        }
+      } else {
+        if (_key is! DSAPublicKey) {
+          throw ArgumentError('Verification requires public key.');
+        }
       }
     } else {
       throw ArgumentError('DSAKeyParameters are required.');
@@ -54,11 +58,10 @@ class DSASigner implements Signer {
     if (!_forSigning) {
       throw StateError('DSASigner not initialised for signature generation');
     }
-    message = _hashMessageIfNeeded(message);
 
     final pri = _key as DSAPrivateKey;
     final q = pri.q;
-    final e = _calculateE(q, message);
+    final e = _calculateE(q, _hashMessageIfNeeded(message));
     final k = _calculateK(q) + _getRandomizer(q);
 
     final r = pri.g.modPow(k, pri.p) % q;
@@ -79,17 +82,13 @@ class DSASigner implements Signer {
       return false;
     }
 
-    message = _hashMessageIfNeeded(message);
-
-    final e = _calculateE(q, message);
+    final e = _calculateE(q, _hashMessageIfNeeded(message));
     final c = signature.s.modInverse(q);
 
-    var u1 = (e * c) % q;
-    var u2 = (signature.r * c) % q;
-    u1 = pub.g.modPow(u1, pub.p);
-    u2 = pub.y.modPow(u2, pub.p);
+    final u1 = (e * c) % q;
+    final u2 = (signature.r * c) % q;
 
-    final v = ((u1 * u2) % pub.p) % q;
+    final v = ((pub.g.modPow(u1, pub.p) * pub.y.modPow(u2, pub.p)) % pub.p) % q;
 
     return v == signature.r;
   }
