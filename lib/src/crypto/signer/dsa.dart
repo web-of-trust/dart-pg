@@ -2,7 +2,6 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
@@ -30,10 +29,7 @@ class DSASigner implements Signer {
       _random = params.random;
       params = params.parameters;
     } else {
-      final random = Random.secure();
-      final max = double.maxFinite.toInt();
-      _random = SecureRandom('Fortuna')
-        ..seed(KeyParameter(Uint8List.fromList(List.generate(32, ((_) => random.nextInt(max))))));
+      _random = newSecureRandom();
     }
     if (params is DSAKeyParameters) {
       _key = params.getKey;

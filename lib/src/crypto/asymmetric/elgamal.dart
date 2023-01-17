@@ -2,7 +2,6 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
@@ -10,13 +9,13 @@ import 'package:pointycastle/api.dart';
 import '../../helpers.dart';
 
 class ElGamalEngine implements AsymmetricBlockCipher {
-  late final ElGamalAsymmetricKey? _key;
+  late ElGamalAsymmetricKey? _key;
 
-  late final SecureRandom _random;
+  late SecureRandom _random;
 
   bool _forEncryption = false;
 
-  late final int _bitSize;
+  late int _bitSize;
 
   @override
   String get algorithmName => 'ElGamal';
@@ -28,19 +27,20 @@ class ElGamalEngine implements AsymmetricBlockCipher {
       _random = params.random;
       params = params.parameters;
     } else {
-      final random = Random.secure();
-      final max = double.maxFinite.toInt();
-      _random = SecureRandom('Fortuna')
-        ..seed(KeyParameter(Uint8List.fromList(List.generate(32, ((_) => random.nextInt(max))))));
+      _random = newSecureRandom();
     }
     if (params is ElGamalKeyParameters) {
       _bitSize = params.getKey.p.bitLength;
       _key = params.getKey;
 
-      if (_forEncryption && _key is! ElGamalPublicKey) {
-        throw ArgumentError('ElGamalPublicKey are required for encryption.');
-      } else if (_key is! ElGamalPrivateKey) {
-        throw ArgumentError('ElGamalPublicKey are required for decryption.');
+      if (_forEncryption) {
+        if (_key is! ElGamalPublicKey) {
+          throw ArgumentError('ElGamalPublicKey are required for encryption.');
+        }
+      } else {
+        if (_key is! ElGamalPrivateKey) {
+          throw ArgumentError('ElGamalPrivateKey are required for decryption.');
+        }
       }
     } else {
       throw ArgumentError('ElGamalKeyParameters are required.');

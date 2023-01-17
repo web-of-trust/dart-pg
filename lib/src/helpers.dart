@@ -2,9 +2,11 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:fixnum/fixnum.dart';
+import 'package:pointycastle/api.dart';
 
 extension StringHelper on String {
   List<String> chunk(final int chunkSize) {
@@ -224,4 +226,10 @@ extension BigIntHelper on BigInt {
 
 extension DateTimeHelper on DateTime {
   Uint8List toBytes() => (millisecondsSinceEpoch ~/ 1000).pack32();
+}
+
+SecureRandom newSecureRandom() {
+  final random = Random.secure();
+  return SecureRandom('Fortuna')
+    ..seed(KeyParameter(Uint8List.fromList(List.generate(32, ((_) => random.nextInt(0xffffffff))))));
 }
