@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -33,6 +34,10 @@ extension StringHelper on String {
     }
 
     return result;
+  }
+
+  Uint8List stringToBytes() {
+    return utf8.encoder.convert(this);
   }
 
   bool hasMatch(final String text) => RegExp(this).hasMatch(text);

@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
@@ -62,10 +63,10 @@ class DSASigner implements Signer {
     final pri = _key as DSAPrivateKey;
     final q = pri.q;
     final e = _calculateE(q, _hashMessageIfNeeded(message));
-    final k = _calculateK(q) + _getRandomizer(q);
+    final k = _calculateK(q);
 
     final r = pri.g.modPow(k, pri.p) % q;
-    final s = (k.modInverse(q) * (e + (pri.x * r))) % q;
+    final s = k.modInverse(q) * (e + (pri.x * r)) % q;
 
     return DSASignature(r, s);
   }
@@ -94,24 +95,15 @@ class DSASigner implements Signer {
   }
 
   BigInt _calculateE(BigInt n, Uint8List message) {
-    final log2n = n.bitLength;
-    final messageBitLength = message.length * 8;
-    if (log2n >= messageBitLength) {
-      return message.toBigIntWithSign(1);
-    } else {
-      return message.toBigIntWithSign(1) >> (messageBitLength - log2n);
-    }
-  }
-
-  BigInt _getRandomizer(BigInt q) {
-    return (_random.nextBigInteger(7) + BigInt.from(128)) * q;
+    final length = min(message.length, n.bitLength ~/ 8);
+    return message.sublist(0, length).toBigIntWithSign(1);
   }
 
   BigInt _calculateK(BigInt n) {
     BigInt k;
     do {
       k = _random.nextBigInteger(n.bitLength);
-    } while (k == BigInt.zero || k >= n);
+    } while (k == BigInt.zero || k.compareTo(n) >= 0);
     return k;
   }
 
