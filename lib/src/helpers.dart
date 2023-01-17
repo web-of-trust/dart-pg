@@ -39,17 +39,17 @@ extension StringHelper on String {
 }
 
 extension IntHelper on int {
-  Uint8List pack16() => Uint8List(2)..buffer.asByteData().setInt16(0, this);
+  Uint8List pack16([Endian endian = Endian.big]) => Uint8List(2)..buffer.asByteData().setInt16(0, this, endian);
 
-  Uint8List pack16Le() => Uint8List(2)..buffer.asByteData().setInt16(0, this, Endian.little);
+  Uint8List pack16Le() => pack16(Endian.little);
 
-  Uint8List pack32() => Uint8List(4)..buffer.asByteData().setInt32(0, this);
+  Uint8List pack32([Endian endian = Endian.big]) => Uint8List(4)..buffer.asByteData().setInt32(0, this, endian);
 
-  Uint8List pack32Le() => Uint8List(4)..buffer.asByteData().setInt32(0, this, Endian.little);
+  Uint8List pack32Le() => pack32(Endian.little);
 
-  Uint8List pack64() => Uint8List(8)..buffer.asByteData().setInt64(0, this);
+  Uint8List pack64([Endian endian = Endian.big]) => Uint8List(8)..buffer.asByteData().setInt64(0, this, endian);
 
-  Uint8List pack64Le() => Uint8List(8)..buffer.asByteData().setInt64(0, this, Endian.little);
+  Uint8List pack64Le() => pack64(Endian.little);
 
   int rotateLeft8(int n) {
     assert(n >= 0);
@@ -58,49 +58,49 @@ extension IntHelper on int {
     return ((this << n) & 0xff) | (this >> (8 - n));
   }
 
-  int shiftLeft32(int n) {
+  int shiftLeft32(final int n) {
     return (Int64(toUnsigned(32)) << n).toInt();
   }
 
-  int shiftRight32(int n) {
+  int shiftRight32(final int n) {
     return (Int64(toUnsigned(32)) >> n).toInt();
   }
 
-  int rotateLeft32(int n) {
+  int rotateLeft32(final int n) {
     final num = Int64(toUnsigned(32));
     return ((num << n) + (num >> (32 - n))).toInt();
   }
 
-  int rotateRight32(int n) {
+  int rotateRight32(final int n) {
     final num = Int64(toUnsigned(32));
     return ((num >> n) + (num << (32 - n))).toInt();
   }
 }
 
 extension Uint8ListHelper on Uint8List {
-  int toIn16() => buffer.asByteData().getInt16(0);
+  int toIn16([Endian endian = Endian.big]) => buffer.asByteData().getInt16(0, endian);
 
-  int toUint16() => buffer.asByteData().getUint16(0);
+  int toUint16([Endian endian = Endian.big]) => buffer.asByteData().getUint16(0, endian);
 
-  int toLeIn16() => buffer.asByteData().getInt16(0, Endian.little);
+  int toLeIn16() => toIn16(Endian.little);
 
-  int toLeUint16() => buffer.asByteData().getUint16(0, Endian.little);
+  int toLeUint16() => toUint16(Endian.little);
 
-  int toInt32() => buffer.asByteData().getInt32(0);
+  int toInt32([Endian endian = Endian.big]) => buffer.asByteData().getInt32(0, endian);
 
-  int toUint32() => buffer.asByteData().getUint32(0);
+  int toUint32([Endian endian = Endian.big]) => buffer.asByteData().getUint32(0, endian);
 
-  int toLeInt32() => buffer.asByteData().getInt32(0, Endian.little);
+  int toLeInt32() => toInt32(Endian.little);
 
-  int toLeUint32() => buffer.asByteData().getUint32(0, Endian.little);
+  int toLeUint32() => toUint32(Endian.little);
 
-  int toInt64() => buffer.asByteData().getInt64(0);
+  int toInt64([Endian endian = Endian.big]) => buffer.asByteData().getInt64(0, endian);
 
-  int toUint64() => buffer.asByteData().getUint64(0);
+  int toUint64([Endian endian = Endian.big]) => buffer.asByteData().getUint64(0, endian);
 
-  int toLeInt64() => buffer.asByteData().getInt64(0, Endian.little);
+  int toLeInt64() => toInt64(Endian.little);
 
-  int toLeUint64() => buffer.asByteData().getUint64(0, Endian.little);
+  int toLeUint64() => toUint64(Endian.little);
 
   BigInt toBigInt() {
     final negative = isNotEmpty && this[0] & 0x80 == 0x80;
@@ -121,7 +121,7 @@ extension Uint8ListHelper on Uint8List {
         : BigInt.zero;
   }
 
-  BigInt toBigIntWithSign(int sign) {
+  BigInt toBigIntWithSign(final int sign) {
     if (sign == 0) {
       return BigInt.zero;
     }

@@ -11,9 +11,9 @@ import '../../helpers.dart';
 class DSASigner implements Signer {
   final Digest? _digest;
 
-  late final DSAAsymmetricKey? _key;
+  late DSAAsymmetricKey? _key;
 
-  late final SecureRandom _random;
+  late SecureRandom _random;
 
   bool _forSigning = false;
 

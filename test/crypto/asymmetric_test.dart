@@ -5,7 +5,7 @@ import 'package:dart_pg/src/helpers.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('ElGamal engine tests', () {
+  group('ElGamal encryption tests', () {
     test('Enc 512 Test', () {
       final p512 = BigInt.parse(
           '9494fec095f3b85ee286542b3836fc81a5dd0a0349b4c239dd38744d488cf8e31db8bcb7d33b41abb9e5a33cca9144b1cef332c94bf0573bf047a3aca98cdf3b',
@@ -39,6 +39,13 @@ void main() {
       _elGamalEncryptionTest(p1024, g1024, 1024);
     }));
   });
+
+  group('DSA signer tests', (() {
+    final pValue = BigInt.parse(
+        '8df2a494492276aa3d25759bb06869cbeac0d83afb8d0cf7cbb8324f0d7882e5d0762fc5b7210eafc2e9adac32ab7aac49693dfbf83724c2ec0736ee31c80291',
+        radix: 16);
+    final qValue = BigInt.parse('c773218c737ec8ee993b4f2ded30f48edace915f', radix: 16);
+  }));
 }
 
 void _elGamalEncryptionTest(BigInt p, BigInt g, int size) {
