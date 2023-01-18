@@ -63,10 +63,28 @@ class DSASigner implements Signer {
     final pri = _key as DSAPrivateKey;
     final q = pri.q;
     final e = _calculateE(q, _hashMessageIfNeeded(message));
-    final k = _calculateK(q);
 
-    final r = pri.g.modPow(k, pri.p) % q;
-    final s = k.modInverse(q) * (e + (pri.x * r)) % q;
+    BigInt r;
+    BigInt s;
+
+    do {
+      // generate s
+      var k = BigInt.zero;
+      var kInv = BigInt.zero;
+      do {
+        // generate r
+        try {
+          k = _calculateK(q);
+          kInv = k.modInverse(q);
+          // r = (g**k mod p) mod q
+          r = pri.g.modPow(k, pri.p) % q;
+        } catch (_) {
+          r = BigInt.zero;
+        }
+      } while (r.sign == 0);
+      // s = k^-1 * (E(m) + x*r) mod q
+      s = kInv * (e + (pri.x * r)) % q;
+    } while (s.sign == 0);
 
     return DSASignature(r, s);
   }
@@ -84,14 +102,23 @@ class DSASigner implements Signer {
     }
 
     final e = _calculateE(q, _hashMessageIfNeeded(message));
-    final c = signature.s.modInverse(q);
+    // w = s^-1 mod q
+    final w = signature.s.modInverse(q);
 
-    final u1 = (e * c) % q;
-    final u2 = (signature.r * c) % q;
+    // u1 = E(m) * w mod q
+    final u1 = (e * w) % q;
+    // u2 = r * w mod q
+    final u2 = (signature.r * w) % q;
 
-    final v = ((pub.g.modPow(u1, pub.p) * pub.y.modPow(u2, pub.p)) % pub.p) % q;
+    // t1 = g**u1 mod p
+    final t1 = pub.g.modPow(u1, pub.p);
+    // t2 = y**u2 mod p
+    final t2 = pub.y.modPow(u2, pub.p);
 
-    return v == signature.r;
+    // v = (g**1 * y**u2 mod p) mod q
+    final v = ((t1 * t2) % pub.p) % q;
+
+    return v.compareTo(signature.r) == 0;
   }
 
   BigInt _calculateE(BigInt n, Uint8List message) {
@@ -103,7 +130,7 @@ class DSASigner implements Signer {
     BigInt k;
     do {
       k = _random.nextBigInteger(n.bitLength);
-    } while (k == BigInt.zero || k.compareTo(n) >= 0);
+    } while (k == BigInt.zero || k >= n);
     return k;
   }
 
@@ -138,7 +165,7 @@ abstract class DSAAsymmetricKey implements AsymmetricKey {
 }
 
 class DSAPublicKey extends DSAAsymmetricKey implements PublicKey {
-  /// g^x mod p
+  /// g ** x mod p
   final BigInt y;
 
   DSAPublicKey(this.y, super.p, super.q, super.g);
