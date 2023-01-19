@@ -227,6 +227,29 @@ extension BigIntHelper on BigInt {
     }
     return result;
   }
+
+  BigInt powMod(BigInt exponent, BigInt modulus) {
+    if (modulus.isNegative || modulus.sign == 0) {
+      throw ArgumentError('non-positive modulo');
+    }
+    if (exponent.isNegative) {
+      return modInverse(modulus).powMod(exponent.abs(), modulus);
+    }
+    if (exponent.sign == 0) {
+      return this % modulus;
+    }
+    var s = BigInt.one;
+    var t = this;
+    var u = exponent;
+    while (!(u.sign == 0)) {
+      if ((u & BigInt.one) == BigInt.one) {
+        s = (s * t) % modulus;
+      }
+      u = u >> 1;
+      t = (t * t) % modulus;
+    }
+    return s;
+  }
 }
 
 extension DateTimeHelper on DateTime {

@@ -83,7 +83,7 @@ class DSASigner implements Signer {
         }
       } while (r.sign == 0);
       // s = k^-1 * (E(m) + x*r) mod q
-      s = kInv * (e + (pri.x * r)) % q;
+      s = (kInv * (e + (pri.x * r))) % q;
     } while (s.sign == 0);
 
     return DSASignature(r, s);
@@ -94,10 +94,10 @@ class DSASigner implements Signer {
     final pub = _key as DSAPublicKey;
     final q = pub.q;
 
-    if (signature.r.compareTo(BigInt.one) < 0 || signature.r.compareTo(q) >= 0) {
+    if (signature.r.sign < 0 || signature.r.compareTo(q) >= 0) {
       return false;
     }
-    if (signature.s.compareTo(BigInt.one) < 0 || signature.s.compareTo(q) >= 0) {
+    if (signature.s.sign < 0 || signature.s.compareTo(q) >= 0) {
       return false;
     }
 

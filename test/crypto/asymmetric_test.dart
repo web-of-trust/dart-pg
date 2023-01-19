@@ -43,6 +43,26 @@ void main() {
 
       _elGamalEncryptionTest(p1024, g1024, 1024);
     }));
+
+    test('Diffie Hellman key agreement test', (() {
+      final prime = BigInt.parse(
+          'ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552bb9ed529077096966d670c354e4abc9804f1746c08ca18217c32905e462e36ce3be39e772c180e86039b2783a2ec07a28fb5c55df06f4c52c9de2bcbf6955817183995497cea956ae515d2261898fa051015728e5a8aacaa68ffffffffffffffff',
+          radix: 16);
+      final generator = BigInt.two;
+      final alicePrivate = BigInt.parse(
+          '22606eda7960458bc9d65f46dd96f114f9a004f0493c1f262139d2c8063b733162e876182ca3bf063ab1a167abdb7f03e0a225a6205660439f6ce46d252069ff',
+          radix: 16);
+      final bobPrivate = BigInt.parse(
+          '6e3efa13a96025d63e4b0d88a09b3a46ddfe9dd3bc9d16554898c02b4ac181f0ceb4e818664b12f02c71a07215c400f988352a4779f3e88836f7c3d3b3c739de',
+          radix: 16);
+
+      final alicePublic = generator.modPow(alicePrivate, prime);
+      final bobPublic = generator.modPow(bobPrivate, prime);
+
+      final aliceShared = bobPublic.modPow(alicePrivate, prime);
+      final bobShared = alicePublic.modPow(bobPrivate, prime);
+      expect(aliceShared, bobShared);
+    }));
   });
 
   group('DSA signer tests', (() {
