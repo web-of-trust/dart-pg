@@ -74,13 +74,13 @@ class PublicKey extends ContainedPacket {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        pgpKey = RsaPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        pgpKey = RSAPublicPgpKey.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.elgamal:
         pgpKey = ElGamalPublicPgpKey.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.dsa:
-        pgpKey = DsaPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        pgpKey = DSAPublicPgpKey.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdh:
         pgpKey = ECDHPublicPgpKey.fromPacketData(bytes.sublist(pos));
@@ -104,7 +104,7 @@ class PublicKey extends ContainedPacket {
   void _calculateFingerprintAndKeyID() {
     final List<int> toHash = [];
     if (version <= 3) {
-      final pk = pgpKey as RsaPublicPgpKey;
+      final pk = pgpKey as RSAPublicPgpKey;
       final bytes = pk.modulus!.toBytes();
 
       toHash.addAll(bytes);

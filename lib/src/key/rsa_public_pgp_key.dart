@@ -8,12 +8,12 @@ import 'package:pointycastle/pointycastle.dart';
 import '../helpers.dart';
 import 'pgp_key.dart';
 
-class RsaPublicPgpKey extends PgpKey {
+class RSAPublicPgpKey extends PgpKey {
   final RSAPublicKey publicKey;
 
-  RsaPublicPgpKey(this.publicKey);
+  RSAPublicPgpKey(this.publicKey);
 
-  factory RsaPublicPgpKey.fromPacketData(Uint8List bytes) {
+  factory RSAPublicPgpKey.fromPacketData(Uint8List bytes) {
     var pos = 0;
     var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
@@ -24,7 +24,7 @@ class RsaPublicPgpKey extends PgpKey {
     pos += 2;
     final publicExponent = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
-    return RsaPublicPgpKey(RSAPublicKey(modulus, publicExponent));
+    return RSAPublicPgpKey(RSAPublicKey(modulus, publicExponent));
   }
 
   BigInt? get modulus => publicKey.modulus;

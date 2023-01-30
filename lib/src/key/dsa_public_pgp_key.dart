@@ -4,18 +4,16 @@
 
 import 'dart:typed_data';
 
+import '../crypto/signer/dsa.dart';
 import '../helpers.dart';
 import 'pgp_key.dart';
 
-class DsaPublicPgpKey extends PgpKey {
-  final BigInt p;
-  final BigInt q;
-  final BigInt g;
-  final BigInt y;
+class DSAPublicPgpKey extends PgpKey {
+  final DSAPublicKey publicKey;
 
-  DsaPublicPgpKey(this.p, this.q, this.g, this.y);
+  DSAPublicPgpKey(this.publicKey);
 
-  factory DsaPublicPgpKey.fromPacketData(Uint8List bytes) {
+  factory DSAPublicPgpKey.fromPacketData(Uint8List bytes) {
     var pos = 0;
     var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
@@ -36,24 +34,24 @@ class DsaPublicPgpKey extends PgpKey {
     pos += 2;
     final y = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
-    return DsaPublicPgpKey(p, q, g, y);
+    return DSAPublicPgpKey(DSAPublicKey(y, p, q, g));
   }
 
   @override
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(p.bitLength.pack16());
-    bytes.addAll(p.toBytes());
+    bytes.addAll(publicKey.p.bitLength.pack16());
+    bytes.addAll(publicKey.p.toBytes());
 
-    bytes.addAll(q.bitLength.pack16());
-    bytes.addAll(q.toBytes());
+    bytes.addAll(publicKey.q.bitLength.pack16());
+    bytes.addAll(publicKey.q.toBytes());
 
-    bytes.addAll(g.bitLength.pack16());
-    bytes.addAll(g.toBytes());
+    bytes.addAll(publicKey.g.bitLength.pack16());
+    bytes.addAll(publicKey.g.toBytes());
 
-    bytes.addAll(y.bitLength.pack16());
-    bytes.addAll(y.toBytes());
+    bytes.addAll(publicKey.y.bitLength.pack16());
+    bytes.addAll(publicKey.y.toBytes());
 
     return Uint8List.fromList(bytes);
   }

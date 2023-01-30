@@ -4,15 +4,14 @@
 
 import 'dart:typed_data';
 
+import '../crypto/asymmetric/elgamal.dart';
 import '../helpers.dart';
 import 'pgp_key.dart';
 
 class ElGamalPublicPgpKey extends PgpKey {
-  final BigInt p;
-  final BigInt g;
-  final BigInt y;
+  final ElGamalPublicKey publicKey;
 
-  ElGamalPublicPgpKey(this.p, this.g, this.y);
+  ElGamalPublicPgpKey(this.publicKey);
 
   factory ElGamalPublicPgpKey.fromPacketData(Uint8List bytes) {
     var pos = 0;
@@ -30,21 +29,21 @@ class ElGamalPublicPgpKey extends PgpKey {
     pos += 2;
     final y = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
-    return ElGamalPublicPgpKey(p, g, y);
+    return ElGamalPublicPgpKey(ElGamalPublicKey(y, p, g));
   }
 
   @override
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(p.bitLength.pack16());
-    bytes.addAll(p.toBytes());
+    bytes.addAll(publicKey.p.bitLength.pack16());
+    bytes.addAll(publicKey.p.toBytes());
 
-    bytes.addAll(g.bitLength.pack16());
-    bytes.addAll(g.toBytes());
+    bytes.addAll(publicKey.g.bitLength.pack16());
+    bytes.addAll(publicKey.g.toBytes());
 
-    bytes.addAll(y.bitLength.pack16());
-    bytes.addAll(y.toBytes());
+    bytes.addAll(publicKey.y.bitLength.pack16());
+    bytes.addAll(publicKey.y.toBytes());
 
     return Uint8List.fromList(bytes);
   }

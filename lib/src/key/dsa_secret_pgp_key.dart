@@ -7,17 +7,17 @@ import 'dart:typed_data';
 import '../helpers.dart';
 import 'pgp_key.dart';
 
-class DsaSecretPgpKey extends PgpKey {
+class DSASecretPgpKey extends PgpKey {
   final BigInt x;
 
-  DsaSecretPgpKey(this.x);
+  DSASecretPgpKey(this.x);
 
-  factory DsaSecretPgpKey.fromPacketData(Uint8List bytes) {
+  factory DSASecretPgpKey.fromPacketData(Uint8List bytes) {
     var pos = 0;
     var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
     final x = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
-    return DsaSecretPgpKey(x);
+    return DSASecretPgpKey(x);
   }
 
   @override

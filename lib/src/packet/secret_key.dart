@@ -116,13 +116,13 @@ class SecretKey extends ContainedPacket {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        pgpKey = RsaSecretBcpgKey.fromPacketData(clearText);
+        pgpKey = RSASecretBcpgKey.fromPacketData(clearText);
         break;
       case KeyAlgorithm.elgamal:
         pgpKey = ElGamalSecretPgpKey.fromPacketData(clearText);
         break;
       case KeyAlgorithm.dsa:
-        pgpKey = DsaSecretPgpKey.fromPacketData(clearText);
+        pgpKey = DSASecretPgpKey.fromPacketData(clearText);
         break;
       case KeyAlgorithm.ecdh:
       case KeyAlgorithm.ecdsa:
