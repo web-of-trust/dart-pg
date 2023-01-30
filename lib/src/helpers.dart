@@ -228,12 +228,12 @@ extension BigIntHelper on BigInt {
     return result;
   }
 
-  BigInt powMod(BigInt exponent, BigInt modulus) {
+  BigInt modExp(BigInt exponent, BigInt modulus) {
     if (modulus.isNegative || modulus.sign == 0) {
       throw ArgumentError('non-positive modulo');
     }
     if (exponent.isNegative) {
-      return modInverse(modulus).powMod(exponent.abs(), modulus);
+      return modInverse(modulus).modExp(exponent.abs(), modulus);
     }
     if (exponent.sign == 0) {
       return this % modulus;
