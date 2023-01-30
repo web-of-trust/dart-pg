@@ -11,6 +11,7 @@ import '../key/dsa_public_params.dart';
 import '../key/ecdh_public_params.dart';
 import '../key/ecdsa_public_params.dart';
 import '../key/elgamal_public_params.dart';
+import '../key/key_id.dart';
 import '../key/key_params.dart';
 import '../key/rsa_public_params.dart';
 import 'contained_packet.dart';
@@ -30,7 +31,7 @@ class PublicKey extends ContainedPacket {
 
   late final Uint8List _fingerprint;
 
-  late final int _keyID;
+  late final KeyID _keyID;
 
   PublicKey(
     this.version,
@@ -111,7 +112,7 @@ class PublicKey extends ContainedPacket {
       toHash.addAll(pk.publicExponent!.toBytes());
 
       _fingerprint = Uint8List.fromList(md5.convert(toHash).bytes);
-      _keyID = bytes.sublist(bytes.length - 8).toUint64();
+      _keyID = KeyID(bytes.sublist(bytes.length - 8));
     } else {
       final bytes = toPacketData();
       if (version == 5) {
@@ -120,24 +121,24 @@ class PublicKey extends ContainedPacket {
         toHash.addAll(bytes);
 
         _fingerprint = Uint8List.fromList(sha256.convert(toHash).bytes);
-        _keyID = _fingerprint.sublist(0, 8).toUint64();
+        _keyID = KeyID(_fingerprint.sublist(0, 8));
       } else if (version == 4) {
         toHash.add(0x99);
         toHash.addAll(bytes.length.pack16());
         toHash.addAll(bytes);
 
         _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
-        _keyID = _fingerprint.sublist(12, 20).toUint64();
+        _keyID = KeyID(_fingerprint.sublist(12, 20));
       } else {
         _fingerprint = Uint8List.fromList([]);
-        _keyID = 0;
+        _keyID = KeyID(Uint8List.fromList([0]));
       }
     }
   }
 
   Uint8List get fingerprint => _fingerprint;
 
-  int get keyID => _keyID;
+  KeyID get keyID => _keyID;
 
   @override
   Uint8List toPacketData() {
