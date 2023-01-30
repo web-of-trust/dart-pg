@@ -6,14 +6,14 @@ import 'dart:typed_data';
 
 import '../crypto/signer/dsa.dart';
 import '../helpers.dart';
-import 'pgp_key.dart';
+import 'key_params.dart';
 
-class DSAPublicPgpKey extends PgpKey {
+class DSAPublicParams extends KeyParams {
   final DSAPublicKey publicKey;
 
-  DSAPublicPgpKey(this.publicKey);
+  DSAPublicParams(this.publicKey);
 
-  factory DSAPublicPgpKey.fromPacketData(Uint8List bytes) {
+  factory DSAPublicParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
     var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
@@ -34,7 +34,7 @@ class DSAPublicPgpKey extends PgpKey {
     pos += 2;
     final y = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
-    return DSAPublicPgpKey(DSAPublicKey(y, p, q, g));
+    return DSAPublicParams(DSAPublicKey(y, p, q, g));
   }
 
   @override

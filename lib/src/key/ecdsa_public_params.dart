@@ -4,11 +4,11 @@
 
 import 'dart:typed_data';
 
-import 'ec_public_pgp_key.dart';
+import 'ec_public_params.dart';
 
-class ECDsaPublicPgpKey extends ECPublicPgpKey {
-  ECDsaPublicPgpKey(super.publicKey);
+class ECDsaPublicParams extends ECPublicParams {
+  ECDsaPublicParams(super.publicKey);
 
-  factory ECDsaPublicPgpKey.fromPacketData(Uint8List bytes) =>
-      ECDsaPublicPgpKey(ECPublicPgpKey.publicKeyPacketData(bytes));
+  factory ECDsaPublicParams.fromPacketData(Uint8List bytes) =>
+      ECDsaPublicParams(ECPublicParams.publicKeyPacketData(bytes));
 }

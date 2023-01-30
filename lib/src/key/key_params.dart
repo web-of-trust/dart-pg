@@ -4,6 +4,6 @@
 
 import 'dart:typed_data';
 
-abstract class PgpKey {
-    Uint8List encode();
+abstract class KeyParams {
+  Uint8List encode();
 }

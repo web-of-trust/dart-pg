@@ -6,14 +6,14 @@ import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
 import '../helpers.dart';
-import 'pgp_key.dart';
+import 'key_params.dart';
 
-class RSASecretBcpgKey extends PgpKey {
+class RSASecretParams extends KeyParams {
   final RSAPrivateKey privateKey;
 
   final BigInt qInv;
 
-  RSASecretBcpgKey(this.privateKey, {BigInt? qInv}) : qInv = qInv ?? privateKey.q!.modInverse(privateKey.p!);
+  RSASecretParams(this.privateKey, {BigInt? qInv}) : qInv = qInv ?? privateKey.q!.modInverse(privateKey.p!);
 
   BigInt? get modulus => privateKey.modulus;
 
@@ -25,7 +25,7 @@ class RSASecretBcpgKey extends PgpKey {
 
   BigInt? get primeQ => privateKey.q;
 
-  factory RSASecretBcpgKey.fromPacketData(Uint8List bytes) {
+  factory RSASecretParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
     var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
@@ -46,7 +46,7 @@ class RSASecretBcpgKey extends PgpKey {
     pos += 2;
     final qInv = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
-    return RSASecretBcpgKey(RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ), qInv: qInv);
+    return RSASecretParams(RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ), qInv: qInv);
   }
 
   @override

@@ -26,7 +26,7 @@ class SecretSubkey extends SecretKey {
       PublicSubkey(
         publicKey.version,
         publicKey.creationTime,
-        publicKey.pgpKey,
+        publicKey.publicParams,
         expirationDays: publicKey.expirationDays,
         algorithm: publicKey.algorithm,
       ),

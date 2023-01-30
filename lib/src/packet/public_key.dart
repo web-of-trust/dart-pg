@@ -7,12 +7,12 @@ import 'package:crypto/crypto.dart';
 
 import '../enums.dart';
 import '../helpers.dart';
-import '../key/dsa_public_pgp_key.dart';
-import '../key/ecdh_public_pgp_key.dart';
-import '../key/ecdsa_public_pgp_key.dart';
-import '../key/elgamal_public_pgp_key.dart';
-import '../key/pgp_key.dart';
-import '../key/rsa_public_pgp_key.dart';
+import '../key/dsa_public_params.dart';
+import '../key/ecdh_public_params.dart';
+import '../key/ecdsa_public_params.dart';
+import '../key/elgamal_public_params.dart';
+import '../key/key_params.dart';
+import '../key/rsa_public_params.dart';
 import 'contained_packet.dart';
 
 /// PublicKey represents an OpenPGP public key.
@@ -26,7 +26,7 @@ class PublicKey extends ContainedPacket {
 
   final KeyAlgorithm algorithm;
 
-  final PgpKey pgpKey;
+  final KeyParams publicParams;
 
   late final Uint8List _fingerprint;
 
@@ -35,7 +35,7 @@ class PublicKey extends ContainedPacket {
   PublicKey(
     this.version,
     this.creationTime,
-    this.pgpKey, {
+    this.publicParams, {
     this.expirationDays = 0,
     this.algorithm = KeyAlgorithm.rsaEncryptSign,
     super.tag = PacketTag.publicKey,
@@ -69,24 +69,24 @@ class PublicKey extends ContainedPacket {
 
     /// A series of values comprising the key material.
     /// This is algorithm-specific and described in section XXXX.
-    final PgpKey pgpKey;
+    final KeyParams publicParams;
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        pgpKey = RSAPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        publicParams = RSAPublicParams.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.elgamal:
-        pgpKey = ElGamalPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        publicParams = ElGamalPublicParams.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.dsa:
-        pgpKey = DSAPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        publicParams = DSAPublicParams.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdh:
-        pgpKey = ECDHPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        publicParams = ECDHPublicParams.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdsa:
-        pgpKey = ECDsaPublicPgpKey.fromPacketData(bytes.sublist(pos));
+        publicParams = ECDsaPublicParams.fromPacketData(bytes.sublist(pos));
         break;
       default:
         throw UnsupportedError('Unknown PGP public key algorithm encountered');
@@ -94,7 +94,7 @@ class PublicKey extends ContainedPacket {
     return PublicKey(
       version,
       creationTime,
-      pgpKey,
+      publicParams,
       expirationDays: expirationDays,
       algorithm: algorithm,
     );
@@ -104,14 +104,14 @@ class PublicKey extends ContainedPacket {
   void _calculateFingerprintAndKeyID() {
     final List<int> toHash = [];
     if (version <= 3) {
-      final pk = pgpKey as RSAPublicPgpKey;
+      final pk = publicParams as RSAPublicParams;
       final bytes = pk.modulus!.toBytes();
 
       toHash.addAll(bytes);
       toHash.addAll(pk.publicExponent!.toBytes());
 
       _fingerprint = Uint8List.fromList(md5.convert(toHash).bytes);
-      _keyID = bytes.sublist(bytes.length - 8).toInt64();
+      _keyID = bytes.sublist(bytes.length - 8).toUint64();
     } else {
       final bytes = toPacketData();
       if (version == 5) {
@@ -120,14 +120,14 @@ class PublicKey extends ContainedPacket {
         toHash.addAll(bytes);
 
         _fingerprint = Uint8List.fromList(sha256.convert(toHash).bytes);
-        _keyID = _fingerprint.sublist(0, 8).toInt64();
+        _keyID = _fingerprint.sublist(0, 8).toUint64();
       } else if (version == 4) {
         toHash.add(0x99);
         toHash.addAll(bytes.length.pack16());
         toHash.addAll(bytes);
 
         _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
-        _keyID = _fingerprint.sublist(12, 20).toInt64();
+        _keyID = _fingerprint.sublist(12, 20).toUint64();
       } else {
         _fingerprint = Uint8List.fromList([]);
         _keyID = 0;
@@ -147,7 +147,7 @@ class PublicKey extends ContainedPacket {
     }
     bytes.add(algorithm.value & 0xff);
 
-    final keyData = pgpKey.encode();
+    final keyData = publicParams.encode();
     if (version == 5) {
       bytes.addAll(keyData.length.pack32());
     }

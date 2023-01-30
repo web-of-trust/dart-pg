@@ -7,12 +7,12 @@ import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
 import '../enums.dart';
-import 'pgp_key.dart';
+import 'key_params.dart';
 
-abstract class ECPublicPgpKey extends PgpKey {
+abstract class ECPublicParams extends KeyParams {
   final ECPublicKey publicKey;
 
-  ECPublicPgpKey(this.publicKey);
+  ECPublicParams(this.publicKey);
 
   @override
   Uint8List encode() {

@@ -7,18 +7,18 @@ import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
 import '../enums.dart';
-import 'ec_public_pgp_key.dart';
+import 'ec_public_params.dart';
 
-class ECDHPublicPgpKey extends ECPublicPgpKey {
+class ECDHPublicParams extends ECPublicParams {
   final int reserved;
 
   final HashAlgorithm hashAlgorithm;
 
   final SymmetricAlgorithm symmetricAlgorithm;
 
-  ECDHPublicPgpKey(super.publicKey, this.hashAlgorithm, this.symmetricAlgorithm, {this.reserved = 0x1});
+  ECDHPublicParams(super.publicKey, this.hashAlgorithm, this.symmetricAlgorithm, {this.reserved = 0x1});
 
-  factory ECDHPublicPgpKey.fromPacketData(Uint8List bytes) {
+  factory ECDHPublicParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
     final length = bytes[pos++];
     if (length == 0 || length == 0xFF) {
@@ -33,7 +33,7 @@ class ECDHPublicPgpKey extends ECPublicPgpKey {
     final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList(derBytes));
 
     pos += length;
-    final parameters = ECPublicPgpKey.parametersFromOid(oid);
+    final parameters = ECPublicParams.parametersFromOid(oid);
     final point = parameters.curve.decodePoint(bytes.sublist(pos));
 
     final encodedLength = point!.getEncoded(false).length;
@@ -43,7 +43,7 @@ class ECDHPublicPgpKey extends ECPublicPgpKey {
     final reserved = kdfBytes[1];
     final hashAlgorithm = HashAlgorithm.values.firstWhere((hash) => hash.value == kdfBytes[2]);
     final symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((sym) => sym.value == kdfBytes[3]);
-    return ECDHPublicPgpKey(
+    return ECDHPublicParams(
       ECPublicKey(point, parameters),
       hashAlgorithm,
       symmetricAlgorithm,

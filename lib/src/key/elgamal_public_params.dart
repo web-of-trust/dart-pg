@@ -6,14 +6,14 @@ import 'dart:typed_data';
 
 import '../crypto/asymmetric/elgamal.dart';
 import '../helpers.dart';
-import 'pgp_key.dart';
+import 'key_params.dart';
 
-class ElGamalPublicPgpKey extends PgpKey {
+class ElGamalPublicParams extends KeyParams {
   final ElGamalPublicKey publicKey;
 
-  ElGamalPublicPgpKey(this.publicKey);
+  ElGamalPublicParams(this.publicKey);
 
-  factory ElGamalPublicPgpKey.fromPacketData(Uint8List bytes) {
+  factory ElGamalPublicParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
     var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
@@ -29,7 +29,7 @@ class ElGamalPublicPgpKey extends PgpKey {
     pos += 2;
     final y = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
 
-    return ElGamalPublicPgpKey(ElGamalPublicKey(y, p, g));
+    return ElGamalPublicParams(ElGamalPublicKey(y, p, g));
   }
 
   @override

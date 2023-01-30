@@ -5,19 +5,19 @@
 import 'dart:typed_data';
 
 import '../helpers.dart';
-import 'pgp_key.dart';
+import 'key_params.dart';
 
-class DSASecretPgpKey extends PgpKey {
+class DSASecretParams extends KeyParams {
   final BigInt x;
 
-  DSASecretPgpKey(this.x);
+  DSASecretParams(this.x);
 
-  factory DSASecretPgpKey.fromPacketData(Uint8List bytes) {
+  factory DSASecretParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
     var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
     final x = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
-    return DSASecretPgpKey(x);
+    return DSASecretParams(x);
   }
 
   @override

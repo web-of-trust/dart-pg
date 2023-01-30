@@ -4,28 +4,30 @@
 
 import 'dart:typed_data';
 
+import 'package:pointycastle/pointycastle.dart';
+
 import '../helpers.dart';
-import 'pgp_key.dart';
+import 'key_params.dart';
 
-class ElGamalSecretPgpKey extends PgpKey {
-  final BigInt x;
+class ECSecretParams extends KeyParams {
+  final ECPrivateKey privateKey;
 
-  ElGamalSecretPgpKey(this.x);
+  ECSecretParams(this.privateKey);
 
-  factory ElGamalSecretPgpKey.fromPacketData(Uint8List bytes) {
+  factory ECSecretParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
     var bitLength = bytes.sublist(pos, pos + 2).toIn16();
     pos += 2;
-    final x = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
-    return ElGamalSecretPgpKey(x);
+    final d = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    return ECSecretParams(ECPrivateKey(d, null));
   }
 
   @override
   Uint8List encode() {
     final List<int> bytes = [];
 
-    bytes.addAll(x.bitLength.pack16());
-    bytes.addAll(x.toBytes());
+    bytes.addAll(privateKey.d!.bitLength.pack16());
+    bytes.addAll(privateKey.d!.toBytes());
 
     return Uint8List.fromList(bytes);
   }

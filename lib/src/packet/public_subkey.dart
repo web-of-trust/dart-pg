@@ -22,7 +22,7 @@ class PublicSubkey extends PublicKey {
     return PublicSubkey(
       publicKey.version,
       publicKey.creationTime,
-      publicKey.pgpKey,
+      publicKey.publicParams,
       expirationDays: publicKey.expirationDays,
       algorithm: publicKey.algorithm,
     );
