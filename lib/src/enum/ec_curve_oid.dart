@@ -9,7 +9,9 @@ enum EcCurveOid {
   secp256k1('1.3.132.0.10'),
   brainpoolP256r1('1.3.36.3.3.2.8.1.1.7'),
   brainpoolP384r1('1.3.36.3.3.2.8.1.1.11'),
-  brainpoolP512r1('1.3.36.3.3.2.8.1.1.13');
+  brainpoolP512r1('1.3.36.3.3.2.8.1.1.13'),
+  ed25519('1.3.6.1.4.1.11591.15.1'),
+  curve25519('1.3.6.1.4.1.3029.1.5.1');
 
   final String identifierString;
 
@@ -31,6 +33,10 @@ enum EcCurveOid {
         return [1, 3, 36, 3, 3, 2, 8, 1, 1, 11];
       case brainpoolP512r1:
         return [1, 3, 36, 3, 3, 2, 8, 1, 1, 13];
+      case ed25519:
+        return [1, 3, 6, 1, 4, 1, 11591, 15, 1];
+      case curve25519:
+        return [1, 3, 6, 1, 4, 1, 3029, 1, 5, 1];
     }
   }
 }
