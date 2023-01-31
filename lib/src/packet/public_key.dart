@@ -15,16 +15,21 @@ import '../key/key_id.dart';
 import '../key/key_params.dart';
 import '../key/rsa_public_params.dart';
 import 'contained_packet.dart';
+import 'key_packet.dart';
 
 /// PublicKey represents an OpenPGP public key.
 /// See RFC 4880, section 5.5.2.
-class PublicKeyPacket extends ContainedPacket {
+class PublicKeyPacket extends ContainedPacket implements KeyPacket {
+  @override
   final int version;
 
+  @override
   final DateTime creationTime;
 
+  @override
   final int expirationDays;
 
+  @override
   final KeyAlgorithm algorithm;
 
   final KeyParams publicParams;
@@ -136,8 +141,10 @@ class PublicKeyPacket extends ContainedPacket {
     }
   }
 
+  @override
   Uint8List get fingerprint => _fingerprint;
 
+  @override
   KeyID get keyID => _keyID;
 
   @override

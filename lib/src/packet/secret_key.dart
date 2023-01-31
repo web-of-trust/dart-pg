@@ -4,6 +4,7 @@
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/key/key_id.dart';
 import 'package:pointycastle/pointycastle.dart' as pc;
 
 import '../enums.dart';
@@ -15,11 +16,12 @@ import '../key/key_params.dart';
 import '../key/rsa_secret_params.dart';
 import '../key/s2k.dart';
 import 'contained_packet.dart';
+import 'key_packet.dart';
 import 'public_key.dart';
 
 /// SecretKey represents a possibly encrypted private key.
 /// See RFC 4880, section 5.5.3.
-class SecretKeyPacket extends ContainedPacket {
+class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   final PublicKeyPacket publicKey;
 
   final SymmetricAlgorithm symmetricAlgorithm;
@@ -143,4 +145,22 @@ class SecretKeyPacket extends ContainedPacket {
     bytes.addAll([...iv, ...keyData]);
     return Uint8List.fromList(bytes);
   }
+
+  @override
+  KeyAlgorithm get algorithm => publicKey.algorithm;
+
+  @override
+  DateTime get creationTime => publicKey.creationTime;
+
+  @override
+  int get expirationDays => publicKey.expirationDays;
+
+  @override
+  Uint8List get fingerprint => publicKey.fingerprint;
+
+  @override
+  KeyID get keyID => publicKey.keyID;
+
+  @override
+  int get version => publicKey.version;
 }

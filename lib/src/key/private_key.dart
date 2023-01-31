@@ -4,4 +4,6 @@
 
 import 'pgp_key.dart';
 
-class PrivateKey extends PgpKey {}
+class PrivateKey extends PgpKey {
+  PrivateKey(super.keyPacket);
+}
