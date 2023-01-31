@@ -136,13 +136,13 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
         _keyID = KeyID(_fingerprint.sublist(12, 20));
       } else {
         _fingerprint = Uint8List.fromList([]);
-        _keyID = KeyID(Uint8List.fromList([0]));
+        _keyID = KeyID(Uint8List.fromList([0, 0, 0, 0, 0, 0, 0, 0]));
       }
     }
   }
 
   @override
-  Uint8List get fingerprint => _fingerprint;
+  String get fingerprint => _fingerprint.toHexadecimal();
 
   @override
   KeyID get keyID => _keyID;

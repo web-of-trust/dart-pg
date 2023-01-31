@@ -156,7 +156,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   int get expirationDays => publicKey.expirationDays;
 
   @override
-  Uint8List get fingerprint => publicKey.fingerprint;
+  String get fingerprint => publicKey.fingerprint;
 
   @override
   KeyID get keyID => publicKey.keyID;
