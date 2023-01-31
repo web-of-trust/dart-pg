@@ -6,8 +6,9 @@ import 'dart:typed_data';
 
 import '../enums.dart';
 import 'public_key.dart';
+import 'subkey_packet.dart';
 
-class PublicSubkeyPacket extends PublicKeyPacket {
+class PublicSubkeyPacket extends PublicKeyPacket implements SubkeyPacket {
   PublicSubkeyPacket(
     super.version,
     super.createdTime,

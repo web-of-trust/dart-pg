@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 import 'test_data.dart';
 
 void main() {
-  group('packet tests', (() {
+  group('user packet tests', (() {
     final faker = Faker();
     test('user id test', (() {
       final name = faker.person.name();
@@ -47,7 +47,13 @@ void main() {
       expect(subpacket.type, subpacketType);
       expect(subpacket.data, subpacketData);
     }));
-
-    test('signature packet test', (() {}));
   }));
+
+  group('public key packet tests', () {
+    test('rsa test', () {});
+  });
+
+  group('signature packet tests', () {
+    test('signature test', (() {}));
+  });
 }

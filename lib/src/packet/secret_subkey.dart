@@ -7,8 +7,9 @@ import 'dart:typed_data';
 import '../enums.dart';
 import 'public_subkey.dart';
 import 'secret_key.dart';
+import 'subkey_packet.dart';
 
-class SecretSubkeyPacket extends SecretKeyPacket {
+class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   SecretSubkeyPacket(
     super.publicKey,
     super.symmetricAlgorithm,
