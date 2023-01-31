@@ -11,7 +11,7 @@ import 'contained_packet.dart';
 
 /// LiteralData represents an encrypted file.
 /// See RFC 4880, section 5.9.
-class LiteralData extends ContainedPacket {
+class LiteralDataPacket extends ContainedPacket {
   final LiteralFormat format;
 
   final DateTime time;
@@ -22,7 +22,7 @@ class LiteralData extends ContainedPacket {
 
   final String filename;
 
-  LiteralData(
+  LiteralDataPacket(
     this.data, {
     this.format = LiteralFormat.utf8,
     DateTime? creationTime,
@@ -31,7 +31,7 @@ class LiteralData extends ContainedPacket {
     super.tag = PacketTag.literalData,
   }) : time = creationTime ?? DateTime.now();
 
-  factory LiteralData.fromPacketData(final Uint8List bytes) {
+  factory LiteralDataPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final format = LiteralFormat.values.firstWhere((format) => format.value == bytes[pos++]);
     final length = bytes[pos++];
@@ -43,7 +43,7 @@ class LiteralData extends ContainedPacket {
     pos += 4;
     final data = bytes.sublist(pos);
 
-    return LiteralData(
+    return LiteralDataPacket(
       data,
       format: format,
       filename: filename,

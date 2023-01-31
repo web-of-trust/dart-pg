@@ -7,8 +7,8 @@ import 'dart:typed_data';
 import '../enums.dart';
 import 'public_key.dart';
 
-class PublicSubkey extends PublicKey {
-  PublicSubkey(
+class PublicSubkeyPacket extends PublicKeyPacket {
+  PublicSubkeyPacket(
     super.version,
     super.createdTime,
     super.pgpKey, {
@@ -17,9 +17,9 @@ class PublicSubkey extends PublicKey {
     super.tag = PacketTag.publicSubkey,
   }) : super();
 
-  factory PublicSubkey.fromPacketData(final Uint8List bytes) {
-    final publicKey = PublicKey.fromPacketData(bytes);
-    return PublicSubkey(
+  factory PublicSubkeyPacket.fromPacketData(final Uint8List bytes) {
+    final publicKey = PublicKeyPacket.fromPacketData(bytes);
+    return PublicSubkeyPacket(
       publicKey.version,
       publicKey.creationTime,
       publicKey.publicParams,

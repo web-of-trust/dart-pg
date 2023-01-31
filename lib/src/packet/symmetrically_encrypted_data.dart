@@ -10,15 +10,16 @@ import 'contained_packet.dart';
 /// SymmetricallyEncryptedData represents a symmetrically encrypted byte string.
 /// The encrypted contents will consist of more OpenPGP packets.
 /// See RFC 4880, sections 5.7 and 5.13.
-class SymmetricallyEncryptedData extends ContainedPacket {
+class SymmetricallyEncryptedDataPacket extends ContainedPacket {
   final Uint8List encrypted;
 
-  SymmetricallyEncryptedData(
+  SymmetricallyEncryptedDataPacket(
     this.encrypted, {
     super.tag = PacketTag.symmetricallyEncryptedData,
   });
 
-  factory SymmetricallyEncryptedData.fromPacketData(final Uint8List bytes) => SymmetricallyEncryptedData(bytes);
+  factory SymmetricallyEncryptedDataPacket.fromPacketData(final Uint8List bytes) =>
+      SymmetricallyEncryptedDataPacket(bytes);
 
   @override
   Uint8List toPacketData() {

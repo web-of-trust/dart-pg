@@ -18,7 +18,7 @@ import 'contained_packet.dart';
 
 /// PublicKey represents an OpenPGP public key.
 /// See RFC 4880, section 5.5.2.
-class PublicKey extends ContainedPacket {
+class PublicKeyPacket extends ContainedPacket {
   final int version;
 
   final DateTime creationTime;
@@ -33,7 +33,7 @@ class PublicKey extends ContainedPacket {
 
   late final KeyID _keyID;
 
-  PublicKey(
+  PublicKeyPacket(
     this.version,
     this.creationTime,
     this.publicParams, {
@@ -44,7 +44,7 @@ class PublicKey extends ContainedPacket {
     _calculateFingerprintAndKeyID();
   }
 
-  factory PublicKey.fromPacketData(final Uint8List bytes) {
+  factory PublicKeyPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
 
     /// A one-octet version number (3, 4 or 5).
@@ -92,7 +92,7 @@ class PublicKey extends ContainedPacket {
       default:
         throw UnsupportedError('Unknown PGP public key algorithm encountered');
     }
-    return PublicKey(
+    return PublicKeyPacket(
       version,
       creationTime,
       publicParams,

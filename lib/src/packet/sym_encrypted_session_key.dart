@@ -10,7 +10,7 @@ import 'contained_packet.dart';
 
 /// SymmetricKeyEncrypted represents a passphrase protected session key.
 /// See RFC 4880, section 5.3.
-class SymEncryptedSessionKey extends ContainedPacket {
+class SymEncryptedSessionKeyPacket extends ContainedPacket {
   final int version;
 
   final SymmetricAlgorithm symmetricAlgorithm;
@@ -19,7 +19,7 @@ class SymEncryptedSessionKey extends ContainedPacket {
 
   final Uint8List keyData;
 
-  SymEncryptedSessionKey(
+  SymEncryptedSessionKeyPacket(
     this.version,
     this.symmetricAlgorithm,
     this.s2k,
@@ -27,13 +27,13 @@ class SymEncryptedSessionKey extends ContainedPacket {
     super.tag = PacketTag.symEncryptedSessionKey,
   });
 
-  factory SymEncryptedSessionKey.fromPacketData(final Uint8List bytes) {
+  factory SymEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
     final symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
     final s2k = S2K.fromPacketData(bytes.sublist(pos));
 
-    return SymEncryptedSessionKey(version, symmetricAlgorithm, s2k, bytes.sublist(pos + s2k.encode().length));
+    return SymEncryptedSessionKeyPacket(version, symmetricAlgorithm, s2k, bytes.sublist(pos + s2k.encode().length));
   }
 
   @override

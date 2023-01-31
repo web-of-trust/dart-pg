@@ -10,20 +10,20 @@ import 'image_attribute.dart';
 import 'subpacket_range.dart';
 import 'user_attribute_subpacket.dart';
 
-class UserAttribute extends ContainedPacket {
+class UserAttributePacket extends ContainedPacket {
   final List<UserAttributeSubpacket> attributes;
 
-  UserAttribute(
+  UserAttributePacket(
     this.attributes, {
     super.tag = PacketTag.userAttribute,
   });
 
-  ImageAttribute? get userImage {
-    final attrs = attributes.whereType<ImageAttribute>();
+  ImageAttributeSubpacket? get userImage {
+    final attrs = attributes.whereType<ImageAttributeSubpacket>();
     return attrs.isNotEmpty ? attrs.first : null;
   }
 
-  factory UserAttribute.fromPacketData(final Uint8List bytes) => UserAttribute(_readSubpackets(bytes));
+  factory UserAttributePacket.fromPacketData(final Uint8List bytes) => UserAttributePacket(_readSubpackets(bytes));
 
   @override
   Uint8List toPacketData() {
@@ -45,8 +45,8 @@ class UserAttribute extends ContainedPacket {
       if (data.isNotEmpty) {
         final type = data[0];
         switch (type) {
-          case ImageAttribute.jpeg:
-            attributes.add(ImageAttribute(data.sublist(1), longLength: range.offset == 5));
+          case ImageAttributeSubpacket.jpeg:
+            attributes.add(ImageAttributeSubpacket(data.sublist(1), longLength: range.offset == 5));
             break;
           default:
             attributes.add(UserAttributeSubpacket(type, data.sublist(1), longLength: range.offset == 5));

@@ -9,7 +9,7 @@ import 'contained_packet.dart';
 
 /// Implementation of the Symmetrically Encrypted Authenticated Encryption with
 /// Additional Data (AEAD) Protected Data Packet
-class AEADEncryptedData extends ContainedPacket {
+class AEADEncryptedDataPacket extends ContainedPacket {
   final int version;
 
   final SymmetricAlgorithm symmetricAlgorithm;
@@ -22,7 +22,7 @@ class AEADEncryptedData extends ContainedPacket {
 
   final Uint8List encrypted;
 
-  AEADEncryptedData(
+  AEADEncryptedDataPacket(
     this.version,
     this.symmetricAlgorithm,
     this.aeadAlgorithm,
@@ -32,7 +32,7 @@ class AEADEncryptedData extends ContainedPacket {
     super.tag = PacketTag.aeadEncryptedData,
   });
 
-  factory AEADEncryptedData.fromPacketData(final Uint8List bytes) {
+  factory AEADEncryptedDataPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
     final symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
@@ -40,7 +40,7 @@ class AEADEncryptedData extends ContainedPacket {
     final chunkSizeByte = bytes[pos++];
     final ivLength = IvLength.values.firstWhere((iv) => iv.name == aeadAlgorithm.name);
 
-    return AEADEncryptedData(
+    return AEADEncryptedDataPacket(
       version,
       symmetricAlgorithm,
       aeadAlgorithm,

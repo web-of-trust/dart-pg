@@ -7,23 +7,23 @@ import 'dart:typed_data';
 import '../enums.dart';
 import 'contained_packet.dart';
 
-class CompressedData extends ContainedPacket {
+class CompressedDataPacket extends ContainedPacket {
   final CompressionAlgorithm algorithm;
 
   final int deflateLevel;
 
   final Uint8List compressed;
 
-  CompressedData(
+  CompressedDataPacket(
     this.compressed, {
     this.algorithm = CompressionAlgorithm.uncompressed,
     this.deflateLevel = 6,
     super.tag = PacketTag.compressedData,
   });
 
-  factory CompressedData.fromPacketData(final Uint8List bytes) {
+  factory CompressedDataPacket.fromPacketData(final Uint8List bytes) {
     final algorithm = CompressionAlgorithm.values.firstWhere((algo) => algo.value == bytes[0]);
-    return CompressedData(bytes.sublist(1), algorithm: algorithm);
+    return CompressedDataPacket(bytes.sublist(1), algorithm: algorithm);
   }
 
   @override

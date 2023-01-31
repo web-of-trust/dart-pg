@@ -10,7 +10,7 @@ import 'contained_packet.dart';
 
 /// PublicKeyEncryptedSessionKey represents a public-key encrypted session key.
 /// See RFC 4880, section 5.1.
-class PublicKeyEncryptedSessionKey extends ContainedPacket {
+class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   final int version;
 
   final int keyID;
@@ -19,7 +19,7 @@ class PublicKeyEncryptedSessionKey extends ContainedPacket {
 
   final Uint8List encrypted;
 
-  PublicKeyEncryptedSessionKey(
+  PublicKeyEncryptedSessionKeyPacket(
     this.version,
     this.keyID,
     this.keyAlgorithm,
@@ -27,14 +27,14 @@ class PublicKeyEncryptedSessionKey extends ContainedPacket {
     super.tag = PacketTag.publicKeyEncryptedSessionKey,
   });
 
-  factory PublicKeyEncryptedSessionKey.fromPacketData(final Uint8List bytes) {
+  factory PublicKeyEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
     final keyID = bytes.sublist(pos, pos + 8).toInt64();
 
     pos += 8;
     final keyAlgorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
-    return PublicKeyEncryptedSessionKey(version, keyID, keyAlgorithm, bytes.sublist(pos));
+    return PublicKeyEncryptedSessionKeyPacket(version, keyID, keyAlgorithm, bytes.sublist(pos));
   }
 
   @override

@@ -6,15 +6,15 @@ import 'dart:typed_data';
 
 import 'user_attribute_subpacket.dart';
 
-class ImageAttribute extends UserAttributeSubpacket {
+class ImageAttributeSubpacket extends UserAttributeSubpacket {
   static const jpeg = 1;
 
   static final Uint8List _zeroes = Uint8List(12);
 
-  ImageAttribute(final Uint8List data, {super.longLength}) : super(1, data);
+  ImageAttributeSubpacket(final Uint8List data, {super.longLength}) : super(1, data);
 
-  factory ImageAttribute.fromImageData(final Uint8List imageData, {final int imageType = jpeg}) {
-    return ImageAttribute(Uint8List.fromList([
+  factory ImageAttributeSubpacket.fromImageData(final Uint8List imageData, {final int imageType = jpeg}) {
+    return ImageAttributeSubpacket(Uint8List.fromList([
       0x10,
       0x00,
       0x01,

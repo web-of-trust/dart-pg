@@ -12,7 +12,7 @@ import 'subpacket_range.dart';
 
 /// Signature represents a signature.
 /// See RFC 4880, section 5.2.
-class Signature extends ContainedPacket {
+class SignaturePacket extends ContainedPacket {
   final int version;
 
   final SignatureType signatureType;
@@ -69,7 +69,7 @@ class Signature extends ContainedPacket {
 
   final IssuerFingerprint? issuerFingerprint;
 
-  Signature(
+  SignaturePacket(
     this.version,
     this.signatureType,
     this.keyAlgorithm,
@@ -105,7 +105,7 @@ class Signature extends ContainedPacket {
 
   bool get keyNeverExpires => keyExpirationTime == null;
 
-  factory Signature.fromPacketData(final Uint8List bytes) {
+  factory SignaturePacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
     if (version == 3 || version == 2) {
@@ -132,7 +132,7 @@ class Signature extends ContainedPacket {
       pos += 2;
       final signature = bytes.sublist(pos);
 
-      return Signature(
+      return SignaturePacket(
         version,
         signatureType,
         keyAlgorithm,
@@ -168,7 +168,7 @@ class Signature extends ContainedPacket {
       pos += 2;
       final signature = bytes.sublist(pos);
 
-      return Signature(
+      return SignaturePacket(
         version,
         signatureType,
         keyAlgorithm,

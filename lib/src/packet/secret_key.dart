@@ -19,8 +19,8 @@ import 'public_key.dart';
 
 /// SecretKey represents a possibly encrypted private key.
 /// See RFC 4880, section 5.5.3.
-class SecretKey extends ContainedPacket {
-  final PublicKey publicKey;
+class SecretKeyPacket extends ContainedPacket {
+  final PublicKeyPacket publicKey;
 
   final SymmetricAlgorithm symmetricAlgorithm;
 
@@ -32,7 +32,7 @@ class SecretKey extends ContainedPacket {
 
   final Uint8List keyData;
 
-  SecretKey(
+  SecretKeyPacket(
     this.publicKey,
     this.symmetricAlgorithm,
     this.s2kUsage,
@@ -42,8 +42,8 @@ class SecretKey extends ContainedPacket {
     super.tag = PacketTag.secretKey,
   });
 
-  factory SecretKey.fromPacketData(final Uint8List bytes) {
-    final publicKey = PublicKey.fromPacketData(bytes);
+  factory SecretKeyPacket.fromPacketData(final Uint8List bytes) {
+    final publicKey = PublicKeyPacket.fromPacketData(bytes);
     final length = publicKey.toPacketData().length;
 
     var pos = length;
@@ -78,7 +78,7 @@ class SecretKey extends ContainedPacket {
     }
     keyData.addAll(bytes.sublist(pos));
 
-    return SecretKey(
+    return SecretKeyPacket(
       publicKey,
       symmetricAlgorithm,
       s2kUsage,

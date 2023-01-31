@@ -8,23 +8,23 @@ import 'dart:typed_data';
 import '../enums.dart';
 import 'contained_packet.dart';
 
-class UserID extends ContainedPacket {
+class UserIDPacket extends ContainedPacket {
   final String name;
 
   final String email;
 
   final String comment;
 
-  UserID(
+  UserIDPacket(
     this.name,
     this.email, {
     this.comment = '',
     super.tag = PacketTag.userID,
   });
 
-  factory UserID.fromPacketData(final Uint8List bytes) {
+  factory UserIDPacket.fromPacketData(final Uint8List bytes) {
     final userID = utf8.decode(bytes);
-    return UserID(
+    return UserIDPacket(
       _extractName(userID),
       _extractEmail(userID),
       comment: _extractComment(userID),

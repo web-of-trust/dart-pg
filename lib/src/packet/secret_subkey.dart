@@ -8,8 +8,8 @@ import '../enums.dart';
 import 'public_subkey.dart';
 import 'secret_key.dart';
 
-class SecretSubkey extends SecretKey {
-  SecretSubkey(
+class SecretSubkeyPacket extends SecretKeyPacket {
+  SecretSubkeyPacket(
     super.publicKey,
     super.symmetricAlgorithm,
     super.s2kUsage,
@@ -19,11 +19,11 @@ class SecretSubkey extends SecretKey {
     super.tag = PacketTag.secretSubkey,
   }) : super();
 
-  factory SecretSubkey.fromPacketData(final Uint8List bytes) {
-    final secretKey = SecretKey.fromPacketData(bytes);
+  factory SecretSubkeyPacket.fromPacketData(final Uint8List bytes) {
+    final secretKey = SecretSubkeyPacket.fromPacketData(bytes);
     final publicKey = secretKey.publicKey;
-    return SecretSubkey(
-      PublicSubkey(
+    return SecretSubkeyPacket(
+      PublicSubkeyPacket(
         publicKey.version,
         publicKey.creationTime,
         publicKey.publicParams,
