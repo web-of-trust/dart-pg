@@ -29,9 +29,12 @@ import 'user_id.dart';
 /// Take care when iterating over it - the packets themselves
 /// are stored as numerical indices.
 class PacketList {
-  final List<ContainedPacket> packets = [];
+  final List<ContainedPacket> packets;
 
-  void packetDecode(Uint8List bytes) {
+  PacketList(this.packets);
+
+  factory PacketList.packetDecode(Uint8List bytes) {
+    final List<ContainedPacket> packets = [];
     var offset = 0;
     while (offset < bytes.length) {
       final packetData = PacketData.readPacketData(bytes, offset);
@@ -92,6 +95,7 @@ class PacketList {
         default:
       }
     }
+    return PacketList(packets);
   }
 
   Uint8List packetEncode() {

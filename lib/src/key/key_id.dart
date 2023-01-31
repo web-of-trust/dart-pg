@@ -11,7 +11,8 @@ class KeyID {
 
   KeyID(this.id);
 
-  factory KeyID.fromHexadecimal(String hex) => KeyID(hex.hexToBytes());
+  factory KeyID.fromString(String hex) => KeyID(hex.hexToBytes());
 
-  String get toHexadecimal => id.toHexadecimal();
+  @override
+  String toString() => id.toHexadecimal();
 }

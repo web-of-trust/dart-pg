@@ -2,6 +2,8 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import '../packet/contained_packet.dart';
+import '../packet/signature.dart';
 import '../packet/subkey_packet.dart';
 import 'pgp_key.dart';
 
@@ -13,5 +15,18 @@ class Subkey {
   /// reference to main Key object, containing the primary key packet corresponding to the subkey
   final PgpKey mainKey;
 
-  Subkey(this.keyPacket, this.mainKey);
+  final List<SignaturePacket> bindingSignatures;
+
+  final List<SignaturePacket> revocationSignatures;
+
+  Subkey(
+    this.keyPacket,
+    this.mainKey, {
+    this.bindingSignatures = const [],
+    this.revocationSignatures = const [],
+  });
+
+  List<ContainedPacket> toPacketList() {
+    return [keyPacket, ...bindingSignatures, ...revocationSignatures];
+  }
 }
