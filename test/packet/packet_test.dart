@@ -70,6 +70,22 @@ void main() {
         }
       }
     });
+
+    test('dsa test', () {
+      final deArmor = Armor.decode(dsaPublicKey);
+      expect(deArmor['type'], ArmorType.publicKey);
+      final packetList = PacketList.packetDecode(deArmor['data']);
+      for (final packet in packetList) {
+        if (packet.tag == PacketTag.publicKey) {
+          final key = packet as PublicKeyPacket;
+          expect(key.fingerprint, 'f79a0d45ce022b4480dca6facb0d44dea6e41c36');
+        }
+        if (packet.tag == PacketTag.publicSubkey) {
+          final subkey = packet as PublicSubkeyPacket;
+          expect(subkey.fingerprint, '58957e4e4290665573475097b75d764296e1205e');
+        }
+      }
+    });
   });
 
   group('signature packet tests', () {
