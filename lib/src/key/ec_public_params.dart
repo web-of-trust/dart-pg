@@ -4,10 +4,10 @@
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/helpers.dart';
 import 'package:pointycastle/pointycastle.dart';
 
 import '../enums.dart';
+import '../helpers.dart';
 import 'key_params.dart';
 
 abstract class ECPublicParams extends KeyParams {

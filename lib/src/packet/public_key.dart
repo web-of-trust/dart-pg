@@ -136,8 +136,8 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
         _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
         _keyID = KeyID(_fingerprint.sublist(12, 20));
       } else {
-        _fingerprint = Uint8List.fromList([]);
-        _keyID = KeyID(Uint8List.fromList([0, 0, 0, 0, 0, 0, 0, 0]));
+        _fingerprint = Uint8List(0);
+        _keyID = KeyID.wildcard();
       }
     }
   }

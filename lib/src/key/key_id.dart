@@ -13,6 +13,8 @@ class KeyID {
 
   factory KeyID.fromString(String hex) => KeyID(hex.hexToBytes());
 
+  factory KeyID.wildcard() => KeyID(Uint8List.fromList(List.filled(8, 0, growable: false)));
+
   @override
   String toString() => id.toHexadecimal();
 }
