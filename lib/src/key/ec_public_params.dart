@@ -4,6 +4,7 @@
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/helpers.dart';
 import 'package:pointycastle/pointycastle.dart';
 
 import '../enums.dart';
@@ -23,7 +24,9 @@ abstract class ECPublicParams extends KeyParams {
     final oid = ASN1ObjectIdentifier(curveInfo.identifier);
     bytes.addAll(oid.encode().sublist(1));
 
-    bytes.addAll(publicKey.Q!.getEncoded(false));
+    final q = publicKey.Q!.getEncoded(false).toBigIntWithSign(1);
+    bytes.addAll(q.bitLength.pack16());
+    bytes.addAll(q.toUnsignedBytes());
     return Uint8List.fromList(bytes);
   }
 
@@ -37,13 +40,13 @@ abstract class ECPublicParams extends KeyParams {
       throw UnsupportedError('Unsupported OID');
     }
 
-    final derBytes = [0x06, length];
-    derBytes.addAll(bytes.sublist(pos, pos + length));
+    final derBytes = [0x06, length, ...bytes.sublist(pos, pos + length)];
     final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList(derBytes));
 
     pos += length;
     final parameters = parametersFromOid(oid);
-    final point = parameters.curve.decodePoint(bytes.sublist(pos));
+    final q = KeyParams.readMPI(bytes.sublist(pos));
+    final point = parameters.curve.decodePoint(q.toUnsignedBytes());
     return ECPublicKey(point, parameters);
   }
 

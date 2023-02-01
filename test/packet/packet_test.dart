@@ -63,15 +63,17 @@ void main() {
         if (packet.tag == PacketTag.publicKey) {
           final key = packet as PublicKeyPacket;
           expect(key.fingerprint, '9246b6ee842e7d1f6e1e5eb783a6d23f576b1501');
+          expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
         }
         if (packet.tag == PacketTag.publicSubkey) {
           final subkey = packet as PublicSubkeyPacket;
           expect(subkey.fingerprint, '543464623d1317db8b9e49d0721b2ff83c908641');
+          expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
         }
       }
     });
 
-    test('dsa test', () {
+    test('dsa elgamal test', () {
       final deArmor = Armor.decode(dsaPublicKey);
       expect(deArmor['type'], ArmorType.publicKey);
       final packetList = PacketList.packetDecode(deArmor['data']);
@@ -79,10 +81,30 @@ void main() {
         if (packet.tag == PacketTag.publicKey) {
           final key = packet as PublicKeyPacket;
           expect(key.fingerprint, 'f79a0d45ce022b4480dca6facb0d44dea6e41c36');
+          expect(key.algorithm, KeyAlgorithm.dsa);
         }
         if (packet.tag == PacketTag.publicSubkey) {
           final subkey = packet as PublicSubkeyPacket;
           expect(subkey.fingerprint, '58957e4e4290665573475097b75d764296e1205e');
+          expect(subkey.algorithm, KeyAlgorithm.elgamal);
+        }
+      }
+    });
+
+    test('ecc test', () {
+      final deArmor = Armor.decode(eccPublicKey);
+      expect(deArmor['type'], ArmorType.publicKey);
+      final packetList = PacketList.packetDecode(deArmor['data']);
+      for (final packet in packetList) {
+        if (packet.tag == PacketTag.publicKey) {
+          final key = packet as PublicKeyPacket;
+          expect(key.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
+          expect(key.algorithm, KeyAlgorithm.ecdsa);
+        }
+        if (packet.tag == PacketTag.publicSubkey) {
+          final subkey = packet as PublicSubkeyPacket;
+          expect(subkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
+          expect(subkey.algorithm, KeyAlgorithm.ecdh);
         }
       }
     });

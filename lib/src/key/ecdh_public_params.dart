@@ -7,7 +7,9 @@ import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
 import '../enums.dart';
+import '../helpers.dart';
 import 'ec_public_params.dart';
+import 'key_params.dart';
 
 class ECDHPublicParams extends ECPublicParams {
   final int reserved;
@@ -34,10 +36,9 @@ class ECDHPublicParams extends ECPublicParams {
 
     pos += length;
     final parameters = ECPublicParams.parametersFromOid(oid);
-    final point = parameters.curve.decodePoint(bytes.sublist(pos));
-
-    final encodedLength = point!.getEncoded(false).length;
-    pos += encodedLength;
+    final q = KeyParams.readMPI(bytes.sublist(pos));
+    final point = parameters.curve.decodePoint(q.toUnsignedBytes());
+    pos += ((q.bitLength + 7) >> 3) + 2;
 
     final kdfBytes = bytes.sublist(pos);
     final reserved = kdfBytes[1];
