@@ -10,7 +10,7 @@ abstract class KeyParams {
   Uint8List encode();
 
   static BigInt readMPI(Uint8List bytes) {
-    final bitLength = bytes.sublist(0, 2).toIn16();
-    return bytes.sublist(2, ((bitLength + 7) >> 3) + 2).toBigInt();
+    final bitLength = bytes.sublist(0, 2).toUint16();
+    return bytes.sublist(2, ((bitLength + 7) >> 3) + 2).toBigIntWithSign(1);
   }
 }

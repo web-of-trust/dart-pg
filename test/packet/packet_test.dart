@@ -4,6 +4,8 @@ import 'package:dart_pg/src/armor/armor.dart';
 import 'package:dart_pg/src/enums.dart';
 import 'package:dart_pg/src/packet/image_attribute.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
+import 'package:dart_pg/src/packet/public_key.dart';
+import 'package:dart_pg/src/packet/public_subkey.dart';
 import 'package:dart_pg/src/packet/user_attribute.dart';
 import 'package:dart_pg/src/packet/user_attribute_subpacket.dart';
 import 'package:dart_pg/src/packet/user_id.dart';
@@ -57,6 +59,16 @@ void main() {
       final deArmor = Armor.decode(rsaPublicKey);
       expect(deArmor['type'], ArmorType.publicKey);
       final packetList = PacketList.packetDecode(deArmor['data']);
+      for (final packet in packetList) {
+        if (packet.tag == PacketTag.publicKey) {
+          final key = packet as PublicKeyPacket;
+          expect(key.fingerprint, '9246b6ee842e7d1f6e1e5eb783a6d23f576b1501');
+        }
+        if (packet.tag == PacketTag.publicSubkey) {
+          final subkey = packet as PublicSubkeyPacket;
+          expect(subkey.fingerprint, '543464623d1317db8b9e49d0721b2ff83c908641');
+        }
+      }
     });
   });
 

@@ -15,24 +15,16 @@ class DSAPublicParams extends KeyParams {
 
   factory DSAPublicParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
-    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final p = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    final p = KeyParams.readMPI(bytes);
 
-    pos += (bitLength + 7) % 8;
-    bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final q = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    pos += ((p.bitLength + 7) >> 3) + 2;
+    final q = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += (bitLength + 7) % 8;
-    bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final g = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    pos += ((q.bitLength + 7) >> 3) + 2;
+    final g = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += (bitLength + 7) % 8;
-    bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final y = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    pos += ((g.bitLength + 7) >> 3) + 2;
+    final y = KeyParams.readMPI(bytes.sublist(pos));
 
     return DSAPublicParams(DSAPublicKey(y, p, q, g));
   }
@@ -42,16 +34,16 @@ class DSAPublicParams extends KeyParams {
     final List<int> bytes = [];
 
     bytes.addAll(publicKey.p.bitLength.pack16());
-    bytes.addAll(publicKey.p.toBytes());
+    bytes.addAll(publicKey.p.toUnsignedBytes());
 
     bytes.addAll(publicKey.q.bitLength.pack16());
-    bytes.addAll(publicKey.q.toBytes());
+    bytes.addAll(publicKey.q.toUnsignedBytes());
 
     bytes.addAll(publicKey.g.bitLength.pack16());
-    bytes.addAll(publicKey.g.toBytes());
+    bytes.addAll(publicKey.g.toUnsignedBytes());
 
     bytes.addAll(publicKey.y.bitLength.pack16());
-    bytes.addAll(publicKey.y.toBytes());
+    bytes.addAll(publicKey.y.toUnsignedBytes());
 
     return Uint8List.fromList(bytes);
   }

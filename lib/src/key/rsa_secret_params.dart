@@ -46,16 +46,16 @@ class RSASecretParams extends KeyParams {
     final List<int> bytes = [];
 
     bytes.addAll(privateExponent!.bitLength.pack16());
-    bytes.addAll(privateExponent!.toBytes());
+    bytes.addAll(privateExponent!.toUnsignedBytes());
 
     bytes.addAll(primeP!.bitLength.pack16());
-    bytes.addAll(primeP!.toBytes());
+    bytes.addAll(primeP!.toUnsignedBytes());
 
     bytes.addAll(primeQ!.bitLength.pack16());
-    bytes.addAll(primeQ!.toBytes());
+    bytes.addAll(primeQ!.toUnsignedBytes());
 
     bytes.addAll(qInv.bitLength.pack16());
-    bytes.addAll(qInv.toBytes());
+    bytes.addAll(qInv.toUnsignedBytes());
 
     return Uint8List.fromList(bytes);
   }

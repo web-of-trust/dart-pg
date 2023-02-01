@@ -31,13 +31,13 @@ class ElGamalPublicParams extends KeyParams {
     final List<int> bytes = [];
 
     bytes.addAll(publicKey.p.bitLength.pack16());
-    bytes.addAll(publicKey.p.toBytes());
+    bytes.addAll(publicKey.p.toUnsignedBytes());
 
     bytes.addAll(publicKey.g.bitLength.pack16());
-    bytes.addAll(publicKey.g.toBytes());
+    bytes.addAll(publicKey.g.toUnsignedBytes());
 
     bytes.addAll(publicKey.y.bitLength.pack16());
-    bytes.addAll(publicKey.y.toBytes());
+    bytes.addAll(publicKey.y.toUnsignedBytes());
 
     return Uint8List.fromList(bytes);
   }

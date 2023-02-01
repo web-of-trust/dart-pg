@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:collection';
 import 'dart:typed_data';
 
 import '../enums.dart';
@@ -28,7 +29,7 @@ import 'user_id.dart';
 /// This class represents a list of openpgp packets.
 /// Take care when iterating over it - the packets themselves
 /// are stored as numerical indices.
-class PacketList {
+class PacketList extends ListBase<ContainedPacket> {
   final List<ContainedPacket> packets;
 
   PacketList(this.packets);
@@ -104,5 +105,21 @@ class PacketList {
       packetBytes.addAll(packet.packetEncode());
     }
     return Uint8List.fromList(packetBytes);
+  }
+
+  @override
+  int get length => packets.length;
+
+  @override
+  ContainedPacket operator [](int index) => packets[index];
+
+  @override
+  void operator []=(int index, ContainedPacket packet) {
+    packets[index] = packet;
+  }
+
+  @override
+  set length(int newLength) {
+    packets.length = newLength;
   }
 }

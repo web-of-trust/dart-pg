@@ -23,7 +23,7 @@ class ECSecretParams extends KeyParams {
     final List<int> bytes = [];
 
     bytes.addAll(privateKey.d!.bitLength.pack16());
-    bytes.addAll(privateKey.d!.toBytes());
+    bytes.addAll(privateKey.d!.toUnsignedBytes());
 
     return Uint8List.fromList(bytes);
   }

@@ -21,7 +21,7 @@ class DSASecretParams extends KeyParams {
     final List<int> bytes = [];
 
     bytes.addAll(x.bitLength.pack16());
-    bytes.addAll(x.toBytes());
+    bytes.addAll(x.toUnsignedBytes());
 
     return Uint8List.fromList(bytes);
   }
