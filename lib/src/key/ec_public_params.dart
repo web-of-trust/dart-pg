@@ -24,7 +24,7 @@ abstract class ECPublicParams extends KeyParams {
     final oid = ASN1ObjectIdentifier(curveInfo.identifier);
     bytes.addAll(oid.encode().sublist(1));
 
-    final q = publicKey.Q!.getEncoded(false).toBigIntWithSign(1);
+    final q = publicKey.Q!.getEncoded(publicKey.Q!.isCompressed).toBigIntWithSign(1);
     bytes.addAll(q.bitLength.pack16());
     bytes.addAll(q.toUnsignedBytes());
     return Uint8List.fromList(bytes);

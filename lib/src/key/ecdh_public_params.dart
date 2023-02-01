@@ -30,8 +30,7 @@ class ECDHPublicParams extends ECPublicParams {
       throw UnsupportedError('Unsupported OID');
     }
 
-    final derBytes = [0x06, length];
-    derBytes.addAll(bytes.sublist(pos, pos + length));
+    final derBytes = [0x06, length, ...bytes.sublist(pos, pos + length)];
     final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList(derBytes));
 
     pos += length;
