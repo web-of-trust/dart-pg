@@ -26,37 +26,29 @@ class RSASecretParams extends KeyParams {
   BigInt? get primeQ => privateKey.q;
 
   factory RSASecretParams.fromPacketData(Uint8List bytes) {
-    var pos = 0;
     final privateExponent = KeyParams.readMPI(bytes);
 
-    pos += ((privateExponent.bitLength + 7) >> 3) + 2;
+    var pos = privateExponent.byteLength + 2;
     final primeP = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += ((primeP.bitLength + 7) >> 3) + 2;
+    pos += primeP.byteLength + 2;
     final primeQ = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += ((primeQ.bitLength + 7) >> 3) + 2;
+    pos += primeQ.byteLength + 2;
     final qInv = KeyParams.readMPI(bytes.sublist(pos));
 
     return RSASecretParams(RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ), qInv: qInv);
   }
 
   @override
-  Uint8List encode() {
-    final List<int> bytes = [];
-
-    bytes.addAll(privateExponent!.bitLength.pack16());
-    bytes.addAll(privateExponent!.toUnsignedBytes());
-
-    bytes.addAll(primeP!.bitLength.pack16());
-    bytes.addAll(primeP!.toUnsignedBytes());
-
-    bytes.addAll(primeQ!.bitLength.pack16());
-    bytes.addAll(primeQ!.toUnsignedBytes());
-
-    bytes.addAll(qInv.bitLength.pack16());
-    bytes.addAll(qInv.toUnsignedBytes());
-
-    return Uint8List.fromList(bytes);
-  }
+  Uint8List encode() => Uint8List.fromList([
+        ...privateExponent!.bitLength.pack16(),
+        ...privateExponent!.toUnsignedBytes(),
+        ...primeP!.bitLength.pack16(),
+        ...primeP!.toUnsignedBytes(),
+        ...primeQ!.bitLength.pack16(),
+        ...primeQ!.toUnsignedBytes(),
+        ...qInv.bitLength.pack16(),
+        ...qInv.toUnsignedBytes(),
+      ]);
 }

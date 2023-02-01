@@ -19,12 +19,5 @@ class ECSecretParams extends KeyParams {
   }
 
   @override
-  Uint8List encode() {
-    final List<int> bytes = [];
-
-    bytes.addAll(privateKey.d!.bitLength.pack16());
-    bytes.addAll(privateKey.d!.toUnsignedBytes());
-
-    return Uint8List.fromList(bytes);
-  }
+  Uint8List encode() => Uint8List.fromList([...privateKey.d!.bitLength.pack16(), ...privateKey.d!.toUnsignedBytes()]);
 }

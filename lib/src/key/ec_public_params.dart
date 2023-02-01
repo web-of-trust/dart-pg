@@ -17,17 +17,16 @@ abstract class ECPublicParams extends KeyParams {
 
   @override
   Uint8List encode() {
-    final List<int> bytes = [];
-
     final curveName = publicKey.parameters!.domainName.toLowerCase();
     final curveInfo = EcCurveOid.values.firstWhere((info) => info.name.toLowerCase() == curveName);
     final oid = ASN1ObjectIdentifier(curveInfo.identifier);
-    bytes.addAll(oid.encode().sublist(1));
-
     final q = publicKey.Q!.getEncoded(publicKey.Q!.isCompressed).toBigIntWithSign(1);
-    bytes.addAll(q.bitLength.pack16());
-    bytes.addAll(q.toUnsignedBytes());
-    return Uint8List.fromList(bytes);
+
+    return Uint8List.fromList([
+      ...oid.encode().sublist(1),
+      ...q.bitLength.pack16(),
+      ...q.toUnsignedBytes(),
+    ]);
   }
 
   static ECPublicKey publicKeyPacketData(Uint8List bytes) {

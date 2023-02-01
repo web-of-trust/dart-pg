@@ -14,37 +14,29 @@ class DSAPublicParams extends KeyParams {
   DSAPublicParams(this.publicKey);
 
   factory DSAPublicParams.fromPacketData(Uint8List bytes) {
-    var pos = 0;
     final p = KeyParams.readMPI(bytes);
 
-    pos += ((p.bitLength + 7) >> 3) + 2;
+    var pos = p.byteLength + 2;
     final q = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += ((q.bitLength + 7) >> 3) + 2;
+    pos += q.byteLength + 2;
     final g = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += ((g.bitLength + 7) >> 3) + 2;
+    pos += g.byteLength + 2;
     final y = KeyParams.readMPI(bytes.sublist(pos));
 
     return DSAPublicParams(DSAPublicKey(y, p, q, g));
   }
 
   @override
-  Uint8List encode() {
-    final List<int> bytes = [];
-
-    bytes.addAll(publicKey.p.bitLength.pack16());
-    bytes.addAll(publicKey.p.toUnsignedBytes());
-
-    bytes.addAll(publicKey.q.bitLength.pack16());
-    bytes.addAll(publicKey.q.toUnsignedBytes());
-
-    bytes.addAll(publicKey.g.bitLength.pack16());
-    bytes.addAll(publicKey.g.toUnsignedBytes());
-
-    bytes.addAll(publicKey.y.bitLength.pack16());
-    bytes.addAll(publicKey.y.toUnsignedBytes());
-
-    return Uint8List.fromList(bytes);
-  }
+  Uint8List encode() => Uint8List.fromList([
+        ...publicKey.p.bitLength.pack16(),
+        ...publicKey.p.toUnsignedBytes(),
+        ...publicKey.q.bitLength.pack16(),
+        ...publicKey.q.toUnsignedBytes(),
+        ...publicKey.g.bitLength.pack16(),
+        ...publicKey.g.toUnsignedBytes(),
+        ...publicKey.y.bitLength.pack16(),
+        ...publicKey.y.toUnsignedBytes(),
+      ]);
 }

@@ -184,6 +184,8 @@ extension Uint8ListHelper on Uint8List {
 }
 
 extension BigIntHelper on BigInt {
+  int get byteLength => (bitLength + 7) >> 3;
+
   Uint8List toBytes() {
     if (this == BigInt.zero) {
       return Uint8List.fromList([0]);

@@ -20,10 +20,7 @@ class PrivateKey extends PublicKey {
   bool get isPrivate => true;
 
   @override
-  String get armor => Armor.encode(
-        ArmorType.privateKey,
-        toPacketList().packetEncode(),
-      );
+  String get armor => Armor.encode(ArmorType.privateKey, toPacketList().packetEncode());
 
   @override
   PublicKey get toPublic {

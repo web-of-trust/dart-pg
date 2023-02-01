@@ -17,12 +17,5 @@ class ElGamalSecretParams extends KeyParams {
   }
 
   @override
-  Uint8List encode() {
-    final List<int> bytes = [];
-
-    bytes.addAll(x.bitLength.pack16());
-    bytes.addAll(x.toUnsignedBytes());
-
-    return Uint8List.fromList(bytes);
-  }
+  Uint8List encode() => Uint8List.fromList([...x.bitLength.pack16(), ...x.toUnsignedBytes()]);
 }

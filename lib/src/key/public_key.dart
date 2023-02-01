@@ -20,10 +20,7 @@ class PublicKey extends PgpKey {
   bool get isPrivate => false;
 
   @override
-  String get armor => Armor.encode(
-        ArmorType.publicKey,
-        toPacketList().packetEncode(),
-      );
+  String get armor => Armor.encode(ArmorType.publicKey, toPacketList().packetEncode());
 
   @override
   PublicKey get toPublic => this;

@@ -15,7 +15,7 @@ class RSAPublicParams extends KeyParams {
 
   factory RSAPublicParams.fromPacketData(Uint8List bytes) {
     final modulus = KeyParams.readMPI(bytes);
-    final publicExponent = KeyParams.readMPI(bytes.sublist(((modulus.bitLength + 7) >> 3) + 2));
+    final publicExponent = KeyParams.readMPI(bytes.sublist(modulus.byteLength + 2));
 
     return RSAPublicParams(RSAPublicKey(modulus, publicExponent));
   }
@@ -25,15 +25,10 @@ class RSAPublicParams extends KeyParams {
   BigInt? get publicExponent => publicKey.publicExponent;
 
   @override
-  Uint8List encode() {
-    final List<int> bytes = [];
-
-    bytes.addAll(modulus!.bitLength.pack16());
-    bytes.addAll(modulus!.toUnsignedBytes());
-
-    bytes.addAll(publicExponent!.bitLength.pack16());
-    bytes.addAll(publicExponent!.toUnsignedBytes());
-
-    return Uint8List.fromList(bytes);
-  }
+  Uint8List encode() => Uint8List.fromList([
+        ...modulus!.bitLength.pack16(),
+        ...modulus!.toUnsignedBytes(),
+        ...publicExponent!.bitLength.pack16(),
+        ...publicExponent!.toUnsignedBytes(),
+      ]);
 }

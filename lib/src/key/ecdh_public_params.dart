@@ -37,7 +37,7 @@ class ECDHPublicParams extends ECPublicParams {
     final parameters = ECPublicParams.parametersFromOid(oid);
     final q = KeyParams.readMPI(bytes.sublist(pos));
     final point = parameters.curve.decodePoint(q.toUnsignedBytes());
-    pos += ((q.bitLength + 7) >> 3) + 2;
+    pos += q.byteLength + 2;
 
     final kdfBytes = bytes.sublist(pos);
     final reserved = kdfBytes[1];
@@ -52,15 +52,13 @@ class ECDHPublicParams extends ECPublicParams {
   }
 
   @override
-  Uint8List encode() {
-    final List<int> bytes = [];
-    bytes.addAll(super.encode());
-    bytes.addAll([
-      0x3,
-      reserved,
-      hashAlgorithm.value,
-      symmetricAlgorithm.value,
-    ]);
-    return Uint8List.fromList(bytes);
-  }
+  Uint8List encode() => Uint8List.fromList([
+        ...super.encode(),
+        ...[
+          0x3,
+          reserved,
+          hashAlgorithm.value,
+          symmetricAlgorithm.value,
+        ]
+      ]);
 }
