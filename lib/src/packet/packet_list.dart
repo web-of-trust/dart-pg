@@ -27,8 +27,6 @@ import 'user_attribute.dart';
 import 'user_id.dart';
 
 /// This class represents a list of openpgp packets.
-/// Take care when iterating over it - the packets themselves
-/// are stored as numerical indices.
 class PacketList extends ListBase<ContainedPacket> {
   final List<ContainedPacket> packets;
 
