@@ -27,24 +27,16 @@ class RSASecretParams extends KeyParams {
 
   factory RSASecretParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
-    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final privateExponent = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    final privateExponent = KeyParams.readMPI(bytes);
 
-    pos += (bitLength + 7) % 8;
-    bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final primeP = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    pos += ((privateExponent.bitLength + 7) >> 3) + 2;
+    final primeP = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += (bitLength + 7) % 8;
-    bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final primeQ = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    pos += ((primeP.bitLength + 7) >> 3) + 2;
+    final primeQ = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += (bitLength + 7) % 8;
-    bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final qInv = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    pos += ((primeQ.bitLength + 7) >> 3) + 2;
+    final qInv = KeyParams.readMPI(bytes.sublist(pos));
 
     return RSASecretParams(RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ), qInv: qInv);
   }

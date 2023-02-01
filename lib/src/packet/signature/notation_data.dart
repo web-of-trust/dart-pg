@@ -23,7 +23,10 @@ class NotationData extends SignatureSubpacket {
     String notationValue, {
     bool critical = false,
   }) =>
-      NotationData(_notationToBytes(humanReadable, notationName, notationValue), critical: critical);
+      NotationData(
+        _notationToBytes(humanReadable, notationName, notationValue),
+        critical: critical,
+      );
 
   bool get isHumanReadable => data[0] == 0x80;
 

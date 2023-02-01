@@ -4,6 +4,8 @@
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/helpers.dart';
+
 import '../../enums.dart';
 import '../signature_subpacket.dart';
 
@@ -19,11 +21,11 @@ class RevocationKey extends SignatureSubpacket {
   }) =>
       RevocationKey(_revocationToBytes(signatureClass, keyAlgorithm, fingerprint), critical: critical);
 
-  int get signatureClass => data[0];
+  RevocationKeyTag get signatureClass => RevocationKeyTag.values.firstWhere((tag) => tag.value == data[0]);
 
-  int get keyAlgorithm => data[1];
+  KeyAlgorithm get keyAlgorithm => KeyAlgorithm.values.firstWhere((alg) => alg.value == data[1]);
 
-  Uint8List get fingerprint => data.sublist(2);
+  String get fingerprint => data.sublist(2).toHexadecimal();
 
   static Uint8List _revocationToBytes(
     RevocationKeyTag signatureClass,

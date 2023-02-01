@@ -15,19 +15,13 @@ class ElGamalPublicParams extends KeyParams {
 
   factory ElGamalPublicParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
-    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final p = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    final p = KeyParams.readMPI(bytes);
 
-    pos += (bitLength + 7) % 8;
-    bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final g = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    pos += ((p.bitLength + 7) >> 3) + 2;
+    final g = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += (bitLength + 7) % 8;
-    bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final y = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    pos += ((g.bitLength + 7) >> 3) + 2;
+    final y = KeyParams.readMPI(bytes.sublist(pos));
 
     return ElGamalPublicParams(ElGamalPublicKey(y, p, g));
   }

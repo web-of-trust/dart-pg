@@ -16,7 +16,7 @@ class RevocationReason extends SignatureSubpacket {
   factory RevocationReason.fromRevocation(RevocationReasonTag reason, String description, {bool critical = false}) =>
       RevocationReason(_revocationToBytes(reason, description), critical: critical);
 
-  int get reason => data[0];
+  RevocationReasonTag get reason => RevocationReasonTag.values.firstWhere((reason) => reason.value == data[0]);
 
   String get description => utf8.decode(data.sublist(1));
 

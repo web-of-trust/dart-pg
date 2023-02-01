@@ -15,11 +15,7 @@ class ECSecretParams extends KeyParams {
   ECSecretParams(this.privateKey);
 
   factory ECSecretParams.fromPacketData(Uint8List bytes) {
-    var pos = 0;
-    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final d = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
-    return ECSecretParams(ECPrivateKey(d, null));
+    return ECSecretParams(ECPrivateKey(KeyParams.readMPI(bytes), null));
   }
 
   @override

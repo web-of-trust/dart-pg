@@ -4,6 +4,8 @@
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/helpers.dart';
+
 import '../../enums.dart';
 import '../signature_subpacket.dart';
 
@@ -14,5 +16,5 @@ class IntendedRecipientFingerprint extends SignatureSubpacket {
 
   int get keyVersion => data[0];
 
-  Uint8List get fingerprint => data.sublist(1);
+  String get fingerprint => data.sublist(1).toHexadecimal();
 }

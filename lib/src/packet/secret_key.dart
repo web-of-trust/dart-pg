@@ -49,14 +49,16 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     final length = publicKey.toPacketData().length;
 
     var pos = length;
-    final s2kUsage = S2kUsage.values.firstWhere((usage) => usage.value == bytes[pos++]);
+    final s2kUsage = S2kUsage.values.firstWhere((usage) => usage.value == bytes[pos]);
+    pos++;
 
     final S2K? s2k;
     final SymmetricAlgorithm symmetricAlgorithm;
     switch (s2kUsage) {
       case S2kUsage.checksum:
       case S2kUsage.sha1:
-        symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == bytes[pos++]);
+        symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == bytes[pos]);
+        pos++;
         s2k = S2K.fromPacketData(bytes.sublist(pos));
         break;
       default:

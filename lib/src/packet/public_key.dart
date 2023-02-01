@@ -67,7 +67,8 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     }
 
     // A one-octet number denoting the public-key algorithm of this key.
-    final algorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
+    final algorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    pos++;
     if (version == 5) {
       /// - A four-octet scalar octet count for the following key material.
       pos += 4;

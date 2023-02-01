@@ -20,9 +20,9 @@ class SignatureTarget extends SignatureSubpacket {
   }) =>
       SignatureTarget(_hashDataBytes(keyAlgorithm, hashAlgorithm, hashData), critical: critical);
 
-  int get keyAlgorithm => data[0];
+  KeyAlgorithm get keyAlgorithm => KeyAlgorithm.values.firstWhere((alg) => alg.value == data[0]);
 
-  int get hashAlgorithm => data[1];
+  HashAlgorithm get hashAlgorithm => HashAlgorithm.values.firstWhere((alg) => alg.value == data[1]);
 
   Uint8List get hashData => data.sublist(2);
 

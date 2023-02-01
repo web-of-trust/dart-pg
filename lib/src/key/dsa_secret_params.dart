@@ -13,11 +13,7 @@ class DSASecretParams extends KeyParams {
   DSASecretParams(this.x);
 
   factory DSASecretParams.fromPacketData(Uint8List bytes) {
-    var pos = 0;
-    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final x = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
-    return DSASecretParams(x);
+    return DSASecretParams(KeyParams.readMPI(bytes));
   }
 
   @override

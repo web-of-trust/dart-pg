@@ -12,8 +12,8 @@ import '../signature_subpacket.dart';
 class IssuerKeyID extends SignatureSubpacket {
   IssuerKeyID(Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.issuerKeyID, data);
 
-  factory IssuerKeyID.fromKeyID(int keyID, {bool critical = false}) =>
-      IssuerKeyID(keyID.pack64(), critical: critical);
+  factory IssuerKeyID.fromKeyID(String keyID, {bool critical = false}) =>
+      IssuerKeyID(keyID.hexToBytes(), critical: critical);
 
-  int get keyID => data.toInt64();
+  String get keyID => data.toHexadecimal();
 }

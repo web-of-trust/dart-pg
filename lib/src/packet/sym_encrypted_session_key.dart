@@ -30,7 +30,8 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   factory SymEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
-    final symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
+    final symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    pos++;
     final s2k = S2K.fromPacketData(bytes.sublist(pos));
 
     return SymEncryptedSessionKeyPacket(version, symmetricAlgorithm, s2k, bytes.sublist(pos + s2k.encode().length));

@@ -35,8 +35,10 @@ class AEADEncryptedDataPacket extends ContainedPacket {
   factory AEADEncryptedDataPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
-    final symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
-    final aeadAlgorithm = AeadAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
+    final symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    pos++;
+    final aeadAlgorithm = AeadAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    pos++;
     final chunkSizeByte = bytes[pos++];
     final ivLength = IvLength.values.firstWhere((iv) => iv.name == aeadAlgorithm.name);
 

@@ -14,15 +14,18 @@ class RSAPublicParams extends KeyParams {
   RSAPublicParams(this.publicKey);
 
   factory RSAPublicParams.fromPacketData(Uint8List bytes) {
-    var pos = 0;
-    var bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final modulus = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    // var pos = 0;
+    // var bitLength = bytes.sublist(pos, pos + 2).toIn16();
+    // pos += 2;
+    // final modulus = bytes.sublist(pos, pos + ((bitLength + 7) >> 3)).toBigInt();
 
-    pos += (bitLength + 7) % 8;
-    bitLength = bytes.sublist(pos, pos + 2).toIn16();
-    pos += 2;
-    final publicExponent = bytes.sublist(pos, (bitLength + 7) % 8).toBigInt();
+    // pos += ((bitLength + 7) >> 3);
+    // bitLength = bytes.sublist(pos, pos + 2).toIn16();
+    // pos += 2;
+    // final publicExponent = bytes.sublist(pos, pos + ((bitLength + 7) >> 3)).toBigInt();
+
+    final modulus = KeyParams.readMPI(bytes);
+    final publicExponent = KeyParams.readMPI(bytes.sublist(((modulus.bitLength + 7) >> 3) + 2));
 
     return RSAPublicParams(RSAPublicKey(modulus, publicExponent));
   }

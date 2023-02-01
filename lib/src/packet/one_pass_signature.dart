@@ -5,7 +5,6 @@
 import 'dart:typed_data';
 
 import '../enums.dart';
-import '../helpers.dart';
 import 'contained_packet.dart';
 
 /// OnePassSignature represents a one-pass signature packet.
@@ -19,7 +18,7 @@ class OnePassSignaturePacket extends ContainedPacket {
 
   final KeyAlgorithm keyAlgorithm;
 
-  final int issuerKeyID;
+  final Uint8List issuerKeyID;
 
   final int nested;
 
@@ -36,10 +35,13 @@ class OnePassSignaturePacket extends ContainedPacket {
   factory OnePassSignaturePacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
-    final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos++]);
-    final hashAlgorithm = HashAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
-    final keyAlgorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos++]);
-    final issuerKeyID = bytes.sublist(pos, pos + 8).toInt64();
+    final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);
+    pos++;
+    final hashAlgorithm = HashAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    pos++;
+    final keyAlgorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    pos++;
+    final issuerKeyID = bytes.sublist(pos, pos + 8);
     return OnePassSignaturePacket(version, signatureType, hashAlgorithm, keyAlgorithm, issuerKeyID, bytes[pos + 8]);
   }
 
@@ -50,7 +52,7 @@ class OnePassSignaturePacket extends ContainedPacket {
       signatureType.value,
       hashAlgorithm.value,
       keyAlgorithm.value,
-      ...issuerKeyID.pack64(),
+      ...issuerKeyID,
       nested,
     ]);
   }

@@ -33,7 +33,8 @@ class LiteralDataPacket extends ContainedPacket {
 
   factory LiteralDataPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
-    final format = LiteralFormat.values.firstWhere((format) => format.value == bytes[pos++]);
+    final format = LiteralFormat.values.firstWhere((format) => format.value == bytes[pos]);
+    pos++;
     final length = bytes[pos++];
     final filename = utf8.decode(bytes.sublist(pos, pos + length));
 

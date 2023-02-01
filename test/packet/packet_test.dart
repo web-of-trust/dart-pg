@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:dart_pg/src/armor/armor.dart';
+import 'package:dart_pg/src/enums.dart';
 import 'package:dart_pg/src/packet/image_attribute.dart';
+import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/packet/user_attribute.dart';
 import 'package:dart_pg/src/packet/user_attribute_subpacket.dart';
 import 'package:dart_pg/src/packet/user_id.dart';
@@ -50,7 +53,11 @@ void main() {
   }));
 
   group('public key packet tests', () {
-    test('rsa test', () {});
+    test('rsa test', () {
+      final deArmor = Armor.decode(rsaPublicKey);
+      expect(deArmor['type'], ArmorType.publicKey);
+      final packetList = PacketList.packetDecode(deArmor['data']);
+    });
   });
 
   group('signature packet tests', () {

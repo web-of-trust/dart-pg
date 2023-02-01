@@ -112,21 +112,24 @@ class SignaturePacket extends ContainedPacket {
       pos++;
 
       /// One-octet signature type.
-      final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos++]);
+      final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);
+      pos++;
 
       /// Four-octet creation time.
       final creationTime = SignatureCreationTime.fromTime(bytes.sublist(pos, pos + 4).toDateTime());
       pos += 4;
 
       /// Eight-octet Key ID of signer.
-      final issuerKeyID = IssuerKeyID.fromKeyID(bytes.sublist(pos, pos + 8).toInt64());
+      final issuerKeyID = IssuerKeyID.fromKeyID(bytes.sublist(pos, pos + 8).toHexadecimal());
       pos += 8;
 
       /// One-octet public-key algorithm.
-      final keyAlgorithm = KeyAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos++]);
+      final keyAlgorithm = KeyAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
+      pos++;
 
       /// One-octet hash algorithm.
-      final hashAlgorithm = HashAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos++]);
+      final hashAlgorithm = HashAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
+      pos++;
 
       final signedHashValue = bytes.sublist(pos, pos + 2);
       pos += 2;
@@ -143,9 +146,12 @@ class SignaturePacket extends ContainedPacket {
         signature,
       );
     } else if (version == 4 || version == 5) {
-      final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos++]);
-      final keyAlgorithm = KeyAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos++]);
-      final hashAlgorithm = HashAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos++]);
+      final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);
+      pos++;
+      final keyAlgorithm = KeyAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
+      pos++;
+      final hashAlgorithm = HashAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
+      pos++;
 
       final hashedLength = bytes.sublist(pos, pos + 2).toIn16();
       pos += 2;
@@ -174,7 +180,7 @@ class SignaturePacket extends ContainedPacket {
         keyAlgorithm,
         hashAlgorithm,
         creationTime,
-        issuerKeyID ?? IssuerKeyID(issuerFingerprint?.fingerprint ?? Uint8List.fromList([0])),
+        issuerKeyID ?? IssuerKeyID(issuerFingerprint?.fingerprint.hexToBytes() ?? Uint8List.fromList([0])),
         signedHashValue,
         signature,
         hashedSubpackets: hashedSubpackets,
