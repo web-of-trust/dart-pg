@@ -8,6 +8,7 @@ import 'package:pointycastle/api.dart';
 
 import '../../helpers.dart';
 
+/// Asymmetric block cipher using basic ElGamal algorithm.
 class ElGamalEngine implements AsymmetricBlockCipher {
   late ElGamalAsymmetricKey? _key;
 
@@ -47,9 +48,11 @@ class ElGamalEngine implements AsymmetricBlockCipher {
     }
   }
 
+  /// Return the maximum size for an input block to this engine.
   @override
   int get inputBlockSize => _forEncryption ? (_bitSize - 1) ~/ 8 : 2 * ((_bitSize + 7) ~/ 8);
 
+  /// Return the maximum size for an output block to this engine.
   @override
   int get outputBlockSize => _forEncryption ? 2 * ((_bitSize + 7) ~/ 8) : (_bitSize - 1) ~/ 8;
 
@@ -60,6 +63,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
     return out.sublist(0, len);
   }
 
+  /// Process a single block using the basic ElGamal algorithm.
   @override
   int processBlock(Uint8List input, int inOff, int inLen, Uint8List output, int outOff) {
     if (_key == null) {
@@ -127,7 +131,7 @@ abstract class ElGamalAsymmetricKey implements AsymmetricKey {
 }
 
 class ElGamalPublicKey extends ElGamalAsymmetricKey implements PublicKey {
-  /// g^x mod p
+  /// g ** x mod p
   final BigInt y;
 
   ElGamalPublicKey(this.y, super.p, super.g);
