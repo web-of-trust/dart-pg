@@ -8,7 +8,7 @@ import 'dart:typed_data';
 
 import 'des.dart';
 
-class TripleDES extends DESEngine {
+class TripleDESEngine extends DESEngine {
   static const _blockSize = 8;
 
   bool _forEncryption = false;

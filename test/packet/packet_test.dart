@@ -6,6 +6,8 @@ import 'package:dart_pg/src/packet/image_attribute.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/packet/public_key.dart';
 import 'package:dart_pg/src/packet/public_subkey.dart';
+import 'package:dart_pg/src/packet/secret_key.dart';
+import 'package:dart_pg/src/packet/secret_subkey.dart';
 import 'package:dart_pg/src/packet/user_attribute.dart';
 import 'package:dart_pg/src/packet/user_attribute_subpacket.dart';
 import 'package:dart_pg/src/packet/user_id.dart';
@@ -110,7 +112,25 @@ void main() {
     });
   });
 
-  group('signature packet tests', () {
-    test('signature test', (() {}));
+  group('secret key packet tests', () {
+    test('rsa test', (() {
+      final deArmor = Armor.decode(rsaPrivateKey);
+      expect(deArmor['type'], ArmorType.privateKey);
+      final packetList = PacketList.packetDecode(deArmor['data']);
+      for (final packet in packetList) {
+        if (packet.tag == PacketTag.secretKey) {
+          final key = packet as SecretKeyPacket;
+          expect(key.fingerprint, '9246b6ee842e7d1f6e1e5eb783a6d23f576b1501');
+          expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
+          print(key.symmetricAlgorithm);
+        }
+        if (packet.tag == PacketTag.secretSubkey) {
+          final subkey = packet as SecretSubkeyPacket;
+          expect(subkey.fingerprint, '543464623d1317db8b9e49d0721b2ff83c908641');
+          expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
+          print(subkey.symmetricAlgorithm);
+        }
+      }
+    }));
   });
 }

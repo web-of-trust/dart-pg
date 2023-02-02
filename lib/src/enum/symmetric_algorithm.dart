@@ -10,8 +10,6 @@ enum SymmetricAlgorithm {
   tripledes(2),
   cast5(3),
   blowfish(4),
-  safer(5),
-  des(6),
   aes128(7),
   aes192(8),
   aes256(9),
@@ -28,12 +26,9 @@ enum SymmetricAlgorithm {
     switch (this) {
       case plaintext:
         return 0;
-      case des:
-        return 64;
       case idea:
       case cast5:
       case blowfish:
-      case safer:
       case aes128:
       case camellia128:
         return 128;

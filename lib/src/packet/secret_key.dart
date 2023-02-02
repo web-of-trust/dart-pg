@@ -5,8 +5,17 @@
 import 'dart:typed_data';
 
 import 'package:dart_pg/src/key/key_id.dart';
+import 'package:pointycastle/block/modes/cfb.dart';
 import 'package:pointycastle/pointycastle.dart' as pc;
 
+import '../crypto/symmetric/blowfish.dart';
+import '../crypto/symmetric/buffered_cipher.dart';
+import '../crypto/symmetric/camellia.dart';
+import '../crypto/symmetric/cast5.dart';
+import '../crypto/symmetric/des.dart';
+import '../crypto/symmetric/idea.dart';
+import '../crypto/symmetric/triple_des.dart';
+import '../crypto/symmetric/twofish.dart';
 import '../enums.dart';
 import '../helpers.dart';
 import '../key/dsa_secret_params.dart';
@@ -70,7 +79,6 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
 
     final List<int> iv = [];
-    final List<int> keyData = [];
     if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
       if (symmetricAlgorithm.value < 7) {
         iv.addAll(bytes.sublist(pos, pos + 8));
@@ -80,14 +88,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         pos += 16;
       }
     }
-    keyData.addAll(bytes.sublist(pos));
 
     return SecretKeyPacket(
       publicKey,
       symmetricAlgorithm,
       s2kUsage,
       Uint8List.fromList(iv),
-      Uint8List.fromList(keyData),
+      bytes.sublist(pos),
       s2k: s2k,
     );
   }
@@ -99,15 +106,50 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   KeyParams decrypt(String passphrase) {
     final Uint8List clearText;
     if (encrypted) {
+      final pc.BlockCipher engine;
+      switch (symmetricAlgorithm) {
+        case SymmetricAlgorithm.aes128:
+        case SymmetricAlgorithm.aes192:
+        case SymmetricAlgorithm.aes256:
+          engine = pc.BlockCipher('AES/CFB-${symmetricAlgorithm.keySize}');
+          break;
+        case SymmetricAlgorithm.blowfish:
+          engine = CFBBlockCipher(BlowfishEngine(), symmetricAlgorithm.keySize ~/ 8);
+          break;
+        case SymmetricAlgorithm.camellia128:
+        case SymmetricAlgorithm.camellia192:
+        case SymmetricAlgorithm.camellia256:
+          engine = CFBBlockCipher(CamelliaEngine(), symmetricAlgorithm.keySize ~/ 8);
+          break;
+        case SymmetricAlgorithm.cast5:
+          engine = CFBBlockCipher(CAST5Engine(), symmetricAlgorithm.keySize ~/ 8);
+          break;
+        case SymmetricAlgorithm.idea:
+          engine = CFBBlockCipher(IDEAEngine(), symmetricAlgorithm.keySize ~/ 8);
+          break;
+        case SymmetricAlgorithm.tripledes:
+          engine = CFBBlockCipher(TripleDESEngine(), symmetricAlgorithm.keySize ~/ 8);
+          break;
+        case SymmetricAlgorithm.twofish:
+          engine = CFBBlockCipher(TwofishEngine(), symmetricAlgorithm.keySize ~/ 8);
+          break;
+        default:
+          engine = pc.BlockCipher('AES/CFB-128');
+      }
+
       final key = s2k!.produceKey(passphrase, symmetricAlgorithm);
-      final cipher = pc.BlockCipher('AES/CFB-128');
+      final cipher = BufferedCipher(engine);
       cipher.init(false, pc.ParametersWithIV(pc.KeyParameter(key), iv));
-      final clearTextWithHash = cipher.process(keyData);
+
+      var clearTextWithHash = Uint8List(keyData.length);
+      final length = cipher.processBytes(keyData, 0, keyData.length, clearTextWithHash, 0);
+      cipher.doFinal(clearTextWithHash, length);
+
       final hashLen = 20;
       clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - hashLen);
       final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hashLen);
-      final digest = pc.Digest('SHA-1');
-      final hash = digest.process(clearText);
+      s2k!.digest.reset();
+      final hash = s2k!.digest.process(clearText);
       if (!hash.equals(hashText)) {
         throw Exception('Incorrect key passphrase');
       }

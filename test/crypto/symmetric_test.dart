@@ -39,7 +39,7 @@ void main() {
 
       _blockCipherVectorTest(
         0,
-        TripleDES(),
+        TripleDESEngine(),
         _kp('0123456789abcdef0123456789abcdef'),
         input,
         '3fa40e8a984d48156a271787ab8883f9893d51ec4b563b53',
@@ -47,7 +47,7 @@ void main() {
 
       _blockCipherVectorTest(
         1,
-        TripleDES(),
+        TripleDESEngine(),
         _kp('0123456789abcdeffedcba9876543210'),
         input,
         'd80a0d8b2bae5e4e6a0094171abcfc2775d2235a706e232c',
@@ -55,7 +55,7 @@ void main() {
 
       _blockCipherVectorTest(
         2,
-        TripleDES(),
+        TripleDESEngine(),
         _kp('0123456789abcdef0123456789abcdef0123456789abcdef'),
         input,
         '3fa40e8a984d48156a271787ab8883f9893d51ec4b563b53',
@@ -63,7 +63,7 @@ void main() {
 
       _blockCipherVectorTest(
         3,
-        TripleDES(),
+        TripleDESEngine(),
         _kp('0123456789abcdeffedcba98765432100123456789abcdef'),
         input,
         'd80a0d8b2bae5e4e6a0094171abcfc2775d2235a706e232c',
@@ -214,7 +214,7 @@ void main() {
         'f34a2850c9c64985d684',
       );
 
-      /// Test with 64 bit OFB mode
+      /// Test with 64 bit CFB mode
       _blockCipherVectorTest(
         3,
         CFBBlockCipher(DESEngine(), 64 ~/ 8),

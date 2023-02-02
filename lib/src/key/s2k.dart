@@ -34,20 +34,22 @@ class S2K {
   /// Eight bytes of salt in a binary string.
   final Uint8List salt;
 
-  final Digest _digest;
+  final Digest digest;
 
   S2K(
     this.salt, {
     this.type = S2kType.iterated,
     this.hash = HashAlgorithm.sha256,
     this.itCount = defaultItCount,
-  }) : _digest = Digest(hash.digestName);
+  }) : digest = Digest(hash.digestName);
 
   factory S2K.fromPacketData(Uint8List bytes) {
     var pos = 0;
     var itCount = defaultItCount;
-    final type = S2kType.values.firstWhere((type) => type.value == bytes[pos++]);
-    final hash = HashAlgorithm.values.firstWhere((hash) => hash.value == bytes[pos++]);
+    final type = S2kType.values.firstWhere((type) => type.value == bytes[pos]);
+    pos++;
+    final hash = HashAlgorithm.values.firstWhere((hash) => hash.value == bytes[pos]);
+    pos++;
     final List<int> salt = [];
     switch (type) {
       case S2kType.simple:
@@ -112,7 +114,8 @@ class S2K {
         default:
           toHash = Uint8List.fromList([]);
       }
-      final result = _digest.process(toHash);
+      digest.reset();
+      final result = digest.process(toHash);
       bytes.addAll(result);
       rLen += result.length;
       prefixLen++;
