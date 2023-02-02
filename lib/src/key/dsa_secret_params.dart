@@ -8,14 +8,15 @@ import '../helpers.dart';
 import 'key_params.dart';
 
 class DSASecretParams extends KeyParams {
-  final BigInt x;
+  /// DSA secret exponent x
+  final BigInt secretExponent;
 
-  DSASecretParams(this.x);
+  DSASecretParams(this.secretExponent);
 
   factory DSASecretParams.fromPacketData(Uint8List bytes) {
     return DSASecretParams(KeyParams.readMPI(bytes));
   }
 
   @override
-  Uint8List encode() => Uint8List.fromList([...x.bitLength.pack16(), ...x.toUnsignedBytes()]);
+  Uint8List encode() => Uint8List.fromList([...secretExponent.bitLength.pack16(), ...secretExponent.toUnsignedBytes()]);
 }

@@ -11,18 +11,22 @@ import 'key_params.dart';
 class RSASecretParams extends KeyParams {
   final RSAPrivateKey privateKey;
 
-  final BigInt qInv;
+  /// The multiplicative inverse of p, mod q
+  final BigInt pInv;
 
-  RSASecretParams(this.privateKey, {BigInt? qInv}) : qInv = qInv ?? privateKey.p!.modInverse(privateKey.q!);
+  RSASecretParams(this.privateKey, {BigInt? pInv}) : pInv = pInv ?? privateKey.p!.modInverse(privateKey.q!);
 
   BigInt? get modulus => privateKey.modulus;
 
   BigInt? get publicExponent => privateKey.publicExponent;
 
+  /// RSA secret exponent d
   BigInt? get privateExponent => privateKey.privateExponent;
 
+  /// RSA secret prime value p
   BigInt? get primeP => privateKey.p;
 
+  /// RSA secret prime value q (p < q)
   BigInt? get primeQ => privateKey.q;
 
   factory RSASecretParams.fromPacketData(Uint8List bytes) {
@@ -35,9 +39,9 @@ class RSASecretParams extends KeyParams {
     final primeQ = KeyParams.readMPI(bytes.sublist(pos));
 
     pos += primeQ.byteLength + 2;
-    final qInv = KeyParams.readMPI(bytes.sublist(pos));
+    final pInv = KeyParams.readMPI(bytes.sublist(pos));
 
-    return RSASecretParams(RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ), qInv: qInv);
+    return RSASecretParams(RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ), pInv: pInv);
   }
 
   @override
@@ -48,7 +52,7 @@ class RSASecretParams extends KeyParams {
         ...primeP!.toUnsignedBytes(),
         ...primeQ!.bitLength.pack16(),
         ...primeQ!.toUnsignedBytes(),
-        ...qInv.bitLength.pack16(),
-        ...qInv.toUnsignedBytes(),
+        ...pInv.bitLength.pack16(),
+        ...pInv.toUnsignedBytes(),
       ]);
 }

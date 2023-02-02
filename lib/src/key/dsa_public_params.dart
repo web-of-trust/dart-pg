@@ -14,19 +14,31 @@ class DSAPublicParams extends KeyParams {
   DSAPublicParams(this.publicKey);
 
   factory DSAPublicParams.fromPacketData(Uint8List bytes) {
-    final p = KeyParams.readMPI(bytes);
+    final primeP = KeyParams.readMPI(bytes);
 
-    var pos = p.byteLength + 2;
-    final q = KeyParams.readMPI(bytes.sublist(pos));
+    var pos = primeP.byteLength + 2;
+    final groupOrder = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += q.byteLength + 2;
-    final g = KeyParams.readMPI(bytes.sublist(pos));
+    pos += groupOrder.byteLength + 2;
+    final groupGenerator = KeyParams.readMPI(bytes.sublist(pos));
 
-    pos += g.byteLength + 2;
+    pos += groupGenerator.byteLength + 2;
     final y = KeyParams.readMPI(bytes.sublist(pos));
 
-    return DSAPublicParams(DSAPublicKey(y, p, q, g));
+    return DSAPublicParams(DSAPublicKey(y, primeP, groupOrder, groupGenerator));
   }
+
+  /// DSA prime p
+  BigInt get primeP => publicKey.p;
+
+  /// DSA group order q (q is a prime divisor of p-1);
+  BigInt get groupOrder => publicKey.q;
+
+  /// DSA group generator g;
+  BigInt get groupGenerator => publicKey.g;
+
+  /// DSA public-key value y (= g ** x mod p where x is secret).
+  BigInt get publicExponent => publicKey.y;
 
   @override
   Uint8List encode() => Uint8List.fromList([

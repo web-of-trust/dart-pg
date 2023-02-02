@@ -125,7 +125,7 @@ void main() {
           expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
 
           final keyParams = key.decrypt(passphrase) as RSASecretParams;
-          expect(keyParams.qInv, keyParams.primeP!.modInverse(keyParams.primeQ!));
+          expect(keyParams.pInv, keyParams.primeP!.modInverse(keyParams.primeQ!));
         }
         if (packet.tag == PacketTag.secretSubkey) {
           final subkey = packet as SecretSubkeyPacket;
@@ -133,7 +133,7 @@ void main() {
           expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
 
           final keyParams = subkey.decrypt(passphrase) as RSASecretParams;
-          expect(keyParams.qInv, keyParams.primeP!.modInverse(keyParams.primeQ!));
+          expect(keyParams.pInv, keyParams.primeP!.modInverse(keyParams.primeQ!));
         }
       }
     }));

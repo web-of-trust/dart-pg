@@ -25,6 +25,15 @@ class ElGamalPublicParams extends KeyParams {
     return ElGamalPublicParams(ElGamalPublicKey(y, p, g));
   }
 
+  /// Elgamal prime p
+  BigInt get primeP => publicKey.p;
+
+  /// Elgamal group generator g
+  BigInt get groupGenerator => publicKey.g;
+
+  /// Elgamal public key value y (= g ** x mod p where x is secret)
+  BigInt get publicExponent => publicKey.y;
+
   @override
   Uint8List encode() => Uint8List.fromList([
         ...publicKey.p.bitLength.pack16(),

@@ -20,8 +20,10 @@ class RSAPublicParams extends KeyParams {
     return RSAPublicParams(RSAPublicKey(modulus, publicExponent));
   }
 
+  /// RSA public modulus n
   BigInt? get modulus => publicKey.modulus;
 
+  /// RSA public encryption exponent e
   BigInt? get publicExponent => publicKey.publicExponent;
 
   @override

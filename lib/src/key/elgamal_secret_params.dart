@@ -8,14 +8,15 @@ import '../helpers.dart';
 import 'key_params.dart';
 
 class ElGamalSecretParams extends KeyParams {
-  final BigInt x;
+  /// Elgamal secret exponent x.
+  final BigInt secretExponent;
 
-  ElGamalSecretParams(this.x);
+  ElGamalSecretParams(this.secretExponent);
 
   factory ElGamalSecretParams.fromPacketData(Uint8List bytes) {
     return ElGamalSecretParams(KeyParams.readMPI(bytes));
   }
 
   @override
-  Uint8List encode() => Uint8List.fromList([...x.bitLength.pack16(), ...x.toUnsignedBytes()]);
+  Uint8List encode() => Uint8List.fromList([...secretExponent.bitLength.pack16(), ...secretExponent.toUnsignedBytes()]);
 }
