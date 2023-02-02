@@ -36,9 +36,7 @@ extension StringHelper on String {
     return result;
   }
 
-  Uint8List stringToBytes() {
-    return utf8.encoder.convert(this);
-  }
+  Uint8List stringToBytes() => utf8.encoder.convert(this);
 
   bool hasMatch(final String text) => RegExp(this).hasMatch(text);
 }

@@ -12,7 +12,6 @@ import '../crypto/symmetric/blowfish.dart';
 import '../crypto/symmetric/buffered_cipher.dart';
 import '../crypto/symmetric/camellia.dart';
 import '../crypto/symmetric/cast5.dart';
-import '../crypto/symmetric/des.dart';
 import '../crypto/symmetric/idea.dart';
 import '../crypto/symmetric/triple_des.dart';
 import '../crypto/symmetric/twofish.dart';
@@ -134,7 +133,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
           engine = CFBBlockCipher(TwofishEngine(), symmetricAlgorithm.keySize ~/ 8);
           break;
         default:
-          engine = pc.BlockCipher('AES/CFB-128');
+          throw UnsupportedError('Unknown symmetric algorithm encountered');
       }
 
       final key = s2k!.produceKey(passphrase, symmetricAlgorithm);

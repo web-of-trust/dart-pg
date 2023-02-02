@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dart_pg/src/armor/armor.dart';
 import 'package:dart_pg/src/enums.dart';
+import 'package:dart_pg/src/key/rsa_secret_params.dart';
 import 'package:dart_pg/src/packet/image_attribute.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/packet/public_key.dart';
@@ -122,13 +123,17 @@ void main() {
           final key = packet as SecretKeyPacket;
           expect(key.fingerprint, '9246b6ee842e7d1f6e1e5eb783a6d23f576b1501');
           expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
-          print(key.symmetricAlgorithm);
+
+          final keyParams = key.decrypt(passphrase) as RSASecretParams;
+          expect(keyParams.qInv, keyParams.primeP!.modInverse(keyParams.primeQ!));
         }
         if (packet.tag == PacketTag.secretSubkey) {
           final subkey = packet as SecretSubkeyPacket;
           expect(subkey.fingerprint, '543464623d1317db8b9e49d0721b2ff83c908641');
           expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
-          print(subkey.symmetricAlgorithm);
+
+          final keyParams = subkey.decrypt(passphrase) as RSASecretParams;
+          expect(keyParams.qInv, keyParams.primeP!.modInverse(keyParams.primeQ!));
         }
       }
     }));

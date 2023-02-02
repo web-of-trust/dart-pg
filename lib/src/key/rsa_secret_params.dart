@@ -13,7 +13,7 @@ class RSASecretParams extends KeyParams {
 
   final BigInt qInv;
 
-  RSASecretParams(this.privateKey, {BigInt? qInv}) : qInv = qInv ?? privateKey.q!.modInverse(privateKey.p!);
+  RSASecretParams(this.privateKey, {BigInt? qInv}) : qInv = qInv ?? privateKey.p!.modInverse(privateKey.q!);
 
   BigInt? get modulus => privateKey.modulus;
 
