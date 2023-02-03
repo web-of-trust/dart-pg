@@ -2,7 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-enum EcCurveOid {
+enum CurveOid {
   prime256v1('1.2.840.10045.3.1.7'),
   secp384r1('1.3.132.0.34'),
   secp521r1('1.3.132.0.35'),
@@ -15,7 +15,7 @@ enum EcCurveOid {
 
   final String identifierString;
 
-  const EcCurveOid(this.identifierString);
+  const CurveOid(this.identifierString);
 
   String get curveName {
     switch (this) {

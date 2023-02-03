@@ -42,13 +42,13 @@ class DSAPublicParams extends KeyParams {
 
   @override
   Uint8List encode() => Uint8List.fromList([
-        ...publicKey.p.bitLength.pack16(),
-        ...publicKey.p.toUnsignedBytes(),
-        ...publicKey.q.bitLength.pack16(),
-        ...publicKey.q.toUnsignedBytes(),
-        ...publicKey.g.bitLength.pack16(),
-        ...publicKey.g.toUnsignedBytes(),
-        ...publicKey.y.bitLength.pack16(),
-        ...publicKey.y.toUnsignedBytes(),
+        ...primeP.bitLength.pack16(),
+        ...primeP.toUnsignedBytes(),
+        ...groupOrder.bitLength.pack16(),
+        ...groupOrder.toUnsignedBytes(),
+        ...groupGenerator.bitLength.pack16(),
+        ...groupGenerator.toUnsignedBytes(),
+        ...publicExponent.bitLength.pack16(),
+        ...publicExponent.toUnsignedBytes(),
       ]);
 }

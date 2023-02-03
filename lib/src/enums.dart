@@ -5,7 +5,7 @@
 export 'enum/aead_algorithm.dart';
 export 'enum/armor_type.dart';
 export 'enum/compression_algorithm.dart';
-export 'enum/ec_curve_oid.dart';
+export 'enum/curve_oid.dart';
 export 'enum/hash_algorithm.dart';
 export 'enum/iv_length.dart';
 export 'enum/key_algorithm.dart';

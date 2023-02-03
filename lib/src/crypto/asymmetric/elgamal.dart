@@ -131,7 +131,7 @@ abstract class ElGamalAsymmetricKey implements AsymmetricKey {
 }
 
 class ElGamalPublicKey extends ElGamalAsymmetricKey implements PublicKey {
-  /// g ** x mod p
+  /// public exponent y = g ** x mod p
   final BigInt y;
 
   ElGamalPublicKey(this.y, super.p, super.g);

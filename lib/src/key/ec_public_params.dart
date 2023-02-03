@@ -18,7 +18,7 @@ abstract class ECPublicParams extends KeyParams {
   @override
   Uint8List encode() {
     final curveName = publicKey.parameters!.domainName.toLowerCase();
-    final curveInfo = EcCurveOid.values.firstWhere((info) => info.name.toLowerCase() == curveName);
+    final curveInfo = CurveOid.values.firstWhere((info) => info.name.toLowerCase() == curveName);
     final oid = ASN1ObjectIdentifier(curveInfo.identifier);
     final q = publicKey.Q!.getEncoded(publicKey.Q!.isCompressed).toBigIntWithSign(1);
 
@@ -50,7 +50,7 @@ abstract class ECPublicParams extends KeyParams {
   }
 
   static ECDomainParameters parametersFromOid(ASN1ObjectIdentifier oid) {
-    final curveOid = EcCurveOid.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
+    final curveOid = CurveOid.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
     return ECDomainParameters(curveOid.name.toLowerCase());
   }
 }

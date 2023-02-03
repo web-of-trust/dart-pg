@@ -21,7 +21,7 @@ class OpenPGP {
   /// Default encryption cipher
   static const preferredSymmetricAlgorithm = SymmetricAlgorithm.aes256;
 
-  static const preferredEcCurve = EcCurveOid.brainpoolp512r1;
+  static const preferredEcCurve = CurveOid.brainpoolp512r1;
 
   static const minRSABits = 2048;
 }

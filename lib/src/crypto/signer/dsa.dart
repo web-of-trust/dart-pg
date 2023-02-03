@@ -165,7 +165,7 @@ abstract class DSAAsymmetricKey implements AsymmetricKey {
 }
 
 class DSAPublicKey extends DSAAsymmetricKey implements PublicKey {
-  /// g ** x mod p
+  /// public exponent y = g ** x mod p
   final BigInt y;
 
   DSAPublicKey(this.y, super.p, super.q, super.g);

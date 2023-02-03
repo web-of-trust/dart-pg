@@ -4,20 +4,19 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/pointycastle.dart';
-
 import '../helpers.dart';
 import 'key_params.dart';
 
 class ECSecretParams extends KeyParams {
-  final ECPrivateKey privateKey;
+  /// ECC's d private parameter
+  final BigInt d;
 
-  ECSecretParams(this.privateKey);
+  ECSecretParams(this.d);
 
   factory ECSecretParams.fromPacketData(Uint8List bytes) {
-    return ECSecretParams(ECPrivateKey(KeyParams.readMPI(bytes), null));
+    return ECSecretParams(KeyParams.readMPI(bytes));
   }
 
   @override
-  Uint8List encode() => Uint8List.fromList([...privateKey.d!.bitLength.pack16(), ...privateKey.d!.toUnsignedBytes()]);
+  Uint8List encode() => Uint8List.fromList([...d.bitLength.pack16(), ...d.toUnsignedBytes()]);
 }

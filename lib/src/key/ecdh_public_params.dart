@@ -18,7 +18,7 @@ class ECDHPublicParams extends ECPublicParams {
 
   final SymmetricAlgorithm symmetricAlgorithm;
 
-  ECDHPublicParams(super.publicKey, this.hashAlgorithm, this.symmetricAlgorithm, {this.reserved = 0x1});
+  ECDHPublicParams(super.publicKey, this.hashAlgorithm, this.symmetricAlgorithm, [this.reserved = 0x1]);
 
   factory ECDHPublicParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
@@ -47,7 +47,7 @@ class ECDHPublicParams extends ECPublicParams {
       ECPublicKey(point, parameters),
       hashAlgorithm,
       symmetricAlgorithm,
-      reserved: reserved,
+      reserved,
     );
   }
 
