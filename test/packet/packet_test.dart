@@ -74,12 +74,12 @@ void main() {
       for (final packet in packetList) {
         if (packet.tag == PacketTag.publicKey) {
           final key = packet as PublicKeyPacket;
-          expect(key.fingerprint, 'b372222bbeecb0a7f706211fdd3c91334e159a72');
+          expect(key.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
           expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
         }
         if (packet.tag == PacketTag.publicSubkey) {
           final subkey = packet as PublicSubkeyPacket;
-          expect(subkey.fingerprint, '5e591af7d2edbc3f9dba59f9cc4d4d3540ee256a');
+          expect(subkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
           expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
         }
       }
@@ -133,22 +133,20 @@ void main() {
           final publicParams = key.publicKey.publicParams as RSAPublicParams;
           final secretParams = key.decrypt(passphrase) as RSASecretParams;
 
-          expect(key.fingerprint, 'b372222bbeecb0a7f706211fdd3c91334e159a72');
+          expect(key.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
           expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
           expect(secretParams.pInv, secretParams.primeP!.modInverse(secretParams.primeQ!));
           expect(publicParams.modulus, secretParams.modulus);
-          // expect(publicParams.publicExponent, secretParams.publicExponent);
         }
         if (packet.tag == PacketTag.secretSubkey) {
           final subkey = packet as SecretSubkeyPacket;
           final publicParams = subkey.publicKey.publicParams as RSAPublicParams;
           final secretParams = subkey.decrypt(passphrase) as RSASecretParams;
 
-          expect(subkey.fingerprint, '5e591af7d2edbc3f9dba59f9cc4d4d3540ee256a');
+          expect(subkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
           expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
           expect(secretParams.pInv, secretParams.primeP!.modInverse(secretParams.primeQ!));
           expect(publicParams.modulus, secretParams.modulus);
-          // expect(publicParams.publicExponent, secretParams.publicExponent);
         }
       }
     }));
