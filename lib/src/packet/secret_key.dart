@@ -77,22 +77,24 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       pos += s2k.encode().length;
     }
 
-    final List<int> iv = [];
+    final Uint8List iv;
     if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
       if (symmetricAlgorithm.value < 7) {
-        iv.addAll(bytes.sublist(pos, pos + 8));
+        iv = bytes.sublist(pos, pos + 8);
         pos += 8;
       } else {
-        iv.addAll(bytes.sublist(pos, pos + 16));
+        iv = bytes.sublist(pos, pos + 16);
         pos += 16;
       }
+    } else {
+      iv = Uint8List(0);
     }
 
     return SecretKeyPacket(
       publicKey,
       symmetricAlgorithm,
       s2kUsage,
-      Uint8List.fromList(iv),
+      iv,
       bytes.sublist(pos),
       s2k: s2k,
     );
