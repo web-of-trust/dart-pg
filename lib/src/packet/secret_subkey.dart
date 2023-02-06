@@ -12,10 +12,10 @@ import 'subkey_packet.dart';
 class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   SecretSubkeyPacket(
     super.publicKey,
-    super.symmetricAlgorithm,
-    super.s2kUsage,
-    super.iv,
     super.keyData, {
+    super.s2kUsage,
+    super.symmetricAlgorithm,
+    super.iv,
     super.s2k,
     super.secretParams,
     super.tag = PacketTag.secretSubkey,
@@ -32,10 +32,10 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
         expirationDays: publicKey.expirationDays,
         algorithm: publicKey.algorithm,
       ),
-      secretKey.symmetricAlgorithm,
-      secretKey.s2kUsage,
-      secretKey.iv,
       secretKey.keyData,
+      s2kUsage: secretKey.s2kUsage,
+      symmetricAlgorithm: secretKey.symmetricAlgorithm,
+      iv: secretKey.iv,
       s2k: secretKey.s2k,
       secretParams: secretKey.secretParams,
     );

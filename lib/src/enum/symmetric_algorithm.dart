@@ -42,4 +42,6 @@ enum SymmetricAlgorithm {
         return 256;
     }
   }
+
+  int get blockSize => keySize ~/ 8;
 }

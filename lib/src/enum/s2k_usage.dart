@@ -5,7 +5,8 @@
 enum S2kUsage {
   none(0),
   checksum(255),
-  sha1(254);
+  sha1(254),
+  aeadProtect(253);
 
   final int value;
 

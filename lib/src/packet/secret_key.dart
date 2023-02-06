@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 
 import 'package:dart_pg/src/key/key_id.dart';
+import 'package:dart_pg/src/openpgp.dart';
 import 'package:pointycastle/block/modes/cfb.dart';
 import 'package:pointycastle/pointycastle.dart' as pc;
 
@@ -32,28 +33,33 @@ import 'public_key.dart';
 class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   final PublicKeyPacket publicKey;
 
-  final SymmetricAlgorithm symmetricAlgorithm;
+  Uint8List _keyData;
 
-  final S2kUsage s2kUsage;
+  S2kUsage _s2kUsage;
 
-  final S2K? s2k;
+  SymmetricAlgorithm _symmetricAlgorithm;
 
-  final Uint8List iv;
+  S2K? _s2k;
 
-  final Uint8List keyData;
+  Uint8List? _iv;
 
   KeyParams? _secretParams;
 
   SecretKeyPacket(
     this.publicKey,
-    this.symmetricAlgorithm,
-    this.s2kUsage,
-    this.iv,
-    this.keyData, {
-    this.s2k,
+    Uint8List keyData, {
+    S2kUsage s2kUsage = S2kUsage.sha1,
+    SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
+    Uint8List? iv,
+    S2K? s2k,
     KeyParams? secretParams,
     super.tag = PacketTag.secretKey,
-  }) : _secretParams = secretParams;
+  })  : _keyData = keyData,
+        _s2kUsage = s2kUsage,
+        _symmetricAlgorithm = symmetricAlgorithm,
+        _iv = iv,
+        _s2k = s2k,
+        _secretParams = secretParams;
 
   factory SecretKeyPacket.fromPacketData(final Uint8List bytes) {
     final publicKey = PublicKeyPacket.fromPacketData(bytes);
@@ -73,24 +79,20 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         s2k = S2K.fromPacketData(bytes.sublist(pos));
         break;
       default:
-        symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == s2kUsage.value);
+        symmetricAlgorithm = SymmetricAlgorithm.plaintext;
         s2k = null;
     }
     if (s2k != null) {
       pos += s2k.encode().length;
     }
 
-    final Uint8List iv;
+    final Uint8List? iv;
     if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
-      if (symmetricAlgorithm.value < 7) {
-        iv = bytes.sublist(pos, pos + 8);
-        pos += 8;
-      } else {
-        iv = bytes.sublist(pos, pos + 16);
-        pos += 16;
-      }
+      final blockSize = symmetricAlgorithm.keySize ~/ 8;
+      iv = bytes.sublist(pos, pos + blockSize);
+      pos += blockSize;
     } else {
-      iv = Uint8List(0);
+      iv = null;
     }
 
     KeyParams? secretParams;
@@ -100,20 +102,30 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
     return SecretKeyPacket(
       publicKey,
-      symmetricAlgorithm,
-      s2kUsage,
-      iv,
       bytes.sublist(pos),
+      s2kUsage: s2kUsage,
+      symmetricAlgorithm: symmetricAlgorithm,
+      iv: iv,
       s2k: s2k,
       secretParams: secretParams,
     );
   }
 
-  bool get isEncrypted => s2kUsage != S2kUsage.none;
+  bool get isEncrypted => _s2kUsage != S2kUsage.none;
 
   bool get isDecrypted => _secretParams != null;
 
-  bool get isDummy => s2k != null && s2k!.type == S2kType.gnu;
+  bool get isDummy => _s2k != null && _s2k!.type == S2kType.gnu;
+
+  Uint8List get keyData => _keyData;
+
+  S2kUsage get s2kUsage => _s2kUsage;
+
+  SymmetricAlgorithm get symmetricAlgorithm => _symmetricAlgorithm;
+
+  S2K? get s2k => _s2k;
+
+  Uint8List? get iv => _iv;
 
   KeyParams? get secretParams => _secretParams;
 
@@ -135,33 +147,57 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   @override
   int get version => publicKey.version;
 
-  Uint8List encrypt(String passphrase) {
-    return keyData;
+  Uint8List encrypt(
+    String passphrase, {
+    S2kUsage s2kUsage = S2kUsage.sha1,
+    SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
+    HashAlgorithm hash = HashAlgorithm.sha1,
+    S2kType type = S2kType.iterated,
+  }) {
+    if (_secretParams != null) {
+      final random = newSecureRandom();
+      _s2kUsage = s2kUsage;
+      _symmetricAlgorithm = symmetricAlgorithm;
+      _s2k = S2K(random.nextBytes(8), hash: hash, type: type);
+      _iv = random.nextBytes(symmetricAlgorithm.blockSize);
+
+      final key = _s2k!.produceKey(passphrase, symmetricAlgorithm);
+      final cipher = BufferedCipher(_cipherEngine());
+      cipher.init(true, pc.ParametersWithIV(pc.KeyParameter(key), _iv!));
+
+      _s2k!.digest.reset();
+      final clearText = _secretParams!.encode();
+      final clearTextWithHash = Uint8List.fromList([...clearText, ..._s2k!.digest.process(clearText)]);
+
+      _keyData = Uint8List(clearTextWithHash.length);
+      final length = cipher.processBytes(clearTextWithHash, 0, clearTextWithHash.length, _keyData, 0);
+      cipher.doFinal(_keyData, length);
+    }
+    return _keyData;
   }
 
   KeyParams decrypt(String passphrase) {
     if (!isDecrypted) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final engine = _cipherEngine();
-        final key = s2k!.produceKey(passphrase, symmetricAlgorithm);
-        final cipher = BufferedCipher(engine);
-        cipher.init(false, pc.ParametersWithIV(pc.KeyParameter(key), iv));
+        final key = _s2k!.produceKey(passphrase, symmetricAlgorithm);
+        final cipher = BufferedCipher(_cipherEngine());
+        cipher.init(false, pc.ParametersWithIV(pc.KeyParameter(key), _iv!));
 
-        var clearTextWithHash = Uint8List(keyData.length);
-        final length = cipher.processBytes(keyData, 0, keyData.length, clearTextWithHash, 0);
+        final clearTextWithHash = Uint8List(_keyData.length);
+        final length = cipher.processBytes(_keyData, 0, _keyData.length, clearTextWithHash, 0);
         cipher.doFinal(clearTextWithHash, length);
 
-        final hashLen = 20;
+        final hashLen = _s2k!.digest.digestSize;
         clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - hashLen);
         final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hashLen);
-        s2k!.digest.reset();
-        final hash = s2k!.digest.process(clearText);
+        _s2k!.digest.reset();
+        final hash = _s2k!.digest.process(clearText);
         if (!hash.equals(hashText)) {
           throw Exception('Incorrect key passphrase');
         }
       } else {
-        clearText = keyData;
+        clearText = _keyData;
       }
 
       _secretParams = _parseSecretParams(clearText, publicKey.algorithm);
@@ -172,10 +208,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   @override
   Uint8List toPacketData() {
     final List<int> bytes = [...publicKey.toPacketData(), s2kUsage.value];
-    if ((s2kUsage == S2kUsage.checksum || s2kUsage == S2kUsage.sha1) && s2k != null) {
-      bytes.addAll([symmetricAlgorithm.value, ...s2k!.encode()]);
+    if ((s2kUsage == S2kUsage.checksum || s2kUsage == S2kUsage.sha1) && _s2k != null) {
+      bytes.addAll([symmetricAlgorithm.value, ..._s2k!.encode()]);
     }
-    bytes.addAll([...iv, ...keyData]);
+    if (_iv != null) {
+      bytes.addAll([..._iv!]);
+    }
+    bytes.addAll([...keyData]);
     return Uint8List.fromList(bytes);
   }
 
@@ -188,24 +227,24 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         engine = pc.BlockCipher('AES/CFB-${symmetricAlgorithm.keySize}');
         break;
       case SymmetricAlgorithm.blowfish:
-        engine = CFBBlockCipher(BlowfishEngine(), symmetricAlgorithm.keySize ~/ 8);
+        engine = CFBBlockCipher(BlowfishEngine(), symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.camellia128:
       case SymmetricAlgorithm.camellia192:
       case SymmetricAlgorithm.camellia256:
-        engine = CFBBlockCipher(CamelliaEngine(), symmetricAlgorithm.keySize ~/ 8);
+        engine = CFBBlockCipher(CamelliaEngine(), symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.cast5:
-        engine = CFBBlockCipher(CAST5Engine(), symmetricAlgorithm.keySize ~/ 8);
+        engine = CFBBlockCipher(CAST5Engine(), symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.idea:
-        engine = CFBBlockCipher(IDEAEngine(), symmetricAlgorithm.keySize ~/ 8);
+        engine = CFBBlockCipher(IDEAEngine(), symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.tripledes:
-        engine = CFBBlockCipher(TripleDESEngine(), symmetricAlgorithm.keySize ~/ 8);
+        engine = CFBBlockCipher(TripleDESEngine(), symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.twofish:
-        engine = CFBBlockCipher(TwofishEngine(), symmetricAlgorithm.keySize ~/ 8);
+        engine = CFBBlockCipher(TwofishEngine(), symmetricAlgorithm.blockSize);
         break;
       default:
         throw UnsupportedError('Unknown symmetric algorithm encountered');
