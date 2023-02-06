@@ -88,7 +88,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
     final Uint8List? iv;
     if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
-      final blockSize = symmetricAlgorithm.keySize ~/ 8;
+      final blockSize = symmetricAlgorithm.blockSize;
       iv = bytes.sublist(pos, pos + blockSize);
       pos += blockSize;
     } else {
@@ -180,7 +180,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (!isDecrypted) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key = _s2k!.produceKey(passphrase, symmetricAlgorithm);
+        final key = _s2k!.produceKey(passphrase, _symmetricAlgorithm);
         final cipher = BufferedCipher(_cipherEngine());
         cipher.init(false, pc.ParametersWithIV(pc.KeyParameter(key), _iv!));
 
@@ -207,44 +207,44 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
   @override
   Uint8List toPacketData() {
-    final List<int> bytes = [...publicKey.toPacketData(), s2kUsage.value];
-    if ((s2kUsage == S2kUsage.checksum || s2kUsage == S2kUsage.sha1) && _s2k != null) {
-      bytes.addAll([symmetricAlgorithm.value, ..._s2k!.encode()]);
+    final List<int> bytes = [...publicKey.toPacketData(), _s2kUsage.value];
+    if (_s2kUsage != S2kUsage.none && _s2k != null) {
+      bytes.addAll([_symmetricAlgorithm.value, ..._s2k!.encode()]);
+      if (_iv != null) {
+        bytes.addAll([..._iv!]);
+      }
     }
-    if (_iv != null) {
-      bytes.addAll([..._iv!]);
-    }
-    bytes.addAll([...keyData]);
+    bytes.addAll([..._keyData]);
     return Uint8List.fromList(bytes);
   }
 
   pc.BlockCipher _cipherEngine() {
     final pc.BlockCipher engine;
-    switch (symmetricAlgorithm) {
+    switch (_symmetricAlgorithm) {
       case SymmetricAlgorithm.aes128:
       case SymmetricAlgorithm.aes192:
       case SymmetricAlgorithm.aes256:
-        engine = pc.BlockCipher('AES/CFB-${symmetricAlgorithm.keySize}');
+        engine = pc.BlockCipher('AES/CFB-${_symmetricAlgorithm.keySize}');
         break;
       case SymmetricAlgorithm.blowfish:
-        engine = CFBBlockCipher(BlowfishEngine(), symmetricAlgorithm.blockSize);
+        engine = CFBBlockCipher(BlowfishEngine(), _symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.camellia128:
       case SymmetricAlgorithm.camellia192:
       case SymmetricAlgorithm.camellia256:
-        engine = CFBBlockCipher(CamelliaEngine(), symmetricAlgorithm.blockSize);
+        engine = CFBBlockCipher(CamelliaEngine(), _symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.cast5:
-        engine = CFBBlockCipher(CAST5Engine(), symmetricAlgorithm.blockSize);
+        engine = CFBBlockCipher(CAST5Engine(), _symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.idea:
-        engine = CFBBlockCipher(IDEAEngine(), symmetricAlgorithm.blockSize);
+        engine = CFBBlockCipher(IDEAEngine(), _symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.tripledes:
-        engine = CFBBlockCipher(TripleDESEngine(), symmetricAlgorithm.blockSize);
+        engine = CFBBlockCipher(TripleDESEngine(), _symmetricAlgorithm.blockSize);
         break;
       case SymmetricAlgorithm.twofish:
-        engine = CFBBlockCipher(TwofishEngine(), symmetricAlgorithm.blockSize);
+        engine = CFBBlockCipher(TwofishEngine(), _symmetricAlgorithm.blockSize);
         break;
       default:
         throw UnsupportedError('Unknown symmetric algorithm encountered');
