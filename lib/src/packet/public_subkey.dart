@@ -16,7 +16,7 @@ class PublicSubkeyPacket extends PublicKeyPacket implements SubkeyPacket {
     super.expirationDays,
     super.algorithm,
     super.tag = PacketTag.publicSubkey,
-  }) : super();
+  });
 
   factory PublicSubkeyPacket.fromPacketData(final Uint8List bytes) {
     final publicKey = PublicKeyPacket.fromPacketData(bytes);

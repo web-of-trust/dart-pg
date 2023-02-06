@@ -42,6 +42,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
   final Uint8List keyData;
 
+  KeyParams? _secretParams;
+
   SecretKeyPacket(
     this.publicKey,
     this.symmetricAlgorithm,
@@ -49,8 +51,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     this.iv,
     this.keyData, {
     this.s2k,
+    KeyParams? secretParams,
     super.tag = PacketTag.secretKey,
-  });
+  }) : _secretParams = secretParams;
 
   factory SecretKeyPacket.fromPacketData(final Uint8List bytes) {
     final publicKey = PublicKeyPacket.fromPacketData(bytes);
@@ -90,6 +93,11 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       iv = Uint8List(0);
     }
 
+    KeyParams? secretParams;
+    if (s2kUsage == S2kUsage.none) {
+      secretParams = _parseSecretParams(bytes.sublist(pos), publicKey.algorithm);
+    }
+
     return SecretKeyPacket(
       publicKey,
       symmetricAlgorithm,
@@ -97,12 +105,35 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       iv,
       bytes.sublist(pos),
       s2k: s2k,
+      secretParams: secretParams,
     );
   }
 
   bool get encrypted => s2kUsage != S2kUsage.none;
 
+  bool get isDecrypted => _secretParams != null;
+
   bool get isDummy => s2k != null && s2k!.type == S2kType.gnu;
+
+  KeyParams? get secretParams => _secretParams;
+
+  @override
+  KeyAlgorithm get algorithm => publicKey.algorithm;
+
+  @override
+  DateTime get creationTime => publicKey.creationTime;
+
+  @override
+  int get expirationDays => publicKey.expirationDays;
+
+  @override
+  String get fingerprint => publicKey.fingerprint;
+
+  @override
+  KeyID get keyID => publicKey.keyID;
+
+  @override
+  int get version => publicKey.version;
 
   KeyParams decrypt(String passphrase) {
     final Uint8List clearText;
@@ -158,27 +189,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       clearText = keyData;
     }
 
-    final KeyParams keyParams;
-    switch (publicKey.algorithm) {
-      case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaEncrypt:
-      case KeyAlgorithm.rsaSign:
-        keyParams = RSASecretParams.fromPacketData(clearText);
-        break;
-      case KeyAlgorithm.elgamal:
-        keyParams = ElGamalSecretParams.fromPacketData(clearText);
-        break;
-      case KeyAlgorithm.dsa:
-        keyParams = DSASecretParams.fromPacketData(clearText);
-        break;
-      case KeyAlgorithm.ecdh:
-      case KeyAlgorithm.ecdsa:
-        keyParams = ECSecretParams.fromPacketData(clearText);
-        break;
-      default:
-        throw UnsupportedError('Unknown PGP public key algorithm encountered');
-    }
-    return keyParams;
+    return _secretParams = _parseSecretParams(clearText, publicKey.algorithm);
   }
 
   @override
@@ -191,21 +202,27 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     return Uint8List.fromList(bytes);
   }
 
-  @override
-  KeyAlgorithm get algorithm => publicKey.algorithm;
-
-  @override
-  DateTime get creationTime => publicKey.creationTime;
-
-  @override
-  int get expirationDays => publicKey.expirationDays;
-
-  @override
-  String get fingerprint => publicKey.fingerprint;
-
-  @override
-  KeyID get keyID => publicKey.keyID;
-
-  @override
-  int get version => publicKey.version;
+  static KeyParams _parseSecretParams(Uint8List packetData, KeyAlgorithm algorithm) {
+    final KeyParams keyParams;
+    switch (algorithm) {
+      case KeyAlgorithm.rsaEncryptSign:
+      case KeyAlgorithm.rsaEncrypt:
+      case KeyAlgorithm.rsaSign:
+        keyParams = RSASecretParams.fromPacketData(packetData);
+        break;
+      case KeyAlgorithm.elgamal:
+        keyParams = ElGamalSecretParams.fromPacketData(packetData);
+        break;
+      case KeyAlgorithm.dsa:
+        keyParams = DSASecretParams.fromPacketData(packetData);
+        break;
+      case KeyAlgorithm.ecdh:
+      case KeyAlgorithm.ecdsa:
+        keyParams = ECSecretParams.fromPacketData(packetData);
+        break;
+      default:
+        throw UnsupportedError('Unknown PGP public key algorithm encountered');
+    }
+    return keyParams;
+  }
 }
