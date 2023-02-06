@@ -43,5 +43,25 @@ enum SymmetricAlgorithm {
     }
   }
 
-  int get blockSize => keySize ~/ 8;
+  int get blockSize {
+    switch (this) {
+      case plaintext:
+        return 0;
+      case cast5:
+      case idea:
+      case tripledes:
+        return 8;
+      case blowfish:
+      case aes128:
+      case aes192:
+      case aes256:
+      case camellia128:
+      case camellia192:
+      case camellia256:
+      case twofish:
+        return 16;
+    }
+  }
+
+  // int get blockSize => (keySize + 7) >> 3;
 }

@@ -11,15 +11,15 @@ import 'subkey_packet.dart';
 
 class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   SecretSubkeyPacket(
-    super.publicKey,
-    super.keyData, {
+    PublicSubkeyPacket publicKey,
+    Uint8List keyData, {
     super.s2kUsage,
     super.symmetricAlgorithm,
-    super.iv,
     super.s2k,
+    super.iv,
     super.secretParams,
     super.tag = PacketTag.secretSubkey,
-  });
+  }) : super(publicKey, keyData);
 
   factory SecretSubkeyPacket.fromPacketData(final Uint8List bytes) {
     final secretKey = SecretKeyPacket.fromPacketData(bytes);
@@ -35,8 +35,8 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
       secretKey.keyData,
       s2kUsage: secretKey.s2kUsage,
       symmetricAlgorithm: secretKey.symmetricAlgorithm,
-      iv: secretKey.iv,
       s2k: secretKey.s2k,
+      iv: secretKey.iv,
       secretParams: secretKey.secretParams,
     );
   }

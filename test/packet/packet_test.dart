@@ -146,7 +146,7 @@ void main() {
         if (packet.tag == PacketTag.secretKey) {
           final key = packet as SecretKeyPacket;
           final publicParams = key.publicKey.publicParams as RSAPublicParams;
-          final secretParams = key.decrypt(passphrase) as RSASecretParams;
+          final secretParams = key.decrypt(passphrase).secretParams as RSASecretParams;
 
           expect(key.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
           expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
@@ -156,7 +156,7 @@ void main() {
         if (packet.tag == PacketTag.secretSubkey) {
           final subkey = packet as SecretSubkeyPacket;
           final publicParams = subkey.publicKey.publicParams as RSAPublicParams;
-          final secretParams = subkey.decrypt(passphrase) as RSASecretParams;
+          final secretParams = subkey.decrypt(passphrase).secretParams as RSASecretParams;
 
           expect(subkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
           expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
@@ -174,7 +174,7 @@ void main() {
         if (packet.tag == PacketTag.secretKey) {
           final key = packet as SecretKeyPacket;
           final publicParams = key.publicKey.publicParams as DSAPublicParams;
-          final secretParams = key.decrypt(passphrase) as DSASecretParams;
+          final secretParams = key.decrypt(passphrase).secretParams as DSASecretParams;
 
           expect(key.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
           expect(key.algorithm, KeyAlgorithm.dsa);
@@ -184,7 +184,7 @@ void main() {
         if (packet.tag == PacketTag.secretSubkey) {
           final subkey = packet as SecretSubkeyPacket;
           final publicParams = subkey.publicKey.publicParams as ElGamalPublicParams;
-          final secretParams = subkey.decrypt(passphrase) as ElGamalSecretParams;
+          final secretParams = subkey.decrypt(passphrase).secretParams as ElGamalSecretParams;
 
           expect(subkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
           expect(subkey.algorithm, KeyAlgorithm.elgamal);
@@ -202,7 +202,7 @@ void main() {
         if (packet.tag == PacketTag.secretKey) {
           final key = packet as SecretKeyPacket;
           final publicParams = key.publicKey.publicParams as ECDsaPublicParams;
-          final secretParams = key.decrypt(passphrase) as ECSecretParams;
+          final secretParams = key.decrypt(passphrase).secretParams as ECSecretParams;
 
           expect(key.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
           expect(key.algorithm, KeyAlgorithm.ecdsa);
@@ -211,7 +211,7 @@ void main() {
         if (packet.tag == PacketTag.secretSubkey) {
           final subkey = packet as SecretSubkeyPacket;
           final publicParams = subkey.publicKey.publicParams as ECDHPublicParams;
-          final secretParams = subkey.decrypt(passphrase) as ECSecretParams;
+          final secretParams = subkey.decrypt(passphrase).secretParams as ECSecretParams;
 
           expect(subkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
           expect(subkey.algorithm, KeyAlgorithm.ecdh);
@@ -220,8 +220,8 @@ void main() {
       }
     });
 
-    test('rsa without passphase test', (() {
-      final deArmor = Armor.decode(rsaPrivateKeyWithoutPassphase);
+    test('without passphase test', (() {
+      final deArmor = Armor.decode(privateKeyWithoutPassphase);
       expect(deArmor['type'], ArmorType.privateKey);
       final packetList = PacketList.packetDecode(deArmor['data']);
       for (final packet in packetList) {
@@ -247,5 +247,16 @@ void main() {
         }
       }
     }));
+
+    test('encrypt test', () {
+      final deArmor = Armor.decode(privateKeyWithoutPassphase);
+      final packetList = PacketList.packetDecode(deArmor['data']);
+      for (final packet in packetList) {
+        if (packet.tag == PacketTag.secretKey) {
+          final key = packet as SecretKeyPacket;
+          key.encrypt(passphrase);
+        }
+      }
+    });
   });
 }

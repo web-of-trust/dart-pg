@@ -256,7 +256,7 @@ E+o2uUnj+GqFelOcwUZ7fja3Y2dsl1wBfiV99aDsKdzfjaTCAOzEjKftKlasiHmG
 -----END PGP PRIVATE KEY BLOCK-----
 ''';
 
-const rsaPrivateKeyWithoutPassphase = '''-----BEGIN PGP PRIVATE KEY BLOCK-----
+const privateKeyWithoutPassphase = '''-----BEGIN PGP PRIVATE KEY BLOCK-----
 
 xcLYBGPc3wYBCADPiGAZfRj0a7kmYHrVZwetSscgDIm+kcYPDRBBclWji2qF
 shEJCnzdf85pQkEqSLr3T1w2R7WZ56t6x4JZBduyVAyoTLHJJD6FWaAjL1zv
