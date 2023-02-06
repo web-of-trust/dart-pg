@@ -37,23 +37,23 @@ class Armor {
     final ArmorType type,
     final Uint8List body, {
     final String text = '',
-    final HashAlgorithm hashAlgo = HashAlgorithm.sha256,
+    final HashAlgorithm hashAlgo = OpenPGP.preferredHashAlgorithm,
     final int partIndex = 0,
     final int partTotal = 0,
-    final String customComment = '',
+    final String customComment = OpenPGP.comment,
   }) {
     final List<String> result = [];
     switch (type) {
       case ArmorType.multipartSection:
         result.add('$messageBegin, PART $partIndex/$partTotal$endOfLine');
-        result.add(_addHeader(customComment: customComment));
+        result.add(_addHeader(customComment));
         result.add('${_base64Encode(body)}\n');
         result.add('=${_crc24CheckSum(body)}\n');
         result.add('$messageEnd, PART $partIndex/$partTotal$endOfLine');
         break;
       case ArmorType.multipartLast:
         result.add('$messageBegin, PART $partIndex$endOfLine');
-        result.add(_addHeader(customComment: customComment));
+        result.add(_addHeader(customComment));
         result.add('${_base64Encode(body)}\n');
         result.add('=${_crc24CheckSum(body)}\n');
         result.add('$messageEnd, PART $partIndex$endOfLine');
@@ -63,35 +63,35 @@ class Armor {
         result.add('Hash: ${hashAlgo.name.toUpperCase()}\n\n');
         result.add('${text.replaceAll(RegExp(r'^-', multiLine: true), '- -')}\n');
         result.add('$signatureBegin$endOfLine');
-        result.add(_addHeader(customComment: customComment));
+        result.add(_addHeader(customComment));
         result.add('${_base64Encode(body)}\n');
         result.add('=${_crc24CheckSum(body)}\n');
         result.add('$signatureEnd$endOfLine');
         break;
       case ArmorType.message:
         result.add('$messageBegin$endOfLine');
-        result.add(_addHeader(customComment: customComment));
+        result.add(_addHeader(customComment));
         result.add('${_base64Encode(body)}\n');
         result.add('=${_crc24CheckSum(body)}\n');
         result.add('$messageEnd$endOfLine');
         break;
       case ArmorType.publicKey:
         result.add('$publicKeyBlockBegin$endOfLine');
-        result.add(_addHeader(customComment: customComment));
+        result.add(_addHeader(customComment));
         result.add('${_base64Encode(body)}\n');
         result.add('=${_crc24CheckSum(body)}\n');
         result.add('$publicKeyBlockEnd$endOfLine');
         break;
       case ArmorType.privateKey:
         result.add('$privateKeyBlockBegin$endOfLine');
-        result.add(_addHeader(customComment: customComment));
+        result.add(_addHeader(customComment));
         result.add('${_base64Encode(body)}\n');
         result.add('=${_crc24CheckSum(body)}\n');
         result.add('$privateKeyBlockEnd$endOfLine');
         break;
       case ArmorType.signature:
         result.add('$signatureBegin$endOfLine');
-        result.add(_addHeader(customComment: customComment));
+        result.add(_addHeader(customComment));
         result.add('${_base64Encode(body)}\n');
         result.add('=${_crc24CheckSum(body)}\n');
         result.add('$signatureEnd$endOfLine');
@@ -104,7 +104,10 @@ class Armor {
 
   /// Dearmor an OpenPGP armored message;
   /// Verify the checksum and return the encoded bytes
-  static Map<String, dynamic> decode(final String armored) {
+  static Map<String, dynamic> decode(
+    final String armored, [
+    final bool checksumRequired = OpenPGP.checksumRequired,
+  ]) {
     var textDone = false;
     var checksum = '';
     ArmorType? type;
@@ -141,7 +144,7 @@ class Armor {
     final text = textLines.join('\r\n').trim();
     final data = base64.decode(dataLines.join().trim());
 
-    if ((checksum != _crc24CheckSum(data)) && (checksum.isNotEmpty || OpenPGP.checksumRequired)) {
+    if ((checksum != _crc24CheckSum(data)) && (checksum.isNotEmpty || checksumRequired)) {
       throw Exception('Ascii armor integrity check failed');
     }
 
@@ -177,7 +180,7 @@ class Armor {
     return ArmorType.multipartSection;
   }
 
-  static String _addHeader({final String customComment = ''}) {
+  static String _addHeader([final String customComment = '']) {
     final List<String> headers = [];
     if (OpenPGP.showVersion) {
       headers.add('Version: ${OpenPGP.version}\n');

@@ -9,6 +9,7 @@ import 'package:pointycastle/pointycastle.dart';
 
 import '../enums.dart';
 import '../helpers.dart';
+import '../openpgp.dart';
 
 /// Implementation of the String-to-key specifier
 ///
@@ -39,7 +40,7 @@ class S2K {
   S2K(
     this.salt, {
     this.type = S2kType.iterated,
-    this.hash = HashAlgorithm.sha256,
+    this.hash = OpenPGP.preferredHashAlgorithm,
     this.itCount = _defaultItCount,
   }) : digest = Digest(hash.digestName);
 
