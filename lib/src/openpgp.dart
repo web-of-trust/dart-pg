@@ -25,6 +25,9 @@ class OpenPGP {
 
   /// Min RSA bits length
   static const minRSABits = 2048;
+
+  /// RSA public exponent
+  static const rsaPublicExponent = '65537';
 }
 
 class Awesome {

@@ -82,6 +82,11 @@ void main() {
           expect(subkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
           expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
         }
+        if (packet.tag == PacketTag.userID) {
+          final userID = packet as UserIDPacket;
+          expect(userID.name, 'rsa pgp key');
+          expect(userID.email, 'test@dummy.com');
+        }
       }
     });
 
@@ -100,6 +105,11 @@ void main() {
           expect(subkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
           expect(subkey.algorithm, KeyAlgorithm.elgamal);
         }
+        if (packet.tag == PacketTag.userID) {
+          final userID = packet as UserIDPacket;
+          expect(userID.name, 'dsa elgamal pgp key');
+          expect(userID.email, 'test@dummy.com');
+        }
       }
     });
 
@@ -117,6 +127,11 @@ void main() {
           final subkey = packet as PublicSubkeyPacket;
           expect(subkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
           expect(subkey.algorithm, KeyAlgorithm.ecdh);
+        }
+        if (packet.tag == PacketTag.userID) {
+          final userID = packet as UserIDPacket;
+          expect(userID.name, 'ecc pgp key');
+          expect(userID.email, 'test@dummy.com');
         }
       }
     });
