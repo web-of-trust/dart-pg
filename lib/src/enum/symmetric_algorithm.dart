@@ -62,6 +62,4 @@ enum SymmetricAlgorithm {
         return 16;
     }
   }
-
-  // int get blockSize => (keySize + 7) >> 3;
 }
