@@ -138,7 +138,7 @@ class S2K {
       prefixLen++;
     }
 
-    return Uint8List.fromList(keyBytes.sublist(0, keyLen));
+    return keyBytes;
   }
 
   Uint8List hashDigest(Uint8List input) {
