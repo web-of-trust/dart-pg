@@ -11,6 +11,7 @@ import 'compressed_data.dart';
 import 'contained_packet.dart';
 import 'literal_data.dart';
 import 'marker_packet.dart';
+import 'modification_detection_code.dart';
 import 'one_pass_signature.dart';
 import 'packet_data.dart';
 import 'public_key.dart';
@@ -88,10 +89,12 @@ class PacketList extends ListBase<ContainedPacket> {
         case PacketTag.symEncryptedIntegrityProtectedData:
           packets.add(SymEncryptedIntegrityProtectedDataPacket.fromPacketData(packetData.data));
           break;
+        case PacketTag.modificationDetectionCode:
+          packets.add(ModificationDetectionCodePacket.fromPacketData(packetData.data));
+          break;
         case PacketTag.aeadEncryptedData:
           packets.add(AEADEncryptedDataPacket.fromPacketData(packetData.data));
           break;
-        default:
       }
     }
     return PacketList(packets);

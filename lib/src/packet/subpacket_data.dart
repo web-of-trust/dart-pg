@@ -31,6 +31,6 @@ class SubpacketData {
       pos += 4;
       return SubpacketData(bytes.sublist(pos, pos + length), start, pos + length, true);
     }
-    return SubpacketData(Uint8List(0), 0, 0);
+    return SubpacketData(Uint8List(0), start, start);
   }
 }
