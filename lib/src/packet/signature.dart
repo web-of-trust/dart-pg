@@ -8,7 +8,7 @@ import '../enums.dart';
 import '../helpers.dart';
 import 'contained_packet.dart';
 import 'signature_subpacket.dart';
-import 'subpacket_range.dart';
+import 'subpacket_data.dart';
 
 /// Signature represents a signature.
 /// See RFC 4880, section 5.2.
@@ -213,100 +213,220 @@ class SignaturePacket extends ContainedPacket {
     final List<SignatureSubpacket> subpackets = [];
     var offset = 0;
     while (offset < bytes.length) {
-      final range = SubpacketRange.readSubpacketRange(bytes.sublist(offset));
-      offset += range.offset;
-      final data = bytes.sublist(offset, offset + range.length);
-      offset += range.length;
+      final subpacketData = SubpacketData.readSubpacketData(bytes, offset);
+      offset = subpacketData.end;
+      final data = subpacketData.data;
       if (data.isNotEmpty) {
         final critical = ((data[0] & 0x80) != 0);
         final type = SignatureSubpacketType.values.firstWhere((type) => type.value == (data[0] & 0x7f));
         switch (type) {
           case SignatureSubpacketType.signatureCreationTime:
-            subpackets.add(SignatureCreationTime(data, critical: critical));
+            subpackets.add(SignatureCreationTime(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.signatureExpirationTime:
-            subpackets.add(SignatureExpirationTime(data, critical: critical));
+            subpackets.add(SignatureExpirationTime(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.exportableCertification:
-            subpackets.add(ExportableCertification(data, critical: critical));
+            subpackets.add(ExportableCertification(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.trustSignature:
-            subpackets.add(TrustSignature(data, critical: critical));
+            subpackets.add(TrustSignature(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           // case SignatureSubpacketType.regularExpression:
-          //   subpackets.add(SignatureSubpacket(data, critical: critical));
+          //   subpackets.add(SignatureSubpacket(
+          //     type,
+          //     data,
+          //     critical: critical,
+          //     isLongLength: subpacketData.isLongLength,
+          //   ));
           //   break;
           case SignatureSubpacketType.revocable:
-            subpackets.add(Revocable(data, critical: critical));
+            subpackets.add(Revocable(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.keyExpirationTime:
-            subpackets.add(KeyExpirationTime(data, critical: critical));
+            subpackets.add(KeyExpirationTime(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           // case SignatureSubpacketType.placeholderBackwardCompatibility:
-          //   subpackets.add(SignatureSubpacket(data, critical: critical));
+          //   subpackets.add(SignatureSubpacket(
+          //     type,
+          //     data,
+          //     critical: critical,
+          //     isLongLength: subpacketData.isLongLength,
+          //   ));
           //   break;
           case SignatureSubpacketType.preferredSymmetricAlgorithms:
-            subpackets.add(PreferredSymmetricAlgorithms(data, critical: critical));
+            subpackets.add(PreferredSymmetricAlgorithms(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.revocationKey:
-            subpackets.add(RevocationKey(data, critical: critical));
+            subpackets.add(RevocationKey(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.issuerKeyID:
-            subpackets.add(IssuerKeyID(data, critical: critical));
+            subpackets.add(IssuerKeyID(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.notationData:
-            subpackets.add(NotationData(data, critical: critical));
+            subpackets.add(NotationData(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.preferredHashAlgorithms:
-            subpackets.add(PreferredHashAlgorithms(data, critical: critical));
+            subpackets.add(PreferredHashAlgorithms(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.preferredCompressionAlgorithms:
-            subpackets.add(PreferredCompressionAlgorithms(data, critical: critical));
+            subpackets.add(PreferredCompressionAlgorithms(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           // case SignatureSubpacketType.keyServerPreferences:
-          //   subpackets.add(SignatureSubpacket(data, critical: critical));
+          //   subpackets.add(SignatureSubpacket(
+          //     type,
+          //     data,
+          //     critical: critical,
+          //     isLongLength: subpacketData.isLongLength,
+          //   ));
           //   break;
           // case SignatureSubpacketType.preferredKeyServer:
-          //   subpackets.add(SignatureSubpacket(data, critical: critical));
+          //   subpackets.add(SignatureSubpacket(
+          //     type,
+          //     data,
+          //     critical: critical,
+          //     isLongLength: subpacketData.isLongLength,
+          //   ));
           //   break;
           case SignatureSubpacketType.primaryUserID:
             subpackets.add(PrimaryUserID(data, critical: critical));
             break;
           // case SignatureSubpacketType.policyURI:
-          //   subpackets.add(SignatureSubpacket(data, critical: critical));
+          //   subpackets.add(SignatureSubpacket(
+          //     type,
+          //     data,
+          //     critical: critical,
+          //     isLongLength: subpacketData.isLongLength,
+          //   ));
           //   break;
           case SignatureSubpacketType.keyFlags:
-            subpackets.add(KeyFlags(data, critical: critical));
+            subpackets.add(KeyFlags(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.signerUserID:
-            subpackets.add(SignerUserID(data, critical: critical));
+            subpackets.add(SignerUserID(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.revocationReason:
-            subpackets.add(RevocationReason(data, critical: critical));
+            subpackets.add(RevocationReason(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.features:
-            subpackets.add(Features(data, critical: critical));
+            subpackets.add(Features(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.signatureTarget:
-            subpackets.add(SignatureTarget(data, critical: critical));
+            subpackets.add(SignatureTarget(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.embeddedSignature:
-            subpackets.add(EmbeddedSignature(data, critical: critical));
+            subpackets.add(EmbeddedSignature(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           case SignatureSubpacketType.issuerFingerprint:
-            subpackets.add(IssuerFingerprint(data, critical: critical));
+            subpackets.add(IssuerFingerprint(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           // case SignatureSubpacketType.preferredAEADAlgorithms:
-          //   subpackets.add(SignatureSubpacket(data, critical: critical));
+          //   subpackets.add(SignatureSubpacket(
+          //     type,
+          //     data,
+          //     critical: critical,
+          //     isLongLength: subpacketData.isLongLength,
+          //   ));
           //   break;
           // case SignatureSubpacketType.intendedRecipientFingerprint:
-          //   subpackets.add(SignatureSubpacket(data, critical: critical));
+          //   subpackets.add(SignatureSubpacket(
+          //     type,
+          //     data,
+          //     critical: critical,
+          //     isLongLength: subpacketData.isLongLength,
+          //   ));
           //   break;
           // case SignatureSubpacketType.attestedCertifications:
-          //   subpackets.add(SignatureSubpacket(data, critical: critical));
+          //   subpackets.add(SignatureSubpacket(
+          //     type,
+          //     data,
+          //     critical: critical,
+          //     isLongLength: subpacketData.isLongLength,
+          //   ));
           //   break;
           default:
-            subpackets.add(SignatureSubpacket(type, data, critical: critical));
+            subpackets.add(SignatureSubpacket(
+              type,
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
         }
       }
     }

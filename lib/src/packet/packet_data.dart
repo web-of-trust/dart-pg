@@ -13,16 +13,18 @@ class PacketData {
 
   final Uint8List data;
 
-  final int offset;
+  final int start;
 
-  PacketData(this.tag, this.data, this.offset);
+  final int end;
 
-  factory PacketData.readPacketData(final Uint8List bytes, [final int offset = 0]) {
-    if (bytes.length <= offset || bytes.sublist(offset).length < 2 || (bytes[offset] & 0x80) == 0) {
+  PacketData(this.tag, this.data, this.start, this.end);
+
+  factory PacketData.readPacketData(final Uint8List bytes, [final int start = 0]) {
+    if (bytes.length <= start || bytes.sublist(start).length < 2 || (bytes[start] & 0x80) == 0) {
       throw Exception('Error during parsing. This message / key probably does not conform to a valid OpenPGP format.');
     }
 
-    var pos = offset;
+    var pos = start;
 
     final headerByte = bytes[pos];
     final oldFormat = ((headerByte & 0x40) != 0) ? false : true;
@@ -32,8 +34,7 @@ class PacketData {
     final packetLengthType = oldFormat ? bytes[pos] & 0x03 : 0;
     pos++;
 
-    final List<int> bodyData = [];
-    var packetLength = bytes.length - offset;
+    var packetLength = bytes.length - start;
     var realRacketLength = -1;
     if (oldFormat) {
       switch (packetLengthType) {
@@ -59,19 +60,16 @@ class PacketData {
         while (true) {
           if (bytes[pos] < 192) {
             final partialLen = bytes[partialPos++];
-            bodyData.addAll(bytes.sublist(partialPos, partialPos + partialLen));
             packetLength += partialLen;
             partialPos += partialLen;
             break;
           } else if (bytes[partialPos] >= 192 && bytes[partialPos] < 224) {
             final partialLen = ((bytes[partialPos++] - 192) << 8) + (bytes[partialPos++]) + 192;
-            bodyData.addAll(bytes.sublist(partialPos, partialPos + partialLen));
             packetLength += partialLen;
             partialPos += partialLen;
             break;
           } else if (bytes[partialPos] > 223 && bytes[partialPos] < 255) {
             final partialLen = 1 << (bytes[partialPos++] & 0x1F);
-            bodyData.addAll(bytes.sublist(partialPos, partialPos + partialLen));
             packetLength += partialLen;
             partialPos += partialLen;
             break;
@@ -81,7 +79,6 @@ class PacketData {
             final partialLen = bytes.sublist(partialPos, partialPos + 4).toInt32();
             partialPos += 4;
 
-            bodyData.addAll(bytes.sublist(partialPos, partialPos + partialLen));
             packetLength += partialLen;
             partialPos += partialLen;
           }
@@ -98,10 +95,6 @@ class PacketData {
       realRacketLength = packetLength;
     }
 
-    if (bodyData.isEmpty) {
-      bodyData.addAll(bytes.sublist(pos, pos + realRacketLength));
-    }
-
-    return PacketData(tag, Uint8List.fromList(bodyData), pos + realRacketLength);
+    return PacketData(tag, bytes.sublist(pos, pos + realRacketLength), start, pos + realRacketLength);
   }
 }

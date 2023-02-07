@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import '../enums.dart';
 import 'contained_packet.dart';
 import 'image_attribute.dart';
-import 'subpacket_range.dart';
+import 'subpacket_data.dart';
 import 'user_attribute_subpacket.dart';
 
 class UserAttributePacket extends ContainedPacket {
@@ -38,18 +38,17 @@ class UserAttributePacket extends ContainedPacket {
     final List<UserAttributeSubpacket> attributes = [];
     var offset = 0;
     while (offset < bytes.length) {
-      final range = SubpacketRange.readSubpacketRange(bytes.sublist(offset));
-      offset += range.offset;
-      final data = bytes.sublist(offset, offset + range.length);
-      offset += range.length;
+      final subpacketData = SubpacketData.readSubpacketData(bytes, offset);
+      offset = subpacketData.end;
+      final data = subpacketData.data;
       if (data.isNotEmpty) {
         final type = data[0];
         switch (type) {
           case ImageAttributeSubpacket.jpeg:
-            attributes.add(ImageAttributeSubpacket(data.sublist(1), longLength: range.offset == 5));
+            attributes.add(ImageAttributeSubpacket(data.sublist(1), isLongLength: subpacketData.isLongLength));
             break;
           default:
-            attributes.add(UserAttributeSubpacket(type, data.sublist(1), longLength: range.offset == 5));
+            attributes.add(UserAttributeSubpacket(type, data.sublist(1), isLongLength: subpacketData.isLongLength));
         }
       }
     }

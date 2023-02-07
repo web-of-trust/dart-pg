@@ -37,7 +37,7 @@ class PacketList extends ListBase<ContainedPacket> {
     var offset = 0;
     while (offset < bytes.length) {
       final packetData = PacketData.readPacketData(bytes, offset);
-      offset = packetData.offset;
+      offset = packetData.end;
 
       switch (packetData.tag) {
         case PacketTag.publicKeyEncryptedSessionKey:

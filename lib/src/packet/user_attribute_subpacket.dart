@@ -11,17 +11,17 @@ class UserAttributeSubpacket {
 
   final Uint8List data;
 
-  final bool longLength;
+  final bool isLongLength;
 
-  UserAttributeSubpacket(this.type, this.data, {this.longLength = false});
+  UserAttributeSubpacket(this.type, this.data, {this.isLongLength = false});
 
   Uint8List toPacketData() {
     final List<int> header;
     final bodyLen = data.length + 1;
 
-    if (bodyLen < 192 && !longLength) {
+    if (bodyLen < 192 && !isLongLength) {
       header = [bodyLen];
-    } else if (bodyLen <= 8383 && !longLength) {
+    } else if (bodyLen <= 8383 && !isLongLength) {
       header = [(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192];
     } else {
       header = [0xff, ...bodyLen.pack32()];
