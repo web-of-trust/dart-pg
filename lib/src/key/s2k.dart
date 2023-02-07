@@ -68,6 +68,8 @@ class S2K {
 
   int get count => (16 + (itCount & 15)) << ((itCount >> 4) + _expbias);
 
+  int get length => type.length;
+
   Uint8List encode() {
     final bytes = [type.value, hash.value];
     switch (type) {

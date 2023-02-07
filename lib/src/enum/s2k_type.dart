@@ -12,4 +12,17 @@ enum S2kType {
   final int value;
 
   const S2kType(this.value);
+
+  int get length {
+    switch (this) {
+      case simple:
+        return 2;
+      case salted:
+        return 10;
+      case iterated:
+        return 11;
+      case gnu:
+        return 6;
+    }
+  }
 }

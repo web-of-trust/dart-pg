@@ -34,7 +34,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     pos++;
     final s2k = S2K.fromPacketData(bytes.sublist(pos));
 
-    return SymEncryptedSessionKeyPacket(version, symmetricAlgorithm, s2k, bytes.sublist(pos + s2k.encode().length));
+    return SymEncryptedSessionKeyPacket(version, symmetricAlgorithm, s2k, bytes.sublist(pos + s2k.length));
   }
 
   @override

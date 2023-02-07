@@ -72,7 +72,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == bytes[pos]);
         pos++;
         s2k = S2K.fromPacketData(bytes.sublist(pos));
-        pos += s2k.encode().length;
+        pos += s2k.length;
         break;
       default:
         symmetricAlgorithm = SymmetricAlgorithm.plaintext;
