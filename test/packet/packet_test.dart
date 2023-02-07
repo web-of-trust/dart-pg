@@ -201,7 +201,7 @@ void main() {
       for (final packet in packetList) {
         if (packet.tag == PacketTag.secretKey) {
           final key = packet as SecretKeyPacket;
-          final publicParams = key.publicKey.publicParams as ECDsaPublicParams;
+          final publicParams = key.publicKey.publicParams as ECDSAPublicParams;
           final secretParams = key.decrypt(passphrase).secretParams as ECSecretParams;
 
           expect(key.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');

@@ -205,14 +205,20 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
   @override
   Uint8List toPacketData() {
-    final List<int> bytes = [...publicKey.toPacketData(), s2kUsage.value];
+    final List<int> bytes;
     if (s2kUsage != S2kUsage.none && s2k != null) {
-      bytes.addAll([symmetricAlgorithm.value, ...s2k!.encode()]);
-      if (iv != null) {
-        bytes.addAll([...iv!]);
-      }
+      bytes = [
+        ...publicKey.toPacketData(),
+        s2kUsage.value,
+        symmetricAlgorithm.value,
+        ...s2k!.encode(),
+        ...iv ?? Uint8List(0),
+        ...keyData,
+      ];
+    } else {
+      bytes = [...publicKey.toPacketData(), s2kUsage.value, ...keyData];
     }
-    bytes.addAll([...keyData]);
+
     return Uint8List.fromList(bytes);
   }
 

@@ -93,7 +93,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
         publicParams = ECDHPublicParams.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdsa:
-        publicParams = ECDsaPublicParams.fromPacketData(bytes.sublist(pos));
+        publicParams = ECDSAPublicParams.fromPacketData(bytes.sublist(pos));
         break;
       default:
         throw UnsupportedError('Unknown PGP public key algorithm encountered');
@@ -134,17 +134,33 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   @override
   Uint8List toPacketData() {
-    final List<int> bytes = [version & 0xff, ...creationTime.toBytes()];
-    if (version <= 3) {
-      bytes.addAll(expirationDays.pack16());
-    }
-    bytes.add(algorithm.value & 0xff);
-
     final keyData = publicParams.encode();
-    if (version == 5) {
-      bytes.addAll(keyData.length.pack32());
+    final List<int> bytes;
+    if (version <= 3) {
+      bytes = [
+        version,
+        ...creationTime.toBytes(),
+        ...expirationDays.pack16(),
+        algorithm.value,
+        ...keyData,
+      ];
+    } else if (version == 4) {
+      bytes = [
+        version,
+        ...creationTime.toBytes(),
+        algorithm.value,
+        ...keyData,
+      ];
+    } else {
+      bytes = [
+        version,
+        ...creationTime.toBytes(),
+        algorithm.value,
+        ...keyData.length.pack32(),
+        ...keyData,
+      ];
     }
 
-    return Uint8List.fromList([...bytes, ...keyData]);
+    return Uint8List.fromList(bytes);
   }
 }

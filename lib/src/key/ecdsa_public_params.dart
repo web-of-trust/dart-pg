@@ -6,9 +6,9 @@ import 'dart:typed_data';
 
 import 'ec_public_params.dart';
 
-class ECDsaPublicParams extends ECPublicParams {
-  ECDsaPublicParams(super.publicKey);
+class ECDSAPublicParams extends ECPublicParams {
+  ECDSAPublicParams(super.publicKey);
 
-  factory ECDsaPublicParams.fromPacketData(Uint8List bytes) =>
-      ECDsaPublicParams(ECPublicParams.publicKeyPacketData(bytes));
+  factory ECDSAPublicParams.fromPacketData(Uint8List bytes) =>
+      ECDSAPublicParams(ECPublicParams.publicKeyPacketData(bytes));
 }
