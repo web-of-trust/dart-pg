@@ -2,6 +2,6 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'contained_packet.dart';
+import 'key_packet.dart';
 
-abstract class SubkeyPacket implements ContainedPacket {}
+abstract class SubkeyPacket extends KeyPacket {}

@@ -29,7 +29,7 @@ class UserAttributePacket extends ContainedPacket {
   Uint8List toPacketData() {
     final List<int> bytes = [];
     for (final attr in attributes) {
-      bytes.addAll(attr.write());
+      bytes.addAll(attr.toPacketData());
     }
     return Uint8List.fromList(bytes);
   }

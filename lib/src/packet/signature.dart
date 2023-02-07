@@ -322,20 +322,20 @@ class SignaturePacket extends ContainedPacket {
   Uint8List toPacketData() {
     final List<int> bytes = [version];
     if (version == 3 || version == 2) {
-      bytes.addAll([5, signatureType.value, ...creationTime.write(), ...issuerKeyID.write()]);
+      bytes.addAll([5, signatureType.value, ...creationTime.toPacketData(), ...issuerKeyID.toPacketData()]);
       bytes.addAll([keyAlgorithm.value, hashAlgorithm.value]);
     } else if (version == 4 || version == 5) {
       bytes.addAll([signatureType.value, keyAlgorithm.value, hashAlgorithm.value]);
 
       bytes.addAll(hashedSubpackets.length.pack16());
       for (final packet in hashedSubpackets) {
-        bytes.addAll(packet.write());
+        bytes.addAll(packet.toPacketData());
       }
 
       if (unhashedSubpackets.isNotEmpty) {
         bytes.addAll(unhashedSubpackets.length.pack16());
         for (final packet in unhashedSubpackets) {
-          bytes.addAll(packet.write());
+          bytes.addAll(packet.toPacketData());
         }
       } else {
         bytes.addAll([0, 0]);

@@ -21,7 +21,7 @@ class SubpacketRange {
     } else if (type < 255) {
       return SubpacketRange(((type - 192) << 8) + (bytes[1]) + 192, 2);
     } else if (type == 255) {
-      return SubpacketRange(bytes.sublist(1).toInt32(), 5);
+      return SubpacketRange(bytes.sublist(1).toUint32(), 5);
     }
     return SubpacketRange(0, 0);
   }

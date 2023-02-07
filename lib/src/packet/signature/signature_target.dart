@@ -30,9 +30,6 @@ class SignatureTarget extends SignatureSubpacket {
     KeyAlgorithm keyAlgorithm,
     HashAlgorithm hashAlgorithm,
     Uint8List hashData,
-  ) {
-    final List<int> bytes = [keyAlgorithm.value, hashAlgorithm.value];
-    bytes.addAll(hashData);
-    return Uint8List.fromList(bytes);
-  }
+  ) =>
+      Uint8List.fromList([keyAlgorithm.value, hashAlgorithm.value, ...hashData]);
 }

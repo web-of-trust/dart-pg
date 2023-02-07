@@ -6,9 +6,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import '../enums.dart';
+import '../helpers.dart';
 import 'contained_packet.dart';
 
 class UserIDPacket extends ContainedPacket {
+  final String userID;
+
   final String name;
 
   final String email;
@@ -16,34 +19,19 @@ class UserIDPacket extends ContainedPacket {
   final String comment;
 
   UserIDPacket(
-    this.name,
-    this.email, {
-    this.comment = '',
+    this.userID, {
     super.tag = PacketTag.userID,
-  });
+  })  : name = _extractName(userID),
+        email = _extractEmail(userID),
+        comment = _extractComment(userID);
 
   factory UserIDPacket.fromPacketData(final Uint8List bytes) {
-    final userID = utf8.decode(bytes);
-    return UserIDPacket(
-      _extractName(userID),
-      _extractEmail(userID),
-      comment: _extractComment(userID),
-    );
+    return UserIDPacket(utf8.decode(bytes));
   }
 
   @override
   Uint8List toPacketData() {
-    final List<String> userID = [];
-    if (name.isNotEmpty) {
-      userID.add(name);
-    }
-    if (comment.isNotEmpty) {
-      userID.add("($comment)");
-    }
-    if (email.isNotEmpty) {
-      userID.add(email);
-    }
-    return utf8.encoder.convert(userID.join(' '));
+    return userID.stringToBytes();
   }
 
   static String _extractName(final String userID) {
@@ -66,7 +54,7 @@ class UserIDPacket extends ContainedPacket {
 
   static String _extractComment(final String userID) {
     if (userID.contains('(') && userID.contains(')')) {
-    return userID.substring(userID.indexOf('(') + 1, userID.indexOf(')'));
+      return userID.substring(userID.indexOf('(') + 1, userID.indexOf(')'));
     } else {
       return '';
     }

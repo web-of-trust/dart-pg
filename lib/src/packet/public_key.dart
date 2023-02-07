@@ -109,35 +109,19 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   /// Computes and set the fingerprint of the key
   void _calculateFingerprintAndKeyID() {
-    final List<int> toHash = [];
     if (version <= 3) {
       final pk = publicParams as RSAPublicParams;
       final bytes = pk.modulus!.toBytes();
-
-      toHash.addAll(bytes);
-      toHash.addAll(pk.publicExponent!.toBytes());
-
-      _fingerprint = Uint8List.fromList(md5.convert(toHash).bytes);
+      _fingerprint = Uint8List.fromList(md5.convert([...bytes, ...pk.publicExponent!.toBytes()]).bytes);
       _keyID = KeyID(bytes.sublist(bytes.length - 8));
     } else {
       final bytes = toPacketData();
-      if (version == 5) {
-        toHash.add(0x9A);
-        toHash.addAll(bytes.length.pack32());
-        toHash.addAll(bytes);
-
-        _fingerprint = Uint8List.fromList(sha256.convert(toHash).bytes);
-        _keyID = KeyID(_fingerprint.sublist(0, 8));
-      } else if (version == 4) {
-        toHash.add(0x99);
-        toHash.addAll(bytes.length.pack16());
-        toHash.addAll(bytes);
-
-        _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
+      if (version == 4) {
+        _fingerprint = Uint8List.fromList(sha1.convert([0x99, ...bytes.length.pack16(), ...bytes]).bytes);
         _keyID = KeyID(_fingerprint.sublist(12, 20));
       } else {
-        _fingerprint = Uint8List(0);
-        _keyID = KeyID.wildcard();
+        _fingerprint = Uint8List.fromList(sha256.convert([0x9A, ...bytes.length.pack32(), ...bytes]).bytes);
+        _keyID = KeyID(_fingerprint.sublist(0, 8));
       }
     }
   }
@@ -160,8 +144,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     if (version == 5) {
       bytes.addAll(keyData.length.pack32());
     }
-    bytes.addAll(keyData);
 
-    return Uint8List.fromList(bytes);
+    return Uint8List.fromList([...bytes, ...keyData]);
   }
 }

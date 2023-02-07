@@ -15,17 +15,17 @@ class UserAttributeSubpacket {
 
   UserAttributeSubpacket(this.type, this.data, {this.longLength = false});
 
-  Uint8List write() {
-    final List<int> bytes = [];
+  Uint8List toPacketData() {
+    final List<int> header;
     final bodyLen = data.length + 1;
+
     if (bodyLen < 192 && !longLength) {
-      bytes.add(bodyLen);
+      header = [bodyLen];
     } else if (bodyLen <= 8383 && !longLength) {
-      bytes.addAll([(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192]);
+      header = [(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192];
     } else {
-      bytes.addAll([0xff, ...bodyLen.pack32()]);
+      header = [0xff, ...bodyLen.pack32()];
     }
-    bytes.addAll([type, ...data]);
-    return Uint8List.fromList(bytes);
+    return Uint8List.fromList([...header, type, ...data]);
   }
 }

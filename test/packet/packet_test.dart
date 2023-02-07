@@ -34,7 +34,7 @@ void main() {
       final email = faker.internet.email();
       final comment = faker.lorem.words(3).join(' ');
 
-      final userId = UserIDPacket(name, email, comment: comment);
+      final userId = UserIDPacket([name, '($comment)', email].join(' '));
       expect(userId.name, name);
       expect(userId.email, email);
       expect(userId.comment, comment);

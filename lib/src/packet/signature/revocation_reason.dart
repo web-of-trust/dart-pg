@@ -20,9 +20,6 @@ class RevocationReason extends SignatureSubpacket {
 
   String get description => utf8.decode(data.sublist(1));
 
-  static Uint8List _revocationToBytes(RevocationReasonTag reason, String description) {
-    final List<int> bytes = [reason.value];
-    bytes.addAll(utf8.encode(description));
-    return Uint8List.fromList(bytes);
-  }
+  static Uint8List _revocationToBytes(RevocationReasonTag reason, String description) =>
+      Uint8List.fromList([reason.value, ...utf8.encode(description)]);
 }

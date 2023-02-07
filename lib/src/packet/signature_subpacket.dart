@@ -39,24 +39,22 @@ class SignatureSubpacket {
 
   SignatureSubpacket(this.type, this.data, {this.critical = false, this.isLongLength = false});
 
-  Uint8List write() {
-    final List<int> bytes = [];
+  Uint8List toPacketData() {
+    final List<int> header;
     final bodyLen = data.length + 1;
 
     if (isLongLength) {
-      bytes.addAll([0xff, ...bodyLen.pack32()]);
+      header = [0xff, ...bodyLen.pack32()];
     } else {
       if (bodyLen < 192) {
-        bytes.add(bodyLen);
+        header = [bodyLen];
       } else if (bodyLen <= 8383) {
-        bytes.addAll([(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192]);
+        header = [(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192];
       } else {
-        bytes.addAll([0xff, ...bodyLen.pack32()]);
+        header = [0xff, ...bodyLen.pack32()];
       }
     }
 
-    bytes.addAll([critical ? 0x80 | type.value : type.value, ...data]);
-
-    return Uint8List.fromList(bytes);
+    return Uint8List.fromList([...header, critical ? 0x80 | type.value : type.value, ...data]);
   }
 }

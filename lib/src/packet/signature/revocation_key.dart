@@ -31,9 +31,6 @@ class RevocationKey extends SignatureSubpacket {
     RevocationKeyTag signatureClass,
     KeyAlgorithm keyAlgorithm,
     Uint8List fingerprint,
-  ) {
-    final List<int> bytes = [signatureClass.value, keyAlgorithm.value];
-    bytes.addAll(fingerprint);
-    return Uint8List.fromList(bytes);
-  }
+  ) =>
+      Uint8List.fromList([signatureClass.value, keyAlgorithm.value, ...fingerprint]);
 }

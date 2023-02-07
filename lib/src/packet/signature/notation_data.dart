@@ -45,8 +45,6 @@ class NotationData extends SignatureSubpacket {
   }
 
   static Uint8List _notationToBytes(bool humanReadable, String notationName, String notationValue) {
-    final List<int> bytes = [humanReadable ? 0x80 : 0x00, 0x0, 0x0, 0x0];
-
     final nameData = utf8.encode(notationName);
     final nameLength = min(nameData.length, 0xffff);
     if (nameLength != nameData.length) {
@@ -59,15 +57,14 @@ class NotationData extends SignatureSubpacket {
       throw Exception('notationValue exceeds maximum length.');
     }
 
-    bytes.add((nameLength >>> 8) & 0xff);
-    bytes.add((nameLength >>> 0) & 0xff);
-
-    bytes.add((valueLength >>> 8) & 0xff);
-    bytes.add((valueLength >>> 0) & 0xff);
-
-    bytes.addAll(nameData.sublist(0, nameLength));
-    bytes.addAll(valueData.sublist(0, valueLength));
-
-    return Uint8List.fromList(bytes);
+    return Uint8List.fromList([
+      ...[humanReadable ? 0x80 : 0x00, 0x0, 0x0, 0x0],
+      (nameLength >> 8) & 0xff,
+      (nameLength >> 0) & 0xff,
+      (valueLength >> 8) & 0xff,
+      (valueLength >> 0) & 0xff,
+      ...nameData.sublist(0, nameLength),
+      ...valueData.sublist(0, valueLength),
+    ]);
   }
 }
