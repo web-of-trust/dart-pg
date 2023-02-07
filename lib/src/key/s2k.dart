@@ -72,27 +72,23 @@ class S2K {
     final bytes = [type.value, hash.value];
     switch (type) {
       case S2kType.simple:
-        break;
+        return Uint8List.fromList(bytes);
       case S2kType.salted:
-        bytes.addAll(salt);
-        break;
+        return Uint8List.fromList([...bytes, ...salt]);
       case S2kType.iterated:
-        bytes.addAll([...salt, itCount]);
-        break;
+        return Uint8List.fromList([...bytes, ...salt, itCount]);
       case S2kType.gnu:
-        bytes.addAll([...utf8.encode('GNU'), 1]);
-        break;
+        return Uint8List.fromList([...bytes, ...utf8.encode('GNU'), 1]);
     }
-    return Uint8List.fromList(bytes);
   }
 
   Uint8List produceKey(String passphrase, SymmetricAlgorithm algorithm) {
-    final List<int> keyBytes = [];
     final pBytes = passphrase.stringToBytes();
+    final keyLen = (algorithm.keySize + 7) >> 3;
+    final keyBytes = Uint8List(keyLen);
 
     var rLen = 0;
     var prefixLen = 0;
-    final keyLen = (algorithm.keySize + 7) >> 3;
     while (rLen < keyLen) {
       final Uint8List toHash;
       switch (type) {
@@ -131,8 +127,13 @@ class S2K {
         default:
           throw UnsupportedError('s2k type not supported.');
       }
+
       final result = hashDigest(toHash);
-      keyBytes.addAll(result);
+      if (rLen + result.length > keyLen) {
+        keyBytes.setAll(rLen, result.sublist(0, keyLen - rLen));
+      } else {
+        keyBytes.setAll(rLen, result);
+      }
       rLen += result.length;
       prefixLen++;
     }
