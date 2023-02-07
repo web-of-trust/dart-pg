@@ -147,9 +147,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm));
       cipher.init(true, pc.ParametersWithIV(pc.KeyParameter(key), iv));
 
-      s2k.digest.reset();
       final clearText = secretParams!.encode();
-      final clearTextWithHash = Uint8List.fromList([...clearText, ...s2k.digest.process(clearText)]);
+      final clearTextWithHash = Uint8List.fromList([...clearText, ...s2k.hashDigest(clearText)]);
 
       final cipherText = Uint8List(clearTextWithHash.length);
       final length = cipher.processBytes(clearTextWithHash, 0, clearTextWithHash.length, cipherText, 0);
@@ -181,11 +180,10 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         final length = cipher.processBytes(keyData, 0, keyData.length, clearTextWithHash, 0);
         cipher.doFinal(clearTextWithHash, length);
 
-        final hashLen = s2k!.digest.digestSize;
+        final hashLen = s2k!.hash.digestSize;
         clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - hashLen);
         final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hashLen);
-        s2k!.digest.reset();
-        final hash = s2k!.digest.process(clearText);
+        final hash = s2k!.hashDigest(clearText);
         if (!hash.equals(hashText)) {
           throw Exception('Incorrect key passphrase');
         }

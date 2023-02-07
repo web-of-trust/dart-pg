@@ -36,4 +36,23 @@ enum HashAlgorithm {
         return 'SHA-224';
     }
   }
+
+  int get digestSize {
+    switch (this) {
+      case md5:
+        return 16;
+      case sha1:
+        return 20;
+      case ripemd160:
+        return 20;
+      case sha256:
+        return 32;
+      case sha384:
+        return 48;
+      case sha512:
+        return 64;
+      case sha224:
+        return 28;
+    }
+  }
 }

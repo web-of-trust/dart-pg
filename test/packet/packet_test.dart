@@ -220,7 +220,7 @@ void main() {
       }
     });
 
-    test('without passphase test', (() {
+    test('encrypt test', (() {
       final deArmor = Armor.decode(privateKeyWithoutPassphase);
       expect(deArmor['type'], ArmorType.privateKey);
       final packetList = PacketList.packetDecode(deArmor['data']);
@@ -234,6 +234,33 @@ void main() {
           expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
           expect(secretParams.pInv, secretParams.primeP!.modInverse(secretParams.primeQ!));
           expect(publicParams.modulus, secretParams.modulus);
+
+          expect(key.isDecrypted, true);
+          expect(key.s2kUsage, S2kUsage.none);
+          expect(key.symmetricAlgorithm, SymmetricAlgorithm.plaintext);
+          expect(key.iv, isNull);
+          expect(key.s2k, isNull);
+
+          final encryptedKey = key.encrypt(passphrase);
+          expect(encryptedKey.fingerprint, key.fingerprint);
+          expect(encryptedKey.secretParams, key.secretParams);
+
+          expect(encryptedKey.s2kUsage, S2kUsage.sha1);
+          expect(encryptedKey.symmetricAlgorithm, SymmetricAlgorithm.aes256);
+          expect(encryptedKey.iv, isNotNull);
+          expect(encryptedKey.s2k, isNotNull);
+
+          final secretKey = SecretKeyPacket.fromPacketData(encryptedKey.toPacketData());
+          expect(secretKey.isDecrypted, false);
+
+          final decryptedKey = secretKey.decrypt(passphrase);
+          final decryptedParams = decryptedKey.secretParams as RSASecretParams;
+
+          expect(decryptedKey.fingerprint, key.fingerprint);
+          expect(decryptedParams.privateExponent, secretParams.privateExponent);
+          expect(decryptedParams.primeP, secretParams.primeP);
+          expect(decryptedParams.primeQ, secretParams.primeQ);
+          expect(decryptedParams.pInv, secretParams.pInv);
         }
         if (packet.tag == PacketTag.secretSubkey) {
           final subkey = packet as SecretSubkeyPacket;
@@ -244,19 +271,35 @@ void main() {
           expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
           expect(secretParams.pInv, secretParams.primeP!.modInverse(secretParams.primeQ!));
           expect(publicParams.modulus, secretParams.modulus);
+
+          expect(subkey.isDecrypted, true);
+          expect(subkey.s2kUsage, S2kUsage.none);
+          expect(subkey.symmetricAlgorithm, SymmetricAlgorithm.plaintext);
+          expect(subkey.iv, isNull);
+          expect(subkey.s2k, isNull);
+
+          final encryptedKey = subkey.encrypt(passphrase);
+          expect(encryptedKey.fingerprint, subkey.fingerprint);
+          expect(encryptedKey.secretParams, subkey.secretParams);
+
+          expect(encryptedKey.s2kUsage, S2kUsage.sha1);
+          expect(encryptedKey.symmetricAlgorithm, SymmetricAlgorithm.aes256);
+          expect(encryptedKey.iv, isNotNull);
+          expect(encryptedKey.s2k, isNotNull);
+
+          final secretKey = SecretKeyPacket.fromPacketData(encryptedKey.toPacketData());
+          expect(secretKey.isDecrypted, false);
+
+          final decryptedKey = secretKey.decrypt(passphrase);
+          final decryptedParams = decryptedKey.secretParams as RSASecretParams;
+
+          expect(decryptedKey.fingerprint, subkey.fingerprint);
+          expect(decryptedParams.privateExponent, secretParams.privateExponent);
+          expect(decryptedParams.primeP, secretParams.primeP);
+          expect(decryptedParams.primeQ, secretParams.primeQ);
+          expect(decryptedParams.pInv, secretParams.pInv);
         }
       }
     }));
-
-    test('encrypt test', () {
-      final deArmor = Armor.decode(privateKeyWithoutPassphase);
-      final packetList = PacketList.packetDecode(deArmor['data']);
-      for (final packet in packetList) {
-        if (packet.tag == PacketTag.secretKey) {
-          final key = packet as SecretKeyPacket;
-          key.encrypt(passphrase);
-        }
-      }
-    });
   });
 }

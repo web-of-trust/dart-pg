@@ -5,7 +5,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:pointycastle/pointycastle.dart';
+import 'package:crypto/crypto.dart';
+import 'package:pointycastle/api.dart' as pc;
 
 import '../enums.dart';
 import '../helpers.dart';
@@ -34,14 +35,12 @@ class S2K {
   /// Eight bytes of salt in a binary string.
   final Uint8List salt;
 
-  final Digest digest;
-
   S2K(
     this.salt, {
     this.type = S2kType.iterated,
     this.hash = HashAlgorithm.sha1,
     this.itCount = _defaultItCount,
-  }) : digest = Digest(hash.digestName);
+  });
 
   factory S2K.fromPacketData(Uint8List bytes) {
     var pos = 0;
@@ -104,38 +103,60 @@ class S2K {
           toHash = Uint8List.fromList([...List.filled(prefixLen, 0), ...salt, ...utf8.encode(passphrase)]);
           break;
         case S2kType.iterated:
-          var count = this.count;
           final data = [...List.filled(prefixLen, 0), ...salt, ...pBytes];
-          count -= data.length;
+          toHash = Uint8List(this.count);
+          toHash.setAll(0, data);
+          var count = this.count - data.length;
+          var pos = data.length;
           while (count > 0) {
             if (count < salt.length) {
-              data.addAll(salt.sublist(0, count));
+              toHash.setAll(pos, salt.sublist(0, count));
               break;
             } else {
-              data.addAll(salt);
+              toHash.setAll(pos, salt);
               count -= salt.length;
+              pos += salt.length;
             }
 
             if (count < pBytes.length) {
-              data.addAll(pBytes.sublist(0, count));
+              toHash.setAll(pos, pBytes.sublist(0, count));
               count = 0;
             } else {
-              data.addAll(pBytes);
+              toHash.setAll(pos, pBytes);
               count -= pBytes.length;
+              pos += pBytes.length;
             }
           }
-          toHash = Uint8List.fromList(data);
           break;
         default:
           throw UnsupportedError('s2k type not supported.');
       }
-      digest.reset();
-      final result = digest.process(toHash);
+      final result = hashDigest(toHash);
       keyBytes.addAll(result);
       rLen += result.length;
       prefixLen++;
     }
 
     return Uint8List.fromList(keyBytes.sublist(0, keyLen));
+  }
+
+  Uint8List hashDigest(Uint8List input) {
+    switch (hash) {
+      case HashAlgorithm.sha1:
+        return Uint8List.fromList(sha1.convert(input).bytes);
+      case HashAlgorithm.ripemd160:
+        final digest = pc.Digest('RIPEMD-160');
+        return digest.process(input);
+      case HashAlgorithm.sha256:
+        return Uint8List.fromList(sha256.convert(input).bytes);
+      case HashAlgorithm.sha384:
+        return Uint8List.fromList(sha384.convert(input).bytes);
+      case HashAlgorithm.sha512:
+        return Uint8List.fromList(sha512.convert(input).bytes);
+      case HashAlgorithm.sha224:
+        return Uint8List.fromList(sha224.convert(input).bytes);
+      default:
+        throw UnsupportedError('Digest type not supported.');
+    }
   }
 }
