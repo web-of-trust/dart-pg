@@ -42,7 +42,7 @@ class S2K {
     this.itCount = _defaultItCount,
   });
 
-  factory S2K.fromPacketData(Uint8List bytes) {
+  factory S2K.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     var itCount = _defaultItCount;
     final type = S2kType.values.firstWhere((type) => type.value == bytes[pos]);
@@ -82,7 +82,7 @@ class S2K {
     }
   }
 
-  Uint8List produceKey(String passphrase, SymmetricAlgorithm algorithm) {
+  Uint8List produceKey(final String passphrase, final SymmetricAlgorithm algorithm) {
     final pBytes = passphrase.stringToBytes();
     final keyLen = (algorithm.keySize + 7) >> 3;
     final keyBytes = Uint8List(keyLen);
@@ -141,7 +141,7 @@ class S2K {
     return keyBytes;
   }
 
-  Uint8List hashDigest(Uint8List input) {
+  Uint8List hashDigest(final Uint8List input) {
     switch (hash) {
       case HashAlgorithm.sha1:
         return Uint8List.fromList(sha1.convert(input).bytes);

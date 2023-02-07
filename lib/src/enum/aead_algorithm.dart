@@ -10,4 +10,15 @@ enum AeadAlgorithm {
   final int value;
 
   const AeadAlgorithm(this.value);
+
+  int get ivLength {
+    switch (this) {
+      case eax:
+        return 16;
+      case ocb:
+        return 15;
+      case experimentalGCM:
+        return 12;
+    }
+  }
 }

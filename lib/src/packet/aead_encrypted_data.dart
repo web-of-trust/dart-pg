@@ -40,15 +40,14 @@ class AEADEncryptedDataPacket extends ContainedPacket {
     final aeadAlgorithm = AeadAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
     pos++;
     final chunkSizeByte = bytes[pos++];
-    final ivLength = IvLength.values.firstWhere((iv) => iv.name == aeadAlgorithm.name);
 
     return AEADEncryptedDataPacket(
       version,
       symmetricAlgorithm,
       aeadAlgorithm,
       chunkSizeByte,
-      bytes.sublist(pos, pos + ivLength.value),
-      bytes.sublist(pos + ivLength.value),
+      bytes.sublist(pos, pos + aeadAlgorithm.ivLength),
+      bytes.sublist(pos + aeadAlgorithm.ivLength),
     );
   }
 

@@ -127,11 +127,11 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   int get version => publicKey.version;
 
   SecretKeyPacket encrypt(
-    String passphrase, {
-    S2kUsage s2kUsage = S2kUsage.sha1,
-    SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
-    HashAlgorithm hash = HashAlgorithm.sha1,
-    S2kType type = S2kType.iterated,
+    final String passphrase, {
+    final S2kUsage s2kUsage = S2kUsage.sha1,
+    final SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
+    final HashAlgorithm hash = HashAlgorithm.sha1,
+    final S2kType type = S2kType.iterated,
   }) {
     assert(s2kUsage != S2kUsage.none);
     assert(symmetricAlgorithm != SymmetricAlgorithm.plaintext);
@@ -166,13 +166,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
   }
 
-  SecretKeyPacket decrypt(String passphrase) {
+  SecretKeyPacket decrypt(final String passphrase) {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
         final key = s2k!.produceKey(passphrase, symmetricAlgorithm);
         final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm));
-        cipher.init(false, pc.ParametersWithIV(pc.KeyParameter(key), iv!));
+        cipher.init(false, pc.ParametersWithIV(pc.KeyParameter(key), iv ?? Uint8List(0)));
 
         final clearTextWithHash = Uint8List(keyData.length);
         final length = cipher.processBytes(keyData, 0, keyData.length, clearTextWithHash, 0);
@@ -222,7 +222,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     return Uint8List.fromList(bytes);
   }
 
-  static pc.BlockCipher _cipherEngine(SymmetricAlgorithm symmetricAlgorithm) {
+  static pc.BlockCipher _cipherEngine(final SymmetricAlgorithm symmetricAlgorithm) {
     final pc.BlockCipher engine;
     switch (symmetricAlgorithm) {
       case SymmetricAlgorithm.aes128:
@@ -256,7 +256,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     return engine;
   }
 
-  static KeyParams _parseSecretParams(Uint8List packetData, KeyAlgorithm algorithm) {
+  static KeyParams _parseSecretParams(final Uint8List packetData, final KeyAlgorithm algorithm) {
     final KeyParams keyParams;
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
