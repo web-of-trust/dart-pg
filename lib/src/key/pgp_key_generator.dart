@@ -9,7 +9,16 @@ import '../helpers.dart';
 import '../openpgp.dart';
 
 class PgpKeyGenerator {
-  static AsymmetricKeyPair rsaKeyGenerate([int bits = OpenPGP.minRSABits]) {
+
+  generateKey(
+    List<String> userIDs,
+    String passphrase, {
+    KeyType type = KeyType.rsa,
+    int rsaBits = OpenPGP.preferredRSABits,
+    CurveOid curve = OpenPGP.preferredEcCurve,
+  }) {}
+
+  static AsymmetricKeyPair rsaKeyGenerate([int bits = OpenPGP.preferredRSABits]) {
     assert(bits >= OpenPGP.minRSABits);
 
     final keyGen = KeyGenerator('RSA');

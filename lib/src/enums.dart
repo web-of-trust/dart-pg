@@ -9,6 +9,7 @@ export 'enum/curve_oid.dart';
 export 'enum/hash_algorithm.dart';
 export 'enum/key_algorithm.dart';
 export 'enum/key_flag.dart';
+export 'enum/key_type.dart';
 export 'enum/literal_format.dart';
 export 'enum/message_format.dart';
 export 'enum/packet_tag.dart';

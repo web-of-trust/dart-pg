@@ -23,6 +23,9 @@ class OpenPGP {
 
   static const preferredEcCurve = CurveOid.brainpoolp512r1;
 
+  /// Default RSA bits length
+  static const preferredRSABits = 4096;
+
   /// Min RSA bits length
   static const minRSABits = 2048;
 
