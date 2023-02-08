@@ -39,6 +39,13 @@ class BufferedCipher {
     _underlyingCipher.init(forEncryption, params);
   }
 
+  Uint8List process(Uint8List input) {
+    final output = Uint8List(input.length);
+    final length = processBytes(input, 0, input.length, output, 0);
+    doFinal(output, length);
+    return output;
+  }
+
   /// process a single byte, producing an output block if necessary.
   int processByte(int input, Uint8List output, int outOff) {
     _buffer[_bufOff++] = input & 0xff;

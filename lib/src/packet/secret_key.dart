@@ -145,15 +145,12 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final iv = random.nextBytes(symmetricAlgorithm.blockSize);
 
       final key = s2k.produceKey(passphrase, symmetricAlgorithm);
-      final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm));
-      cipher.init(true, pc.ParametersWithIV(pc.KeyParameter(key), iv));
+      final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm))
+        ..init(true, pc.ParametersWithIV(pc.KeyParameter(key), iv));
 
       final clearText = secretParams!.encode();
       final clearTextWithHash = Uint8List.fromList([...clearText, ...s2k.hashDigest(clearText)]);
-
-      final cipherText = Uint8List(clearTextWithHash.length);
-      final length = cipher.processBytes(clearTextWithHash, 0, clearTextWithHash.length, cipherText, 0);
-      cipher.doFinal(cipherText, length);
+      final cipherText = cipher.process(clearTextWithHash);
 
       return SecretKeyPacket(
         publicKey,
@@ -174,13 +171,10 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final Uint8List clearText;
       if (isEncrypted) {
         final key = s2k!.produceKey(passphrase, symmetricAlgorithm);
-        final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm));
-        cipher.init(false, pc.ParametersWithIV(pc.KeyParameter(key), iv ?? Uint8List(0)));
+        final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm))
+          ..init(false, pc.ParametersWithIV(pc.KeyParameter(key), iv ?? Uint8List(0)));
 
-        final clearTextWithHash = Uint8List(keyData.length);
-        final length = cipher.processBytes(keyData, 0, keyData.length, clearTextWithHash, 0);
-        cipher.doFinal(clearTextWithHash, length);
-
+        final clearTextWithHash = cipher.process(keyData);
         final hashLen = s2k!.hash.digestSize;
         clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - hashLen);
         final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hashLen);
