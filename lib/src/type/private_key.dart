@@ -4,17 +4,20 @@
 
 import '../armor/armor.dart';
 import '../enums.dart';
+import '../packet/secret_key.dart';
+import '../packet/secret_subkey.dart';
+import 'key.dart';
 import 'public_key.dart';
 
-class PrivateKey extends PublicKey {
+/// Class that represents an OpenPGP Private key
+class PrivateKey extends Key {
   PrivateKey(
-    super.keyPacket,
-    super.subKeys, {
-    super.directSignatures = const [],
-    super.revocationSignatures = const [],
-    super.users = const [],
-    super.userAttributes = const [],
-  });
+    SecretKeyPacket? keyPacket, {
+    List<SecretSubkeyPacket> subKeyPackets = const [],
+    super.userIDPackets,
+    super.userAttributes,
+    super.signaturePackets,
+  }) : super(keyPacket, subKeyPackets: subKeyPackets);
 
   @override
   bool get isPrivate => true;
@@ -24,6 +27,6 @@ class PrivateKey extends PublicKey {
 
   @override
   PublicKey get toPublic {
-    return PublicKey(keyPacket, subKeys);
+    return PublicKey((keyPacket as SecretKeyPacket).publicKey);
   }
 }
