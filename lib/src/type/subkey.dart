@@ -4,24 +4,21 @@
 
 import '../packet/signature.dart';
 import '../packet/subkey_packet.dart';
-import 'key.dart';
 
 /// Class that represents a subkey packet and the relevant signatures.
 class Subkey {
   /// subkey packet to hold in the Subkey
   final SubkeyPacket keyPacket;
 
-  /// reference to main Key object, containing the primary key packet corresponding to the subkey
-  final Key mainKey;
-
   final List<SignaturePacket> bindingSignatures;
 
   final List<SignaturePacket> revocationSignatures;
 
   Subkey(
-    this.keyPacket,
-    this.mainKey, {
+    this.keyPacket, {
     this.bindingSignatures = const [],
     this.revocationSignatures = const [],
   });
+
+  int get keyStrength => keyPacket.keyStrength;
 }

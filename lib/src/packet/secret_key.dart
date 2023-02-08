@@ -126,6 +126,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   @override
   int get version => publicKey.version;
 
+  @override
+  int get keyStrength => publicKey.keyStrength;
+
   SecretKeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,

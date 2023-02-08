@@ -8,6 +8,7 @@ import 'package:crypto/crypto.dart';
 import '../enums.dart';
 import '../helpers.dart';
 import '../key/dsa_public_params.dart';
+import '../key/ec_public_params.dart';
 import '../key/ecdh_public_params.dart';
 import '../key/ecdsa_public_params.dart';
 import '../key/elgamal_public_params.dart';
@@ -131,6 +132,24 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   @override
   KeyID get keyID => _keyID;
+
+  @override
+  int get keyStrength {
+    final keyParams = publicParams;
+    if (keyParams is RSAPublicParams) {
+      return keyParams.modulus!.bitLength;
+    }
+    if (keyParams is DSAPublicParams) {
+      return keyParams.primeP.bitLength;
+    }
+    if (keyParams is ElGamalPublicParams) {
+      return keyParams.primeP.bitLength;
+    }
+    if (keyParams is ECPublicParams) {
+      return keyParams.publicKey.parameters!.curve.fieldSize;
+    }
+    return -1;
+  }
 
   @override
   Uint8List toPacketData() {

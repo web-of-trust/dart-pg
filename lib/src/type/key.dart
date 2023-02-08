@@ -33,6 +33,8 @@ abstract class Key {
     this.signaturePackets = const [],
   });
 
+  int get keyStrength => keyPacket?.keyStrength ?? -1;
+
   bool get isPrivate;
 
   String get armor;
@@ -48,7 +50,6 @@ abstract class Key {
             .toList(growable: false);
         return Subkey(
           packet,
-          this,
           bindingSignatures: bindingSignatures,
           revocationSignatures: revocationSignatures,
         );

@@ -18,4 +18,6 @@ abstract class KeyPacket implements ContainedPacket {
   String get fingerprint;
 
   KeyID get keyID;
+
+  int get keyStrength;
 }
