@@ -80,7 +80,11 @@ class Signer {
     final signer = pc.Signer('${hashAlgorithm.digestName}/RSA')
       ..init(true, pc.PrivateKeyParameter<pc.RSAPrivateKey>(privateKey));
     final signature = signer.generateSignature(message) as RSASignature;
-    return signature.bytes;
+    final s = signature.bytes.toBigIntWithSign(1);
+    return Uint8List.fromList([
+      ...s.bitLength.pack16(),
+      ...s.toUnsignedBytes(),
+    ]);
   }
 
   static bool _rsaVerify(
@@ -91,7 +95,8 @@ class Signer {
   ) {
     final signer = pc.Signer('${hashAlgorithm.digestName}/RSA')
       ..init(false, pc.PublicKeyParameter<pc.RSAPublicKey>(publicKey));
-    return signer.verifySignature(message, RSASignature(signature));
+    final s = Helper.readMPI(signature);
+    return signer.verifySignature(message, RSASignature(s.toUnsignedBytes()));
   }
 
   static Uint8List _dsaSign(DSAPrivateKey privateKey, HashAlgorithm hashAlgorithm, Uint8List message) {
