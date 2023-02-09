@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import '../packet/packet_list.dart';
 import '../packet/signature.dart';
 import '../packet/user_attribute.dart';
 import '../packet/user_id.dart';
@@ -12,17 +13,23 @@ class User {
 
   final UserAttributePacket? userAttribute;
 
-  final List<SignaturePacket> selfCertifications;
+  final List<SignaturePacket> selfCertifications = [];
 
-  final List<SignaturePacket> otherCertifications;
+  final List<SignaturePacket> otherCertifications = [];
 
-  final List<SignaturePacket> revocationSignatures;
+  final List<SignaturePacket> revocationSignatures = [];
 
   User({
     this.userID,
     this.userAttribute,
-    this.selfCertifications = const [],
-    this.otherCertifications = const [],
-    this.revocationSignatures = const [],
   });
+
+  PacketList toPacketList() {
+    return PacketList([
+      userID ?? userAttribute!,
+      ...revocationSignatures,
+      ...selfCertifications,
+      ...otherCertifications,
+    ]);
+  }
 }

@@ -11,60 +11,108 @@ import '../packet/signature.dart';
 import '../packet/user_attribute.dart';
 import '../packet/user_id.dart';
 import 'key.dart';
+import 'subkey.dart';
+import 'user.dart';
 
 /// Class that represents an OpenPGP Public Key
 class PublicKey extends Key {
   PublicKey(
     PublicKeyPacket? keyPacket, {
-    List<PublicSubkeyPacket> subKeyPackets = const [],
-    super.userIDPackets,
-    super.userAttributes,
-    super.signaturePackets,
-  }) : super(keyPacket, subKeyPackets: subKeyPackets);
+    super.revocationSignatures,
+    super.directSignatures,
+    super.users,
+    super.subkeys,
+  }) : super(keyPacket);
 
   factory PublicKey.fromPacketList(PacketList packetList) {
-    PublicKeyPacket? keyPacket;
-    final List<PublicSubkeyPacket> subKeyPackets = [];
-    final List<UserIDPacket> userIDPackets = [];
-    final List<UserAttributePacket> userAttributes = [];
-    final List<SignaturePacket> signaturePackets = [];
+    final List<SignaturePacket> revocationSignatures = [];
+    final List<SignaturePacket> directSignatures = [];
+    final List<User> users = [];
+    final List<Subkey> subkeys = [];
 
-    for (var packet in packetList) {
+    PublicKeyPacket? keyPacket;
+    Subkey? subkey;
+    User? user;
+    String? primaryKeyID;
+    for (final packet in packetList) {
       switch (packet.tag) {
         case PacketTag.publicKey:
           if (packet is PublicKeyPacket) {
             keyPacket = packet;
+            primaryKeyID = packet.keyID.toString();
           }
           break;
         case PacketTag.publicSubkey:
           if (packet is PublicSubkeyPacket) {
-            subKeyPackets.add(packet);
+            subkey = Subkey(packet);
+            subkeys.add(subkey);
           }
+          user = null;
           break;
         case PacketTag.userID:
           if (packet is UserIDPacket) {
-            userIDPackets.add(packet);
+            user = User(userID: packet);
+            users.add(user);
           }
           break;
         case PacketTag.userAttribute:
           if (packet is UserAttributePacket) {
-            userAttributes.add(packet);
+            user = User(userAttribute: packet);
+            users.add(user);
           }
           break;
         case PacketTag.signature:
           if (packet is SignaturePacket) {
-            signaturePackets.add(packet);
+            switch (packet.signatureType) {
+              case SignatureType.certGeneric:
+              case SignatureType.certPersona:
+              case SignatureType.certCasual:
+              case SignatureType.certPositive:
+                if (user != null) {
+                  if (packet.issuerKeyID.keyID == primaryKeyID) {
+                    user.selfCertifications.add(packet);
+                  } else {
+                    user.otherCertifications.add(packet);
+                  }
+                }
+                break;
+              case SignatureType.certRevocation:
+                if (user != null) {
+                  user.revocationSignatures.add(packet);
+                } else {
+                  directSignatures.add(packet);
+                }
+                break;
+              case SignatureType.subkeyBinding:
+                if (subkey != null) {
+                  subkey.bindingSignatures.add(packet);
+                }
+                break;
+              case SignatureType.subkeyRevocation:
+                if (subkey != null) {
+                  subkey.revocationSignatures.add(packet);
+                }
+                break;
+              case SignatureType.key:
+                directSignatures.add(packet);
+                break;
+              case SignatureType.keyRevocation:
+                revocationSignatures.add(packet);
+                break;
+              default:
+            }
           }
           break;
         default:
       }
     }
+
     return PublicKey(
       keyPacket,
-      subKeyPackets: subKeyPackets,
-      userIDPackets: userIDPackets,
-      userAttributes: userAttributes,
-      signaturePackets: signaturePackets,
+      revocationSignatures: revocationSignatures,
+      directSignatures: directSignatures,
+      users: users,
+      subkeys: subkeys,
     );
   }
 

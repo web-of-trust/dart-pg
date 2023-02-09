@@ -4,20 +4,120 @@
 
 import '../armor/armor.dart';
 import '../enums.dart';
+import '../packet/contained_packet.dart';
+import '../packet/packet_list.dart';
+import '../packet/public_key.dart';
 import '../packet/secret_key.dart';
 import '../packet/secret_subkey.dart';
+import '../packet/signature.dart';
+import '../packet/user_attribute.dart';
+import '../packet/user_id.dart';
 import 'key.dart';
 import 'public_key.dart';
+import 'subkey.dart';
+import 'user.dart';
 
-/// Class that represents an OpenPGP Private key
+/// Class that represents an OpenPGP Private Key
 class PrivateKey extends Key {
   PrivateKey(
     SecretKeyPacket? keyPacket, {
-    List<SecretSubkeyPacket> subKeyPackets = const [],
-    super.userIDPackets,
-    super.userAttributes,
-    super.signaturePackets,
-  }) : super(keyPacket, subKeyPackets: subKeyPackets);
+    super.users,
+    super.revocationSignatures,
+    super.directSignatures,
+    super.subkeys,
+  }) : super(keyPacket);
+
+  factory PrivateKey.fromPacketList(PacketList packetList) {
+    final List<SignaturePacket> revocationSignatures = [];
+    final List<SignaturePacket> directSignatures = [];
+    final List<User> users = [];
+    final List<Subkey> subkeys = [];
+
+    SecretKeyPacket? keyPacket;
+    Subkey? subkey;
+    User? user;
+    String? primaryKeyID;
+    for (final packet in packetList) {
+      switch (packet.tag) {
+        case PacketTag.secretKey:
+          if (packet is SecretKeyPacket) {
+            keyPacket = packet;
+            primaryKeyID = packet.keyID.toString();
+          }
+          break;
+        case PacketTag.secretSubkey:
+          if (packet is SecretSubkeyPacket) {
+            subkey = Subkey(packet);
+            subkeys.add(subkey);
+          }
+          user = null;
+          break;
+        case PacketTag.userID:
+          if (packet is UserIDPacket) {
+            user = User(userID: packet);
+            users.add(user);
+          }
+          break;
+        case PacketTag.userAttribute:
+          if (packet is UserAttributePacket) {
+            user = User(userAttribute: packet);
+            users.add(user);
+          }
+          break;
+        case PacketTag.signature:
+          if (packet is SignaturePacket) {
+            switch (packet.signatureType) {
+              case SignatureType.certGeneric:
+              case SignatureType.certPersona:
+              case SignatureType.certCasual:
+              case SignatureType.certPositive:
+                if (user != null) {
+                  if (packet.issuerKeyID.keyID == primaryKeyID) {
+                    user.selfCertifications.add(packet);
+                  } else {
+                    user.otherCertifications.add(packet);
+                  }
+                }
+                break;
+              case SignatureType.certRevocation:
+                if (user != null) {
+                  user.revocationSignatures.add(packet);
+                } else {
+                  directSignatures.add(packet);
+                }
+                break;
+              case SignatureType.subkeyBinding:
+                if (subkey != null) {
+                  subkey.bindingSignatures.add(packet);
+                }
+                break;
+              case SignatureType.subkeyRevocation:
+                if (subkey != null) {
+                  subkey.revocationSignatures.add(packet);
+                }
+                break;
+              case SignatureType.key:
+                directSignatures.add(packet);
+                break;
+              case SignatureType.keyRevocation:
+                revocationSignatures.add(packet);
+                break;
+              default:
+            }
+          }
+          break;
+        default:
+      }
+    }
+
+    return PrivateKey(
+      keyPacket,
+      users: users,
+      revocationSignatures: revocationSignatures,
+      directSignatures: directSignatures,
+      subkeys: subkeys,
+    );
+  }
 
   @override
   bool get isPrivate => true;
@@ -27,6 +127,24 @@ class PrivateKey extends Key {
 
   @override
   PublicKey get toPublic {
-    return PublicKey((keyPacket as SecretKeyPacket).publicKey);
+    final packetList = PacketList([]);
+    final packets = toPacketList();
+    for (final packet in packets) {
+      switch (packet.tag) {
+        case PacketTag.secretKey:
+          if (packet is SecretKeyPacket) {
+            packetList.add(packet.publicKey);
+          }
+          break;
+        case PacketTag.secretSubkey:
+          if (packet is SecretSubkeyPacket) {
+            packetList.add(packet.publicKey);
+          }
+          break;
+        default:
+          packetList.add(packet);
+      }
+    }
+    return PublicKey.fromPacketList((packetList));
   }
 }

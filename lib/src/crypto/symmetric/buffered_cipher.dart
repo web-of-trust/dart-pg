@@ -46,20 +46,6 @@ class BufferedCipher {
     return output;
   }
 
-  /// process a single byte, producing an output block if necessary.
-  int processByte(int input, Uint8List output, int outOff) {
-    _buffer[_bufOff++] = input & 0xff;
-    if (_bufOff == _buffer.length) {
-      if ((outOff + _buffer.length) > output.length) {
-        throw ArgumentError('output buffer too short');
-      }
-
-      _bufOff = 0;
-      return _underlyingCipher.processBlock(_buffer, 0, output, outOff);
-    }
-    return 0;
-  }
-
   /// process an array of bytes, producing output if necessary.
   int processBytes(Uint8List input, int inOff, int length, Uint8List output, int outOff) {
     if (length < 1) {
@@ -120,19 +106,6 @@ class BufferedCipher {
 
     reset();
     return resultLen;
-  }
-
-  Uint8List doInputFinal(Uint8List input, int inOff, int inLen) {
-    final length = getOutputSize(inLen);
-    if (length > 0) {
-      final outBytes = Uint8List(length);
-      var pos = (inLen > 0) ? processBytes(input, inOff, inLen, outBytes, 0) : 0;
-      pos += doFinal(outBytes, pos);
-      return (pos < outBytes.length) ? outBytes.sublist(0, pos) : outBytes;
-    } else {
-      reset();
-    }
-    return Uint8List(0);
   }
 
   /// Reset the buffer and cipher. After resetting the object is in the same
