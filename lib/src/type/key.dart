@@ -36,9 +36,9 @@ abstract class Key {
 
   bool get isPrivate;
 
-  String get armor;
-
   PublicKey get toPublic;
+
+  String armor();
 
   PacketList toPacketList() {
     final packetList = PacketList([

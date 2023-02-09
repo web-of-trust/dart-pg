@@ -37,7 +37,7 @@ class Armor {
     final ArmorType type,
     final Uint8List body, {
     final String text = '',
-    final HashAlgorithm hashAlgo = OpenPGP.preferredHashAlgorithm,
+    final String hashAlgo = '',
     final int partIndex = 0,
     final int partTotal = 0,
     final String customComment = OpenPGP.comment,
@@ -60,7 +60,7 @@ class Armor {
         break;
       case ArmorType.signedMessage:
         result.add('$signedMessageBegin$endOfLine');
-        result.add('Hash: ${hashAlgo.name.toUpperCase()}\n\n');
+        result.add('Hash: $hashAlgo\n\n');
         result.add('${text.replaceAll(RegExp(r'^-', multiLine: true), '- -')}\n');
         result.add('$signatureBegin$endOfLine');
         result.add(_addHeader(customComment));
@@ -149,7 +149,7 @@ class Armor {
     }
 
     return {
-      'type': type,
+      'type': type ?? ArmorType.multipartSection,
       'data': data,
       if (headers.isNotEmpty) 'headers': headers,
       if (text.isNotEmpty) 'text': text,

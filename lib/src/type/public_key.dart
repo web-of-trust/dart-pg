@@ -24,6 +24,14 @@ class PublicKey extends Key {
     super.subkeys,
   }) : super(keyPacket);
 
+  factory PublicKey.fromArmored(String armored) {
+    final unarmor = Armor.decode(armored);
+    if (unarmor['type'] != ArmorType.publicKey) {
+      throw Exception('Armored text not of public key type');
+    }
+    return PublicKey.fromPacketList(PacketList.packetDecode(unarmor['data']));
+  }
+
   factory PublicKey.fromPacketList(PacketList packetList) {
     final List<SignaturePacket> revocationSignatures = [];
     final List<SignaturePacket> directSignatures = [];
@@ -124,8 +132,8 @@ class PublicKey extends Key {
   bool get isPrivate => false;
 
   @override
-  String get armor => Armor.encode(ArmorType.publicKey, toPacketList().packetEncode());
+  PublicKey get toPublic => this;
 
   @override
-  PublicKey get toPublic => this;
+  String armor() => Armor.encode(ArmorType.publicKey, toPacketList().packetEncode());
 }

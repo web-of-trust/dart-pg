@@ -25,6 +25,14 @@ class PrivateKey extends Key {
     super.subkeys,
   }) : super(keyPacket);
 
+  factory PrivateKey.fromArmored(String armored) {
+    final unarmor = Armor.decode(armored);
+    if (unarmor['type'] != ArmorType.privateKey) {
+      throw Exception('Armored text not of private key type');
+    }
+    return PrivateKey.fromPacketList(PacketList.packetDecode(unarmor['data']));
+  }
+
   factory PrivateKey.fromPacketList(PacketList packetList) {
     final List<SignaturePacket> revocationSignatures = [];
     final List<SignaturePacket> directSignatures = [];
@@ -125,9 +133,6 @@ class PrivateKey extends Key {
   bool get isPrivate => true;
 
   @override
-  String get armor => Armor.encode(ArmorType.privateKey, toPacketList().packetEncode());
-
-  @override
   PublicKey get toPublic {
     final packetList = PacketList([]);
     final packets = toPacketList();
@@ -149,4 +154,7 @@ class PrivateKey extends Key {
     }
     return PublicKey.fromPacketList((packetList));
   }
+
+  @override
+  String armor() => Armor.encode(ArmorType.privateKey, toPacketList().packetEncode());
 }

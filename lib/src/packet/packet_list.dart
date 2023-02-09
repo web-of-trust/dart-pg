@@ -102,7 +102,7 @@ class PacketList extends ListBase<ContainedPacket> {
 
   Uint8List packetEncode() {
     List<int> packetBytes = [];
-    for (var packet in packets) {
+    for (final packet in packets) {
       packetBytes.addAll(packet.packetEncode());
     }
     return Uint8List.fromList(packetBytes);
