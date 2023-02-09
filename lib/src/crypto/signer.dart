@@ -19,30 +19,31 @@ import '../key/rsa_secret_params.dart';
 import 'signer/dsa.dart';
 
 class Signer {
+  /// Creates a signature on data using specified algorithms and private key parameters.
   static Uint8List sign(
     KeyAlgorithm keyAlgorithm,
     HashAlgorithm hashAlgorithm,
-    KeyParams publicKeyParams,
-    KeyParams privateKeyParams,
+    KeyParams publicParams,
+    KeyParams secretParams,
     Uint8List message,
   ) {
     switch (keyAlgorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final privateKey = (privateKeyParams as RSASecretParams).privateKey;
+        final privateKey = (secretParams as RSASecretParams).privateKey;
         return _rsaSign(privateKey, hashAlgorithm, message);
       case KeyAlgorithm.dsa:
-        final keyParams = publicKeyParams as DSAPublicParams;
+        final keyParams = publicParams as DSAPublicParams;
         final p = keyParams.primeP;
         final q = keyParams.groupOrder;
         final g = keyParams.groupGenerator;
-        final x = (privateKeyParams as DSASecretParams).secretExponent;
+        final x = (secretParams as DSASecretParams).secretExponent;
         final privateKey = DSAPrivateKey(x, p, q, g);
         return _dsaSign(privateKey, hashAlgorithm, message);
       case KeyAlgorithm.ecdsa:
-        final d = (privateKeyParams as ECSecretParams).d;
-        final publicKey = (publicKeyParams as ECPublicParams).publicKey;
+        final d = (secretParams as ECSecretParams).d;
+        final publicKey = (publicParams as ECPublicParams).publicKey;
         final privateKey = ECPrivateKey(d, publicKey.parameters);
         return _ecdsaSign(privateKey, hashAlgorithm, message);
       default:
@@ -50,10 +51,11 @@ class Signer {
     }
   }
 
+  /// Verifies the signature provided for data using specified algorithms and public key parameters.
   static bool verify(
     KeyAlgorithm keyAlgorithm,
     HashAlgorithm hashAlgorithm,
-    KeyParams publicKeyParams,
+    KeyParams publicParams,
     Uint8List message,
     Uint8List signature,
   ) {
@@ -61,13 +63,13 @@ class Signer {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final publicKey = (publicKeyParams as RSAPublicParams).publicKey;
+        final publicKey = (publicParams as RSAPublicParams).publicKey;
         return _rsaVerify(publicKey, hashAlgorithm, message, signature);
       case KeyAlgorithm.dsa:
-        final publicKey = (publicKeyParams as DSAPublicParams).publicKey;
+        final publicKey = (publicParams as DSAPublicParams).publicKey;
         return _dsaVerify(publicKey, hashAlgorithm, message, signature);
       case KeyAlgorithm.ecdsa:
-        final publicKey = (publicKeyParams as ECPublicParams).publicKey;
+        final publicKey = (publicParams as ECPublicParams).publicKey;
         return _ecdsaVerify(publicKey, hashAlgorithm, message, signature);
       default:
         throw Exception('Unknown signature algorithm.');
