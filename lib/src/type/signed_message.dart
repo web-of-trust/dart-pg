@@ -34,6 +34,7 @@ class SignedMessage {
 
   List<String> get signingKeyIDs => signature.signingKeyIDs;
 
+  /// Returns ASCII armored text of signed signature
   String armor() {
     final hashes = signature.packetList.map((packet) => (packet as SignaturePacket).hashAlgorithm.name.toLowerCase());
     return Armor.encode(

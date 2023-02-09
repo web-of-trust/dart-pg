@@ -14,7 +14,7 @@ class DSASecretParams extends KeyParams {
   DSASecretParams(this.secretExponent);
 
   factory DSASecretParams.fromPacketData(Uint8List bytes) {
-    return DSASecretParams(KeyParams.readMPI(bytes));
+    return DSASecretParams(Helper.readMPI(bytes));
   }
 
   @override

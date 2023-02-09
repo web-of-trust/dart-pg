@@ -50,7 +50,7 @@ class OpenPGP {
     keyGen.init(
       ParametersWithRandom(
         RSAKeyGeneratorParameters(BigInt.parse(OpenPGP.rsaPublicExponent), bits, 64),
-        newSecureRandom(),
+        Helper.secureRandom(),
       ),
     );
     return keyGen.generateKeyPair();
@@ -61,7 +61,7 @@ class OpenPGP {
     keyGen.init(
       ParametersWithRandom(
         ECKeyGeneratorParameters(ECDomainParameters(curveOid.name.toLowerCase())),
-        newSecureRandom(),
+        Helper.secureRandom(),
       ),
     );
     return keyGen.generateKeyPair();

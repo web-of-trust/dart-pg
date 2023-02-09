@@ -140,7 +140,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     assert(symmetricAlgorithm != SymmetricAlgorithm.plaintext);
 
     if (secretParams != null) {
-      final random = newSecureRandom();
+      final random = Helper.secureRandom();
       final s2k = S2K(random.nextBytes(8), hash: hash, type: type);
       final iv = random.nextBytes(symmetricAlgorithm.blockSize);
 

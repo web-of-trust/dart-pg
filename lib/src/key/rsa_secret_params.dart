@@ -30,16 +30,16 @@ class RSASecretParams extends KeyParams {
   BigInt? get primeQ => privateKey.q;
 
   factory RSASecretParams.fromPacketData(Uint8List bytes) {
-    final privateExponent = KeyParams.readMPI(bytes);
+    final privateExponent = Helper.readMPI(bytes);
 
     var pos = privateExponent.byteLength + 2;
-    final primeP = KeyParams.readMPI(bytes.sublist(pos));
+    final primeP = Helper.readMPI(bytes.sublist(pos));
 
     pos += primeP.byteLength + 2;
-    final primeQ = KeyParams.readMPI(bytes.sublist(pos));
+    final primeQ = Helper.readMPI(bytes.sublist(pos));
 
     pos += primeQ.byteLength + 2;
-    final pInv = KeyParams.readMPI(bytes.sublist(pos));
+    final pInv = Helper.readMPI(bytes.sublist(pos));
 
     return RSASecretParams(RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ), pInv: pInv);
   }

@@ -14,16 +14,16 @@ class DSAPublicParams extends KeyParams {
   DSAPublicParams(this.publicKey);
 
   factory DSAPublicParams.fromPacketData(Uint8List bytes) {
-    final primeP = KeyParams.readMPI(bytes);
+    final primeP = Helper.readMPI(bytes);
 
     var pos = primeP.byteLength + 2;
-    final groupOrder = KeyParams.readMPI(bytes.sublist(pos));
+    final groupOrder = Helper.readMPI(bytes.sublist(pos));
 
     pos += groupOrder.byteLength + 2;
-    final groupGenerator = KeyParams.readMPI(bytes.sublist(pos));
+    final groupGenerator = Helper.readMPI(bytes.sublist(pos));
 
     pos += groupGenerator.byteLength + 2;
-    final y = KeyParams.readMPI(bytes.sublist(pos));
+    final y = Helper.readMPI(bytes.sublist(pos));
 
     return DSAPublicParams(DSAPublicKey(y, primeP, groupOrder, groupGenerator));
   }

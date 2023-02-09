@@ -122,7 +122,7 @@ void _elGamalEncryptionTest(BigInt p, BigInt g, int size) {
 }
 
 BigInt _dhCalculatePrivateKey(BigInt p) {
-  final random = newSecureRandom();
+  final random = Helper.secureRandom();
   final min = BigInt.two;
   final max = p - BigInt.two;
   final minWeight = max.bitLength >> 2;

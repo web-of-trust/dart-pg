@@ -44,7 +44,7 @@ abstract class ECPublicParams extends KeyParams {
 
     pos += length;
     final parameters = parametersFromOid(oid);
-    final q = KeyParams.readMPI(bytes.sublist(pos));
+    final q = Helper.readMPI(bytes.sublist(pos));
     final point = parameters.curve.decodePoint(q.toUnsignedBytes());
     return ECPublicKey(point, parameters);
   }

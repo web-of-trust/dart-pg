@@ -14,7 +14,7 @@ class ECSecretParams extends KeyParams {
   ECSecretParams(this.d);
 
   factory ECSecretParams.fromPacketData(Uint8List bytes) {
-    return ECSecretParams(KeyParams.readMPI(bytes));
+    return ECSecretParams(Helper.readMPI(bytes));
   }
 
   @override

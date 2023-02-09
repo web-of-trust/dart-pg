@@ -30,7 +30,7 @@ class DSASigner implements Signer {
       _random = params.random;
       params = params.parameters;
     } else {
-      _random = newSecureRandom();
+      _random = Helper.secureRandom();
     }
     if (params is DSAKeyParameters) {
       _key = params.getKey;
@@ -149,6 +149,27 @@ class DSASignature implements Signature {
   final BigInt s;
 
   DSASignature(this.r, this.s);
+
+  Uint8List encode() => Uint8List.fromList([
+        ...r.bitLength.pack16(),
+        ...r.toUnsignedBytes(),
+        ...s.bitLength.pack16(),
+        ...s.toUnsignedBytes(),
+      ]);
+
+  @override
+  String toString() => '(${r.toString()},${s.toString()})';
+
+  @override
+  bool operator ==(other) {
+    if (other is! DSASignature) return false;
+    return (other.r == r) && (other.s == s);
+  }
+
+  @override
+  int get hashCode {
+    return r.hashCode + s.hashCode;
+  }
 }
 
 abstract class DSAAsymmetricKey implements AsymmetricKey {

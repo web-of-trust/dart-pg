@@ -38,6 +38,7 @@ abstract class Key {
 
   PublicKey get toPublic;
 
+  /// Returns ASCII armored text of key
   String armor();
 
   PacketList toPacketList() {

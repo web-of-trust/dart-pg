@@ -28,7 +28,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
       _random = params.random;
       params = params.parameters;
     } else {
-      _random = newSecureRandom();
+      _random = Helper.secureRandom();
     }
     if (params is ElGamalKeyParameters) {
       _bitSize = params.getKey.p.bitLength;

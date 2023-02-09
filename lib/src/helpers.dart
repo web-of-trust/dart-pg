@@ -256,8 +256,15 @@ extension DateTimeHelper on DateTime {
   Uint8List toBytes() => (millisecondsSinceEpoch ~/ 1000).pack32();
 }
 
-SecureRandom newSecureRandom() {
-  final random = Random.secure();
-  return SecureRandom('Fortuna')
-    ..seed(KeyParameter(Uint8List.fromList(List.generate(32, ((_) => random.nextInt(0xffffffff))))));
+class Helper {
+  static BigInt readMPI(Uint8List bytes) {
+    final bitLength = bytes.sublist(0, 2).toUint16();
+    return bytes.sublist(2, ((bitLength + 7) >> 3) + 2).toBigIntWithSign(1);
+  }
+
+  static SecureRandom secureRandom() {
+    final random = Random.secure();
+    return SecureRandom('Fortuna')
+      ..seed(KeyParameter(Uint8List.fromList(List.generate(32, ((_) => random.nextInt(0xffffffff))))));
+  }
 }

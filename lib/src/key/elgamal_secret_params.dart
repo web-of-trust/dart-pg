@@ -14,7 +14,7 @@ class ElGamalSecretParams extends KeyParams {
   ElGamalSecretParams(this.secretExponent);
 
   factory ElGamalSecretParams.fromPacketData(Uint8List bytes) {
-    return ElGamalSecretParams(KeyParams.readMPI(bytes));
+    return ElGamalSecretParams(Helper.readMPI(bytes));
   }
 
   @override
