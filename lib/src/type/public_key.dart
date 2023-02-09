@@ -17,7 +17,7 @@ import 'user.dart';
 /// Class that represents an OpenPGP Public Key
 class PublicKey extends Key {
   PublicKey(
-    PublicKeyPacket? keyPacket, {
+    PublicKeyPacket keyPacket, {
     super.revocationSignatures,
     super.directSignatures,
     super.users,
@@ -83,6 +83,12 @@ class PublicKey extends Key {
                   directSignatures.add(packet);
                 }
                 break;
+              case SignatureType.key:
+                directSignatures.add(packet);
+                break;
+              case SignatureType.keyRevocation:
+                revocationSignatures.add(packet);
+                break;
               case SignatureType.subkeyBinding:
                 if (subkey != null) {
                   subkey.bindingSignatures.add(packet);
@@ -93,18 +99,16 @@ class PublicKey extends Key {
                   subkey.revocationSignatures.add(packet);
                 }
                 break;
-              case SignatureType.key:
-                directSignatures.add(packet);
-                break;
-              case SignatureType.keyRevocation:
-                revocationSignatures.add(packet);
-                break;
               default:
             }
           }
           break;
         default:
       }
+    }
+
+    if (keyPacket == null) {
+      throw Exception('Public key packet not found in packet list');
     }
 
     return PublicKey(

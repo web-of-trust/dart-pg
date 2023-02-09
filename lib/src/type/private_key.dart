@@ -4,9 +4,7 @@
 
 import '../armor/armor.dart';
 import '../enums.dart';
-import '../packet/contained_packet.dart';
 import '../packet/packet_list.dart';
-import '../packet/public_key.dart';
 import '../packet/secret_key.dart';
 import '../packet/secret_subkey.dart';
 import '../packet/signature.dart';
@@ -20,7 +18,7 @@ import 'user.dart';
 /// Class that represents an OpenPGP Private Key
 class PrivateKey extends Key {
   PrivateKey(
-    SecretKeyPacket? keyPacket, {
+    SecretKeyPacket keyPacket, {
     super.users,
     super.revocationSignatures,
     super.directSignatures,
@@ -108,6 +106,10 @@ class PrivateKey extends Key {
           break;
         default:
       }
+    }
+
+    if (keyPacket == null) {
+      throw Exception('Secret key packet not found in packet list');
     }
 
     return PrivateKey(

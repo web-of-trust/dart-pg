@@ -12,7 +12,7 @@ import 'user.dart';
 /// Abstract class that represents an OpenPGP key. Must contain a primary key.
 /// Can contain additional subkeys, signatures, user ids, user attributes.
 abstract class Key {
-  final KeyPacket? keyPacket;
+  final KeyPacket keyPacket;
 
   final List<SignaturePacket> revocationSignatures;
 
@@ -30,7 +30,9 @@ abstract class Key {
     this.subkeys = const [],
   });
 
-  int get keyStrength => keyPacket?.keyStrength ?? -1;
+  int get keyStrength => keyPacket.keyStrength;
+
+  String get keyID => keyPacket.keyID.toString();
 
   bool get isPrivate;
 
@@ -40,7 +42,7 @@ abstract class Key {
 
   PacketList toPacketList() {
     final packetList = PacketList([
-      keyPacket!,
+      keyPacket,
       ...revocationSignatures,
       ...directSignatures,
     ]);
