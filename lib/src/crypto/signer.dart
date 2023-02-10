@@ -47,7 +47,7 @@ class Signer {
         final privateKey = ECPrivateKey(d, publicKey.parameters);
         return _ecdsaSign(privateKey, hashAlgorithm, message);
       default:
-        throw Exception('Unknown signature algorithm.');
+        throw Exception('Unknown public key algorithm for message signing.');
     }
   }
 
@@ -72,7 +72,7 @@ class Signer {
         final publicKey = (publicParams as ECPublicParams).publicKey;
         return _ecdsaVerify(publicKey, hashAlgorithm, message, signature);
       default:
-        throw Exception('Unknown signature algorithm.');
+        throw Exception('Unknown public key algorithm for signature verification.');
     }
   }
 

@@ -41,8 +41,11 @@ class Generator {
           ECDHPublicParams(keyPair.publicKey as ECPublicKey, curveOid.kdfHash, curveOid.kdfSymmetric),
           ECSecretParams((keyPair.privateKey as ECPrivateKey).d!),
         );
+      case KeyAlgorithm.dsa:
+      case KeyAlgorithm.elgamal:
+        throw Exception('Unsupported public key algorithm for key generation.');
       default:
-        throw Exception('Unknown signature algorithm.');
+        throw Exception('Unknown public key algorithm for key generation.');
     }
   }
 
