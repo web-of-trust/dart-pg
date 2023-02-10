@@ -42,30 +42,6 @@ class OpenPGP {
     int rsaBits = OpenPGP.preferredRSABits,
     CurveOid curve = OpenPGP.preferredEcCurve,
   }) {}
-
-  static AsymmetricKeyPair generateRSAKeyPair([int bits = OpenPGP.preferredRSABits]) {
-    assert(bits >= OpenPGP.minRSABits);
-
-    final keyGen = KeyGenerator('RSA');
-    keyGen.init(
-      ParametersWithRandom(
-        RSAKeyGeneratorParameters(BigInt.parse(OpenPGP.rsaPublicExponent), bits, 64),
-        Helper.secureRandom(),
-      ),
-    );
-    return keyGen.generateKeyPair();
-  }
-
-  static AsymmetricKeyPair generateECKeyPair([CurveOid curveOid = OpenPGP.preferredEcCurve]) {
-    final keyGen = KeyGenerator('EC');
-    keyGen.init(
-      ParametersWithRandom(
-        ECKeyGeneratorParameters(ECDomainParameters(curveOid.name.toLowerCase())),
-        Helper.secureRandom(),
-      ),
-    );
-    return keyGen.generateKeyPair();
-  }
 }
 
 class Awesome {
