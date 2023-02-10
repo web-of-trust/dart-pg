@@ -53,7 +53,11 @@ class OpenPGP {
     KeyType type = KeyType.rsa,
     int rsaBits = OpenPGP.preferredRSABits,
     CurveOid curve = OpenPGP.preferredEcCurve,
-  }) {}
+  }) {
+    if (userIDs.isEmpty) {
+      throw Exception('UserIDs are required for key generation');
+    }
+  }
 }
 
 class Awesome {

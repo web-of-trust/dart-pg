@@ -6,10 +6,47 @@ import 'package:pointycastle/export.dart';
 
 import '../enums.dart';
 import '../helpers.dart';
+import '../key/ec_secret_params.dart';
+import '../key/ecdh_public_params.dart';
+import '../key/ecdsa_public_params.dart';
+import '../key/key_pair_params.dart';
+import '../key/rsa_public_params.dart';
+import '../key/rsa_secret_params.dart';
 import '../openpgp.dart';
 
 class Generator {
-  static AsymmetricKeyPair generateRSAKeyPair([int bits = OpenPGP.preferredRSABits]) {
+  static KeyPairParams generateKeyPairParams(
+    KeyAlgorithm algorithm, {
+    int bits = OpenPGP.preferredRSABits,
+    CurveOid curveOid = OpenPGP.preferredEcCurve,
+  }) {
+    switch (algorithm) {
+      case KeyAlgorithm.rsaEncryptSign:
+      case KeyAlgorithm.rsaEncrypt:
+      case KeyAlgorithm.rsaSign:
+        final keyPair = _generateRSAKeyPair(bits);
+        return KeyPairParams(
+          RSAPublicParams(keyPair.publicKey as RSAPublicKey),
+          RSASecretParams(keyPair.privateKey as RSAPrivateKey),
+        );
+      case KeyAlgorithm.ecdsa:
+        final keyPair = _generateECKeyPair(curveOid);
+        return KeyPairParams(
+          ECDSAPublicParams(keyPair.publicKey as ECPublicKey),
+          ECSecretParams((keyPair.privateKey as ECPrivateKey).d!),
+        );
+      case KeyAlgorithm.ecdh:
+        final keyPair = _generateECKeyPair(curveOid);
+        return KeyPairParams(
+          ECDHPublicParams(keyPair.publicKey as ECPublicKey, curveOid.hash, curveOid.cipher),
+          ECSecretParams((keyPair.privateKey as ECPrivateKey).d!),
+        );
+      default:
+        throw Exception('Unknown signature algorithm.');
+    }
+  }
+
+  static AsymmetricKeyPair _generateRSAKeyPair([int bits = OpenPGP.preferredRSABits]) {
     assert(bits >= OpenPGP.minRSABits);
 
     final keyGen = KeyGenerator('RSA');
@@ -22,7 +59,7 @@ class Generator {
     return keyGen.generateKeyPair();
   }
 
-  static AsymmetricKeyPair generateECKeyPair([CurveOid curveOid = OpenPGP.preferredEcCurve]) {
+  static AsymmetricKeyPair _generateECKeyPair([CurveOid curveOid = OpenPGP.preferredEcCurve]) {
     final keyGen = KeyGenerator('EC');
     keyGen.init(
       ParametersWithRandom(
