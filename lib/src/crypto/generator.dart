@@ -38,7 +38,7 @@ class Generator {
       case KeyAlgorithm.ecdh:
         final keyPair = _generateECKeyPair(curveOid);
         return KeyPairParams(
-          ECDHPublicParams(keyPair.publicKey as ECPublicKey, curveOid.hash, curveOid.cipher),
+          ECDHPublicParams(keyPair.publicKey as ECPublicKey, curveOid.kdfHash, curveOid.kdfSymmetric),
           ECSecretParams((keyPair.privateKey as ECPrivateKey).d!),
         );
       default:

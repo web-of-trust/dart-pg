@@ -13,11 +13,11 @@ import 'ec_public_params.dart';
 class ECDHPublicParams extends ECPublicParams {
   final int reserved;
 
-  final HashAlgorithm hashAlgorithm;
+  final HashAlgorithm kdfHash;
 
-  final SymmetricAlgorithm symmetricAlgorithm;
+  final SymmetricAlgorithm kdfSymmetric;
 
-  ECDHPublicParams(super.publicKey, this.hashAlgorithm, this.symmetricAlgorithm, [this.reserved = 0x1]);
+  ECDHPublicParams(super.publicKey, this.kdfHash, this.kdfSymmetric, [this.reserved = 0x1]);
 
   factory ECDHPublicParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
@@ -40,12 +40,12 @@ class ECDHPublicParams extends ECPublicParams {
 
     final kdfBytes = bytes.sublist(pos);
     final reserved = kdfBytes[1];
-    final hashAlgorithm = HashAlgorithm.values.firstWhere((hash) => hash.value == kdfBytes[2]);
-    final symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((sym) => sym.value == kdfBytes[3]);
+    final kdfHash = HashAlgorithm.values.firstWhere((hash) => hash.value == kdfBytes[2]);
+    final kdfSymmetric = SymmetricAlgorithm.values.firstWhere((sym) => sym.value == kdfBytes[3]);
     return ECDHPublicParams(
       ECPublicKey(point, parameters),
-      hashAlgorithm,
-      symmetricAlgorithm,
+      kdfHash,
+      kdfSymmetric,
       reserved,
     );
   }
@@ -56,8 +56,8 @@ class ECDHPublicParams extends ECPublicParams {
         ...[
           0x3,
           reserved,
-          hashAlgorithm.value,
-          symmetricAlgorithm.value,
+          kdfHash.value,
+          kdfSymmetric.value,
         ]
       ]);
 }

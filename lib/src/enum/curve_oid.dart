@@ -66,7 +66,7 @@ enum CurveOid {
     }
   }
 
-  HashAlgorithm get hash {
+  HashAlgorithm get kdfHash {
     switch (this) {
       case brainpoolp256r1:
       case curve25519:
@@ -83,10 +83,11 @@ enum CurveOid {
     }
   }
 
-  SymmetricAlgorithm get cipher {
+  SymmetricAlgorithm get kdfSymmetric {
     switch (this) {
       case brainpoolp256r1:
       case curve25519:
+      case ed25519:
       case prime256v1:
       case secp256k1:
         return SymmetricAlgorithm.aes128;
@@ -96,8 +97,6 @@ enum CurveOid {
       case brainpoolp512r1:
       case secp521r1:
         return SymmetricAlgorithm.aes256;
-      case ed25519:
-        return SymmetricAlgorithm.plaintext;
     }
   }
 }
