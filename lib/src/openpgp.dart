@@ -2,10 +2,8 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'package:pointycastle/pointycastle.dart';
-
 import 'enums.dart';
-import 'helpers.dart';
+import 'type/private_key.dart';
 
 class OpenPGP {
   static const version = 'Dart Privacy Guard 1.0.0';
@@ -34,6 +32,20 @@ class OpenPGP {
 
   /// RSA public exponent
   static const rsaPublicExponent = '65537';
+
+  static signDetached(String message, List<PrivateKey> signingKeys) {}
+
+  static sign(
+    String message,
+    List<PrivateKey> signingKeys, {
+    DateTime? date,
+    bool detached = false,
+  }) {
+    if (signingKeys.isEmpty) {
+      throw Exception('No signing keys provided');
+    }
+    date = date ?? DateTime.now();
+  }
 
   static generateKey(
     List<String> userIDs,

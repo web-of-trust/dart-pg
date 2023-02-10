@@ -35,7 +35,7 @@ class UserIDPacket extends ContainedPacket {
   }
 
   static String _extractName(final String userID) {
-    final List<String> name = [];
+    final name = <String>[];
     final chars = userID.split('');
     for (final char in chars) {
       if (char == '(' || char == '<') {

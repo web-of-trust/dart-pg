@@ -30,9 +30,9 @@ class ElGamalEngine implements AsymmetricBlockCipher {
     } else {
       _random = Helper.secureRandom();
     }
-    if (params is ElGamalKeyParameters) {
-      _bitSize = params.getKey.p.bitLength;
-      _key = params.getKey;
+    if (params is AsymmetricKeyParameter<ElGamalAsymmetricKey>) {
+      _key = params.key;
+      _bitSize = _key!.p.bitLength;
 
       if (_forEncryption) {
         if (_key is! ElGamalPublicKey) {
@@ -147,10 +147,4 @@ class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
   ElGamalPrivateKey(this.x, super.p, super.g) : publicKey = ElGamalPublicKey(g.modPow(x, p), p, g);
 
   BigInt get y => publicKey.y;
-}
-
-class ElGamalKeyParameters extends AsymmetricKeyParameter {
-  ElGamalKeyParameters(ElGamalAsymmetricKey key) : super(key);
-
-  ElGamalAsymmetricKey get getKey => key as ElGamalAsymmetricKey;
 }

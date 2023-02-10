@@ -34,10 +34,10 @@ class PrivateKey extends Key {
   }
 
   factory PrivateKey.fromPacketList(PacketList packetList) {
-    final List<SignaturePacket> revocationSignatures = [];
-    final List<SignaturePacket> directSignatures = [];
-    final List<User> users = [];
-    final List<Subkey> subkeys = [];
+    final revocationSignatures = <SignaturePacket>[];
+    final directSignatures = <SignaturePacket>[];
+    final users = <User>[];
+    final subkeys = <Subkey>[];
 
     SecretKeyPacket? keyPacket;
     Subkey? subkey;

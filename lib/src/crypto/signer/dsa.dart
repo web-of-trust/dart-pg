@@ -32,8 +32,8 @@ class DSASigner implements Signer {
     } else {
       _random = Helper.secureRandom();
     }
-    if (params is DSAKeyParameters) {
-      _key = params.getKey;
+    if (params is AsymmetricKeyParameter<DSAAsymmetricKey>) {
+      _key = params.key;
 
       if (_forSigning) {
         if (_key is! DSAPrivateKey) {
@@ -45,7 +45,7 @@ class DSASigner implements Signer {
         }
       }
     } else {
-      throw ArgumentError('DSAKeyParameters are required.');
+      throw ArgumentError('AsymmetricKeyParameter are required.');
     }
   }
 
@@ -202,10 +202,4 @@ class DSAPrivateKey extends DSAAsymmetricKey implements PrivateKey {
   DSAPrivateKey(this.x, super.p, super.q, super.g) : publicKey = DSAPublicKey(g.modPow(x, p), p, q, g);
 
   BigInt get y => publicKey.y;
-}
-
-class DSAKeyParameters extends AsymmetricKeyParameter {
-  DSAKeyParameters(DSAAsymmetricKey key) : super(key);
-
-  DSAAsymmetricKey get getKey => key as DSAAsymmetricKey;
 }

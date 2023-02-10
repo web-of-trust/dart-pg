@@ -440,7 +440,7 @@ class SignaturePacket extends ContainedPacket {
 
   @override
   Uint8List toPacketData() {
-    final List<int> bytes = [version];
+    final bytes = [version];
     if (version == 3 || version == 2) {
       bytes.addAll([5, signatureType.value, ...creationTime.toPacketData(), ...issuerKeyID.toPacketData()]);
       bytes.addAll([keyAlgorithm.value, hashAlgorithm.value]);

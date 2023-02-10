@@ -31,10 +31,10 @@ import 'user_id.dart';
 class PacketList extends ListBase<ContainedPacket> {
   final List<ContainedPacket> packets;
 
-  PacketList(this.packets);
+  PacketList(Iterable<ContainedPacket> packets) : packets = packets.toList(growable: false);
 
   factory PacketList.packetDecode(Uint8List bytes) {
-    final List<ContainedPacket> packets = [];
+    final packets = <ContainedPacket>[];
     var offset = 0;
     while (offset < bytes.length) {
       final packetData = PacketData.readPacketData(bytes, offset);

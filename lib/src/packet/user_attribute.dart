@@ -27,7 +27,7 @@ class UserAttributePacket extends ContainedPacket {
 
   @override
   Uint8List toPacketData() {
-    final List<int> bytes = [];
+    final bytes = <int>[];
     for (final attr in attributes) {
       bytes.addAll(attr.toPacketData());
     }
@@ -35,7 +35,7 @@ class UserAttributePacket extends ContainedPacket {
   }
 
   static List<UserAttributeSubpacket> _readSubpackets(final Uint8List bytes) {
-    final List<UserAttributeSubpacket> attributes = [];
+    final attributes = <UserAttributeSubpacket>[];
     var offset = 0;
     while (offset < bytes.length) {
       final subpacketData = SubpacketData.readSubpacketData(bytes, offset);

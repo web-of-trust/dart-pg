@@ -83,18 +83,18 @@ void main() {
     test('With sha1 test', (() {
       final signer = DSASigner(Digest('SHA-1'));
 
-      signer.init(true, DSAKeyParameters(privateKey));
+      signer.init(true, PrivateKeyParameter<DSAPrivateKey>(privateKey));
       final signature = signer.generateSignature(message);
-      signer.init(false, DSAKeyParameters(publicKey));
+      signer.init(false, PublicKeyParameter<DSAPublicKey>(publicKey));
       expect(signer.verifySignature(message, signature), true);
     }));
 
     test('With sha256 test', (() {
       final signer = DSASigner(Digest('SHA-256'));
 
-      signer.init(true, DSAKeyParameters(DSAPrivateKey(xValue, pValue, qValue, gValue)));
+      signer.init(true, PrivateKeyParameter<DSAPrivateKey>(privateKey));
       final signature = signer.generateSignature(message);
-      signer.init(false, DSAKeyParameters(publicKey));
+      signer.init(false, PublicKeyParameter<DSAPublicKey>(publicKey));
       expect(signer.verifySignature(message, signature), true);
     }));
   }));
@@ -106,7 +106,7 @@ void _elGamalEncryptionTest(BigInt p, BigInt g, int size) {
   final publicKey = privateKey.publicKey;
 
   final engine = ElGamalEngine();
-  engine.init(true, ElGamalKeyParameters(publicKey));
+  engine.init(true, PublicKeyParameter<ElGamalPublicKey>(publicKey));
   expect(engine.outputBlockSize, size ~/ 4, reason: "$size outputBlockSize on encryption failed.");
 
   final message = "5468697320697320612074657374".hexToBytes();
@@ -114,7 +114,7 @@ void _elGamalEncryptionTest(BigInt p, BigInt g, int size) {
   final cipherText = Uint8List(engine.outputBlockSize);
   engine.processBlock(plainText, 0, plainText.length, cipherText, 0);
 
-  engine.init(false, ElGamalKeyParameters(privateKey));
+  engine.init(false, PrivateKeyParameter<ElGamalPrivateKey>(privateKey));
   engine.processBlock(cipherText, 0, cipherText.length, plainText, 0);
 
   expect(engine.outputBlockSize, (size ~/ 8) - 1, reason: "$size outputBlockSize on decryption failed.");
