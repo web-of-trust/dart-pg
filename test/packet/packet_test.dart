@@ -150,7 +150,7 @@ void main() {
 
           expect(key.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
           expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
-          expect(secretParams.pInv, secretParams.primeP!.modInverse(secretParams.primeQ!));
+          expect(secretParams.pInv, secretParams.primeP.modInverse(secretParams.primeQ));
           expect(publicParams.modulus, secretParams.modulus);
         }
         if (packet.tag == PacketTag.secretSubkey) {
@@ -160,7 +160,7 @@ void main() {
 
           expect(subkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
           expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
-          expect(secretParams.pInv, secretParams.primeP!.modInverse(secretParams.primeQ!));
+          expect(secretParams.pInv, secretParams.primeP.modInverse(secretParams.primeQ));
           expect(publicParams.modulus, secretParams.modulus);
         }
       }
@@ -232,7 +232,7 @@ void main() {
 
           expect(key.fingerprint, '93456c517e3eddb679bb510c2213de9391374950');
           expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
-          expect(secretParams.pInv, secretParams.primeP!.modInverse(secretParams.primeQ!));
+          expect(secretParams.pInv, secretParams.primeP.modInverse(secretParams.primeQ));
           expect(publicParams.modulus, secretParams.modulus);
 
           expect(key.isDecrypted, true);
@@ -269,7 +269,7 @@ void main() {
 
           expect(subkey.fingerprint, 'c503083b150f47a5d6fdb661c865808a31866def');
           expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
-          expect(secretParams.pInv, secretParams.primeP!.modInverse(secretParams.primeQ!));
+          expect(secretParams.pInv, secretParams.primeP.modInverse(secretParams.primeQ));
           expect(publicParams.modulus, secretParams.modulus);
 
           expect(subkey.isDecrypted, true);

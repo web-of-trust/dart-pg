@@ -9,30 +9,31 @@ import '../helpers.dart';
 import 'key_params.dart';
 
 class ElGamalPublicParams extends KeyParams {
-  final ElGamalPublicKey publicKey;
-
-  ElGamalPublicParams(this.publicKey);
-
-  factory ElGamalPublicParams.fromPacketData(Uint8List bytes) {
-    final p = Helper.readMPI(bytes);
-
-    var pos = p.byteLength + 2;
-    final g = Helper.readMPI(bytes.sublist(pos));
-
-    pos += g.byteLength + 2;
-    final y = Helper.readMPI(bytes.sublist(pos));
-
-    return ElGamalPublicParams(ElGamalPublicKey(y, p, g));
-  }
-
   /// Elgamal prime p
-  BigInt get primeP => publicKey.p;
+  final BigInt primeP;
 
   /// Elgamal group generator g
-  BigInt get groupGenerator => publicKey.g;
+  final BigInt groupGenerator;
 
   /// Elgamal public key value y (= g ** x mod p where x is secret)
-  BigInt get publicExponent => publicKey.y;
+  final BigInt publicExponent;
+
+  final ElGamalPublicKey publicKey;
+
+  ElGamalPublicParams(this.primeP, this.groupGenerator, this.publicExponent)
+      : publicKey = ElGamalPublicKey(publicExponent, primeP, groupGenerator);
+
+  factory ElGamalPublicParams.fromPacketData(Uint8List bytes) {
+    final primeP = Helper.readMPI(bytes);
+
+    var pos = primeP.byteLength + 2;
+    final groupGenerator = Helper.readMPI(bytes.sublist(pos));
+
+    pos += groupGenerator.byteLength + 2;
+    final publicExponent = Helper.readMPI(bytes.sublist(pos));
+
+    return ElGamalPublicParams(primeP, groupGenerator, publicExponent);
+  }
 
   @override
   Uint8List encode() => Uint8List.fromList([

@@ -9,9 +9,22 @@ import '../helpers.dart';
 import 'key_params.dart';
 
 class DSAPublicParams extends KeyParams {
+  /// DSA prime p
+  final BigInt primeP;
+
+  /// DSA group order q (q is a prime divisor of p-1);
+  final BigInt groupOrder;
+
+  /// DSA group generator g;
+  final BigInt groupGenerator;
+
+  /// DSA public-key value y (= g ** x mod p where x is secret).
+  final BigInt publicExponent;
+
   final DSAPublicKey publicKey;
 
-  DSAPublicParams(this.publicKey);
+  DSAPublicParams(this.primeP, this.groupOrder, this.groupGenerator, this.publicExponent)
+      : publicKey = DSAPublicKey(publicExponent, primeP, groupOrder, groupGenerator);
 
   factory DSAPublicParams.fromPacketData(Uint8List bytes) {
     final primeP = Helper.readMPI(bytes);
@@ -23,22 +36,10 @@ class DSAPublicParams extends KeyParams {
     final groupGenerator = Helper.readMPI(bytes.sublist(pos));
 
     pos += groupGenerator.byteLength + 2;
-    final y = Helper.readMPI(bytes.sublist(pos));
+    final publicExponent = Helper.readMPI(bytes.sublist(pos));
 
-    return DSAPublicParams(DSAPublicKey(y, primeP, groupOrder, groupGenerator));
+    return DSAPublicParams(primeP, groupOrder, groupGenerator, publicExponent);
   }
-
-  /// DSA prime p
-  BigInt get primeP => publicKey.p;
-
-  /// DSA group order q (q is a prime divisor of p-1);
-  BigInt get groupOrder => publicKey.q;
-
-  /// DSA group generator g;
-  BigInt get groupGenerator => publicKey.g;
-
-  /// DSA public-key value y (= g ** x mod p where x is secret).
-  BigInt get publicExponent => publicKey.y;
 
   @override
   Uint8List encode() => Uint8List.fromList([

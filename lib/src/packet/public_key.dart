@@ -112,8 +112,8 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   void _calculateFingerprintAndKeyID() {
     if (version <= 3) {
       final pk = publicParams as RSAPublicParams;
-      final bytes = pk.modulus!.toBytes();
-      _fingerprint = Uint8List.fromList(md5.convert([...bytes, ...pk.publicExponent!.toBytes()]).bytes);
+      final bytes = pk.modulus.toBytes();
+      _fingerprint = Uint8List.fromList(md5.convert([...bytes, ...pk.publicExponent.toBytes()]).bytes);
       _keyID = KeyID(bytes.sublist(bytes.length - 8));
     } else {
       final bytes = toPacketData();
@@ -137,7 +137,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   int get keyStrength {
     final keyParams = publicParams;
     if (keyParams is RSAPublicParams) {
-      return keyParams.modulus!.bitLength;
+      return keyParams.modulus.bitLength;
     }
     if (keyParams is DSAPublicParams) {
       return keyParams.primeP.bitLength;

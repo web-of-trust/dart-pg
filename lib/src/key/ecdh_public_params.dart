@@ -17,7 +17,7 @@ class ECDHPublicParams extends ECPublicParams {
 
   final SymmetricAlgorithm kdfSymmetric;
 
-  ECDHPublicParams(super.publicKey, this.kdfHash, this.kdfSymmetric, [this.reserved = 0x1]);
+  ECDHPublicParams(super.oid, super.q, this.kdfHash, this.kdfSymmetric, [this.reserved = 0x1]);
 
   factory ECDHPublicParams.fromPacketData(Uint8List bytes) {
     var pos = 0;
@@ -33,9 +33,7 @@ class ECDHPublicParams extends ECPublicParams {
     final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList(derBytes));
 
     pos += length;
-    final parameters = ECPublicParams.parametersFromOid(oid);
     final q = Helper.readMPI(bytes.sublist(pos));
-    final point = parameters.curve.decodePoint(q.toUnsignedBytes());
     pos += q.byteLength + 2;
 
     final kdfBytes = bytes.sublist(pos);
@@ -43,7 +41,8 @@ class ECDHPublicParams extends ECPublicParams {
     final kdfHash = HashAlgorithm.values.firstWhere((hash) => hash.value == kdfBytes[2]);
     final kdfSymmetric = SymmetricAlgorithm.values.firstWhere((sym) => sym.value == kdfBytes[3]);
     return ECDHPublicParams(
-      ECPublicKey(point, parameters),
+      oid,
+      q,
       kdfHash,
       kdfSymmetric,
       reserved,

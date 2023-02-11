@@ -9,25 +9,29 @@ import '../helpers.dart';
 import 'key_params.dart';
 
 class RSASecretParams extends KeyParams {
-  final RSAPrivateKey privateKey;
+  /// RSA secret exponent d
+  final BigInt privateExponent;
+
+  /// RSA secret prime value p
+  final BigInt primeP;
+
+  /// RSA secret prime value q (p < q)
+  final BigInt primeQ;
 
   /// The multiplicative inverse of p, mod q
   final BigInt pInv;
 
-  RSASecretParams(this.privateKey, {BigInt? pInv}) : pInv = pInv ?? privateKey.p!.modInverse(privateKey.q!);
+  final RSAPrivateKey privateKey;
 
-  BigInt? get modulus => privateKey.modulus;
+  RSASecretParams(this.privateExponent, this.primeP, this.primeQ, {BigInt? pInv})
+      : pInv = pInv ?? primeP.modInverse(primeQ),
+        privateKey = RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ);
 
-  BigInt? get publicExponent => privateKey.publicExponent;
+  /// RSA modulus n
+  BigInt get modulus => privateKey.modulus!;
 
-  /// RSA secret exponent d
-  BigInt? get privateExponent => privateKey.privateExponent;
-
-  /// RSA secret prime value p
-  BigInt? get primeP => privateKey.p;
-
-  /// RSA secret prime value q (p < q)
-  BigInt? get primeQ => privateKey.q;
+  /// RSA public encryption exponent e
+  BigInt get publicExponent => privateKey.publicExponent!;
 
   factory RSASecretParams.fromPacketData(Uint8List bytes) {
     final privateExponent = Helper.readMPI(bytes);
@@ -41,17 +45,17 @@ class RSASecretParams extends KeyParams {
     pos += primeQ.byteLength + 2;
     final pInv = Helper.readMPI(bytes.sublist(pos));
 
-    return RSASecretParams(RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ), pInv: pInv);
+    return RSASecretParams(privateExponent, primeP, primeQ, pInv: pInv);
   }
 
   @override
   Uint8List encode() => Uint8List.fromList([
-        ...privateExponent!.bitLength.pack16(),
-        ...privateExponent!.toUnsignedBytes(),
-        ...primeP!.bitLength.pack16(),
-        ...primeP!.toUnsignedBytes(),
-        ...primeQ!.bitLength.pack16(),
-        ...primeQ!.toUnsignedBytes(),
+        ...privateExponent.bitLength.pack16(),
+        ...privateExponent.toUnsignedBytes(),
+        ...primeP.bitLength.pack16(),
+        ...primeP.toUnsignedBytes(),
+        ...primeQ.bitLength.pack16(),
+        ...primeQ.toUnsignedBytes(),
         ...pInv.bitLength.pack16(),
         ...pInv.toUnsignedBytes(),
       ]);

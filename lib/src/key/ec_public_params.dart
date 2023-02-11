@@ -11,17 +11,16 @@ import '../helpers.dart';
 import 'key_params.dart';
 
 abstract class ECPublicParams extends KeyParams {
+  final ASN1ObjectIdentifier oid;
+
+  final BigInt q;
+
   final ECPublicKey publicKey;
 
-  ECPublicParams(this.publicKey);
+  ECPublicParams(this.oid, this.q) : publicKey = _publicKeyFromOid(oid, q);
 
   @override
   Uint8List encode() {
-    final curveName = publicKey.parameters!.domainName.toLowerCase();
-    final curveInfo = CurveOid.values.firstWhere((info) => info.name.toLowerCase() == curveName);
-    final oid = ASN1ObjectIdentifier(curveInfo.identifier);
-    final q = publicKey.Q!.getEncoded(publicKey.Q!.isCompressed).toBigIntWithSign(1);
-
     return Uint8List.fromList([
       ...oid.encode().sublist(1),
       ...q.bitLength.pack16(),
@@ -29,28 +28,10 @@ abstract class ECPublicParams extends KeyParams {
     ]);
   }
 
-  static ECPublicKey publicKeyPacketData(Uint8List bytes) {
-    var pos = 0;
-    final length = bytes[pos++];
-    if (length == 0 || length == 0xFF) {
-      throw Exception('Future extensions not yet implemented');
-    }
-    if (length > 127) {
-      throw UnsupportedError('Unsupported OID');
-    }
-
-    final derBytes = [0x06, length, ...bytes.sublist(pos, pos + length)];
-    final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList(derBytes));
-
-    pos += length;
-    final parameters = parametersFromOid(oid);
-    final q = Helper.readMPI(bytes.sublist(pos));
+  static ECPublicKey _publicKeyFromOid(ASN1ObjectIdentifier oid, BigInt q) {
+    final curveOid = CurveOid.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
+    final parameters = ECDomainParameters(curveOid.name.toLowerCase());
     final point = parameters.curve.decodePoint(q.toUnsignedBytes());
     return ECPublicKey(point, parameters);
-  }
-
-  static ECDomainParameters parametersFromOid(ASN1ObjectIdentifier oid) {
-    final curveOid = CurveOid.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
-    return ECDomainParameters(curveOid.name.toLowerCase());
   }
 }

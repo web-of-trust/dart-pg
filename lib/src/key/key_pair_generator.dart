@@ -2,19 +2,20 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'package:pointycastle/export.dart';
+import 'package:pointycastle/pointycastle.dart';
 
 import '../enums.dart';
 import '../helpers.dart';
-import '../key/ec_secret_params.dart';
-import '../key/ecdh_public_params.dart';
-import '../key/ecdsa_public_params.dart';
-import '../key/key_pair_params.dart';
-import '../key/rsa_public_params.dart';
-import '../key/rsa_secret_params.dart';
+import 'ec_secret_params.dart';
+import 'ecdh_public_params.dart';
+import 'ecdsa_public_params.dart';
+import 'key_pair_params.dart';
+import 'rsa_public_params.dart';
+import 'rsa_secret_params.dart';
 import '../openpgp.dart';
 
-class Generator {
+class KeyPairGenerator {
+  /// Generate algorithm-specific key parameters
   static KeyPairParams generateKeyPairParams(
     KeyAlgorithm algorithm, {
     int bits = OpenPGP.preferredRSABits,
@@ -25,20 +26,36 @@ class Generator {
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
         final keyPair = _generateRSAKeyPair(bits);
+        final publicKey = keyPair.publicKey as RSAPublicKey;
+        final privateKey = keyPair.privateKey as RSAPrivateKey;
+
         return KeyPairParams(
-          RSAPublicParams(keyPair.publicKey as RSAPublicKey),
-          RSASecretParams(keyPair.privateKey as RSAPrivateKey),
+          RSAPublicParams(publicKey.modulus!, publicKey.publicExponent!),
+          RSASecretParams(
+            privateKey.privateExponent!,
+            privateKey.p!,
+            privateKey.q!,
+          ),
         );
       case KeyAlgorithm.ecdsa:
         final keyPair = _generateECKeyPair(curveOid);
+        final oid = ASN1ObjectIdentifier.fromIdentifierString(curveOid.identifierString);
+        final q = (keyPair.publicKey as ECPublicKey).Q!;
         return KeyPairParams(
-          ECDSAPublicParams(keyPair.publicKey as ECPublicKey),
+          ECDSAPublicParams(oid, q.getEncoded(q.isCompressed).toBigIntWithSign(1)),
           ECSecretParams((keyPair.privateKey as ECPrivateKey).d!),
         );
       case KeyAlgorithm.ecdh:
         final keyPair = _generateECKeyPair(curveOid);
+        final oid = ASN1ObjectIdentifier.fromIdentifierString(curveOid.identifierString);
+        final q = (keyPair.publicKey as ECPublicKey).Q!;
         return KeyPairParams(
-          ECDHPublicParams(keyPair.publicKey as ECPublicKey, curveOid.kdfHash, curveOid.kdfSymmetric),
+          ECDHPublicParams(
+            oid,
+            q.getEncoded(q.isCompressed).toBigIntWithSign(1),
+            curveOid.kdfHash,
+            curveOid.kdfSymmetric,
+          ),
           ECSecretParams((keyPair.privateKey as ECPrivateKey).d!),
         );
       case KeyAlgorithm.dsa:

@@ -9,28 +9,28 @@ import '../helpers.dart';
 import 'key_params.dart';
 
 class RSAPublicParams extends KeyParams {
+  /// RSA modulus n
+  final BigInt modulus;
+
+  /// RSA public encryption exponent e
+  final BigInt publicExponent;
+
   final RSAPublicKey publicKey;
 
-  RSAPublicParams(this.publicKey);
+  RSAPublicParams(this.modulus, this.publicExponent) : publicKey = RSAPublicKey(modulus, publicExponent);
 
   factory RSAPublicParams.fromPacketData(Uint8List bytes) {
     final modulus = Helper.readMPI(bytes);
     final publicExponent = Helper.readMPI(bytes.sublist(modulus.byteLength + 2));
 
-    return RSAPublicParams(RSAPublicKey(modulus, publicExponent));
+    return RSAPublicParams(modulus, publicExponent);
   }
-
-  /// RSA public modulus n
-  BigInt? get modulus => publicKey.modulus;
-
-  /// RSA public encryption exponent e
-  BigInt? get publicExponent => publicKey.publicExponent;
 
   @override
   Uint8List encode() => Uint8List.fromList([
-        ...modulus!.bitLength.pack16(),
-        ...modulus!.toUnsignedBytes(),
-        ...publicExponent!.bitLength.pack16(),
-        ...publicExponent!.toUnsignedBytes(),
+        ...modulus.bitLength.pack16(),
+        ...modulus.toUnsignedBytes(),
+        ...publicExponent.bitLength.pack16(),
+        ...publicExponent.toUnsignedBytes(),
       ]);
 }
