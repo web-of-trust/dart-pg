@@ -26,8 +26,8 @@ class KeyPairGenerator {
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
         final keyPair = _generateRSAKeyPair(bits);
-        final publicKey = keyPair.publicKey as RSAPublicKey;
-        final privateKey = keyPair.privateKey as RSAPrivateKey;
+        final publicKey = keyPair.publicKey;
+        final privateKey = keyPair.privateKey;
 
         return KeyPairParams(
           RSAPublicParams(publicKey.modulus!, publicKey.publicExponent!),
@@ -40,15 +40,15 @@ class KeyPairGenerator {
       case KeyAlgorithm.ecdsa:
         final keyPair = _generateECKeyPair(curveOid);
         final oid = ASN1ObjectIdentifier.fromIdentifierString(curveOid.identifierString);
-        final q = (keyPair.publicKey as ECPublicKey).Q!;
+        final q = keyPair.publicKey.Q!;
         return KeyPairParams(
           ECDSAPublicParams(oid, q.getEncoded(q.isCompressed).toBigIntWithSign(1)),
-          ECSecretParams((keyPair.privateKey as ECPrivateKey).d!),
+          ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.ecdh:
         final keyPair = _generateECKeyPair(curveOid);
         final oid = ASN1ObjectIdentifier.fromIdentifierString(curveOid.identifierString);
-        final q = (keyPair.publicKey as ECPublicKey).Q!;
+        final q = keyPair.publicKey.Q!;
         return KeyPairParams(
           ECDHPublicParams(
             oid,
@@ -56,7 +56,7 @@ class KeyPairGenerator {
             curveOid.kdfHash,
             curveOid.kdfSymmetric,
           ),
-          ECSecretParams((keyPair.privateKey as ECPrivateKey).d!),
+          ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.dsa:
       case KeyAlgorithm.elgamal:
@@ -66,7 +66,7 @@ class KeyPairGenerator {
     }
   }
 
-  static AsymmetricKeyPair _generateRSAKeyPair([int bits = OpenPGP.preferredRSABits]) {
+  static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([int bits = OpenPGP.preferredRSABits]) {
     assert(bits >= OpenPGP.minRSABits);
 
     final keyGen = KeyGenerator('RSA');
@@ -76,10 +76,11 @@ class KeyPairGenerator {
         Helper.secureRandom(),
       ),
     );
-    return keyGen.generateKeyPair();
+    return keyGen.generateKeyPair() as AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>;
   }
 
-  static AsymmetricKeyPair _generateECKeyPair([CurveOid curveOid = OpenPGP.preferredEcCurve]) {
+  static AsymmetricKeyPair<ECPublicKey, ECPrivateKey> _generateECKeyPair(
+      [CurveOid curveOid = OpenPGP.preferredEcCurve]) {
     final keyGen = KeyGenerator('EC');
     keyGen.init(
       ParametersWithRandom(
@@ -87,6 +88,6 @@ class KeyPairGenerator {
         Helper.secureRandom(),
       ),
     );
-    return keyGen.generateKeyPair();
+    return keyGen.generateKeyPair() as AsymmetricKeyPair<ECPublicKey, ECPrivateKey>;
   }
 }
