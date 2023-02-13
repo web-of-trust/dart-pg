@@ -60,13 +60,15 @@ class KeyPairGenerator {
         );
       case KeyAlgorithm.dsa:
       case KeyAlgorithm.elgamal:
-        throw Exception('Unsupported public key algorithm for key generation.');
+        throw UnsupportedError('Unsupported public key algorithm for key generation.');
       default:
         throw Exception('Unknown public key algorithm for key generation.');
     }
   }
 
-  static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([int bits = OpenPGP.preferredRSABits]) {
+  static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([
+    int bits = OpenPGP.preferredRSABits,
+  ]) {
     assert(bits >= OpenPGP.minRSABits);
 
     final keyGen = KeyGenerator('RSA');
@@ -79,15 +81,22 @@ class KeyPairGenerator {
     return keyGen.generateKeyPair() as AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>;
   }
 
-  static AsymmetricKeyPair<ECPublicKey, ECPrivateKey> _generateECKeyPair(
-      [CurveOid curveOid = OpenPGP.preferredEcCurve]) {
-    final keyGen = KeyGenerator('EC');
-    keyGen.init(
-      ParametersWithRandom(
-        ECKeyGeneratorParameters(ECDomainParameters(curveOid.name.toLowerCase())),
-        Helper.secureRandom(),
-      ),
-    );
-    return keyGen.generateKeyPair() as AsymmetricKeyPair<ECPublicKey, ECPrivateKey>;
+  static AsymmetricKeyPair<ECPublicKey, ECPrivateKey> _generateECKeyPair([
+    CurveOid curveOid = OpenPGP.preferredEcCurve,
+  ]) {
+    switch (curveOid) {
+      case CurveOid.ed25519:
+      case CurveOid.curve25519:
+        throw UnsupportedError('Unsupported curve for key generation.');
+      default:
+        final keyGen = KeyGenerator('EC');
+        keyGen.init(
+          ParametersWithRandom(
+            ECKeyGeneratorParameters(ECDomainParameters(curveOid.name.toLowerCase())),
+            Helper.secureRandom(),
+          ),
+        );
+        return keyGen.generateKeyPair() as AsymmetricKeyPair<ECPublicKey, ECPrivateKey>;
+    }
   }
 }

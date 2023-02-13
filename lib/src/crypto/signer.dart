@@ -46,6 +46,8 @@ class Signer {
         final publicKey = (publicParams as ECPublicParams).publicKey;
         final privateKey = ECPrivateKey(d, publicKey.parameters);
         return _ecdsaSign(privateKey, hashAlgorithm, message);
+      case KeyAlgorithm.eddsa:
+        throw UnsupportedError('Unsupported public key algorithm for message signing.');
       default:
         throw Exception('Unknown public key algorithm for message signing.');
     }
@@ -71,6 +73,8 @@ class Signer {
       case KeyAlgorithm.ecdsa:
         final publicKey = (publicParams as ECPublicParams).publicKey;
         return _ecdsaVerify(publicKey, hashAlgorithm, message, signature);
+      case KeyAlgorithm.eddsa:
+        throw UnsupportedError('Unsupported public key algorithm for signature verification.');
       default:
         throw Exception('Unknown public key algorithm for signature verification.');
     }
