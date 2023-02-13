@@ -3,6 +3,10 @@
 // file that was distributed with this source code.
 
 import 'enums.dart';
+import 'packet/contained_packet.dart';
+import 'packet/key_packet_generator.dart';
+import 'packet/packet_list.dart';
+import 'packet/user_id.dart';
 import 'type/private_key.dart';
 
 class OpenPGP {
@@ -15,6 +19,8 @@ class OpenPGP {
   static const showComment = false;
 
   static const checksumRequired = true;
+
+  static const version5Keys = false;
 
   /// Default hash algorithm
   static const preferredHashAlgorithm = HashAlgorithm.sha256;
@@ -53,13 +59,22 @@ class OpenPGP {
     KeyType type = KeyType.rsa,
     int rsaBits = OpenPGP.preferredRSABits,
     CurveOid curve = OpenPGP.preferredEcCurve,
+    DateTime? date,
   }) {
     if (userIDs.isEmpty) {
       throw Exception('UserIDs are required for key generation');
     }
-  }
-}
 
-class Awesome {
-  bool get isAwesome => true;
+    final keyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdsa;
+    final subkeyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdh;
+    final packets = [
+      KeyPacketGenerator.generateSecretKey(keyAlgorithm).encrypt(passphrase),
+      KeyPacketGenerator.generateSecretSubkey(subkeyAlgorithm).encrypt(passphrase),
+      ...userIDs.map((userID) => UserIDPacket(userID)),
+    ];
+
+    // wrap key object with signature
+
+    return PrivateKey.fromPacketList(PacketList(packets));
+  }
 }

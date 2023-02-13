@@ -18,14 +18,14 @@ class KeyPairGenerator {
   /// Generate algorithm-specific key parameters
   static KeyPairParams generateKeyPairParams(
     KeyAlgorithm algorithm, {
-    int bits = OpenPGP.preferredRSABits,
+    int rsaBits = OpenPGP.preferredRSABits,
     CurveOid curveOid = OpenPGP.preferredEcCurve,
   }) {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final keyPair = _generateRSAKeyPair(bits);
+        final keyPair = _generateRSAKeyPair(rsaBits);
         final publicKey = keyPair.publicKey;
         final privateKey = keyPair.privateKey;
 

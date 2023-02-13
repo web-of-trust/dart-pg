@@ -5,6 +5,7 @@
 import '../armor/armor.dart';
 import '../enums.dart';
 import '../packet/packet_list.dart';
+import '../packet/secret_key.dart';
 import '../packet/signature.dart';
 
 /// Class that represents an OpenPGP signature.
@@ -25,4 +26,6 @@ class Signature {
 
   /// Returns ASCII armored text of signature
   String armor() => Armor.encode(ArmorType.signature, packetList.packetEncode());
+
+  sign(SecretKeyPacket secretKeyPacket) {}
 }
