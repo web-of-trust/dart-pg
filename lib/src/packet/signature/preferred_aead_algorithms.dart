@@ -11,5 +11,6 @@ class PreferredAEADAlgorithms extends SignatureSubpacket {
   PreferredAEADAlgorithms(Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.preferredAEADAlgorithms, data);
 
-  List<int> get preferences => data.toList();
+  List<AeadAlgorithm> get preferences =>
+      data.map((pref) => AeadAlgorithm.values.firstWhere((alg) => alg.value == pref)).toList();
 }

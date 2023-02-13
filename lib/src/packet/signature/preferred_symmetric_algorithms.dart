@@ -11,5 +11,6 @@ class PreferredSymmetricAlgorithms extends SignatureSubpacket {
   PreferredSymmetricAlgorithms(Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.preferredSymmetricAlgorithms, data);
 
-  List<int> get preferences => data.toList();
+  List<SymmetricAlgorithm> get preferences =>
+      data.map((pref) => SymmetricAlgorithm.values.firstWhere((alg) => alg.value == pref)).toList(growable: false);
 }

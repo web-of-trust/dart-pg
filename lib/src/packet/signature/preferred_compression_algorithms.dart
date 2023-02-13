@@ -11,5 +11,6 @@ class PreferredCompressionAlgorithms extends SignatureSubpacket {
   PreferredCompressionAlgorithms(Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.preferredCompressionAlgorithms, data);
 
-  List<int> get preferences => data.toList();
+  List<CompressionAlgorithm> get preferences =>
+      data.map((pref) => CompressionAlgorithm.values.firstWhere((alg) => alg.value == pref)).toList();
 }
