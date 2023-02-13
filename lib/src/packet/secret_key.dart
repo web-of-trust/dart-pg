@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/key/key_id.dart';
+import 'package:dart_pg/src/packet/key/key_id.dart';
 import 'package:dart_pg/src/openpgp.dart';
 import 'package:pointycastle/block/modes/cfb.dart';
 import 'package:pointycastle/pointycastle.dart' as pc;
@@ -18,12 +18,12 @@ import '../crypto/symmetric/triple_des.dart';
 import '../crypto/symmetric/twofish.dart';
 import '../enums.dart';
 import '../helpers.dart';
-import '../key/dsa_secret_params.dart';
-import '../key/ec_secret_params.dart';
-import '../key/elgamal_secret_params.dart';
-import '../key/key_params.dart';
-import '../key/rsa_secret_params.dart';
-import '../key/s2k.dart';
+import 'key/dsa_secret_params.dart';
+import 'key/ec_secret_params.dart';
+import 'key/elgamal_secret_params.dart';
+import 'key/key_params.dart';
+import 'key/rsa_secret_params.dart';
+import 'key/s2k.dart';
 import 'contained_packet.dart';
 import 'key_packet.dart';
 import 'public_key.dart';

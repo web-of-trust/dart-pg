@@ -7,14 +7,14 @@ import 'package:crypto/crypto.dart';
 
 import '../enums.dart';
 import '../helpers.dart';
-import '../key/dsa_public_params.dart';
-import '../key/ec_public_params.dart';
-import '../key/ecdh_public_params.dart';
-import '../key/ecdsa_public_params.dart';
-import '../key/elgamal_public_params.dart';
-import '../key/key_id.dart';
-import '../key/key_params.dart';
-import '../key/rsa_public_params.dart';
+import 'key/dsa_public_params.dart';
+import 'key/ec_public_params.dart';
+import 'key/ecdh_public_params.dart';
+import 'key/ecdsa_public_params.dart';
+import 'key/elgamal_public_params.dart';
+import 'key/key_id.dart';
+import 'key/key_params.dart';
+import 'key/rsa_public_params.dart';
 import 'contained_packet.dart';
 import 'key_packet.dart';
 

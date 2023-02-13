@@ -4,18 +4,18 @@
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/key/rsa_public_params.dart';
+import 'package:dart_pg/src/packet/key/rsa_public_params.dart';
 import 'package:pointycastle/export.dart' as pc;
 import 'package:pointycastle/impl.dart';
 
 import '../enums.dart';
 import '../helpers.dart';
-import '../key/dsa_public_params.dart';
-import '../key/dsa_secret_params.dart';
-import '../key/ec_public_params.dart';
-import '../key/ec_secret_params.dart';
-import '../key/key_params.dart';
-import '../key/rsa_secret_params.dart';
+import '../packet/key/dsa_public_params.dart';
+import '../packet/key/dsa_secret_params.dart';
+import '../packet/key/ec_public_params.dart';
+import '../packet/key/ec_secret_params.dart';
+import '../packet/key/key_params.dart';
+import '../packet/key/rsa_secret_params.dart';
 import 'signer/dsa.dart';
 
 class Signer {
