@@ -37,63 +37,63 @@ class PacketList extends ListBase<ContainedPacket> {
     final packets = <ContainedPacket>[];
     var offset = 0;
     while (offset < bytes.length) {
-      final packetData = PacketReader.readPacketData(bytes, offset);
-      offset = packetData.end;
+      final reader = PacketReader.fromPacket(bytes, offset);
+      offset = reader.end;
 
-      switch (packetData.tag) {
+      switch (reader.tag) {
         case PacketTag.publicKeyEncryptedSessionKey:
-          packets.add(PublicKeyEncryptedSessionKeyPacket.fromPacketData(packetData.data));
+          packets.add(PublicKeyEncryptedSessionKeyPacket.fromPacketData(reader.data));
           break;
         case PacketTag.signature:
-          packets.add(SignaturePacket.fromPacketData(packetData.data));
+          packets.add(SignaturePacket.fromPacketData(reader.data));
           break;
         case PacketTag.symEncryptedSessionKey:
-          packets.add(SymEncryptedSessionKeyPacket.fromPacketData(packetData.data));
+          packets.add(SymEncryptedSessionKeyPacket.fromPacketData(reader.data));
           break;
         case PacketTag.onePassSignature:
-          packets.add(OnePassSignaturePacket.fromPacketData(packetData.data));
+          packets.add(OnePassSignaturePacket.fromPacketData(reader.data));
           break;
         case PacketTag.secretKey:
-          packets.add(SecretKeyPacket.fromPacketData(packetData.data));
+          packets.add(SecretKeyPacket.fromPacketData(reader.data));
           break;
         case PacketTag.publicKey:
-          packets.add(PublicKeyPacket.fromPacketData(packetData.data));
+          packets.add(PublicKeyPacket.fromPacketData(reader.data));
           break;
         case PacketTag.secretSubkey:
-          packets.add(SecretSubkeyPacket.fromPacketData(packetData.data));
+          packets.add(SecretSubkeyPacket.fromPacketData(reader.data));
           break;
         case PacketTag.compressedData:
-          packets.add(CompressedDataPacket.fromPacketData(packetData.data));
+          packets.add(CompressedDataPacket.fromPacketData(reader.data));
           break;
         case PacketTag.symmetricallyEncryptedData:
-          packets.add(SymmetricallyEncryptedDataPacket.fromPacketData(packetData.data));
+          packets.add(SymmetricallyEncryptedDataPacket.fromPacketData(reader.data));
           break;
         case PacketTag.marker:
           packets.add(MarkerPacket());
           break;
         case PacketTag.literalData:
-          packets.add(LiteralDataPacket.fromPacketData(packetData.data));
+          packets.add(LiteralDataPacket.fromPacketData(reader.data));
           break;
         case PacketTag.trust:
-          packets.add(TrustPacketPacket.fromPacketData(packetData.data));
+          packets.add(TrustPacketPacket.fromPacketData(reader.data));
           break;
         case PacketTag.userID:
-          packets.add(UserIDPacket.fromPacketData(packetData.data));
+          packets.add(UserIDPacket.fromPacketData(reader.data));
           break;
         case PacketTag.publicSubkey:
-          packets.add(PublicSubkeyPacket.fromPacketData(packetData.data));
+          packets.add(PublicSubkeyPacket.fromPacketData(reader.data));
           break;
         case PacketTag.userAttribute:
-          packets.add(UserAttributePacket.fromPacketData(packetData.data));
+          packets.add(UserAttributePacket.fromPacketData(reader.data));
           break;
         case PacketTag.symEncryptedIntegrityProtectedData:
-          packets.add(SymEncryptedIntegrityProtectedDataPacket.fromPacketData(packetData.data));
+          packets.add(SymEncryptedIntegrityProtectedDataPacket.fromPacketData(reader.data));
           break;
         case PacketTag.modificationDetectionCode:
-          packets.add(ModificationDetectionCodePacket.fromPacketData(packetData.data));
+          packets.add(ModificationDetectionCodePacket.fromPacketData(reader.data));
           break;
         case PacketTag.aeadEncryptedData:
-          packets.add(AEADEncryptedDataPacket.fromPacketData(packetData.data));
+          packets.add(AEADEncryptedDataPacket.fromPacketData(reader.data));
           break;
       }
     }

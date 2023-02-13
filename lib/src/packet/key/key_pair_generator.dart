@@ -17,9 +17,9 @@ import '../../openpgp.dart';
 class KeyPairGenerator {
   /// Generate algorithm-specific key parameters
   static KeyPairParams generateKeyPairParams(
-    KeyAlgorithm algorithm, {
-    int rsaBits = OpenPGP.preferredRSABits,
-    CurveOid curveOid = OpenPGP.preferredEcCurve,
+    final KeyAlgorithm algorithm, {
+    final int rsaBits = OpenPGP.preferredRSABits,
+    final CurveOid curveOid = OpenPGP.preferredEcCurve,
   }) {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
@@ -67,7 +67,7 @@ class KeyPairGenerator {
   }
 
   static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([
-    int bits = OpenPGP.preferredRSABits,
+    final int bits = OpenPGP.preferredRSABits,
   ]) {
     if (bits < OpenPGP.minRSABits) {
       throw ArgumentError('RSA bits should be at least ${OpenPGP.minRSABits}, got: $bits');
@@ -84,7 +84,7 @@ class KeyPairGenerator {
   }
 
   static AsymmetricKeyPair<ECPublicKey, ECPrivateKey> _generateECKeyPair([
-    CurveOid curveOid = OpenPGP.preferredEcCurve,
+    final CurveOid curveOid = OpenPGP.preferredEcCurve,
   ]) {
     switch (curveOid) {
       case CurveOid.ed25519:

@@ -38,21 +38,21 @@ class UserAttributePacket extends ContainedPacket {
     final attributes = <UserAttributeSubpacket>[];
     var offset = 0;
     while (offset < bytes.length) {
-      final subpacketData = SubpacketReader.readSubpacketData(bytes, offset);
-      offset = subpacketData.end;
-      if (subpacketData.data.isNotEmpty) {
-        switch (subpacketData.type) {
+      final reader = SubpacketReader.fromSubpacket(bytes, offset);
+      offset = reader.end;
+      if (reader.data.isNotEmpty) {
+        switch (reader.type) {
           case ImageAttributeSubpacket.jpeg:
             attributes.add(ImageAttributeSubpacket(
-              subpacketData.data,
-              isLongLength: subpacketData.isLongLength,
+              reader.data,
+              isLongLength: reader.isLongLength,
             ));
             break;
           default:
             attributes.add(UserAttributeSubpacket(
-              subpacketData.type,
-              subpacketData.data,
-              isLongLength: subpacketData.isLongLength,
+              reader.type,
+              reader.data,
+              isLongLength: reader.isLongLength,
             ));
         }
       }

@@ -14,18 +14,17 @@ class KeyPacketGenerator {
   static const keyVersion = OpenPGP.version5Keys ? 5 : 4;
 
   static SecretKeyPacket generateSecretKey(
-    KeyAlgorithm algorithm, {
-    int rsaBits = OpenPGP.preferredRSABits,
-    CurveOid curveOid = OpenPGP.preferredEcCurve,
-    DateTime? date,
+    final KeyAlgorithm algorithm, {
+    final int rsaBits = OpenPGP.preferredRSABits,
+    final CurveOid curveOid = OpenPGP.preferredEcCurve,
+    final DateTime? date,
   }) {
-    date = date ?? DateTime.now();
     final keyPair = KeyPairGenerator.generateKeyPairParams(algorithm, rsaBits: rsaBits, curveOid: curveOid);
 
     return SecretKeyPacket(
       PublicKeyPacket(
         keyVersion,
-        date,
+        date ?? DateTime.now(),
         keyPair.publicParams,
         algorithm: algorithm,
       ),
@@ -35,18 +34,17 @@ class KeyPacketGenerator {
   }
 
   static SecretSubkeyPacket generateSecretSubkey(
-    KeyAlgorithm algorithm, {
-    int rsaBits = OpenPGP.preferredRSABits,
-    CurveOid curveOid = OpenPGP.preferredEcCurve,
-    DateTime? date,
+    final KeyAlgorithm algorithm, {
+    final int rsaBits = OpenPGP.preferredRSABits,
+    final CurveOid curveOid = OpenPGP.preferredEcCurve,
+    final DateTime? date,
   }) {
-    date = date ?? DateTime.now();
     final keyPair = KeyPairGenerator.generateKeyPairParams(algorithm, rsaBits: rsaBits, curveOid: curveOid);
 
     return SecretSubkeyPacket(
       PublicSubkeyPacket(
         keyVersion,
-        date,
+        date ?? DateTime.now(),
         keyPair.publicParams,
         algorithm: algorithm,
       ),

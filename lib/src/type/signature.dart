@@ -26,6 +26,4 @@ class Signature {
 
   /// Returns ASCII armored text of signature
   String armor() => Armor.encode(ArmorType.signature, packetList.packetEncode());
-
-  sign(SecretKeyPacket secretKeyPacket) {}
 }
