@@ -6,8 +6,8 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/pointycastle.dart';
 
-import '../enums.dart';
-import '../helpers.dart';
+import '../../enums.dart';
+import '../../helpers.dart';
 import 'key_params.dart';
 
 abstract class ECPublicParams extends KeyParams {

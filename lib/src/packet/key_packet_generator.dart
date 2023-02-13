@@ -3,8 +3,8 @@
 // file that was distributed with this source code.
 
 import '../enums.dart';
-import '../key/key_pair_generator.dart';
 import '../openpgp.dart';
+import 'key/key_pair_generator.dart';
 import 'public_key.dart';
 import 'public_subkey.dart';
 import 'secret_key.dart';

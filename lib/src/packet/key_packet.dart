@@ -3,7 +3,7 @@
 // file that was distributed with this source code.
 
 import '../enums.dart';
-import '../key/key_id.dart';
+import 'key/key_id.dart';
 import 'contained_packet.dart';
 
 abstract class KeyPacket implements ContainedPacket {

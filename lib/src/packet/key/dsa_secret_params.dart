@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../helpers.dart';
+import '../../helpers.dart';
 import 'key_params.dart';
 
 class DSASecretParams extends KeyParams {

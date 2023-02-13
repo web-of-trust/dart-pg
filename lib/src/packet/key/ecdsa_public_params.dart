@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/pointycastle.dart';
 
-import '../helpers.dart';
+import '../../helpers.dart';
 import 'ec_public_params.dart';
 
 class ECDSAPublicParams extends ECPublicParams {

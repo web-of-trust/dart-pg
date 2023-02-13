@@ -5,7 +5,7 @@
 import 'dart:typed_data';
 
 import '../enums.dart';
-import '../key/s2k.dart';
+import 'key/s2k.dart';
 import 'contained_packet.dart';
 
 /// SymmetricKeyEncrypted represents a passphrase protected session key.

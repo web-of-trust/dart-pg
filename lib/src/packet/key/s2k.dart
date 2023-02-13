@@ -8,8 +8,8 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:pointycastle/api.dart' as pc;
 
-import '../enums.dart';
-import '../helpers.dart';
+import '../../enums.dart';
+import '../../helpers.dart';
 
 /// Implementation of the String-to-key specifier
 ///

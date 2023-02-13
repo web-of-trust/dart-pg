@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../helpers.dart';
+import '../../helpers.dart';
 
 class KeyID {
   final Uint8List id;

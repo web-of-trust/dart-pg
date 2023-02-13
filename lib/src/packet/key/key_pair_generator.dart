@@ -4,15 +4,15 @@
 
 import 'package:pointycastle/pointycastle.dart';
 
-import '../enums.dart';
-import '../helpers.dart';
+import '../../enums.dart';
+import '../../helpers.dart';
 import 'ec_secret_params.dart';
 import 'ecdh_public_params.dart';
 import 'ecdsa_public_params.dart';
 import 'key_pair_params.dart';
 import 'rsa_public_params.dart';
 import 'rsa_secret_params.dart';
-import '../openpgp.dart';
+import '../../openpgp.dart';
 
 class KeyPairGenerator {
   /// Generate algorithm-specific key parameters

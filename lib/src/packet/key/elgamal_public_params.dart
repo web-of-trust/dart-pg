@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../crypto/asymmetric/elgamal.dart';
-import '../helpers.dart';
+import '../../crypto/asymmetric/elgamal.dart';
+import '../../helpers.dart';
 import 'key_params.dart';
 
 class ElGamalPublicParams extends KeyParams {

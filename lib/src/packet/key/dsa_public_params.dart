@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../crypto/signer/dsa.dart';
-import '../helpers.dart';
+import '../../crypto/signer/dsa.dart';
+import '../../helpers.dart';
 import 'key_params.dart';
 
 class DSAPublicParams extends KeyParams {
