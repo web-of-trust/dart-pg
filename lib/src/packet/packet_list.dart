@@ -13,7 +13,7 @@ import 'literal_data.dart';
 import 'marker_packet.dart';
 import 'modification_detection_code.dart';
 import 'one_pass_signature.dart';
-import 'packet_data.dart';
+import 'packet_reader.dart';
 import 'public_key.dart';
 import 'public_key_encrypted_session_key.dart';
 import 'public_subkey.dart';
@@ -37,7 +37,7 @@ class PacketList extends ListBase<ContainedPacket> {
     final packets = <ContainedPacket>[];
     var offset = 0;
     while (offset < bytes.length) {
-      final packetData = PacketData.readPacketData(bytes, offset);
+      final packetData = PacketReader.readPacketData(bytes, offset);
       offset = packetData.end;
 
       switch (packetData.tag) {

@@ -14,7 +14,7 @@ import 'signature/preferred_aead_algorithms.dart';
 import 'signature/preferred_key_server.dart';
 import 'signature/regular_expression.dart';
 import 'signature_subpacket.dart';
-import 'subpacket_data.dart';
+import 'subpacket_reader.dart';
 
 /// Signature represents a signature.
 /// See RFC 4880, section 5.2.
@@ -268,7 +268,7 @@ class SignaturePacket extends ContainedPacket {
     final List<SignatureSubpacket> subpackets = [];
     var offset = 0;
     while (offset < bytes.length) {
-      final subpacketData = SubpacketData.readSubpacketData(bytes, offset);
+      final subpacketData = SubpacketReader.readSubpacketData(bytes, offset);
       offset = subpacketData.end;
       final data = subpacketData.data;
       if (data.isNotEmpty) {

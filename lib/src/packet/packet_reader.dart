@@ -7,8 +7,8 @@ import 'dart:typed_data';
 import '../enums.dart';
 import '../helpers.dart';
 
-/// Generic Packet Data Parser function
-class PacketData {
+/// Generic Packet Data Reader function
+class PacketReader {
   final PacketTag tag;
 
   final Uint8List data;
@@ -17,9 +17,9 @@ class PacketData {
 
   final int end;
 
-  PacketData(this.tag, this.data, this.start, this.end);
+  PacketReader(this.tag, this.data, this.start, this.end);
 
-  factory PacketData.readPacketData(final Uint8List bytes, [final int start = 0]) {
+  factory PacketReader.readPacketData(final Uint8List bytes, [final int start = 0]) {
     if (bytes.length <= start || bytes.sublist(start).length < 2 || (bytes[start] & 0x80) == 0) {
       throw Exception('Error during parsing. This message / key probably does not conform to a valid OpenPGP format.');
     }
@@ -95,6 +95,6 @@ class PacketData {
       realRacketLength = packetLength;
     }
 
-    return PacketData(tag, bytes.sublist(pos, pos + realRacketLength), start, pos + realRacketLength);
+    return PacketReader(tag, bytes.sublist(pos, pos + realRacketLength), start, pos + realRacketLength);
   }
 }

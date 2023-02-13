@@ -6,8 +6,8 @@ import 'dart:typed_data';
 
 import '../helpers.dart';
 
-/// Generic Sub Packet Data Parser function
-class SubpacketData {
+/// Generic Sub Packet Data Reader function
+class SubpacketReader {
   final int type;
 
   final Uint8List data;
@@ -18,13 +18,13 @@ class SubpacketData {
 
   final bool isLongLength;
 
-  SubpacketData(this.type, this.data, this.start, this.end, [this.isLongLength = false]);
+  SubpacketReader(this.type, this.data, this.start, this.end, [this.isLongLength = false]);
 
-  factory SubpacketData.readSubpacketData(final Uint8List bytes, [final int start = 0]) {
+  factory SubpacketReader.readSubpacketData(final Uint8List bytes, [final int start = 0]) {
     var pos = start;
     final type = bytes[pos++];
     if (type < 192) {
-      return SubpacketData(
+      return SubpacketReader(
         bytes[pos],
         bytes.sublist(pos + 1, pos + type + 1),
         start,
@@ -32,7 +32,7 @@ class SubpacketData {
       );
     } else if (type < 255) {
       final length = ((type - 192) << 8) + (bytes[pos++]) + 192;
-      return SubpacketData(
+      return SubpacketReader(
         bytes[pos],
         bytes.sublist(pos + 1, pos + length + 1),
         start,
@@ -41,7 +41,7 @@ class SubpacketData {
     } else if (type == 255) {
       final length = bytes.sublist(pos, pos + 4).toUint32();
       pos += 4;
-      return SubpacketData(
+      return SubpacketReader(
         bytes[pos],
         bytes.sublist(pos + 1, pos + length + 1),
         start,
@@ -49,6 +49,6 @@ class SubpacketData {
         true,
       );
     }
-    return SubpacketData(0, Uint8List(0), start, start);
+    return SubpacketReader(0, Uint8List(0), start, start);
   }
 }

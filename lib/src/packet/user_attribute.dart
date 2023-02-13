@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import '../enums.dart';
 import 'contained_packet.dart';
 import 'image_attribute.dart';
-import 'subpacket_data.dart';
+import 'subpacket_reader.dart';
 import 'user_attribute_subpacket.dart';
 
 class UserAttributePacket extends ContainedPacket {
@@ -38,7 +38,7 @@ class UserAttributePacket extends ContainedPacket {
     final attributes = <UserAttributeSubpacket>[];
     var offset = 0;
     while (offset < bytes.length) {
-      final subpacketData = SubpacketData.readSubpacketData(bytes, offset);
+      final subpacketData = SubpacketReader.readSubpacketData(bytes, offset);
       offset = subpacketData.end;
       if (subpacketData.data.isNotEmpty) {
         switch (subpacketData.type) {
