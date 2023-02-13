@@ -22,28 +22,28 @@ class SubpacketReader {
 
   factory SubpacketReader.readSubpacketData(final Uint8List bytes, [final int start = 0]) {
     var pos = start;
-    final type = bytes[pos++];
-    if (type < 192) {
+    final header = bytes[pos++];
+    if (header < 192) {
       return SubpacketReader(
         bytes[pos],
-        bytes.sublist(pos + 1, pos + type + 1),
+        bytes.sublist(pos + 1, pos + header),
         start,
-        pos + type,
+        pos + header,
       );
-    } else if (type < 255) {
-      final length = ((type - 192) << 8) + (bytes[pos++]) + 192;
+    } else if (header < 255) {
+      final length = ((header - 192) << 8) + (bytes[pos++]) + 192;
       return SubpacketReader(
         bytes[pos],
-        bytes.sublist(pos + 1, pos + length + 1),
+        bytes.sublist(pos + 1, pos + length),
         start,
         pos + length,
       );
-    } else if (type == 255) {
+    } else if (header == 255) {
       final length = bytes.sublist(pos, pos + 4).toUint32();
       pos += 4;
       return SubpacketReader(
         bytes[pos],
-        bytes.sublist(pos + 1, pos + length + 1),
+        bytes.sublist(pos + 1, pos + length),
         start,
         pos + length,
         true,
