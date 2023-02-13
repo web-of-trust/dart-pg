@@ -136,6 +136,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
   }) {
+    if (passphrase.isEmpty) {
+      throw ArgumentError('passphrase are required for key encryption');
+    }
     assert(s2kUsage != S2kUsage.none);
     assert(symmetricAlgorithm != SymmetricAlgorithm.plaintext);
 
@@ -180,7 +183,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hashLen);
         final hash = s2k!.hashDigest(clearText);
         if (!hash.equals(hashText)) {
-          throw Exception('Incorrect key passphrase');
+          throw ArgumentError('Incorrect key passphrase');
         }
       } else {
         clearText = keyData;

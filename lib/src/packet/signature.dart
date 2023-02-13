@@ -7,6 +7,12 @@ import 'dart:typed_data';
 import '../enums.dart';
 import '../helpers.dart';
 import 'contained_packet.dart';
+import 'secret_key.dart';
+import 'signature/key_server_preferences.dart';
+import 'signature/policy_uri.dart';
+import 'signature/preferred_aead_algorithms.dart';
+import 'signature/preferred_key_server.dart';
+import 'signature/regular_expression.dart';
 import 'signature_subpacket.dart';
 import 'subpacket_data.dart';
 
@@ -39,6 +45,8 @@ class SignaturePacket extends ContainedPacket {
 
   final TrustSignature? trustSignature;
 
+  final RegularExpression? regularExpression;
+
   final Revocable? revocable;
 
   final KeyExpirationTime? keyExpirationTime;
@@ -53,7 +61,13 @@ class SignaturePacket extends ContainedPacket {
 
   final PreferredCompressionAlgorithms? preferredCompressionAlgorithms;
 
+  final KeyServerPreferences? keyServerPreferences;
+
+  final PreferredKeyServer? preferredKeyServer;
+
   final PrimaryUserID? primaryUserID;
+
+  final PolicyURI? policyURI;
 
   final KeyFlags? keyFlags;
 
@@ -69,6 +83,8 @@ class SignaturePacket extends ContainedPacket {
 
   final IssuerFingerprint? issuerFingerprint;
 
+  final PreferredAEADAlgorithms? preferredAEADAlgorithms;
+
   SignaturePacket(
     this.version,
     this.signatureType,
@@ -83,6 +99,7 @@ class SignaturePacket extends ContainedPacket {
     this.signatureExpirationTime,
     this.exportable,
     this.trustSignature,
+    this.regularExpression,
     this.revocable,
     this.keyExpirationTime,
     this.preferredSymmetricAlgorithms,
@@ -90,7 +107,10 @@ class SignaturePacket extends ContainedPacket {
     this.notationData,
     this.preferredHashAlgorithms,
     this.preferredCompressionAlgorithms,
+    this.keyServerPreferences,
+    this.preferredKeyServer,
     this.primaryUserID,
+    this.policyURI,
     this.keyFlags,
     this.signerUserID,
     this.revocationReason,
@@ -98,6 +118,7 @@ class SignaturePacket extends ContainedPacket {
     this.signatureTarget,
     this.embeddedSignature,
     this.issuerFingerprint,
+    this.preferredAEADAlgorithms,
     super.tag = PacketTag.signature,
   });
 
@@ -209,6 +230,40 @@ class SignaturePacket extends ContainedPacket {
     }
   }
 
+  sign(SecretKeyPacket key, {DateTime? date, bool detached = false}) {
+    date = date ?? DateTime.now();
+  }
+
+  Uint8List writeHashedSubpackets() {
+    return Uint8List.fromList([
+      ...creationTime.toSubpacket(),
+      ...signatureExpirationTime?.toSubpacket() ?? [],
+      ...exportable?.toSubpacket() ?? [],
+      ...trustSignature?.toSubpacket() ?? [],
+      ...regularExpression?.toSubpacket() ?? [],
+      ...revocable?.toSubpacket() ?? [],
+      ...keyExpirationTime?.toSubpacket() ?? [],
+      ...preferredSymmetricAlgorithms?.toSubpacket() ?? [],
+      ...revocationKey?.toSubpacket() ?? [],
+      ...issuerKeyID.toSubpacket(),
+      ...notationData?.toSubpacket() ?? [],
+      ...preferredHashAlgorithms?.toSubpacket() ?? [],
+      ...preferredCompressionAlgorithms?.toSubpacket() ?? [],
+      ...keyServerPreferences?.toSubpacket() ?? [],
+      ...preferredKeyServer?.toSubpacket() ?? [],
+      ...primaryUserID?.toSubpacket() ?? [],
+      ...policyURI?.toSubpacket() ?? [],
+      ...keyFlags?.toSubpacket() ?? [],
+      ...signerUserID?.toSubpacket() ?? [],
+      ...revocationReason?.toSubpacket() ?? [],
+      ...features?.toSubpacket() ?? [],
+      ...signatureTarget?.toSubpacket() ?? [],
+      ...embeddedSignature?.toSubpacket() ?? [],
+      ...issuerFingerprint?.toSubpacket() ?? [],
+      ...preferredAEADAlgorithms?.toSubpacket() ?? [],
+    ]);
+  }
+
   static List<SignatureSubpacket> _readSubpackets(final Uint8List bytes) {
     final List<SignatureSubpacket> subpackets = [];
     var offset = 0;
@@ -217,8 +272,8 @@ class SignaturePacket extends ContainedPacket {
       offset = subpacketData.end;
       final data = subpacketData.data;
       if (data.isNotEmpty) {
-        final critical = ((data[0] & 0x80) != 0);
-        final type = SignatureSubpacketType.values.firstWhere((type) => type.value == (data[0] & 0x7f));
+        final critical = ((subpacketData.type & 0x80) != 0);
+        final type = SignatureSubpacketType.values.firstWhere((type) => type.value == (subpacketData.type & 0x7f));
         switch (type) {
           case SignatureSubpacketType.signatureCreationTime:
             subpackets.add(SignatureCreationTime(
@@ -248,14 +303,13 @@ class SignaturePacket extends ContainedPacket {
               isLongLength: subpacketData.isLongLength,
             ));
             break;
-          // case SignatureSubpacketType.regularExpression:
-          //   subpackets.add(SignatureSubpacket(
-          //     type,
-          //     data,
-          //     critical: critical,
-          //     isLongLength: subpacketData.isLongLength,
-          //   ));
-          //   break;
+          case SignatureSubpacketType.regularExpression:
+            subpackets.add(RegularExpression(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
+            break;
           case SignatureSubpacketType.revocable:
             subpackets.add(Revocable(
               data,
@@ -320,33 +374,30 @@ class SignaturePacket extends ContainedPacket {
               isLongLength: subpacketData.isLongLength,
             ));
             break;
-          // case SignatureSubpacketType.keyServerPreferences:
-          //   subpackets.add(SignatureSubpacket(
-          //     type,
-          //     data,
-          //     critical: critical,
-          //     isLongLength: subpacketData.isLongLength,
-          //   ));
-          //   break;
-          // case SignatureSubpacketType.preferredKeyServer:
-          //   subpackets.add(SignatureSubpacket(
-          //     type,
-          //     data,
-          //     critical: critical,
-          //     isLongLength: subpacketData.isLongLength,
-          //   ));
-          //   break;
+          case SignatureSubpacketType.keyServerPreferences:
+            subpackets.add(KeyServerPreferences(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
+            break;
+          case SignatureSubpacketType.preferredKeyServer:
+            subpackets.add(PreferredKeyServer(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
+            break;
           case SignatureSubpacketType.primaryUserID:
             subpackets.add(PrimaryUserID(data, critical: critical));
             break;
-          // case SignatureSubpacketType.policyURI:
-          //   subpackets.add(SignatureSubpacket(
-          //     type,
-          //     data,
-          //     critical: critical,
-          //     isLongLength: subpacketData.isLongLength,
-          //   ));
-          //   break;
+          case SignatureSubpacketType.policyURI:
+            subpackets.add(PolicyURI(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
+            break;
           case SignatureSubpacketType.keyFlags:
             subpackets.add(KeyFlags(
               data,
@@ -396,14 +447,13 @@ class SignaturePacket extends ContainedPacket {
               isLongLength: subpacketData.isLongLength,
             ));
             break;
-          // case SignatureSubpacketType.preferredAEADAlgorithms:
-          //   subpackets.add(SignatureSubpacket(
-          //     type,
-          //     data,
-          //     critical: critical,
-          //     isLongLength: subpacketData.isLongLength,
-          //   ));
-          //   break;
+          case SignatureSubpacketType.preferredAEADAlgorithms:
+            subpackets.add(PreferredAEADAlgorithms(
+              data,
+              critical: critical,
+              isLongLength: subpacketData.isLongLength,
+            ));
+            break;
           // case SignatureSubpacketType.intendedRecipientFingerprint:
           //   subpackets.add(SignatureSubpacket(
           //     type,
@@ -442,20 +492,20 @@ class SignaturePacket extends ContainedPacket {
   Uint8List toPacketData() {
     final bytes = [version];
     if (version == 3 || version == 2) {
-      bytes.addAll([5, signatureType.value, ...creationTime.toPacketData(), ...issuerKeyID.toPacketData()]);
+      bytes.addAll([5, signatureType.value, ...creationTime.toSubpacket(), ...issuerKeyID.toSubpacket()]);
       bytes.addAll([keyAlgorithm.value, hashAlgorithm.value]);
     } else if (version == 4 || version == 5) {
       bytes.addAll([signatureType.value, keyAlgorithm.value, hashAlgorithm.value]);
 
       bytes.addAll(hashedSubpackets.length.pack16());
       for (final packet in hashedSubpackets) {
-        bytes.addAll(packet.toPacketData());
+        bytes.addAll(packet.toSubpacket());
       }
 
       if (unhashedSubpackets.isNotEmpty) {
         bytes.addAll(unhashedSubpackets.length.pack16());
         for (final packet in unhashedSubpackets) {
-          bytes.addAll(packet.toPacketData());
+          bytes.addAll(packet.toSubpacket());
         }
       } else {
         bytes.addAll([0, 0]);

@@ -39,7 +39,7 @@ class SignatureSubpacket {
 
   SignatureSubpacket(this.type, this.data, {this.critical = false, this.isLongLength = false});
 
-  Uint8List toPacketData() {
+  Uint8List toSubpacket() {
     final List<int> header;
     final bodyLen = data.length + 1;
 
@@ -55,6 +55,6 @@ class SignatureSubpacket {
       }
     }
 
-    return Uint8List.fromList([...header, critical ? 0x80 | type.value : type.value, ...data]);
+    return Uint8List.fromList([...header, critical ? type.value | 0x80 : type.value, ...data]);
   }
 }

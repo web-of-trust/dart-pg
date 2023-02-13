@@ -3,7 +3,6 @@
 // file that was distributed with this source code.
 
 import 'enums.dart';
-import 'packet/contained_packet.dart';
 import 'packet/key_packet_generator.dart';
 import 'packet/packet_list.dart';
 import 'packet/user_id.dart';

@@ -40,15 +40,20 @@ class UserAttributePacket extends ContainedPacket {
     while (offset < bytes.length) {
       final subpacketData = SubpacketData.readSubpacketData(bytes, offset);
       offset = subpacketData.end;
-      final data = subpacketData.data;
-      if (data.isNotEmpty) {
-        final type = data[0];
-        switch (type) {
+      if (subpacketData.data.isNotEmpty) {
+        switch (subpacketData.type) {
           case ImageAttributeSubpacket.jpeg:
-            attributes.add(ImageAttributeSubpacket(data.sublist(1), isLongLength: subpacketData.isLongLength));
+            attributes.add(ImageAttributeSubpacket(
+              subpacketData.data,
+              isLongLength: subpacketData.isLongLength,
+            ));
             break;
           default:
-            attributes.add(UserAttributeSubpacket(type, data.sublist(1), isLongLength: subpacketData.isLongLength));
+            attributes.add(UserAttributeSubpacket(
+              subpacketData.type,
+              subpacketData.data,
+              isLongLength: subpacketData.isLongLength,
+            ));
         }
       }
     }

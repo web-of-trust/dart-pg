@@ -69,7 +69,9 @@ class KeyPairGenerator {
   static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([
     int bits = OpenPGP.preferredRSABits,
   ]) {
-    assert(bits >= OpenPGP.minRSABits);
+    if (bits < OpenPGP.minRSABits) {
+      throw ArgumentError('RSA bits should be at least ${OpenPGP.minRSABits}, got: $bits');
+    }
 
     final keyGen = KeyGenerator('RSA');
     keyGen.init(
