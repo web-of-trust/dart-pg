@@ -33,6 +33,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   @override
   final KeyAlgorithm algorithm;
 
+  @override
   final KeyParams publicParams;
 
   late final Uint8List _fingerprint;

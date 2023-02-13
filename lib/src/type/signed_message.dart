@@ -5,7 +5,7 @@
 import '../armor/armor.dart';
 import '../enums.dart';
 import '../packet/packet_list.dart';
-import '../packet/signature.dart';
+import '../packet/signature_packet.dart';
 import 'public_key.dart';
 import 'signature.dart';
 

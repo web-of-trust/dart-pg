@@ -3,7 +3,7 @@
 // file that was distributed with this source code.
 
 import '../packet/packet_list.dart';
-import '../packet/signature.dart';
+import '../packet/signature_packet.dart';
 import '../packet/subkey_packet.dart';
 
 /// Class that represents a subkey packet and the relevant signatures.

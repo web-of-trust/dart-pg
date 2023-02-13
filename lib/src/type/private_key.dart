@@ -7,7 +7,7 @@ import '../enums.dart';
 import '../packet/packet_list.dart';
 import '../packet/secret_key.dart';
 import '../packet/secret_subkey.dart';
-import '../packet/signature.dart';
+import '../packet/signature_packet.dart';
 import '../packet/user_attribute.dart';
 import '../packet/user_id.dart';
 import 'key.dart';

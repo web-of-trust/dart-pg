@@ -4,7 +4,7 @@
 
 import '../packet/key_packet.dart';
 import '../packet/packet_list.dart';
-import '../packet/signature.dart';
+import '../packet/signature_packet.dart';
 import 'public_key.dart';
 import 'subkey.dart';
 import 'user.dart';

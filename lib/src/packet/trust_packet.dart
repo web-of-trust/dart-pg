@@ -7,18 +7,17 @@ import 'dart:typed_data';
 import '../enums.dart';
 import 'contained_packet.dart';
 
-class TrustPacketPacket extends ContainedPacket {
+class TrustPacket extends ContainedPacket {
   final Uint8List levelAndTrustAmount;
 
-  TrustPacketPacket(
+  TrustPacket(
     this.levelAndTrustAmount, {
     super.tag = PacketTag.trust,
   });
 
-  factory TrustPacketPacket.fromTrustCode(final int trustCode) =>
-      TrustPacketPacket(Uint8List.fromList([trustCode & 0xff]));
+  factory TrustPacket.fromTrustCode(final int trustCode) => TrustPacket(Uint8List.fromList([trustCode & 0xff]));
 
-  factory TrustPacketPacket.fromPacketData(final Uint8List bytes) => TrustPacketPacket.fromTrustCode(bytes[0]);
+  factory TrustPacket.fromPacketData(final Uint8List bytes) => TrustPacket.fromTrustCode(bytes[0]);
 
   @override
   Uint8List toPacketData() {

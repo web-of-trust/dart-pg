@@ -19,7 +19,7 @@ import 'public_key_encrypted_session_key.dart';
 import 'public_subkey.dart';
 import 'secret_key.dart';
 import 'secret_subkey.dart';
-import 'signature.dart';
+import 'signature_packet.dart';
 import 'sym_encrypted_integrity_protected_data.dart';
 import 'sym_encrypted_session_key.dart';
 import 'symmetrically_encrypted_data.dart';
@@ -75,7 +75,7 @@ class PacketList extends ListBase<ContainedPacket> {
           packets.add(LiteralDataPacket.fromPacketData(reader.data));
           break;
         case PacketTag.trust:
-          packets.add(TrustPacketPacket.fromPacketData(reader.data));
+          packets.add(TrustPacket.fromPacketData(reader.data));
           break;
         case PacketTag.userID:
           packets.add(UserIDPacket.fromPacketData(reader.data));

@@ -3,7 +3,7 @@
 // file that was distributed with this source code.
 
 import '../packet/packet_list.dart';
-import '../packet/signature.dart';
+import '../packet/signature_packet.dart';
 import '../packet/user_attribute.dart';
 import '../packet/user_id.dart';
 

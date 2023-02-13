@@ -12,7 +12,7 @@ class PublicSubkeyPacket extends PublicKeyPacket implements SubkeyPacket {
   PublicSubkeyPacket(
     super.version,
     super.createdTime,
-    super.pgpKey, {
+    super.publicParams, {
     super.expirationDays,
     super.algorithm,
     super.tag = PacketTag.publicSubkey,

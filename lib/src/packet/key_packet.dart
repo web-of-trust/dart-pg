@@ -5,6 +5,7 @@
 import '../enums.dart';
 import 'key/key_id.dart';
 import 'contained_packet.dart';
+import 'key/key_params.dart';
 
 abstract class KeyPacket implements ContainedPacket {
   int get version;
@@ -14,6 +15,8 @@ abstract class KeyPacket implements ContainedPacket {
   int get expirationDays;
 
   KeyAlgorithm get algorithm;
+
+  KeyParams get publicParams;
 
   String get fingerprint;
 

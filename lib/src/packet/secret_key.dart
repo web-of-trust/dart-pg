@@ -115,6 +115,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   DateTime get creationTime => publicKey.creationTime;
 
   @override
+  KeyParams get publicParams => publicKey.publicParams;
+
+  @override
   int get expirationDays => publicKey.expirationDays;
 
   @override
