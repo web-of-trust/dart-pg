@@ -4,10 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/packet/key/key_id.dart';
-import 'package:dart_pg/src/openpgp.dart';
-import 'package:pointycastle/block/modes/cfb.dart';
-import 'package:pointycastle/pointycastle.dart' as pc;
+import 'package:pointycastle/export.dart';
 
 import '../crypto/symmetric/blowfish.dart';
 import '../crypto/symmetric/buffered_cipher.dart';
@@ -18,9 +15,11 @@ import '../crypto/symmetric/triple_des.dart';
 import '../crypto/symmetric/twofish.dart';
 import '../enums.dart';
 import '../helpers.dart';
+import '../openpgp.dart';
 import 'key/dsa_secret_params.dart';
 import 'key/ec_secret_params.dart';
 import 'key/elgamal_secret_params.dart';
+import 'key/key_id.dart';
 import 'key/key_params.dart';
 import 'key/rsa_secret_params.dart';
 import 'key/s2k.dart';
@@ -152,7 +151,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
       final key = s2k.produceKey(passphrase, symmetricAlgorithm);
       final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm))
-        ..init(true, pc.ParametersWithIV(pc.KeyParameter(key), iv));
+        ..init(true, ParametersWithIV(KeyParameter(key), iv));
 
       final clearText = secretParams!.encode();
       final clearTextWithHash = Uint8List.fromList([...clearText, ...Helper.hashDigest(clearText, s2k.hash)]);
@@ -176,16 +175,22 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key = s2k!.produceKey(passphrase, symmetricAlgorithm);
+        final key = s2k?.produceKey(passphrase, symmetricAlgorithm) ?? Uint8List((symmetricAlgorithm.keySize + 7) >> 3);
         final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm))
-          ..init(false, pc.ParametersWithIV(pc.KeyParameter(key), iv ?? Uint8List(0)));
+          ..init(
+            false,
+            ParametersWithIV(
+              KeyParameter(key),
+              iv ?? Uint8List(symmetricAlgorithm.blockSize),
+            ),
+          );
 
         final clearTextWithHash = cipher.process(keyData);
-        final hashLen = s2k!.hash.digestSize;
-        clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - hashLen);
-        final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hashLen);
-        final hash = Helper.hashDigest(clearText, s2k!.hash);
-        if (!hash.equals(hashText)) {
+        final hash = s2k?.hash ?? HashAlgorithm.sha1;
+        clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - hash.digestSize);
+        final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hash.digestSize);
+        final hashed = Helper.hashDigest(clearText, hash);
+        if (!hashed.equals(hashText)) {
           throw ArgumentError('Incorrect key passphrase');
         }
       } else {
@@ -207,6 +212,11 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   }
 
   @override
+  Uint8List writeForHash(int version) {
+    return publicKey.writeForHash(version);
+  }
+
+  @override
   Uint8List toPacketData() {
     final List<int> bytes;
     if (s2kUsage != S2kUsage.none && s2k != null) {
@@ -215,7 +225,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         s2kUsage.value,
         symmetricAlgorithm.value,
         ...s2k!.encode(),
-        ...iv ?? Uint8List(0),
+        ...iv ?? [],
         ...keyData,
       ];
     } else {
@@ -225,13 +235,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     return Uint8List.fromList(bytes);
   }
 
-  static pc.BlockCipher _cipherEngine(final SymmetricAlgorithm symmetricAlgorithm) {
-    final pc.BlockCipher engine;
+  static BlockCipher _cipherEngine(final SymmetricAlgorithm symmetricAlgorithm) {
+    final BlockCipher engine;
     switch (symmetricAlgorithm) {
       case SymmetricAlgorithm.aes128:
       case SymmetricAlgorithm.aes192:
       case SymmetricAlgorithm.aes256:
-        engine = pc.BlockCipher('AES/CFB-${symmetricAlgorithm.blockSize * 8}');
+        engine = BlockCipher('AES/CFB-${symmetricAlgorithm.blockSize * 8}');
         break;
       case SymmetricAlgorithm.blowfish:
         engine = CFBBlockCipher(BlowfishEngine(), symmetricAlgorithm.blockSize);

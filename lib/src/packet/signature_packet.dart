@@ -4,12 +4,21 @@
 
 import 'dart:typed_data';
 
+import 'package:pointycastle/pointycastle.dart';
+
+import '../crypto/signer/dsa.dart';
 import '../enums.dart';
 import '../helpers.dart';
 import 'contained_packet.dart';
+import 'key/dsa_public_params.dart';
+import 'key/ec_public_params.dart';
+import 'key/rsa_public_params.dart';
 import 'key_packet.dart';
+import 'literal_data.dart';
 import 'signature_subpacket.dart';
 import 'subpacket_reader.dart';
+import 'user_attribute.dart';
+import 'user_id.dart';
 
 /// Signature represents a signature.
 /// See RFC 4880, section 5.2.
@@ -21,6 +30,8 @@ class SignaturePacket extends ContainedPacket {
   final KeyAlgorithm keyAlgorithm;
 
   final HashAlgorithm hashAlgorithm;
+
+  final Uint8List signatureData;
 
   final Uint8List signedHashValue;
 
@@ -40,7 +51,13 @@ class SignaturePacket extends ContainedPacket {
     this.hashedSubpackets = const [],
     this.unhashedSubpackets = const [],
     super.tag = PacketTag.signature,
-  });
+  }) : signatureData = Uint8List.fromList([
+          version,
+          signatureType.value,
+          keyAlgorithm.value,
+          hashAlgorithm.value,
+          ..._writeSubpackets(hashedSubpackets),
+        ]);
 
   SignatureCreationTime get creationTime =>
       _getSubpacket<SignatureCreationTime>(hashedSubpackets) ?? SignatureCreationTime.fromTime(DateTime.now());
@@ -114,16 +131,6 @@ class SignaturePacket extends ContainedPacket {
 
   bool get keyNeverExpires => keyExpirationTime == null;
 
-  Uint8List get signatureData {
-    return Uint8List.fromList([
-      version,
-      signatureType.value,
-      keyAlgorithm.value,
-      hashAlgorithm.value,
-      ..._writeHashedSubpackets(),
-    ]);
-  }
-
   factory SignaturePacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
@@ -172,22 +179,161 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  bool verify(KeyPacket key, Uint8List data, {bool detached = false}) {
-    return false;
+  bool verify(
+    KeyPacket keyPacket, {
+    LiteralDataPacket? data,
+    UserIDPacket? userID,
+    UserAttributePacket? userAttribute,
+    KeyPacket? key,
+    KeyPacket? bind,
+    bool detached = false,
+  }) {
+    if (keyAlgorithm != keyPacket.algorithm) {
+      throw ArgumentError('Public key algorithm used to sign signature does not match issuer key algorithm.');
+    }
+
+    final message = toHash(
+      signatureType,
+      data: data,
+      userID: userID,
+      userAttribute: userAttribute,
+      key: key,
+      bind: bind,
+      detached: detached,
+    );
+
+    final hash = Helper.hashDigest(message, hashAlgorithm);
+    if (signedHashValue[0] != hash[0] || signedHashValue[1] != hash[1]) {
+      throw Exception('Signed digest did not match');
+    }
+
+    switch (keyAlgorithm) {
+      case KeyAlgorithm.rsaEncryptSign:
+      case KeyAlgorithm.rsaEncrypt:
+      case KeyAlgorithm.rsaSign:
+        final publicKey = (keyPacket.publicParams as RSAPublicParams).publicKey;
+        return _rsaVerify(publicKey, message);
+      case KeyAlgorithm.dsa:
+        final publicKey = (keyPacket.publicParams as DSAPublicParams).publicKey;
+        return _dsaVerify(publicKey, message);
+      case KeyAlgorithm.ecdsa:
+        final publicKey = (keyPacket.publicParams as ECPublicParams).publicKey;
+        return _ecdsaVerify(publicKey, message);
+      case KeyAlgorithm.eddsa:
+        throw UnsupportedError('Unsupported public key algorithm for signature verification.');
+      default:
+        throw Exception('Unknown public key algorithm for signature verification.');
+    }
   }
 
-  calculateTrailer(Uint8List data, [bool detached = false]) {}
-
-  Uint8List _writeHashedSubpackets() {
-    final subpackets = hashedSubpackets.map((subpacket) => subpacket.toSubpacket()).expand((element) => element);
-    return Uint8List.fromList([...subpackets.length.pack16(), ...subpackets]);
+  Uint8List toHash(
+    SignatureType type, {
+    LiteralDataPacket? data,
+    UserIDPacket? userID,
+    UserAttributePacket? userAttribute,
+    KeyPacket? key,
+    KeyPacket? bind,
+    bool detached = false,
+  }) {
+    return Uint8List.fromList([
+      ..._toSign(type, data: data, userID: userID, userAttribute: userAttribute, key: key, bind: bind),
+      ...signatureData,
+      ..._calculateTrailer(data: data, detached: detached),
+    ]);
   }
 
-  Uint8List _writeUnhashedSubPackets() {
-    final subpackets = unhashedSubpackets.isEmpty
-        ? [0, 0]
-        : unhashedSubpackets.map((subpacket) => subpacket.toSubpacket()).expand((element) => element);
-    return Uint8List.fromList([...subpackets.length.pack16(), ...subpackets]);
+  Uint8List _toSign(
+    SignatureType type, {
+    LiteralDataPacket? data,
+    UserIDPacket? userID,
+    UserAttributePacket? userAttribute,
+    KeyPacket? key,
+    KeyPacket? bind,
+  }) {
+    switch (type) {
+      case SignatureType.binary:
+      case SignatureType.text:
+        return data?.getBytes() ?? Uint8List(0);
+      case SignatureType.certGeneric:
+      case SignatureType.certPersona:
+      case SignatureType.certCasual:
+      case SignatureType.certPositive:
+      case SignatureType.certRevocation:
+        final tag = (userID != null) ? 0xb4 : 0xd1;
+        final bytes = userID?.toPacketData() ?? userAttribute?.toPacketData();
+        if (bytes == null) {
+          throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
+        }
+        return Uint8List.fromList([
+          ..._toSign(SignatureType.key, key: key),
+          tag,
+          ...bytes.length.pack32(),
+          ...bytes,
+        ]);
+      case SignatureType.subkeyBinding:
+      case SignatureType.subkeyRevocation:
+      case SignatureType.keyBinding:
+        return Uint8List.fromList([
+          ..._toSign(SignatureType.key, key: key),
+          ..._toSign(SignatureType.key, key: bind),
+        ]);
+      case SignatureType.key:
+        return key?.writeForHash(version) ?? Uint8List(0);
+      case SignatureType.keyRevocation:
+        return _toSign(SignatureType.key, key: key);
+      default:
+        return Uint8List(0);
+    }
+  }
+
+  Uint8List _calculateTrailer({LiteralDataPacket? data, bool detached = false}) {
+    final List<int> header;
+    if (version == 5 && (signatureType == SignatureType.binary || signatureType == SignatureType.text)) {
+      if (detached) {
+        header = List.filled(6, 0);
+      } else {
+        header = data?.writeHeader() ?? [];
+      }
+    } else {
+      header = [];
+    }
+
+    return Uint8List.fromList([
+      ...header,
+      ...[version, 0xff],
+      ...(version == 5) ? List.filled(4, 0) : <int>[],
+      ...signatureData.length.pack32(),
+    ]);
+  }
+
+  bool _rsaVerify(RSAPublicKey publicKey, Uint8List message) {
+    final signer = Signer('${hashAlgorithm.digestName}/RSA')..init(false, PublicKeyParameter<RSAPublicKey>(publicKey));
+    final s = Helper.readMPI(signature);
+    return signer.verifySignature(message, RSASignature(s.toUnsignedBytes()));
+  }
+
+  bool _dsaVerify(DSAPublicKey publicKey, Uint8List message) {
+    final signer = DSASigner(Digest(hashAlgorithm.digestName))
+      ..init(false, PublicKeyParameter<DSAPublicKey>(publicKey));
+
+    final r = Helper.readMPI(signature);
+    final s = Helper.readMPI(signature.sublist(r.byteLength + 2));
+
+    return signer.verifySignature(message, DSASignature(r, s));
+  }
+
+  bool _ecdsaVerify(ECPublicKey publicKey, Uint8List message) {
+    final signer = Signer('${hashAlgorithm.digestName}/ECDSA')..init(false, PublicKeyParameter<ECPublicKey>(publicKey));
+
+    final r = Helper.readMPI(signature);
+    final s = Helper.readMPI(signature.sublist(r.byteLength + 2));
+
+    return signer.verifySignature(message, ECSignature(r, s));
+  }
+
+  static Uint8List _writeSubpackets(List<SignatureSubpacket> subpackets) {
+    final bytes = subpackets.map((subpacket) => subpacket.toSubpacket()).expand((byte) => byte);
+    return Uint8List.fromList([...bytes.length.pack16(), ...bytes]);
   }
 
   static List<SignatureSubpacket> _readSubpackets(final Uint8List bytes) {
@@ -393,7 +539,7 @@ class SignaturePacket extends ContainedPacket {
   @override
   Uint8List toPacketData() => Uint8List.fromList([
         ...signatureData,
-        ..._writeUnhashedSubPackets(),
+        ..._writeSubpackets(unhashedSubpackets),
         ...signedHashValue,
         ...signature,
       ]);

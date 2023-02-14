@@ -57,7 +57,7 @@ class LiteralDataPacket extends ContainedPacket {
   Uint8List toPacketData() {
     return Uint8List.fromList([
       ...writeHeader(),
-      ...data.isNotEmpty ? data : text.replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n').stringToBytes(),
+      ...getBytes(),
     ]);
   }
 
@@ -68,5 +68,9 @@ class LiteralDataPacket extends ContainedPacket {
       ...filename.stringToBytes(),
       ...time.toBytes(),
     ]);
+  }
+
+  Uint8List getBytes() {
+    return data.isNotEmpty ? data : text.replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n').stringToBytes();
   }
 }
