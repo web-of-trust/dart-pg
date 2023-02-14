@@ -180,15 +180,15 @@ class SignaturePacket extends ContainedPacket {
   }
 
   bool verify(
-    KeyPacket keyPacket, {
+    KeyPacket key, {
     LiteralDataPacket? data,
     UserIDPacket? userID,
     UserAttributePacket? userAttribute,
-    KeyPacket? key,
-    KeyPacket? bind,
+    KeyPacket? keyData,
+    KeyPacket? bindKeyData,
     bool detached = false,
   }) {
-    if (keyAlgorithm != keyPacket.algorithm) {
+    if (keyAlgorithm != key.algorithm) {
       throw ArgumentError('Public key algorithm used to sign signature does not match issuer key algorithm.');
     }
 
@@ -197,8 +197,8 @@ class SignaturePacket extends ContainedPacket {
       data: data,
       userID: userID,
       userAttribute: userAttribute,
-      key: key,
-      bind: bind,
+      keyData: keyData,
+      bindKeyData: bindKeyData,
       detached: detached,
     );
 
@@ -211,13 +211,13 @@ class SignaturePacket extends ContainedPacket {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final publicKey = (keyPacket.publicParams as RSAPublicParams).publicKey;
+        final publicKey = (key.publicParams as RSAPublicParams).publicKey;
         return _rsaVerify(publicKey, message);
       case KeyAlgorithm.dsa:
-        final publicKey = (keyPacket.publicParams as DSAPublicParams).publicKey;
+        final publicKey = (key.publicParams as DSAPublicParams).publicKey;
         return _dsaVerify(publicKey, message);
       case KeyAlgorithm.ecdsa:
-        final publicKey = (keyPacket.publicParams as ECPublicParams).publicKey;
+        final publicKey = (key.publicParams as ECPublicParams).publicKey;
         return _ecdsaVerify(publicKey, message);
       case KeyAlgorithm.eddsa:
         throw UnsupportedError('Unsupported public key algorithm for signature verification.');
@@ -231,12 +231,13 @@ class SignaturePacket extends ContainedPacket {
     LiteralDataPacket? data,
     UserIDPacket? userID,
     UserAttributePacket? userAttribute,
-    KeyPacket? key,
-    KeyPacket? bind,
+    KeyPacket? keyData,
+    KeyPacket? bindKeyData,
     bool detached = false,
   }) {
     return Uint8List.fromList([
-      ..._toSign(type, data: data, userID: userID, userAttribute: userAttribute, key: key, bind: bind),
+      ..._toSign(type,
+          data: data, userID: userID, userAttribute: userAttribute, keyData: keyData, bindKeyData: bindKeyData),
       ...signatureData,
       ..._calculateTrailer(data: data, detached: detached),
     ]);
@@ -247,8 +248,8 @@ class SignaturePacket extends ContainedPacket {
     LiteralDataPacket? data,
     UserIDPacket? userID,
     UserAttributePacket? userAttribute,
-    KeyPacket? key,
-    KeyPacket? bind,
+    KeyPacket? keyData,
+    KeyPacket? bindKeyData,
   }) {
     switch (type) {
       case SignatureType.binary:
@@ -265,7 +266,7 @@ class SignaturePacket extends ContainedPacket {
           throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
         }
         return Uint8List.fromList([
-          ..._toSign(SignatureType.key, key: key),
+          ..._toSign(SignatureType.key, keyData: keyData),
           tag,
           ...bytes.length.pack32(),
           ...bytes,
@@ -274,13 +275,13 @@ class SignaturePacket extends ContainedPacket {
       case SignatureType.subkeyRevocation:
       case SignatureType.keyBinding:
         return Uint8List.fromList([
-          ..._toSign(SignatureType.key, key: key),
-          ..._toSign(SignatureType.key, key: bind),
+          ..._toSign(SignatureType.key, keyData: keyData),
+          ..._toSign(SignatureType.key, keyData: bindKeyData),
         ]);
       case SignatureType.key:
-        return key?.writeForHash(version) ?? Uint8List(0);
+        return keyData?.writeForHash(version) ?? Uint8List(0);
       case SignatureType.keyRevocation:
-        return _toSign(SignatureType.key, key: key);
+        return _toSign(SignatureType.key, keyData: keyData);
       default:
         return Uint8List(0);
     }
