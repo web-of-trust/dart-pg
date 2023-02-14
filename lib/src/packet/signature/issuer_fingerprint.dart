@@ -7,12 +7,16 @@ import 'dart:typed_data';
 import 'package:dart_pg/src/helpers.dart';
 
 import '../../enums.dart';
+import '../key_packet.dart';
 import '../signature_subpacket.dart';
 
 /// packet giving the issuer key fingerprint.
 class IssuerFingerprint extends SignatureSubpacket {
   IssuerFingerprint(Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.issuerFingerprint, data);
+
+  factory IssuerFingerprint.fromKey(KeyPacket key) =>
+      IssuerFingerprint(Uint8List.fromList([key.version, ...key.fingerprint.hexToBytes()]));
 
   int get keyVersion => data[0];
 
