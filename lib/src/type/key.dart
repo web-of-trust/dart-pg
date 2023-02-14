@@ -41,18 +41,11 @@ abstract class Key {
   /// Returns ASCII armored text of key
   String armor();
 
-  PacketList toPacketList() {
-    final packetList = PacketList([
-      keyPacket,
-      ...revocationSignatures,
-      ...directSignatures,
-    ]);
-    for (final user in users) {
-      packetList.addAll(user.toPacketList());
-    }
-    for (final subkey in subkeys) {
-      packetList.addAll(subkey.toPacketList());
-    }
-    return packetList;
-  }
+  PacketList toPacketList() => PacketList([
+        keyPacket,
+        ...revocationSignatures,
+        ...directSignatures,
+        ...users.map((user) => user.toPacketList()).expand((packet) => packet),
+        ...subkeys.map((subkey) => subkey.toPacketList()).expand((packet) => packet),
+      ]);
 }

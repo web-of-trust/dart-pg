@@ -27,6 +27,11 @@ export 'signature/signature_expiration_time.dart';
 export 'signature/signature_target.dart';
 export 'signature/signer_user_id.dart';
 export 'signature/trust_signature.dart';
+export 'signature/policy_uri.dart';
+export 'signature/preferred_aead_algorithms.dart';
+export 'signature/preferred_key_server.dart';
+export 'signature/regular_expression.dart';
+export 'signature/key_server_preferences.dart';
 
 class SignatureSubpacket {
   final SignatureSubpacketType type;

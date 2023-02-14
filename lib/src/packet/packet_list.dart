@@ -100,13 +100,8 @@ class PacketList extends ListBase<ContainedPacket> {
     return PacketList(packets);
   }
 
-  Uint8List packetEncode() {
-    List<int> packetBytes = [];
-    for (final packet in packets) {
-      packetBytes.addAll(packet.packetEncode());
-    }
-    return Uint8List.fromList(packetBytes);
-  }
+  Uint8List packetEncode() =>
+      Uint8List.fromList(packets.map((packet) => packet.packetEncode()).expand((byte) => byte).toList(growable: false));
 
   @override
   int get length => packets.length;

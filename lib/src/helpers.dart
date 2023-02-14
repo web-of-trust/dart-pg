@@ -6,8 +6,11 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:pointycastle/api.dart';
+import 'package:pointycastle/api.dart' as pc;
+
+import 'enums.dart';
 
 extension StringHelper on String {
   List<String> chunk(final int chunkSize) {
@@ -227,29 +230,6 @@ extension BigIntHelper on BigInt {
     }
     return result;
   }
-
-  BigInt modExp(BigInt exponent, BigInt modulus) {
-    if (modulus.isNegative || modulus.sign == 0) {
-      throw ArgumentError('non-positive modulo');
-    }
-    if (exponent.isNegative) {
-      return modInverse(modulus).modExp(exponent.abs(), modulus);
-    }
-    if (exponent.sign == 0) {
-      return this % modulus;
-    }
-    var s = BigInt.one;
-    var t = this;
-    var u = exponent;
-    while (!(u.sign == 0)) {
-      if ((u & BigInt.one) == BigInt.one) {
-        s = (s * t) % modulus;
-      }
-      u = u >> 1;
-      t = (t * t) % modulus;
-    }
-    return s;
-  }
 }
 
 extension DateTimeHelper on DateTime {
@@ -262,9 +242,29 @@ class Helper {
     return bytes.sublist(2, ((bitLength + 7) >> 3) + 2).toBigIntWithSign(1);
   }
 
-  static SecureRandom secureRandom() {
+  static pc.SecureRandom secureRandom() {
     final random = Random.secure();
-    return SecureRandom('Fortuna')
-      ..seed(KeyParameter(Uint8List.fromList(List.generate(32, ((_) => random.nextInt(0xffffffff))))));
+    return pc.SecureRandom('Fortuna')
+      ..seed(pc.KeyParameter(Uint8List.fromList(List.generate(32, ((_) => random.nextInt(0xffffffff))))));
+  }
+
+  static Uint8List hashDigest(final Uint8List input, [HashAlgorithm hash = HashAlgorithm.sha256]) {
+    switch (hash) {
+      case HashAlgorithm.sha1:
+        return Uint8List.fromList(sha1.convert(input).bytes);
+      case HashAlgorithm.ripemd160:
+        final digest = pc.Digest('RIPEMD-160');
+        return digest.process(input);
+      case HashAlgorithm.sha256:
+        return Uint8List.fromList(sha256.convert(input).bytes);
+      case HashAlgorithm.sha384:
+        return Uint8List.fromList(sha384.convert(input).bytes);
+      case HashAlgorithm.sha512:
+        return Uint8List.fromList(sha512.convert(input).bytes);
+      case HashAlgorithm.sha224:
+        return Uint8List.fromList(sha224.convert(input).bytes);
+      default:
+        throw UnsupportedError('Digest type not supported.');
+    }
   }
 }

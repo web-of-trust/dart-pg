@@ -155,7 +155,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         ..init(true, pc.ParametersWithIV(pc.KeyParameter(key), iv));
 
       final clearText = secretParams!.encode();
-      final clearTextWithHash = Uint8List.fromList([...clearText, ...s2k.hashDigest(clearText)]);
+      final clearTextWithHash = Uint8List.fromList([...clearText, ...Helper.hashDigest(clearText, s2k.hash)]);
       final cipherText = cipher.process(clearTextWithHash);
 
       return SecretKeyPacket(
@@ -184,7 +184,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         final hashLen = s2k!.hash.digestSize;
         clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - hashLen);
         final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hashLen);
-        final hash = s2k!.hashDigest(clearText);
+        final hash = Helper.hashDigest(clearText, s2k!.hash);
         if (!hash.equals(hashText)) {
           throw ArgumentError('Incorrect key passphrase');
         }

@@ -8,11 +8,6 @@ import '../enums.dart';
 import '../helpers.dart';
 import 'contained_packet.dart';
 import 'key_packet.dart';
-import 'signature/key_server_preferences.dart';
-import 'signature/policy_uri.dart';
-import 'signature/preferred_aead_algorithms.dart';
-import 'signature/preferred_key_server.dart';
-import 'signature/regular_expression.dart';
 import 'signature_subpacket.dart';
 import 'subpacket_reader.dart';
 
@@ -27,10 +22,6 @@ class SignaturePacket extends ContainedPacket {
 
   final HashAlgorithm hashAlgorithm;
 
-  final SignatureCreationTime creationTime;
-
-  final IssuerKeyID issuerKeyID;
-
   final Uint8List signedHashValue;
 
   final Uint8List signature;
@@ -39,88 +30,85 @@ class SignaturePacket extends ContainedPacket {
 
   final List<SignatureSubpacket> unhashedSubpackets;
 
-  final SignatureExpirationTime? signatureExpirationTime;
-
-  final ExportableCertification? exportable;
-
-  final TrustSignature? trustSignature;
-
-  final RegularExpression? regularExpression;
-
-  final Revocable? revocable;
-
-  final KeyExpirationTime? keyExpirationTime;
-
-  final PreferredSymmetricAlgorithms? preferredSymmetricAlgorithms;
-
-  final RevocationKey? revocationKey;
-
-  final NotationData? notationData;
-
-  final PreferredHashAlgorithms? preferredHashAlgorithms;
-
-  final PreferredCompressionAlgorithms? preferredCompressionAlgorithms;
-
-  final KeyServerPreferences? keyServerPreferences;
-
-  final PreferredKeyServer? preferredKeyServer;
-
-  final PrimaryUserID? primaryUserID;
-
-  final PolicyURI? policyURI;
-
-  final KeyFlags? keyFlags;
-
-  final SignerUserID? signerUserID;
-
-  final RevocationReason? revocationReason;
-
-  final Features? features;
-
-  final SignatureTarget? signatureTarget;
-
-  final EmbeddedSignature? embeddedSignature;
-
-  final IssuerFingerprint? issuerFingerprint;
-
-  final PreferredAEADAlgorithms? preferredAEADAlgorithms;
-
   SignaturePacket(
     this.version,
     this.signatureType,
     this.keyAlgorithm,
     this.hashAlgorithm,
-    this.creationTime,
-    this.issuerKeyID,
     this.signedHashValue,
     this.signature, {
     this.hashedSubpackets = const [],
     this.unhashedSubpackets = const [],
-    this.signatureExpirationTime,
-    this.exportable,
-    this.trustSignature,
-    this.regularExpression,
-    this.revocable,
-    this.keyExpirationTime,
-    this.preferredSymmetricAlgorithms,
-    this.revocationKey,
-    this.notationData,
-    this.preferredHashAlgorithms,
-    this.preferredCompressionAlgorithms,
-    this.keyServerPreferences,
-    this.preferredKeyServer,
-    this.primaryUserID,
-    this.policyURI,
-    this.keyFlags,
-    this.signerUserID,
-    this.revocationReason,
-    this.features,
-    this.signatureTarget,
-    this.embeddedSignature,
-    this.issuerFingerprint,
-    this.preferredAEADAlgorithms,
     super.tag = PacketTag.signature,
   });
+
+  SignatureCreationTime get creationTime =>
+      _getSubpacket<SignatureCreationTime>(hashedSubpackets) ?? SignatureCreationTime.fromTime(DateTime.now());
+
+  IssuerKeyID get issuerKeyID {
+    final issuerKeyID = _getSubpacket<IssuerKeyID>(hashedSubpackets) ?? _getSubpacket<IssuerKeyID>(unhashedSubpackets);
+    if (issuerKeyID != null) {
+      return issuerKeyID;
+    } else if (issuerFingerprint != null) {
+      final fingerprint = issuerFingerprint!.data.sublist(1);
+      if (issuerFingerprint!.keyVersion == 5) {
+        return IssuerKeyID(fingerprint.sublist(0, 8));
+      } else {
+        return IssuerKeyID(fingerprint.sublist(12, 20));
+      }
+    } else {
+      return IssuerKeyID.wildcard();
+    }
+  }
+
+  SignatureExpirationTime? get signatureExpirationTime => _getSubpacket<SignatureExpirationTime>(hashedSubpackets);
+
+  ExportableCertification? get exportable => _getSubpacket<ExportableCertification>(hashedSubpackets);
+
+  TrustSignature? get trustSignature => _getSubpacket<TrustSignature>(hashedSubpackets);
+
+  RegularExpression? get regularExpression => _getSubpacket<RegularExpression>(hashedSubpackets);
+
+  Revocable? get revocable => _getSubpacket<Revocable>(hashedSubpackets);
+
+  KeyExpirationTime? get keyExpirationTime => _getSubpacket<KeyExpirationTime>(hashedSubpackets);
+
+  PreferredSymmetricAlgorithms? get preferredSymmetricAlgorithms =>
+      _getSubpacket<PreferredSymmetricAlgorithms>(hashedSubpackets);
+
+  RevocationKey? get revocationKey => _getSubpacket<RevocationKey>(hashedSubpackets);
+
+  NotationData? get notationData => _getSubpacket<NotationData>(hashedSubpackets);
+
+  PreferredHashAlgorithms? get preferredHashAlgorithms => _getSubpacket<PreferredHashAlgorithms>(hashedSubpackets);
+
+  PreferredCompressionAlgorithms? get preferredCompressionAlgorithms =>
+      _getSubpacket<PreferredCompressionAlgorithms>(hashedSubpackets);
+
+  KeyServerPreferences? get keyServerPreferences => _getSubpacket<KeyServerPreferences>(hashedSubpackets);
+
+  PreferredKeyServer? get preferredKeyServer => _getSubpacket<PreferredKeyServer>(hashedSubpackets);
+
+  PrimaryUserID? get primaryUserID => _getSubpacket<PrimaryUserID>(hashedSubpackets);
+
+  PolicyURI? get policyURI => _getSubpacket<PolicyURI>(hashedSubpackets);
+
+  KeyFlags? get keyFlags => _getSubpacket<KeyFlags>(hashedSubpackets);
+
+  SignerUserID? get signerUserID => _getSubpacket<SignerUserID>(hashedSubpackets);
+
+  RevocationReason? get revocationReason => _getSubpacket<RevocationReason>(hashedSubpackets);
+
+  Features? get features => _getSubpacket<Features>(hashedSubpackets);
+
+  SignatureTarget? get signatureTarget => _getSubpacket<SignatureTarget>(hashedSubpackets);
+
+  EmbeddedSignature? get embeddedSignature => _getSubpacket<EmbeddedSignature>(hashedSubpackets);
+
+  IssuerFingerprint? get issuerFingerprint =>
+      _getSubpacket<IssuerFingerprint>(hashedSubpackets) ?? _getSubpacket<IssuerFingerprint>(unhashedSubpackets);
+
+  PreferredAEADAlgorithms? get preferredAEADAlgorithms => _getSubpacket<PreferredAEADAlgorithms>(hashedSubpackets);
 
   bool get signatureNeverExpires => signatureExpirationTime == null;
 
@@ -139,118 +127,49 @@ class SignaturePacket extends ContainedPacket {
   factory SignaturePacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
-    switch (version) {
-      case 2:
-      case 3:
-        pos++;
-
-        /// One-octet signature type.
-        final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);
-        pos++;
-
-        /// Four-octet creation time.
-        final creationTime = SignatureCreationTime.fromTime(bytes.sublist(pos, pos + 4).toDateTime());
-        pos += 4;
-
-        /// Eight-octet Key ID of signer.
-        final issuerKeyID = IssuerKeyID.fromKeyID(bytes.sublist(pos, pos + 8).toHexadecimal());
-        pos += 8;
-
-        /// One-octet public-key algorithm.
-        final keyAlgorithm = KeyAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
-        pos++;
-
-        /// One-octet hash algorithm.
-        final hashAlgorithm = HashAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
-        pos++;
-
-        /// Two-octet field holding left 16 bits of signed hash value.
-        final signedHashValue = bytes.sublist(pos, pos + 2);
-        pos += 2;
-        final signature = bytes.sublist(pos);
-
-        return SignaturePacket(
-          version,
-          signatureType,
-          keyAlgorithm,
-          hashAlgorithm,
-          creationTime,
-          issuerKeyID,
-          signedHashValue,
-          signature,
-        );
-      case 4:
-      case 5:
-
-        /// One-octet signature type.
-        final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);
-        pos++;
-
-        /// One-octet public-key algorithm.
-        final keyAlgorithm = KeyAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
-        pos++;
-
-        /// One-octet hash algorithm.
-        final hashAlgorithm = HashAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
-        pos++;
-
-        /// read hashed subpackets
-        final hashedLength = bytes.sublist(pos, pos + 2).toUint16();
-        pos += 2;
-        final hashedSubpackets = _readSubpackets(bytes.sublist(pos, pos + hashedLength));
-        pos += hashedLength;
-
-        /// read unhashed subpackets
-        final unhashedLength = bytes.sublist(pos, pos + 2).toUint16();
-        pos += 2;
-        final unhashedSubpackets = _readSubpackets(bytes.sublist(pos, pos + unhashedLength));
-        pos += hashedLength;
-
-        /// Two-octet field holding left 16 bits of signed hash value.
-        final signedHashValue = bytes.sublist(pos, pos + 2);
-        pos += 2;
-        final signature = bytes.sublist(pos);
-
-        final creationTime =
-            _getSubpacket<SignatureCreationTime>(hashedSubpackets) ?? SignatureCreationTime.fromTime(DateTime.now());
-        final issuerKeyID =
-            _getSubpacket<IssuerKeyID>(hashedSubpackets) ?? _getSubpacket<IssuerKeyID>(unhashedSubpackets);
-        final issuerFingerprint =
-            _getSubpacket<IssuerFingerprint>(hashedSubpackets) ?? _getSubpacket<IssuerFingerprint>(unhashedSubpackets);
-
-        return SignaturePacket(
-          version,
-          signatureType,
-          keyAlgorithm,
-          hashAlgorithm,
-          creationTime,
-          issuerKeyID ?? IssuerKeyID(issuerFingerprint?.fingerprint.hexToBytes() ?? Uint8List.fromList([0])),
-          signedHashValue,
-          signature,
-          hashedSubpackets: hashedSubpackets,
-          unhashedSubpackets: unhashedSubpackets,
-          signatureExpirationTime: _getSubpacket<SignatureExpirationTime>(hashedSubpackets),
-          exportable: _getSubpacket<ExportableCertification>(hashedSubpackets),
-          trustSignature: _getSubpacket<TrustSignature>(hashedSubpackets),
-          revocable: _getSubpacket<Revocable>(hashedSubpackets),
-          keyExpirationTime: _getSubpacket<KeyExpirationTime>(hashedSubpackets),
-          preferredSymmetricAlgorithms: _getSubpacket<PreferredSymmetricAlgorithms>(hashedSubpackets),
-          revocationKey: _getSubpacket<RevocationKey>(hashedSubpackets),
-          notationData: _getSubpacket<NotationData>(hashedSubpackets),
-          preferredHashAlgorithms: _getSubpacket<PreferredHashAlgorithms>(hashedSubpackets),
-          preferredCompressionAlgorithms: _getSubpacket<PreferredCompressionAlgorithms>(hashedSubpackets),
-          primaryUserID: _getSubpacket<PrimaryUserID>(hashedSubpackets),
-          keyFlags: _getSubpacket<KeyFlags>(hashedSubpackets),
-          signerUserID: _getSubpacket<SignerUserID>(hashedSubpackets),
-          revocationReason: _getSubpacket<RevocationReason>(hashedSubpackets),
-          features: _getSubpacket<Features>(hashedSubpackets),
-          signatureTarget: _getSubpacket<SignatureTarget>(hashedSubpackets),
-          embeddedSignature: _getSubpacket<EmbeddedSignature>(hashedSubpackets),
-          issuerFingerprint: issuerFingerprint,
-        );
-      default:
-        throw UnsupportedError('Version $version of the signature packet is unsupported.');
+    if (version != 4 && version != 5) {
+      throw UnsupportedError('Version $version of the signature packet is unsupported.');
     }
+
+    /// One-octet signature type.
+    final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);
+    pos++;
+
+    /// One-octet public-key algorithm.
+    final keyAlgorithm = KeyAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
+    pos++;
+
+    /// One-octet hash algorithm.
+    final hashAlgorithm = HashAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
+    pos++;
+
+    /// read hashed subpackets
+    final hashedLength = bytes.sublist(pos, pos + 2).toUint16();
+    pos += 2;
+    final hashedSubpackets = _readSubpackets(bytes.sublist(pos, pos + hashedLength));
+    pos += hashedLength;
+
+    /// read unhashed subpackets
+    final unhashedLength = bytes.sublist(pos, pos + 2).toUint16();
+    pos += 2;
+    final unhashedSubpackets = _readSubpackets(bytes.sublist(pos, pos + unhashedLength));
+    pos += hashedLength;
+
+    /// Two-octet field holding left 16 bits of signed hash value.
+    final signedHashValue = bytes.sublist(pos, pos + 2);
+    pos += 2;
+    final signature = bytes.sublist(pos);
+
+    return SignaturePacket(
+      version,
+      signatureType,
+      keyAlgorithm,
+      hashAlgorithm,
+      signedHashValue,
+      signature,
+      hashedSubpackets: hashedSubpackets,
+      unhashedSubpackets: unhashedSubpackets,
+    );
   }
 
   bool verify(KeyPacket key, Uint8List data, {bool detached = false}) {
@@ -260,35 +179,7 @@ class SignaturePacket extends ContainedPacket {
   calculateTrailer(Uint8List data, [bool detached = false]) {}
 
   Uint8List _writeHashedSubpackets() {
-    final subpackets = hashedSubpackets.isEmpty
-        ? <int>[
-            ...creationTime.toSubpacket(),
-            ...signatureExpirationTime?.toSubpacket() ?? [],
-            ...exportable?.toSubpacket() ?? [],
-            ...trustSignature?.toSubpacket() ?? [],
-            ...regularExpression?.toSubpacket() ?? [],
-            ...revocable?.toSubpacket() ?? [],
-            ...keyExpirationTime?.toSubpacket() ?? [],
-            ...preferredSymmetricAlgorithms?.toSubpacket() ?? [],
-            ...revocationKey?.toSubpacket() ?? [],
-            ...issuerKeyID.toSubpacket(),
-            ...notationData?.toSubpacket() ?? [],
-            ...preferredHashAlgorithms?.toSubpacket() ?? [],
-            ...preferredCompressionAlgorithms?.toSubpacket() ?? [],
-            ...keyServerPreferences?.toSubpacket() ?? [],
-            ...preferredKeyServer?.toSubpacket() ?? [],
-            ...primaryUserID?.toSubpacket() ?? [],
-            ...policyURI?.toSubpacket() ?? [],
-            ...keyFlags?.toSubpacket() ?? [],
-            ...signerUserID?.toSubpacket() ?? [],
-            ...revocationReason?.toSubpacket() ?? [],
-            ...features?.toSubpacket() ?? [],
-            ...signatureTarget?.toSubpacket() ?? [],
-            ...embeddedSignature?.toSubpacket() ?? [],
-            ...issuerFingerprint?.toSubpacket() ?? [],
-            ...preferredAEADAlgorithms?.toSubpacket() ?? [],
-          ]
-        : hashedSubpackets.map((subpacket) => subpacket.toSubpacket()).expand((element) => element);
+    final subpackets = hashedSubpackets.map((subpacket) => subpacket.toSubpacket()).expand((element) => element);
     return Uint8List.fromList([...subpackets.length.pack16(), ...subpackets]);
   }
 
@@ -500,31 +391,10 @@ class SignaturePacket extends ContainedPacket {
   }
 
   @override
-  Uint8List toPacketData() {
-    switch (version) {
-      case 2:
-      case 3:
-        return Uint8List.fromList([
-          version,
-          5,
-          signatureType.value,
-          ...creationTime.toSubpacket(),
-          ...issuerKeyID.toSubpacket(),
-          keyAlgorithm.value,
-          hashAlgorithm.value,
-          ...signedHashValue,
-          ...signature,
-        ]);
-      case 4:
-      case 5:
-        return Uint8List.fromList([
-          ...signatureData,
-          ..._writeUnhashedSubPackets(),
-          ...signedHashValue,
-          ...signature,
-        ]);
-      default:
-        throw UnsupportedError('Unknown version $version');
-    }
-  }
+  Uint8List toPacketData() => Uint8List.fromList([
+        ...signatureData,
+        ..._writeUnhashedSubPackets(),
+        ...signedHashValue,
+        ...signature,
+      ]);
 }

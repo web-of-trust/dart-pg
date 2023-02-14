@@ -5,9 +5,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-import 'package:pointycastle/api.dart' as pc;
-
 import '../../enums.dart';
 import '../../helpers.dart';
 
@@ -130,7 +127,7 @@ class S2K {
           throw UnsupportedError('s2k type not supported.');
       }
 
-      final result = hashDigest(toHash);
+      final result = Helper.hashDigest(toHash, hash);
       if (rLen + result.length > keyLen) {
         keyBytes.setAll(rLen, result.sublist(0, keyLen - rLen));
       } else {
@@ -141,25 +138,5 @@ class S2K {
     }
 
     return keyBytes;
-  }
-
-  Uint8List hashDigest(final Uint8List input) {
-    switch (hash) {
-      case HashAlgorithm.sha1:
-        return Uint8List.fromList(sha1.convert(input).bytes);
-      case HashAlgorithm.ripemd160:
-        final digest = pc.Digest('RIPEMD-160');
-        return digest.process(input);
-      case HashAlgorithm.sha256:
-        return Uint8List.fromList(sha256.convert(input).bytes);
-      case HashAlgorithm.sha384:
-        return Uint8List.fromList(sha384.convert(input).bytes);
-      case HashAlgorithm.sha512:
-        return Uint8List.fromList(sha512.convert(input).bytes);
-      case HashAlgorithm.sha224:
-        return Uint8List.fromList(sha224.convert(input).bytes);
-      default:
-        throw UnsupportedError('Digest type not supported.');
-    }
   }
 }

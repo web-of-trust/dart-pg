@@ -5,7 +5,6 @@
 import '../armor/armor.dart';
 import '../enums.dart';
 import '../packet/packet_list.dart';
-import '../packet/secret_key.dart';
 import '../packet/signature_packet.dart';
 
 /// Class that represents an OpenPGP signature.

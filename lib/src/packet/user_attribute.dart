@@ -26,13 +26,8 @@ class UserAttributePacket extends ContainedPacket {
   factory UserAttributePacket.fromPacketData(final Uint8List bytes) => UserAttributePacket(_readSubpackets(bytes));
 
   @override
-  Uint8List toPacketData() {
-    final bytes = <int>[];
-    for (final attr in attributes) {
-      bytes.addAll(attr.toSubpacket());
-    }
-    return Uint8List.fromList(bytes);
-  }
+  Uint8List toPacketData() =>
+      Uint8List.fromList(attributes.map((attr) => attr.toSubpacket()).expand((byte) => byte).toList(growable: false));
 
   static List<UserAttributeSubpacket> _readSubpackets(final Uint8List bytes) {
     final attributes = <UserAttributeSubpacket>[];

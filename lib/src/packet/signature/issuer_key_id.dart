@@ -15,5 +15,7 @@ class IssuerKeyID extends SignatureSubpacket {
   factory IssuerKeyID.fromKeyID(String keyID, {bool critical = false}) =>
       IssuerKeyID(keyID.hexToBytes(), critical: critical);
 
+  factory IssuerKeyID.wildcard() => IssuerKeyID(Uint8List.fromList(List.filled(8, 0, growable: false)));
+
   String get keyID => data.toHexadecimal();
 }
