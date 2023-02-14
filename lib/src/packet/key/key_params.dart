@@ -4,6 +4,17 @@
 
 import 'dart:typed_data';
 
+export 'dsa_public_params.dart';
+export 'dsa_secret_params.dart';
+export 'ec_public_params.dart';
+export 'ec_secret_params.dart';
+export 'ecdh_public_params.dart';
+export 'ecdsa_public_params.dart';
+export 'elgamal_public_params.dart';
+export 'elgamal_secret_params.dart';
+export 'rsa_public_params.dart';
+export 'rsa_secret_params.dart';
+
 abstract class KeyParams {
   Uint8List encode();
 }

@@ -6,22 +6,12 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/export.dart';
 
-import '../crypto/symmetric/blowfish.dart';
-import '../crypto/symmetric/buffered_cipher.dart';
-import '../crypto/symmetric/camellia.dart';
-import '../crypto/symmetric/cast5.dart';
-import '../crypto/symmetric/idea.dart';
-import '../crypto/symmetric/triple_des.dart';
-import '../crypto/symmetric/twofish.dart';
+import '../crypto/symmetric/base_cipher.dart';
 import '../enums.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
-import 'key/dsa_secret_params.dart';
-import 'key/ec_secret_params.dart';
-import 'key/elgamal_secret_params.dart';
 import 'key/key_id.dart';
 import 'key/key_params.dart';
-import 'key/rsa_secret_params.dart';
 import 'key/s2k.dart';
 import 'contained_packet.dart';
 import 'key_packet.dart';

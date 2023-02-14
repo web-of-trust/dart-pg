@@ -6,6 +6,14 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
 
+export 'blowfish.dart';
+export 'buffered_cipher.dart';
+export 'camellia.dart';
+export 'cast5.dart';
+export 'idea.dart';
+export 'triple_des.dart';
+export 'twofish.dart';
+
 /// Base implementation of [BlockCipher] which provides shared methods.
 abstract class BaseCipher implements BlockCipher {
   @override
