@@ -16,10 +16,10 @@ class KeyPacketGenerator {
   static SecretKeyPacket generateSecretKey(
     final KeyAlgorithm algorithm, {
     final int rsaBits = OpenPGP.preferredRSABits,
-    final CurveOid curveOid = OpenPGP.preferredEcCurve,
+    final CurveOid curve = OpenPGP.preferredEcCurve,
     final DateTime? date,
   }) {
-    final keyPair = KeyPairGenerator.generateKeyPairParams(algorithm, rsaBits: rsaBits, curveOid: curveOid);
+    final keyPair = KeyPairGenerator.generateKeyPairParams(algorithm, rsaBits: rsaBits, curve: curve);
 
     return SecretKeyPacket(
       PublicKeyPacket(
@@ -36,10 +36,10 @@ class KeyPacketGenerator {
   static SecretSubkeyPacket generateSecretSubkey(
     final KeyAlgorithm algorithm, {
     final int rsaBits = OpenPGP.preferredRSABits,
-    final CurveOid curveOid = OpenPGP.preferredEcCurve,
+    final CurveOid curve = OpenPGP.preferredEcCurve,
     final DateTime? date,
   }) {
-    final keyPair = KeyPairGenerator.generateKeyPairParams(algorithm, rsaBits: rsaBits, curveOid: curveOid);
+    final keyPair = KeyPairGenerator.generateKeyPairParams(algorithm, rsaBits: rsaBits, curve: curve);
 
     return SecretSubkeyPacket(
       PublicSubkeyPacket(

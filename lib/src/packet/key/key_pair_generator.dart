@@ -15,7 +15,7 @@ class KeyPairGenerator {
   static KeyPairParams generateKeyPairParams(
     final KeyAlgorithm algorithm, {
     final int rsaBits = OpenPGP.preferredRSABits,
-    final CurveOid curveOid = OpenPGP.preferredEcCurve,
+    final CurveOid curve = OpenPGP.preferredEcCurve,
   }) {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
@@ -34,23 +34,23 @@ class KeyPairGenerator {
           ),
         );
       case KeyAlgorithm.ecdsa:
-        final keyPair = _generateECKeyPair(curveOid);
-        final oid = ASN1ObjectIdentifier.fromIdentifierString(curveOid.identifierString);
+        final keyPair = _generateECKeyPair(curve);
+        final oid = ASN1ObjectIdentifier.fromIdentifierString(curve.identifierString);
         final q = keyPair.publicKey.Q!;
         return KeyPairParams(
           ECDSAPublicParams(oid, q.getEncoded(q.isCompressed).toBigIntWithSign(1)),
           ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.ecdh:
-        final keyPair = _generateECKeyPair(curveOid);
-        final oid = ASN1ObjectIdentifier.fromIdentifierString(curveOid.identifierString);
+        final keyPair = _generateECKeyPair(curve);
+        final oid = ASN1ObjectIdentifier.fromIdentifierString(curve.identifierString);
         final q = keyPair.publicKey.Q!;
         return KeyPairParams(
           ECDHPublicParams(
             oid,
             q.getEncoded(q.isCompressed).toBigIntWithSign(1),
-            curveOid.kdfHash,
-            curveOid.kdfSymmetric,
+            curve.hashAlgorithm,
+            curve.symmetricAlgorithm,
           ),
           ECSecretParams(keyPair.privateKey.d!),
         );
@@ -80,9 +80,9 @@ class KeyPairGenerator {
   }
 
   static AsymmetricKeyPair<ECPublicKey, ECPrivateKey> _generateECKeyPair([
-    final CurveOid curveOid = OpenPGP.preferredEcCurve,
+    final CurveOid curve = OpenPGP.preferredEcCurve,
   ]) {
-    switch (curveOid) {
+    switch (curve) {
       case CurveOid.ed25519:
       case CurveOid.curve25519:
         throw UnsupportedError('Unsupported curve for key generation.');
@@ -90,7 +90,7 @@ class KeyPairGenerator {
         final keyGen = KeyGenerator('EC');
         keyGen.init(
           ParametersWithRandom(
-            ECKeyGeneratorParameters(ECDomainParameters(curveOid.name.toLowerCase())),
+            ECKeyGeneratorParameters(ECDomainParameters(curve.name.toLowerCase())),
             Helper.secureRandom(),
           ),
         );

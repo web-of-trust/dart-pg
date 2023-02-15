@@ -2,9 +2,13 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+
 import 'enums.dart';
+import 'packet/contained_packet.dart';
 import 'packet/key_packet_generator.dart';
 import 'packet/packet_list.dart';
+import 'packet/secret_subkey.dart';
+import 'packet/signature_generator.dart';
 import 'packet/user_id.dart';
 import 'type/private_key.dart';
 
@@ -66,13 +70,42 @@ class OpenPGP {
 
     final keyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdsa;
     final subkeyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdh;
-    final packets = [
-      KeyPacketGenerator.generateSecretKey(keyAlgorithm).encrypt(passphrase),
-      KeyPacketGenerator.generateSecretSubkey(subkeyAlgorithm).encrypt(passphrase),
-      ...userIDs.map((userID) => UserIDPacket(userID)),
+
+    final secretKey = KeyPacketGenerator.generateSecretKey(
+      keyAlgorithm,
+      rsaBits: rsaBits,
+      curve: curve,
+      date: date,
+    ).encrypt(passphrase);
+    final secretSubkey = KeyPacketGenerator.generateSecretSubkey(
+      subkeyAlgorithm,
+      rsaBits: rsaBits,
+      curve: curve,
+      date: date,
+    ).encrypt(passphrase) as SecretSubkeyPacket;
+
+    final packets = <ContainedPacket>[
+      secretKey,
     ];
 
-    // wrap key object with signature
+    // Wrap key userID with signature
+    for (final userID in userIDs) {
+      final userIDPacket = UserIDPacket(userID);
+      packets.addAll([
+        userIDPacket,
+        SignatureGenerator.createCertGenericSignature(
+          userIDPacket,
+          secretKey,
+          curve: curve,
+          date: date,
+        )
+      ]);
+    }
+
+    packets.addAll([
+      secretSubkey,
+      SignatureGenerator.createBindingSignature(secretSubkey, secretKey),
+    ]);
 
     return PrivateKey.fromPacketList(PacketList(packets));
   }

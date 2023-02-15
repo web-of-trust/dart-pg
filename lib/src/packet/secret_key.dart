@@ -128,13 +128,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
   }) {
-    if (passphrase.isEmpty) {
-      throw ArgumentError('passphrase are required for key encryption');
-    }
-    assert(s2kUsage != S2kUsage.none);
-    assert(symmetricAlgorithm != SymmetricAlgorithm.plaintext);
-
     if (secretParams != null) {
+      if (passphrase.isEmpty) {
+        throw ArgumentError('passphrase are required for key encryption');
+      }
+      assert(s2kUsage != S2kUsage.none);
+      assert(symmetricAlgorithm != SymmetricAlgorithm.plaintext);
+
       final random = Helper.secureRandom();
       final s2k = S2K(random.nextBytes(8), hash: hash, type: type);
       final iv = random.nextBytes(symmetricAlgorithm.blockSize);
