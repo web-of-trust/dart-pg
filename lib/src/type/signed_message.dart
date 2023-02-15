@@ -2,8 +2,11 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:typed_data';
+
 import '../armor/armor.dart';
 import '../enums.dart';
+import '../packet/literal_data.dart';
 import '../packet/packet_list.dart';
 import '../packet/signature_packet.dart';
 import 'cleartext_message.dart';
@@ -42,7 +45,7 @@ class SignedMessage extends CleartextMessage {
 
   /// Verify signatures of cleartext signed message
   bool verify(List<PublicKey> keys, [DateTime? date]) {
-    date = date ?? DateTime.now();
+    final literalData = LiteralDataPacket(Uint8List(0), text: text);
     return false;
   }
 }

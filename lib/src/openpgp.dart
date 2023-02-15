@@ -8,6 +8,7 @@ import 'packet/key_packet_generator.dart';
 import 'packet/packet_list.dart';
 import 'packet/signature_generator.dart';
 import 'packet/user_id.dart';
+import 'type/cleartext_message.dart';
 import 'type/private_key.dart';
 
 class OpenPGP {
@@ -43,7 +44,7 @@ class OpenPGP {
   static signDetached(String message, List<PrivateKey> signingKeys) {}
 
   static sign(
-    String message,
+    CleartextMessage message,
     List<PrivateKey> signingKeys, {
     DateTime? date,
     bool detached = false,
@@ -51,7 +52,6 @@ class OpenPGP {
     if (signingKeys.isEmpty) {
       throw Exception('No signing keys provided');
     }
-    date = date ?? DateTime.now();
   }
 
   static PrivateKey generateKey(

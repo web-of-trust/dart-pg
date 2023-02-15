@@ -43,8 +43,8 @@ class Armor {
   Armor(
     this.type,
     this.data, {
-    this.headers = const [],
     this.text = '',
+    this.headers = const [],
   });
 
   /// Dearmor an OpenPGP armored message;
@@ -56,6 +56,7 @@ class Armor {
     var textDone = false;
     var checksum = '';
     ArmorType? type;
+
     final List<String> headers = [];
     final List<String> textLines = [];
     final List<String> dataLines = [];
@@ -89,7 +90,7 @@ class Armor {
     final text = textLines.join('\r\n').trim();
     final data = base64.decode(dataLines.join().trim());
 
-    if ((checksum != _crc24CheckSum(data)) && (checksum.isNotEmpty || checksumRequired)) {
+    if ((checksum != _crc24Checksum(data)) && (checksum.isNotEmpty || checksumRequired)) {
       throw Exception('Ascii armor integrity check failed');
     }
 
@@ -106,62 +107,76 @@ class Armor {
     final int partTotal = 0,
     final String customComment = OpenPGP.comment,
   }) {
-    final List<String> result = [];
+    final List<String> result;
     switch (type) {
       case ArmorType.multipartSection:
-        result.add('$messageBegin, PART $partIndex/$partTotal$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(data)}\n');
-        result.add('=${_crc24CheckSum(data)}\n');
-        result.add('$messageEnd, PART $partIndex/$partTotal$endOfLine');
+        result = [
+          '$messageBegin, PART $partIndex/$partTotal$endOfLine',
+          _addHeader(customComment),
+          '${_base64Encode(data)}\n',
+          '=${_crc24Checksum(data)}\n',
+          '$messageEnd, PART $partIndex/$partTotal$endOfLine',
+        ];
         break;
       case ArmorType.multipartLast:
-        result.add('$messageBegin, PART $partIndex$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(data)}\n');
-        result.add('=${_crc24CheckSum(data)}\n');
-        result.add('$messageEnd, PART $partIndex$endOfLine');
+        result = [
+          '$messageBegin, PART $partIndex$endOfLine',
+          _addHeader(customComment),
+          '${_base64Encode(data)}\n',
+          '=${_crc24Checksum(data)}\n',
+          '$messageEnd, PART $partIndex$endOfLine',
+        ];
         break;
       case ArmorType.signedMessage:
-        result.add('$signedMessageBegin$endOfLine');
-        result.add('Hash: $hashAlgo\n\n');
-        result.add('${text.replaceAll(RegExp(r'^-', multiLine: true), '- -')}\n');
-        result.add('$signatureBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(data)}\n');
-        result.add('=${_crc24CheckSum(data)}\n');
-        result.add('$signatureEnd$endOfLine');
+        result = [
+          '$signedMessageBegin$endOfLine',
+          'Hash: $hashAlgo\n\n',
+          '${text.replaceAll(RegExp(r'^-', multiLine: true), '- -')}\n',
+          '$signatureBegin$endOfLine',
+          _addHeader(customComment),
+          '${_base64Encode(data)}\n',
+          '=${_crc24Checksum(data)}\n',
+          '$signatureEnd$endOfLine',
+        ];
         break;
       case ArmorType.message:
-        result.add('$messageBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(data)}\n');
-        result.add('=${_crc24CheckSum(data)}\n');
-        result.add('$messageEnd$endOfLine');
+        result = [
+          '$messageBegin$endOfLine',
+          _addHeader(customComment),
+          '${_base64Encode(data)}\n',
+          '=${_crc24Checksum(data)}\n',
+          '$messageEnd$endOfLine',
+        ];
         break;
       case ArmorType.publicKey:
-        result.add('$publicKeyBlockBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(data)}\n');
-        result.add('=${_crc24CheckSum(data)}\n');
-        result.add('$publicKeyBlockEnd$endOfLine');
+        result = [
+          '$publicKeyBlockBegin$endOfLine',
+          _addHeader(customComment),
+          '${_base64Encode(data)}\n',
+          '=${_crc24Checksum(data)}\n',
+          '$publicKeyBlockEnd$endOfLine',
+        ];
         break;
       case ArmorType.privateKey:
-        result.add('$privateKeyBlockBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(data)}\n');
-        result.add('=${_crc24CheckSum(data)}\n');
-        result.add('$privateKeyBlockEnd$endOfLine');
+        result = [
+          '$privateKeyBlockBegin$endOfLine',
+          _addHeader(customComment),
+          '${_base64Encode(data)}\n',
+          '=${_crc24Checksum(data)}\n',
+          '$privateKeyBlockEnd$endOfLine',
+        ];
         break;
       case ArmorType.signature:
-        result.add('$signatureBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(data)}\n');
-        result.add('=${_crc24CheckSum(data)}\n');
-        result.add('$signatureEnd$endOfLine');
+        result = [
+          '$signatureBegin$endOfLine',
+          _addHeader(customComment),
+          '${_base64Encode(data)}\n',
+          '=${_crc24Checksum(data)}\n',
+          '$signatureEnd$endOfLine',
+        ];
         break;
       default:
-        break;
+        result = [];
     }
     return result.join();
   }
@@ -209,7 +224,7 @@ class Armor {
     return base64.encode(data).chunk(76).join('\n');
   }
 
-  static String _crc24CheckSum(final Uint8List data) {
+  static String _crc24Checksum(final Uint8List data) {
     return Crc24.base64Calculate(data);
   }
 }
