@@ -6,20 +6,17 @@ import '../armor/armor.dart';
 import '../enums.dart';
 import '../packet/packet_list.dart';
 import '../packet/signature_packet.dart';
+import 'cleartext_message.dart';
 import 'public_key.dart';
 import 'signature.dart';
 
 /// Class that represents an OpenPGP cleartext signed message.
 /// See {@link https://tools.ietf.org/html/rfc4880#section-7}
-class SignedMessage {
-  /// The cleartext of the signed message
-  final String _text;
-
+class SignedMessage extends CleartextMessage {
   /// The detached signature or an empty signature for unsigned messages
   final Signature signature;
 
-  SignedMessage(String text, this.signature)
-      : _text = text.trimRight().replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n');
+  SignedMessage(super.text, this.signature);
 
   factory SignedMessage.fromArmored(String armored) {
     final unarmor = Armor.decode(armored);
@@ -30,8 +27,6 @@ class SignedMessage {
     return SignedMessage(unarmor['text'] ?? '', Signature(packetList));
   }
 
-  String get text => _text.replaceAll(RegExp(r'\r\n', multiLine: true), '\n');
-
   List<String> get signingKeyIDs => signature.signingKeyIDs;
 
   /// Returns ASCII armored text of signed signature
@@ -40,7 +35,7 @@ class SignedMessage {
     return Armor.encode(
       ArmorType.signedMessage,
       signature.packetList.packetEncode(),
-      text: _text,
+      text: text,
       hashAlgo: hashes.join(),
     );
   }
