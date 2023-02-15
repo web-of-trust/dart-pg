@@ -92,8 +92,10 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
   PublicKeyPacket get publicKey => _publicKey;
 
+  @override
   bool get isEncrypted => s2kUsage != S2kUsage.none;
 
+  @override
   bool get isDecrypted => secretParams != null;
 
   bool get isDummy => s2k != null && s2k!.type == S2kType.gnu;

@@ -72,7 +72,7 @@ class KeyPairGenerator {
     final keyGen = KeyGenerator('RSA');
     keyGen.init(
       ParametersWithRandom(
-        RSAKeyGeneratorParameters(BigInt.parse(OpenPGP.rsaPublicExponent), bits, 64),
+        RSAKeyGeneratorParameters(BigInt.from(OpenPGP.rsaPublicExponent), bits, 64),
         Helper.secureRandom(),
       ),
     );

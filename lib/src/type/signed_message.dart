@@ -46,6 +46,6 @@ class SignedMessage extends CleartextMessage {
   /// Verify signatures of cleartext signed message
   bool verify(List<PublicKey> keys, [DateTime? date]) {
     final literalData = LiteralDataPacket(Uint8List(0), text: text);
-    return false;
+    return literalData.data.isEmpty;
   }
 }

@@ -31,5 +31,9 @@ abstract class KeyPacket implements ContainedPacket {
 
   int get keyStrength;
 
+  bool get isEncrypted;
+
+  bool get isDecrypted;
+
   Uint8List writeForHash();
 }

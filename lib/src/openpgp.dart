@@ -2,6 +2,8 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'package:dart_pg/src/packet/secret_key.dart';
+
 import 'enums.dart';
 import 'packet/contained_packet.dart';
 import 'packet/key_packet_generator.dart';
@@ -39,7 +41,7 @@ class OpenPGP {
   static const minRSABits = 2048;
 
   /// RSA public exponent
-  static const rsaPublicExponent = '65537';
+  static const rsaPublicExponent = 65537;
 
   static signDetached(String message, List<PrivateKey> signingKeys) {}
 
@@ -54,6 +56,10 @@ class OpenPGP {
     }
   }
 
+  /// Generates a new OpenPGP key pair. Supports RSA and ECC keys.
+  /// By default, primary and subkeys will be of same type.
+  /// The generated primary key will have signing capabilities.
+  /// By default, one subkey with encryption capabilities is also generated.
   static PrivateKey generateKey(
     List<String> userIDs,
     String passphrase, {
@@ -120,5 +126,18 @@ class OpenPGP {
     ));
 
     return PrivateKey.fromPacketList(PacketList(packets));
+  }
+
+  /// Unlock a private key with the given passphrase.
+  /// This method does not change the original key.
+  static PrivateKey decryptKey(PrivateKey privateKey, String passphrase) {
+    final keyPacket = (privateKey.keyPacket as SecretKeyPacket).decrypt(passphrase);
+    return PrivateKey(
+      keyPacket,
+      revocationSignatures: privateKey.revocationSignatures,
+      directSignatures: privateKey.directSignatures,
+      users: privateKey.users,
+      subkeys: privateKey.subkeys,
+    );
   }
 }

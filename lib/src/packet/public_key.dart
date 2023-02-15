@@ -120,6 +120,12 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   KeyID get keyID => _keyID;
 
   @override
+  bool get isEncrypted => false;
+
+  @override
+  bool get isDecrypted => true;
+
+  @override
   int get keyStrength {
     final keyParams = publicParams;
     if (keyParams is RSAPublicParams) {

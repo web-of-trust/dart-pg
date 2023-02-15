@@ -2,6 +2,9 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import '../enums.dart';
+import '../packet/key/key_id.dart';
+import '../packet/key/key_params.dart';
 import '../packet/packet_list.dart';
 import '../packet/signature_packet.dart';
 import '../packet/subkey_packet.dart';
@@ -16,6 +19,16 @@ class Subkey {
   final List<SignaturePacket> bindingSignatures = [];
 
   Subkey(this.keyPacket);
+
+  DateTime get creationTime => keyPacket.creationTime;
+
+  KeyAlgorithm get algorithm => keyPacket.algorithm;
+
+  String get fingerprint => keyPacket.fingerprint;
+
+  KeyID get keyID => keyPacket.keyID;
+
+  KeyParams get publicParams => keyPacket.publicParams;
 
   int get keyStrength => keyPacket.keyStrength;
 
