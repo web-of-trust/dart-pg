@@ -5,7 +5,7 @@
 import 'hash_algorithm.dart';
 import 'symmetric_algorithm.dart';
 
-enum CurveOid {
+enum CurveInfo {
   prime256v1('1.2.840.10045.3.1.7'),
   secp384r1('1.3.132.0.34'),
   secp521r1('1.3.132.0.35'),
@@ -18,7 +18,7 @@ enum CurveOid {
 
   final String identifierString;
 
-  const CurveOid(this.identifierString);
+  const CurveInfo(this.identifierString);
 
   String get curveName {
     switch (this) {

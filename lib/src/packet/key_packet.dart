@@ -9,6 +9,11 @@ import 'key/key_id.dart';
 import 'contained_packet.dart';
 import 'key/key_params.dart';
 
+export 'public_key.dart';
+export 'public_subkey.dart';
+export 'secret_key.dart';
+export 'secret_subkey.dart';
+
 abstract class KeyPacket implements ContainedPacket {
   int get version;
 

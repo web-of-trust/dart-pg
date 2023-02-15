@@ -15,7 +15,7 @@ class KeyPairGenerator {
   static KeyPairParams generateKeyPairParams(
     final KeyAlgorithm algorithm, {
     final int rsaBits = OpenPGP.preferredRSABits,
-    final CurveOid curve = OpenPGP.preferredEcCurve,
+    final CurveInfo curve = OpenPGP.preferredCurve,
   }) {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
@@ -56,7 +56,7 @@ class KeyPairGenerator {
         );
       case KeyAlgorithm.dsa:
       case KeyAlgorithm.elgamal:
-        throw UnsupportedError('Unsupported public key algorithm for key generation.');
+        throw UnsupportedError('public key algorithm ${algorithm.name} is unsupported for key generation.');
       default:
         throw Exception('Unknown public key algorithm for key generation.');
     }
@@ -80,12 +80,12 @@ class KeyPairGenerator {
   }
 
   static AsymmetricKeyPair<ECPublicKey, ECPrivateKey> _generateECKeyPair([
-    final CurveOid curve = OpenPGP.preferredEcCurve,
+    final CurveInfo curve = OpenPGP.preferredCurve,
   ]) {
     switch (curve) {
-      case CurveOid.ed25519:
-      case CurveOid.curve25519:
-        throw UnsupportedError('Unsupported curve for key generation.');
+      case CurveInfo.ed25519:
+      case CurveInfo.curve25519:
+        throw UnsupportedError('Curve ${curve.name} is unsupported for key generation.');
       default:
         final keyGen = KeyGenerator('EC');
         keyGen.init(

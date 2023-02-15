@@ -15,12 +15,11 @@ import 'key/key_params.dart';
 import 'key/s2k.dart';
 import 'contained_packet.dart';
 import 'key_packet.dart';
-import 'public_key.dart';
 
 /// SecretKey represents a possibly encrypted private key.
 /// See RFC 4880, section 5.5.3.
 class SecretKeyPacket extends ContainedPacket implements KeyPacket {
-  final PublicKeyPacket publicKey;
+  final PublicKeyPacket _publicKey;
 
   final Uint8List keyData;
 
@@ -35,7 +34,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   final KeyParams? secretParams;
 
   SecretKeyPacket(
-    this.publicKey,
+    this._publicKey,
     this.keyData, {
     this.s2kUsage = S2kUsage.sha1,
     this.symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
@@ -91,6 +90,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     );
   }
 
+  PublicKeyPacket get publicKey => _publicKey;
+
   bool get isEncrypted => s2kUsage != S2kUsage.none;
 
   bool get isDecrypted => secretParams != null;
@@ -98,28 +99,28 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   bool get isDummy => s2k != null && s2k!.type == S2kType.gnu;
 
   @override
-  KeyAlgorithm get algorithm => publicKey.algorithm;
+  KeyAlgorithm get algorithm => _publicKey.algorithm;
 
   @override
-  DateTime get creationTime => publicKey.creationTime;
+  DateTime get creationTime => _publicKey.creationTime;
 
   @override
-  KeyParams get publicParams => publicKey.publicParams;
+  KeyParams get publicParams => _publicKey.publicParams;
 
   @override
-  int get expirationDays => publicKey.expirationDays;
+  int get expirationDays => _publicKey.expirationDays;
 
   @override
-  String get fingerprint => publicKey.fingerprint;
+  String get fingerprint => _publicKey.fingerprint;
 
   @override
-  KeyID get keyID => publicKey.keyID;
+  KeyID get keyID => _publicKey.keyID;
 
   @override
-  int get version => publicKey.version;
+  int get version => _publicKey.version;
 
   @override
-  int get keyStrength => publicKey.keyStrength;
+  int get keyStrength => _publicKey.keyStrength;
 
   SecretKeyPacket encrypt(
     final String passphrase, {
@@ -198,6 +199,21 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       );
     } else {
       return this;
+    }
+  }
+
+  SecretKeyPacket clearSecretParams() {
+    if (secretParams == null) {
+      return this;
+    } else {
+      return SecretKeyPacket(
+        publicKey,
+        keyData,
+        s2kUsage: s2kUsage,
+        symmetricAlgorithm: symmetricAlgorithm,
+        s2k: s2k,
+        iv: iv,
+      );
     }
   }
 

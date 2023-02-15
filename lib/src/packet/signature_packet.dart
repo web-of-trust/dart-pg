@@ -13,7 +13,6 @@ import 'contained_packet.dart';
 import 'key/key_params.dart';
 import 'key_packet.dart';
 import 'literal_data.dart';
-import 'secret_key.dart';
 import 'signature_subpacket.dart';
 import 'subpacket_reader.dart';
 import 'user_attribute.dart';

@@ -2,12 +2,10 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-
 import 'enums.dart';
 import 'packet/contained_packet.dart';
 import 'packet/key_packet_generator.dart';
 import 'packet/packet_list.dart';
-import 'packet/secret_subkey.dart';
 import 'packet/signature_generator.dart';
 import 'packet/user_id.dart';
 import 'type/private_key.dart';
@@ -31,7 +29,7 @@ class OpenPGP {
   /// Default encryption cipher
   static const preferredSymmetricAlgorithm = SymmetricAlgorithm.aes256;
 
-  static const preferredEcCurve = CurveOid.brainpoolp512r1;
+  static const preferredCurve = CurveInfo.brainpoolp512r1;
 
   /// Default RSA bits length
   static const preferredRSABits = 4096;
@@ -56,12 +54,15 @@ class OpenPGP {
     date = date ?? DateTime.now();
   }
 
-  static generateKey(
+  static PrivateKey generateKey(
     List<String> userIDs,
     String passphrase, {
     KeyType type = KeyType.rsa,
     int rsaBits = OpenPGP.preferredRSABits,
-    CurveOid curve = OpenPGP.preferredEcCurve,
+    CurveInfo curve = OpenPGP.preferredCurve,
+    int keyExpirationTime = 0,
+    bool subkeySign = false,
+    String? subkeyPassphrase,
     DateTime? date,
   }) {
     if (userIDs.isEmpty) {
@@ -82,30 +83,41 @@ class OpenPGP {
       rsaBits: rsaBits,
       curve: curve,
       date: date,
-    ).encrypt(passphrase) as SecretSubkeyPacket;
+    ).encrypt(subkeyPassphrase ?? passphrase);
 
-    final packets = <ContainedPacket>[
-      secretKey,
-    ];
+    final packets = <ContainedPacket>[secretKey];
 
-    // Wrap key userID with signature
+    /// Wrap user id with certificate signature
     for (final userID in userIDs) {
       final userIDPacket = UserIDPacket(userID);
       packets.addAll([
         userIDPacket,
-        SignatureGenerator.createCertGenericSignature(
+        SignatureGenerator.createCertificateSignature(
           userIDPacket,
           secretKey,
-          curve: curve,
+          keyExpirationTime: keyExpirationTime,
           date: date,
         )
       ]);
     }
 
+    /// Wrap secret subkey with binding signature
     packets.addAll([
       secretSubkey,
-      SignatureGenerator.createBindingSignature(secretSubkey, secretKey),
+      SignatureGenerator.createBindingSignature(
+        secretSubkey,
+        secretKey,
+        keyExpirationTime: keyExpirationTime,
+        subkeySign: subkeySign,
+        date: date,
+      ),
     ]);
+
+    /// Add revocation signature packet for creating a revocation certificate.
+    packets.add(SignatureGenerator.createRevocationSignature(
+      secretKey,
+      date: date,
+    ));
 
     return PrivateKey.fromPacketList(PacketList(packets));
   }

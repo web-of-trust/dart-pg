@@ -29,13 +29,13 @@ abstract class ECPublicParams extends KeyParams {
   }
 
   static ECPublicKey _publicKeyFromOid(ASN1ObjectIdentifier oid, BigInt q) {
-    final curveOid = CurveOid.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
-    switch (curveOid) {
-      case CurveOid.ed25519:
-      case CurveOid.curve25519:
-        throw UnsupportedError('Unsupported curve.');
+    final curve = CurveInfo.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
+    switch (curve) {
+      case CurveInfo.ed25519:
+      case CurveInfo.curve25519:
+        throw UnsupportedError('Curve ${curve.name} is unsupported.');
       default:
-        final parameters = ECDomainParameters(curveOid.name.toLowerCase());
+        final parameters = ECDomainParameters(curve.name.toLowerCase());
         final point = parameters.curve.decodePoint(q.toUnsignedBytes());
         return ECPublicKey(point, parameters);
     }
