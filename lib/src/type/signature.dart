@@ -14,11 +14,11 @@ class Signature {
   Signature(PacketList packetList) : packetList = PacketList(packetList.whereType<SignaturePacket>());
 
   factory Signature.fromArmored(String armored) {
-    final unarmor = Armor.decode(armored);
-    if (unarmor['type'] != ArmorType.signature) {
+    final armor = Armor.decode(armored);
+    if (armor.type != ArmorType.signature) {
       throw Exception('Armored text not of signature type');
     }
-    return Signature(PacketList.packetDecode(unarmor['data']));
+    return Signature(PacketList.packetDecode(armor.data));
   }
 
   List<String> get signingKeyIDs => packetList.map((packet) => (packet as SignaturePacket).issuerKeyID.keyID).toList();

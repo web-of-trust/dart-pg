@@ -26,11 +26,11 @@ class PrivateKey extends Key {
   }) : super(keyPacket);
 
   factory PrivateKey.fromArmored(String armored) {
-    final unarmor = Armor.decode(armored);
-    if (unarmor['type'] != ArmorType.privateKey) {
+    final armor = Armor.decode(armored);
+    if (armor.type != ArmorType.privateKey) {
       throw Exception('Armored text not of private key type');
     }
-    return PrivateKey.fromPacketList(PacketList.packetDecode(unarmor['data']));
+    return PrivateKey.fromPacketList(PacketList.packetDecode(armor.data));
   }
 
   factory PrivateKey.fromPacketList(PacketList packetList) {

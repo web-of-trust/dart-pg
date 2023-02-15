@@ -37,9 +37,9 @@ void main() {
       final endReg = RegExp(r'END PGP MESSAGE, PART \d+\/\d+');
       expect(endReg.hasMatch(armored), true);
 
-      final deArmor = Armor.decode(armored);
-      expect(deArmor['type'], ArmorType.multipartSection);
-      expect(deArmor['data'], bytes);
+      final armor = Armor.decode(armored);
+      expect(armor.type, ArmorType.multipartSection);
+      expect(armor.data, bytes);
     }));
 
     test('armor multipart last test', (() {
@@ -58,9 +58,9 @@ void main() {
       final endReg = RegExp(r'END PGP MESSAGE, PART \d+');
       expect(endReg.hasMatch(armored), true);
 
-      final deArmor = Armor.decode(armored);
-      expect(deArmor['type'], ArmorType.multipartLast);
-      expect(deArmor['data'], bytes);
+      final armor = Armor.decode(armored);
+      expect(armor.type, ArmorType.multipartLast);
+      expect(armor.data, bytes);
     }));
 
     test('armor signed message test', (() {
@@ -83,10 +83,10 @@ void main() {
       final endSignReg = RegExp(r'END PGP SIGNATURE');
       expect(endSignReg.hasMatch(armored), true);
 
-      final deArmor = Armor.decode(armored);
-      expect(deArmor['type'], ArmorType.signedMessage);
-      expect(deArmor['data'], bytes);
-      expect(deArmor['text'], text);
+      final armor = Armor.decode(armored);
+      expect(armor.type, ArmorType.signedMessage);
+      expect(armor.data, bytes);
+      expect(armor.text, text);
     }));
 
     test('armor message test', (() {
@@ -103,9 +103,9 @@ void main() {
       final endReg = RegExp(r'END PGP MESSAGE');
       expect(endReg.hasMatch(armored), true);
 
-      final deArmor = Armor.decode(armored);
-      expect(deArmor['type'], ArmorType.message);
-      expect(deArmor['data'], message);
+      final armor = Armor.decode(armored);
+      expect(armor.type, ArmorType.message);
+      expect(armor.data, message);
     }));
 
     test('armor public key test', (() {
@@ -122,9 +122,9 @@ void main() {
       final endReg = RegExp(r'END PGP PUBLIC KEY BLOCK');
       expect(endReg.hasMatch(armored), true);
 
-      final deArmor = Armor.decode(armored);
-      expect(deArmor['type'], ArmorType.publicKey);
-      expect(deArmor['data'], publicKey);
+      final armor = Armor.decode(armored);
+      expect(armor.type, ArmorType.publicKey);
+      expect(armor.data, publicKey);
     }));
 
     test('armor private key test', (() {
@@ -141,9 +141,9 @@ void main() {
       final endReg = RegExp(r'END PGP PRIVATE KEY BLOCK');
       expect(endReg.hasMatch(armored), true);
 
-      final deArmor = Armor.decode(armored);
-      expect(deArmor['type'], ArmorType.privateKey);
-      expect(deArmor['data'], privateKey);
+      final armor = Armor.decode(armored);
+      expect(armor.type, ArmorType.privateKey);
+      expect(armor.data, privateKey);
     }));
 
     test('armor signature test', (() {
@@ -160,9 +160,9 @@ void main() {
       final endReg = RegExp(r'END PGP SIGNATURE');
       expect(endReg.hasMatch(armored), true);
 
-      final deArmor = Armor.decode(armored);
-      expect(deArmor['type'], ArmorType.signature);
-      expect(deArmor['data'], signature);
+      final armor = Armor.decode(armored);
+      expect(armor.type, ArmorType.signature);
+      expect(armor.data, signature);
     }));
   }));
 }

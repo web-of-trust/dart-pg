@@ -32,79 +32,24 @@ class Armor {
   static const beginPattern =
       r'^-----BEGIN PGP (MESSAGE, PART \d+\/\d+|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$';
 
-  /// Armor an OpenPGP binary packet block
-  static String encode(
-    final ArmorType type,
-    final Uint8List body, {
-    final String text = '',
-    final String hashAlgo = '',
-    final int partIndex = 0,
-    final int partTotal = 0,
-    final String customComment = OpenPGP.comment,
-  }) {
-    final List<String> result = [];
-    switch (type) {
-      case ArmorType.multipartSection:
-        result.add('$messageBegin, PART $partIndex/$partTotal$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(body)}\n');
-        result.add('=${_crc24CheckSum(body)}\n');
-        result.add('$messageEnd, PART $partIndex/$partTotal$endOfLine');
-        break;
-      case ArmorType.multipartLast:
-        result.add('$messageBegin, PART $partIndex$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(body)}\n');
-        result.add('=${_crc24CheckSum(body)}\n');
-        result.add('$messageEnd, PART $partIndex$endOfLine');
-        break;
-      case ArmorType.signedMessage:
-        result.add('$signedMessageBegin$endOfLine');
-        result.add('Hash: $hashAlgo\n\n');
-        result.add('${text.replaceAll(RegExp(r'^-', multiLine: true), '- -')}\n');
-        result.add('$signatureBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(body)}\n');
-        result.add('=${_crc24CheckSum(body)}\n');
-        result.add('$signatureEnd$endOfLine');
-        break;
-      case ArmorType.message:
-        result.add('$messageBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(body)}\n');
-        result.add('=${_crc24CheckSum(body)}\n');
-        result.add('$messageEnd$endOfLine');
-        break;
-      case ArmorType.publicKey:
-        result.add('$publicKeyBlockBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(body)}\n');
-        result.add('=${_crc24CheckSum(body)}\n');
-        result.add('$publicKeyBlockEnd$endOfLine');
-        break;
-      case ArmorType.privateKey:
-        result.add('$privateKeyBlockBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(body)}\n');
-        result.add('=${_crc24CheckSum(body)}\n');
-        result.add('$privateKeyBlockEnd$endOfLine');
-        break;
-      case ArmorType.signature:
-        result.add('$signatureBegin$endOfLine');
-        result.add(_addHeader(customComment));
-        result.add('${_base64Encode(body)}\n');
-        result.add('=${_crc24CheckSum(body)}\n');
-        result.add('$signatureEnd$endOfLine');
-        break;
-      default:
-        break;
-    }
-    return result.join();
-  }
+  final ArmorType type;
+
+  final Uint8List data;
+
+  final List<String> headers;
+
+  final String text;
+
+  Armor(
+    this.type,
+    this.data, {
+    this.headers = const [],
+    this.text = '',
+  });
 
   /// Dearmor an OpenPGP armored message;
   /// Verify the checksum and return the encoded bytes
-  static Map<String, dynamic> decode(
+  factory Armor.decode(
     final String armored, [
     final bool checksumRequired = OpenPGP.checksumRequired,
   ]) {
@@ -148,12 +93,77 @@ class Armor {
       throw Exception('Ascii armor integrity check failed');
     }
 
-    return {
-      'type': type ?? ArmorType.multipartSection,
-      'data': data,
-      if (headers.isNotEmpty) 'headers': headers,
-      if (text.isNotEmpty) 'text': text,
-    };
+    return Armor(type ?? ArmorType.multipartSection, data, headers: headers, text: text);
+  }
+
+  /// Armor an OpenPGP binary packet block
+  static String encode(
+    final ArmorType type,
+    final Uint8List data, {
+    final String text = '',
+    final String hashAlgo = '',
+    final int partIndex = 0,
+    final int partTotal = 0,
+    final String customComment = OpenPGP.comment,
+  }) {
+    final List<String> result = [];
+    switch (type) {
+      case ArmorType.multipartSection:
+        result.add('$messageBegin, PART $partIndex/$partTotal$endOfLine');
+        result.add(_addHeader(customComment));
+        result.add('${_base64Encode(data)}\n');
+        result.add('=${_crc24CheckSum(data)}\n');
+        result.add('$messageEnd, PART $partIndex/$partTotal$endOfLine');
+        break;
+      case ArmorType.multipartLast:
+        result.add('$messageBegin, PART $partIndex$endOfLine');
+        result.add(_addHeader(customComment));
+        result.add('${_base64Encode(data)}\n');
+        result.add('=${_crc24CheckSum(data)}\n');
+        result.add('$messageEnd, PART $partIndex$endOfLine');
+        break;
+      case ArmorType.signedMessage:
+        result.add('$signedMessageBegin$endOfLine');
+        result.add('Hash: $hashAlgo\n\n');
+        result.add('${text.replaceAll(RegExp(r'^-', multiLine: true), '- -')}\n');
+        result.add('$signatureBegin$endOfLine');
+        result.add(_addHeader(customComment));
+        result.add('${_base64Encode(data)}\n');
+        result.add('=${_crc24CheckSum(data)}\n');
+        result.add('$signatureEnd$endOfLine');
+        break;
+      case ArmorType.message:
+        result.add('$messageBegin$endOfLine');
+        result.add(_addHeader(customComment));
+        result.add('${_base64Encode(data)}\n');
+        result.add('=${_crc24CheckSum(data)}\n');
+        result.add('$messageEnd$endOfLine');
+        break;
+      case ArmorType.publicKey:
+        result.add('$publicKeyBlockBegin$endOfLine');
+        result.add(_addHeader(customComment));
+        result.add('${_base64Encode(data)}\n');
+        result.add('=${_crc24CheckSum(data)}\n');
+        result.add('$publicKeyBlockEnd$endOfLine');
+        break;
+      case ArmorType.privateKey:
+        result.add('$privateKeyBlockBegin$endOfLine');
+        result.add(_addHeader(customComment));
+        result.add('${_base64Encode(data)}\n');
+        result.add('=${_crc24CheckSum(data)}\n');
+        result.add('$privateKeyBlockEnd$endOfLine');
+        break;
+      case ArmorType.signature:
+        result.add('$signatureBegin$endOfLine');
+        result.add(_addHeader(customComment));
+        result.add('${_base64Encode(data)}\n');
+        result.add('=${_crc24CheckSum(data)}\n');
+        result.add('$signatureEnd$endOfLine');
+        break;
+      default:
+        break;
+    }
+    return result.join();
   }
 
   static ArmorType _getType(final String text) {

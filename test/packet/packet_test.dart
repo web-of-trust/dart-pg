@@ -68,9 +68,9 @@ void main() {
 
   group('public key packet tests', () {
     test('rsa test', () {
-      final deArmor = Armor.decode(rsaPublicKey);
-      expect(deArmor['type'], ArmorType.publicKey);
-      final packetList = PacketList.packetDecode(deArmor['data']);
+      final armor = Armor.decode(rsaPublicKey);
+      expect(armor.type, ArmorType.publicKey);
+      final packetList = PacketList.packetDecode(armor.data);
       for (final packet in packetList) {
         if (packet.tag == PacketTag.publicKey) {
           final key = packet as PublicKeyPacket;
@@ -91,9 +91,9 @@ void main() {
     });
 
     test('dsa elgamal test', () {
-      final deArmor = Armor.decode(dsaPublicKey);
-      expect(deArmor['type'], ArmorType.publicKey);
-      final packetList = PacketList.packetDecode(deArmor['data']);
+      final armor = Armor.decode(dsaPublicKey);
+      expect(armor.type, ArmorType.publicKey);
+      final packetList = PacketList.packetDecode(armor.data);
       for (final packet in packetList) {
         if (packet.tag == PacketTag.publicKey) {
           final key = packet as PublicKeyPacket;
@@ -114,9 +114,9 @@ void main() {
     });
 
     test('ecc test', () {
-      final deArmor = Armor.decode(eccPublicKey);
-      expect(deArmor['type'], ArmorType.publicKey);
-      final packetList = PacketList.packetDecode(deArmor['data']);
+      final armor = Armor.decode(eccPublicKey);
+      expect(armor.type, ArmorType.publicKey);
+      final packetList = PacketList.packetDecode(armor.data);
       for (final packet in packetList) {
         if (packet.tag == PacketTag.publicKey) {
           final key = packet as PublicKeyPacket;
@@ -139,9 +139,9 @@ void main() {
 
   group('secret key packet tests', () {
     test('rsa test', (() {
-      final deArmor = Armor.decode(rsaPrivateKey);
-      expect(deArmor['type'], ArmorType.privateKey);
-      final packetList = PacketList.packetDecode(deArmor['data']);
+      final armor = Armor.decode(rsaPrivateKey);
+      expect(armor.type, ArmorType.privateKey);
+      final packetList = PacketList.packetDecode(armor.data);
       for (final packet in packetList) {
         if (packet.tag == PacketTag.secretKey) {
           final key = packet as SecretKeyPacket;
@@ -167,9 +167,9 @@ void main() {
     }));
 
     test('dsa elgamal test', () {
-      final deArmor = Armor.decode(dsaPrivateKey);
-      expect(deArmor['type'], ArmorType.privateKey);
-      final packetList = PacketList.packetDecode(deArmor['data']);
+      final armor = Armor.decode(dsaPrivateKey);
+      expect(armor.type, ArmorType.privateKey);
+      final packetList = PacketList.packetDecode(armor.data);
       for (final packet in packetList) {
         if (packet.tag == PacketTag.secretKey) {
           final key = packet as SecretKeyPacket;
@@ -195,9 +195,9 @@ void main() {
     });
 
     test('ecc test', () {
-      final deArmor = Armor.decode(eccPrivateKey);
-      expect(deArmor['type'], ArmorType.privateKey);
-      final packetList = PacketList.packetDecode(deArmor['data']);
+      final armor = Armor.decode(eccPrivateKey);
+      expect(armor.type, ArmorType.privateKey);
+      final packetList = PacketList.packetDecode(armor.data);
       for (final packet in packetList) {
         if (packet.tag == PacketTag.secretKey) {
           final key = packet as SecretKeyPacket;
@@ -221,9 +221,9 @@ void main() {
     });
 
     test('encrypt test', (() {
-      final deArmor = Armor.decode(privateKeyWithoutPassphase);
-      expect(deArmor['type'], ArmorType.privateKey);
-      final packetList = PacketList.packetDecode(deArmor['data']);
+      final armor = Armor.decode(privateKeyWithoutPassphase);
+      expect(armor.type, ArmorType.privateKey);
+      final packetList = PacketList.packetDecode(armor.data);
       for (final packet in packetList) {
         if (packet.tag == PacketTag.secretKey) {
           final key = packet as SecretKeyPacket;

@@ -25,11 +25,11 @@ class PublicKey extends Key {
   }) : super(keyPacket);
 
   factory PublicKey.fromArmored(String armored) {
-    final unarmor = Armor.decode(armored);
-    if (unarmor['type'] != ArmorType.publicKey) {
+    final armor = Armor.decode(armored);
+    if (armor.type != ArmorType.publicKey) {
       throw Exception('Armored text not of public key type');
     }
-    return PublicKey.fromPacketList(PacketList.packetDecode(unarmor['data']));
+    return PublicKey.fromPacketList(PacketList.packetDecode(armor.data));
   }
 
   factory PublicKey.fromPacketList(PacketList packetList) {

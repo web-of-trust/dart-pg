@@ -19,12 +19,12 @@ class SignedMessage extends CleartextMessage {
   SignedMessage(super.text, this.signature);
 
   factory SignedMessage.fromArmored(String armored) {
-    final unarmor = Armor.decode(armored);
-    if (unarmor['type'] != ArmorType.signedMessage) {
+    final armor = Armor.decode(armored);
+    if (armor.type != ArmorType.signedMessage) {
       throw Exception('Armored text not of signed message type');
     }
-    final packetList = PacketList.packetDecode(unarmor['data']);
-    return SignedMessage(unarmor['text'] ?? '', Signature(packetList));
+    final packetList = PacketList.packetDecode(armor.data);
+    return SignedMessage(armor.text, Signature(packetList));
   }
 
   List<String> get signingKeyIDs => signature.signingKeyIDs;
