@@ -8,14 +8,42 @@ import '../enums.dart';
 import '../openpgp.dart';
 import 'key/key_params.dart';
 import 'key_packet.dart';
+import 'literal_data.dart';
 import 'signature_packet.dart';
 import 'signature_subpacket.dart';
 import 'user_id.dart';
 
 class SignatureGenerator {
+  static SignaturePacket createLiteralDataSignature(
+    final SecretKeyPacket secretKey,
+    final LiteralDataPacket literalData, {
+    final String userID = '',
+    final DateTime? date,
+    final bool detached = false,
+  }) {
+    final hashedSubpackets =
+        userID.isNotEmpty ? <SignatureSubpacket>[SignerUserID.fromUserID(userID)] : <SignatureSubpacket>[];
+    return SignaturePacket(
+      secretKey.version,
+      literalData.text.isNotEmpty ? SignatureType.text : SignatureType.binary,
+      secretKey.algorithm,
+      _getPreferredHashAlgo(secretKey),
+      Uint8List(0),
+      Uint8List(0),
+      hashedSubpackets: hashedSubpackets,
+    ).sign(
+      secretKey,
+      literalData: literalData,
+      date: date,
+      detached: detached,
+    );
+  }
+
   static SignaturePacket createRevocationSignature(
-    SecretKeyPacket secretKey, {
-    DateTime? date,
+    final SecretKeyPacket secretKey, {
+    RevocationReasonTag reason = RevocationReasonTag.noReason,
+    String description = '',
+    final DateTime? date,
   }) {
     return SignaturePacket(
       secretKey.version,
@@ -24,7 +52,7 @@ class SignatureGenerator {
       _getPreferredHashAlgo(secretKey),
       Uint8List(0),
       Uint8List(0),
-      hashedSubpackets: [RevocationReason.fromRevocation(RevocationReasonTag.noReason, '')],
+      hashedSubpackets: [RevocationReason.fromRevocation(reason, description)],
     ).sign(
       secretKey,
       keyData: secretKey,
@@ -33,11 +61,11 @@ class SignatureGenerator {
   }
 
   static SignaturePacket createBindingSignature(
-    SecretSubkeyPacket subkey,
-    SecretKeyPacket primaryKey, {
-    int keyExpirationTime = 0,
-    bool subkeySign = false,
-    DateTime? date,
+    final SecretSubkeyPacket subkey,
+    final SecretKeyPacket primaryKey, {
+    final int keyExpirationTime = 0,
+    final bool subkeySign = false,
+    final DateTime? date,
   }) {
     final preferredHashAlgo = _getPreferredHashAlgo(subkey);
     final hashedSubpackets = <SignatureSubpacket>[];
@@ -82,10 +110,10 @@ class SignatureGenerator {
   }
 
   static SignaturePacket createCertificateSignature(
-    UserIDPacket userID,
-    SecretKeyPacket secretKey, {
-    int keyExpirationTime = 0,
-    DateTime? date,
+    final UserIDPacket userIdData,
+    final SecretKeyPacket secretKey, {
+    final int keyExpirationTime = 0,
+    final DateTime? date,
   }) {
     final hashedSubpackets = [
       KeyFlags.fromFlags(KeyFlag.certifyKeys.value | KeyFlag.signData.value),
@@ -121,13 +149,13 @@ class SignatureGenerator {
       hashedSubpackets: hashedSubpackets,
     ).sign(
       secretKey,
-      userID: userID,
+      userIdData: userIdData,
       keyData: secretKey,
       date: date,
     );
   }
 
-  static HashAlgorithm _getPreferredHashAlgo(KeyPacket keyPacket) {
+  static HashAlgorithm _getPreferredHashAlgo(final KeyPacket keyPacket) {
     switch (keyPacket.algorithm) {
       case KeyAlgorithm.ecdh:
       case KeyAlgorithm.ecdsa:

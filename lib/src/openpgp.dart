@@ -3,8 +3,10 @@
 // file that was distributed with this source code.
 
 import 'enums.dart';
-import 'type/cleartext_message.dart';
 import 'type/private_key.dart';
+import 'type/public_key.dart';
+import 'type/signature.dart';
+import 'type/signed_message.dart';
 
 class OpenPGP {
   static const version = 'Dart Privacy Guard 1.0.0';
@@ -36,17 +38,14 @@ class OpenPGP {
   /// RSA public exponent
   static const rsaPublicExponent = 65537;
 
-  static signDetached(String message, List<PrivateKey> signingKeys) {}
+  /// Signs a cleartext message & return detached signature
+  static Signature signDetached(String message, List<PrivateKey> signingKeys, {DateTime? date}) {
+    return SignedMessage.sign(message, signingKeys, date: date, detached: true).signature;
+  }
 
-  static sign(
-    CleartextMessage message,
-    List<PrivateKey> signingKeys, {
-    DateTime? date,
-    bool detached = false,
-  }) {
-    if (signingKeys.isEmpty) {
-      throw Exception('No signing keys provided');
-    }
+  /// Signs a cleartext message.
+  static SignedMessage sign(String message, List<PrivateKey> signingKeys, {DateTime? date}) {
+    return SignedMessage.sign(message, signingKeys, date: date);
   }
 
   /// Generates a new OpenPGP key pair. Supports RSA and ECC keys.
@@ -80,5 +79,10 @@ class OpenPGP {
   /// Reads an (optionally armored) OpenPGP private key and returns a PrivateKey object
   static PrivateKey readPrivateKey(String armored) {
     return PrivateKey.fromArmored(armored);
+  }
+
+  /// Reads an (optionally armored) OpenPGP public key and returns a PublicKey object
+  static PublicKey readPublicKey(String armored) {
+    return PublicKey.fromArmored(armored);
   }
 }

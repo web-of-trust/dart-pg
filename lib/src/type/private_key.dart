@@ -10,10 +10,10 @@ import '../packet/key_packet_generator.dart';
 import '../packet/packet_list.dart';
 import '../packet/key_packet.dart';
 import '../packet/signature_generator.dart';
+import '../packet/signature_packet.dart';
 import '../packet/user_id.dart';
 import 'key.dart';
 import 'key_reader.dart';
-import 'public_key.dart';
 import 'subkey.dart';
 
 /// Class that represents an OpenPGP Private Key
@@ -27,7 +27,7 @@ class PrivateKey extends Key {
   }) : super(keyPacket);
 
   /// Reads an (optionally armored) OpenPGP private key and returns a PrivateKey object
-  factory PrivateKey.fromArmored(String armored) {
+  factory PrivateKey.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
     if (armor.type != ArmorType.privateKey) {
       throw ArgumentError('Armored text not of private key type');
@@ -35,7 +35,7 @@ class PrivateKey extends Key {
     return PrivateKey.fromPacketList(PacketList.packetDecode(armor.data));
   }
 
-  factory PrivateKey.fromPacketList(PacketList packetList) {
+  factory PrivateKey.fromPacketList(final PacketList packetList) {
     final keyReader = KeyReader.fromPacketList(packetList);
     if (keyReader.keyPacket is! SecretKeyPacket) {
       throw ArgumentError('Key packet not of secret key type');
@@ -54,15 +54,15 @@ class PrivateKey extends Key {
   /// The generated primary key will have signing capabilities.
   /// By default, one subkey with encryption capabilities is also generated.
   factory PrivateKey.generate(
-    List<String> userIDs,
-    String passphrase, {
-    KeyType type = KeyType.rsa,
-    int rsaBits = OpenPGP.preferredRSABits,
-    CurveInfo curve = OpenPGP.preferredCurve,
-    int keyExpirationTime = 0,
-    bool subkeySign = false,
-    String? subkeyPassphrase,
-    DateTime? date,
+    final List<String> userIDs,
+    final String passphrase, {
+    final KeyType type = KeyType.rsa,
+    final int rsaBits = OpenPGP.preferredRSABits,
+    final CurveInfo curve = OpenPGP.preferredCurve,
+    final int keyExpirationTime = 0,
+    final bool subkeySign = false,
+    final String? subkeyPassphrase,
+    final DateTime? date,
   }) {
     if (userIDs.isEmpty) {
       throw Exception('UserIDs are required for key generation');
@@ -112,20 +112,11 @@ class PrivateKey extends Key {
       ),
     ]);
 
-    /// Add revocation signature packet for creating a revocation certificate.
-    packets.add(SignatureGenerator.createRevocationSignature(
-      secretKey,
-      date: date,
-    ));
-
     return PrivateKey.fromPacketList(PacketList(packets));
   }
 
   @override
   SecretKeyPacket get keyPacket => super.keyPacket as SecretKeyPacket;
-
-  @override
-  bool get isPrivate => true;
 
   @override
   PublicKey get toPublic {
@@ -153,11 +144,32 @@ class PrivateKey extends Key {
   @override
   String armor() => Armor.encode(ArmorType.privateKey, toPacketList().packetEncode());
 
+  /// Creats a revocation certificate.
+  SignaturePacket createRevocationSignature({
+    final RevocationReasonTag reason = RevocationReasonTag.noReason,
+    final String description = '',
+    final DateTime? date,
+  }) {
+    return SignatureGenerator.createRevocationSignature(
+      keyPacket,
+      reason: reason,
+      description: description,
+      date: date,
+    );
+  }
+
+  SecretKeyPacket getSigningKeyPacket({
+    final String keyID = '',
+    final DateTime? date,
+  }) {
+    return keyPacket;
+  }
+
   /// Lock a private key with the given passphrase.
   /// This method does not change the original key.
   PrivateKey encrypt(
     final String passphrase, {
-    List<String> subkeyPassphrases = const [],
+    final List<String> subkeyPassphrases = const [],
     final S2kUsage s2kUsage = S2kUsage.sha1,
     final SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
     final HashAlgorithm hash = OpenPGP.preferredHashAlgorithm,
@@ -197,12 +209,11 @@ class PrivateKey extends Key {
         }
       }).toList(growable: false),
     );
-    ;
   }
 
   /// Unlock a private key with the given passphrase.
   /// This method does not change the original key.
-  PrivateKey decrypt(String passphrase, [List<String> subkeyPassphrases = const []]) {
+  PrivateKey decrypt(final String passphrase, [final List<String> subkeyPassphrases = const []]) {
     if (passphrase.isEmpty) {
       throw ArgumentError('passphrase are required for key decryption');
     }

@@ -45,9 +45,6 @@ class PublicKey extends Key {
   PublicKeyPacket get keyPacket => super.keyPacket as PublicKeyPacket;
 
   @override
-  bool get isPrivate => false;
-
-  @override
   PublicKey get toPublic => this;
 
   @override

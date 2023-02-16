@@ -8,9 +8,10 @@ import '../armor/armor.dart';
 import '../enums.dart';
 import '../packet/literal_data.dart';
 import '../packet/packet_list.dart';
+import '../packet/signature_generator.dart';
 import '../packet/signature_packet.dart';
 import 'cleartext_message.dart';
-import 'public_key.dart';
+import 'key.dart';
 import 'signature.dart';
 
 /// Class that represents an OpenPGP cleartext signed message.
@@ -21,13 +22,42 @@ class SignedMessage extends CleartextMessage {
 
   SignedMessage(super.text, this.signature);
 
-  factory SignedMessage.fromArmored(String armored) {
+  factory SignedMessage.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
     if (armor.type != ArmorType.signedMessage) {
       throw Exception('Armored text not of signed message type');
     }
     final packetList = PacketList.packetDecode(armor.data);
     return SignedMessage(armor.text, Signature(packetList));
+  }
+
+  factory SignedMessage.sign(
+    final String message,
+    final List<PrivateKey> signingKeys, {
+    final String userID = '',
+    final DateTime? date,
+    final bool detached = false,
+  }) {
+    if (signingKeys.isEmpty) {
+      throw Exception('No signing keys provided');
+    }
+    final literalData = LiteralDataPacket(Uint8List(0), text: message);
+    return SignedMessage(
+      message,
+      Signature(
+        PacketList(
+          signingKeys.map(
+            (key) => SignatureGenerator.createLiteralDataSignature(
+              key.getSigningKeyPacket(),
+              literalData,
+              userID: userID,
+              date: date,
+              detached: detached,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   List<String> get signingKeyIDs => signature.signingKeyIDs;
@@ -44,8 +74,7 @@ class SignedMessage extends CleartextMessage {
   }
 
   /// Verify signatures of cleartext signed message
-  bool verify(List<PublicKey> keys, [DateTime? date]) {
-    final literalData = LiteralDataPacket(Uint8List(0), text: text);
-    return literalData.data.isEmpty;
+  bool verify(final List<PublicKey> keys, [final DateTime? date]) {
+    return false;
   }
 }

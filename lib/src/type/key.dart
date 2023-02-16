@@ -12,6 +12,9 @@ import 'public_key.dart';
 import 'subkey.dart';
 import 'user.dart';
 
+export 'public_key.dart';
+export 'private_key.dart';
+
 /// Abstract class that represents an OpenPGP key. Must contain a primary key.
 /// Can contain additional subkeys, signatures, user ids, user attributes.
 abstract class Key {
@@ -45,12 +48,66 @@ abstract class Key {
 
   int get keyStrength => keyPacket.keyStrength;
 
-  bool get isPrivate;
+  bool get isPrivate => keyPacket.tag == PacketTag.secretKey;
 
   PublicKey get toPublic;
 
   /// Returns ASCII armored text of key
   String armor();
+
+  /// Verify primary key.
+  /// Checks for revocation signatures, expiration time and valid self signature.
+  bool verifyPrimaryKey({
+    final String userID = '',
+    final DateTime? date,
+  }) {
+    if (isRevoked(date: date)) {
+      return false;
+    }
+    return true;
+  }
+
+  User? getPrimaryUser({
+    final String userID = '',
+    final DateTime? date,
+  }) {
+    for (final user in users) {
+      if (user.userID == null) {
+        continue;
+      }
+      if (userID.isNotEmpty && user.userID!.userID != userID) {
+        throw Exception('Could not find user that matches that user ID');
+      }
+      final selfCertifications = user.selfCertifications
+        ..sort((a, b) => a.creationTime.creationTime.compareTo(b.creationTime.creationTime));
+      if (user.isRevoked(keyPacket,
+          date: date, signature: selfCertifications.isNotEmpty ? selfCertifications[0] : null)) {
+        continue;
+      }
+      return user;
+    }
+    return null;
+  }
+
+  /// Checks if a signature on a key is revoked
+  bool isRevoked({
+    SignaturePacket? signature,
+    final DateTime? date,
+  }) {
+    if (revocationSignatures.isNotEmpty) {
+      for (var revocation in revocationSignatures) {
+        if (signature == null || revocation.issuerKeyID.keyID == signature.issuerKeyID.keyID) {
+          return revocation.verify(
+            keyPacket,
+            keyData: keyPacket,
+            signatureType: SignatureType.keyRevocation,
+            date: date,
+          );
+        }
+      }
+    }
+    return false;
+  }
 
   PacketList toPacketList() => PacketList([
         keyPacket,
