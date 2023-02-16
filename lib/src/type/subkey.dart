@@ -14,11 +14,15 @@ class Subkey {
   /// subkey packet to hold in the Subkey
   final SubkeyPacket keyPacket;
 
-  final List<SignaturePacket> revocationSignatures = [];
+  final List<SignaturePacket> revocationSignatures;
 
-  final List<SignaturePacket> bindingSignatures = [];
+  final List<SignaturePacket> bindingSignatures;
 
-  Subkey(this.keyPacket);
+  Subkey(
+    this.keyPacket, {
+    this.revocationSignatures = const [],
+    this.bindingSignatures = const [],
+  });
 
   DateTime get creationTime => keyPacket.creationTime;
 

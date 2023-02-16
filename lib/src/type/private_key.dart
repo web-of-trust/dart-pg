@@ -4,11 +4,13 @@
 
 import '../armor/armor.dart';
 import '../enums.dart';
+import '../openpgp.dart';
 import '../packet/packet_list.dart';
 import '../packet/key_packet.dart';
 import 'key.dart';
 import 'key_reader.dart';
 import 'public_key.dart';
+import 'subkey.dart';
 
 /// Class that represents an OpenPGP Private Key
 class PrivateKey extends Key {
@@ -43,6 +45,9 @@ class PrivateKey extends Key {
   }
 
   @override
+  SecretKeyPacket get keyPacket => super.keyPacket as SecretKeyPacket;
+
+  @override
   bool get isPrivate => true;
 
   @override
@@ -70,4 +75,78 @@ class PrivateKey extends Key {
 
   @override
   String armor() => Armor.encode(ArmorType.privateKey, toPacketList().packetEncode());
+
+  /// Lock a private key with the given passphrase.
+  /// This method does not change the original key.
+  PrivateKey encrypt(
+    final String passphrase, {
+    List<String> subkeyPassphrases = const [],
+    final S2kUsage s2kUsage = S2kUsage.sha1,
+    final SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
+    final HashAlgorithm hash = OpenPGP.preferredHashAlgorithm,
+    final S2kType type = S2kType.iterated,
+  }) {
+    if (passphrase.isEmpty) {
+      throw ArgumentError('passphrase are required for key encryption');
+    }
+    return PrivateKey(
+      keyPacket.encrypt(
+        passphrase,
+        s2kUsage: s2kUsage,
+        symmetricAlgorithm: symmetricAlgorithm,
+        hash: hash,
+        type: type,
+      ),
+      revocationSignatures: revocationSignatures,
+      directSignatures: directSignatures,
+      users: users,
+      subkeys: subkeys.map((subkey) {
+        final index = subkeys.indexOf(subkey);
+        final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases[index] : passphrase;
+        if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
+          return Subkey(
+            (subkey.keyPacket as SecretSubkeyPacket).encrypt(
+              subkeyPassphrase,
+              s2kUsage: s2kUsage,
+              symmetricAlgorithm: symmetricAlgorithm,
+              hash: hash,
+              type: type,
+            ),
+            revocationSignatures: subkey.revocationSignatures,
+            bindingSignatures: subkey.bindingSignatures,
+          );
+        } else {
+          return subkey;
+        }
+      }).toList(growable: false),
+    );
+    ;
+  }
+
+  /// Unlock a private key with the given passphrase.
+  /// This method does not change the original key.
+  PrivateKey decrypt(String passphrase, [List<String> subkeyPassphrases = const []]) {
+    if (passphrase.isEmpty) {
+      throw ArgumentError('passphrase are required for key decryption');
+    }
+    return PrivateKey(
+      keyPacket.decrypt(passphrase),
+      revocationSignatures: revocationSignatures,
+      directSignatures: directSignatures,
+      users: users,
+      subkeys: subkeys.map((subkey) {
+        final index = subkeys.indexOf(subkey);
+        final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases[index] : passphrase;
+        if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
+          return Subkey(
+            (subkey.keyPacket as SecretSubkeyPacket).decrypt(subkeyPassphrase),
+            revocationSignatures: subkey.revocationSignatures,
+            bindingSignatures: subkey.bindingSignatures,
+          );
+        } else {
+          return subkey;
+        }
+      }).toList(growable: false),
+    );
+  }
 }

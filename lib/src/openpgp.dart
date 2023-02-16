@@ -2,8 +2,6 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'package:dart_pg/src/packet/secret_key.dart';
-
 import 'enums.dart';
 import 'packet/contained_packet.dart';
 import 'packet/key_packet_generator.dart';
@@ -128,16 +126,8 @@ class OpenPGP {
     return PrivateKey.fromPacketList(PacketList(packets));
   }
 
-  /// Unlock a private key with the given passphrase.
-  /// This method does not change the original key.
-  static PrivateKey decryptKey(PrivateKey privateKey, String passphrase) {
-    final keyPacket = (privateKey.keyPacket as SecretKeyPacket).decrypt(passphrase);
-    return PrivateKey(
-      keyPacket,
-      revocationSignatures: privateKey.revocationSignatures,
-      directSignatures: privateKey.directSignatures,
-      users: privateKey.users,
-      subkeys: privateKey.subkeys,
-    );
+  /// Reads an (optionally armored) OpenPGP private key and returns a PrivateKey object
+  static PrivateKey readPrivateKey(String armored) {
+    return PrivateKey.fromArmored(armored);
   }
 }

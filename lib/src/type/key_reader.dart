@@ -53,7 +53,11 @@ class KeyReader {
         case PacketTag.publicSubkey:
         case PacketTag.secretSubkey:
           if (packet is SubkeyPacket) {
-            subkey = Subkey(packet);
+            subkey = Subkey(
+              packet,
+              revocationSignatures: [],
+              bindingSignatures: [],
+            );
             subkeys.add(subkey);
           }
           user = null;

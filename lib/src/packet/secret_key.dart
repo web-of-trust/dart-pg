@@ -128,7 +128,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
     final SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
-    final HashAlgorithm hash = HashAlgorithm.sha1,
+    final HashAlgorithm hash = OpenPGP.preferredHashAlgorithm,
     final S2kType type = S2kType.iterated,
   }) {
     if (secretParams != null) {
@@ -147,7 +147,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         ..init(true, ParametersWithIV(KeyParameter(key), iv));
 
       final clearText = secretParams!.encode();
-      final clearTextWithHash = Uint8List.fromList([...clearText, ...Helper.hashDigest(clearText, s2k.hash)]);
+      final clearTextWithHash = Uint8List.fromList([...clearText, ...Helper.hashDigest(clearText, HashAlgorithm.sha1)]);
       final cipherText = cipher.process(clearTextWithHash);
 
       return SecretKeyPacket(
@@ -179,10 +179,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
           );
 
         final clearTextWithHash = cipher.process(keyData);
-        final hash = s2k?.hash ?? HashAlgorithm.sha1;
-        clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - hash.digestSize);
-        final hashText = clearTextWithHash.sublist(clearTextWithHash.length - hash.digestSize);
-        final hashed = Helper.hashDigest(clearText, hash);
+        clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - HashAlgorithm.sha1.digestSize);
+        final hashText = clearTextWithHash.sublist(clearTextWithHash.length - HashAlgorithm.sha1.digestSize);
+        final hashed = Helper.hashDigest(clearText, HashAlgorithm.sha1);
         if (!hashed.equals(hashText)) {
           throw ArgumentError('Incorrect key passphrase');
         }

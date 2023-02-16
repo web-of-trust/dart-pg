@@ -76,7 +76,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     }
   }
 
-  static SecretSubkeyPacket _fromSecretKey(SecretKeyPacket secretKey) {
+  static SecretSubkeyPacket _fromSecretKey(final SecretKeyPacket secretKey) {
     final publicKey = secretKey.publicKey;
     return SecretSubkeyPacket(
       PublicSubkeyPacket(
