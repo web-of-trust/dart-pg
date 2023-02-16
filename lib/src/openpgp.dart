@@ -3,11 +3,6 @@
 // file that was distributed with this source code.
 
 import 'enums.dart';
-import 'packet/contained_packet.dart';
-import 'packet/key_packet_generator.dart';
-import 'packet/packet_list.dart';
-import 'packet/signature_generator.dart';
-import 'packet/user_id.dart';
 import 'type/cleartext_message.dart';
 import 'type/private_key.dart';
 
@@ -69,61 +64,17 @@ class OpenPGP {
     String? subkeyPassphrase,
     DateTime? date,
   }) {
-    if (userIDs.isEmpty) {
-      throw Exception('UserIDs are required for key generation');
-    }
-
-    final keyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdsa;
-    final subkeyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdh;
-
-    final secretKey = KeyPacketGenerator.generateSecretKey(
-      keyAlgorithm,
+    return PrivateKey.generate(
+      userIDs,
+      passphrase,
+      type: type,
       rsaBits: rsaBits,
       curve: curve,
+      keyExpirationTime: keyExpirationTime,
+      subkeySign: subkeySign,
+      subkeyPassphrase: subkeyPassphrase,
       date: date,
-    ).encrypt(passphrase);
-    final secretSubkey = KeyPacketGenerator.generateSecretSubkey(
-      subkeyAlgorithm,
-      rsaBits: rsaBits,
-      curve: curve,
-      date: date,
-    ).encrypt(subkeyPassphrase ?? passphrase);
-
-    final packets = <ContainedPacket>[secretKey];
-
-    /// Wrap user id with certificate signature
-    for (final userID in userIDs) {
-      final userIDPacket = UserIDPacket(userID);
-      packets.addAll([
-        userIDPacket,
-        SignatureGenerator.createCertificateSignature(
-          userIDPacket,
-          secretKey,
-          keyExpirationTime: keyExpirationTime,
-          date: date,
-        )
-      ]);
-    }
-
-    /// Wrap secret subkey with binding signature
-    packets.addAll([
-      secretSubkey,
-      SignatureGenerator.createBindingSignature(
-        secretSubkey,
-        secretKey,
-        keyExpirationTime: keyExpirationTime,
-        subkeySign: subkeySign,
-        date: date,
-      ),
-    ]);
-
-    /// Add revocation signature packet for creating a revocation certificate.
-    packets.add(SignatureGenerator.createRevocationSignature(
-      secretKey,
-      date: date,
-    ));
-
-    return PrivateKey.fromPacketList(PacketList(packets));
+    );
   }
 
   /// Reads an (optionally armored) OpenPGP private key and returns a PrivateKey object

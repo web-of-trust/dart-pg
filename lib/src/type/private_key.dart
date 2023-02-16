@@ -5,8 +5,12 @@
 import '../armor/armor.dart';
 import '../enums.dart';
 import '../openpgp.dart';
+import '../packet/contained_packet.dart';
+import '../packet/key_packet_generator.dart';
 import '../packet/packet_list.dart';
 import '../packet/key_packet.dart';
+import '../packet/signature_generator.dart';
+import '../packet/user_id.dart';
 import 'key.dart';
 import 'key_reader.dart';
 import 'public_key.dart';
@@ -22,6 +26,7 @@ class PrivateKey extends Key {
     super.subkeys,
   }) : super(keyPacket);
 
+  /// Reads an (optionally armored) OpenPGP private key and returns a PrivateKey object
   factory PrivateKey.fromArmored(String armored) {
     final armor = Armor.decode(armored);
     if (armor.type != ArmorType.privateKey) {
@@ -42,6 +47,78 @@ class PrivateKey extends Key {
       users: keyReader.users,
       subkeys: keyReader.subkeys,
     );
+  }
+
+  /// Generates a new OpenPGP key pair. Supports RSA and ECC keys.
+  /// By default, primary and subkeys will be of same type.
+  /// The generated primary key will have signing capabilities.
+  /// By default, one subkey with encryption capabilities is also generated.
+  factory PrivateKey.generate(
+    List<String> userIDs,
+    String passphrase, {
+    KeyType type = KeyType.rsa,
+    int rsaBits = OpenPGP.preferredRSABits,
+    CurveInfo curve = OpenPGP.preferredCurve,
+    int keyExpirationTime = 0,
+    bool subkeySign = false,
+    String? subkeyPassphrase,
+    DateTime? date,
+  }) {
+    if (userIDs.isEmpty) {
+      throw Exception('UserIDs are required for key generation');
+    }
+
+    final keyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdsa;
+    final subkeyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdh;
+
+    final secretKey = KeyPacketGenerator.generateSecretKey(
+      keyAlgorithm,
+      rsaBits: rsaBits,
+      curve: curve,
+      date: date,
+    ).encrypt(passphrase);
+    final secretSubkey = KeyPacketGenerator.generateSecretSubkey(
+      subkeyAlgorithm,
+      rsaBits: rsaBits,
+      curve: curve,
+      date: date,
+    ).encrypt(subkeyPassphrase ?? passphrase);
+
+    final packets = <ContainedPacket>[secretKey];
+
+    /// Wrap user id with certificate signature
+    for (final userID in userIDs) {
+      final userIDPacket = UserIDPacket(userID);
+      packets.addAll([
+        userIDPacket,
+        SignatureGenerator.createCertificateSignature(
+          userIDPacket,
+          secretKey,
+          keyExpirationTime: keyExpirationTime,
+          date: date,
+        )
+      ]);
+    }
+
+    /// Wrap secret subkey with binding signature
+    packets.addAll([
+      secretSubkey,
+      SignatureGenerator.createBindingSignature(
+        secretSubkey,
+        secretKey,
+        keyExpirationTime: keyExpirationTime,
+        subkeySign: subkeySign,
+        date: date,
+      ),
+    ]);
+
+    /// Add revocation signature packet for creating a revocation certificate.
+    packets.add(SignatureGenerator.createRevocationSignature(
+      secretKey,
+      date: date,
+    ));
+
+    return PrivateKey.fromPacketList(PacketList(packets));
   }
 
   @override
