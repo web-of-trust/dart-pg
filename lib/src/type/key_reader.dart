@@ -45,6 +45,9 @@ class KeyReader {
       switch (packet.tag) {
         case PacketTag.publicKey:
         case PacketTag.secretKey:
+          if (keyPacket != null) {
+            throw Exception('Key block contains multiple keys');
+          }
           if (packet is KeyPacket) {
             keyPacket = packet;
             primaryKeyID = packet.keyID.toString();

@@ -34,9 +34,10 @@ class User {
     if (revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
         if (signature == null || revocation.issuerKeyID.keyID == signature.issuerKeyID.keyID) {
-          if (revocation.verify(
+          if (revocation.verifyCertRevocation(
             keyPacket,
-            keyPacket.writeForHash(),
+            userID: userID,
+            userAttribute: userAttribute,
             date: date,
           )) {
             return true;

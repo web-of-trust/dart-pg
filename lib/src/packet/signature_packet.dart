@@ -424,6 +424,28 @@ class SignaturePacket extends ContainedPacket {
     }
   }
 
+  bool verifyCertRevocation(
+    final KeyPacket verifyKey, {
+    UserIDPacket? userID,
+    UserAttributePacket? userAttribute,
+    final DateTime? date,
+  }) {
+    final bytes = userID?.toPacketData() ?? userAttribute?.toPacketData();
+    if (bytes == null) {
+      throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
+    }
+    return verify(
+      verifyKey,
+      Uint8List.fromList([
+        ...verifyKey.writeForHash(),
+        (userID != null) ? 0xb4 : 0xd1,
+        ...bytes.length.pack32(),
+        ...bytes,
+      ]),
+      date: date,
+    );
+  }
+
   static Uint8List _calculateTrailer(
     final SignatureType signatureType,
     final Uint8List signatureData,

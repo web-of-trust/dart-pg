@@ -161,6 +161,17 @@ class PrivateKey extends Key {
     final String keyID = '',
     final DateTime? date,
   }) {
+    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
+    for (final subkey in subkeys) {
+      if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
+        if ((subkey.keyPacket is SecretKeyPacket) && subkey.isSigningKey && subkey.verify(keyPacket, date: date)) {
+          return subkey.keyPacket as SecretKeyPacket;
+        }
+      }
+    }
+    if (keyID.isNotEmpty && keyID != keyPacket.keyID.toString()) {
+      throw ArgumentError('Could not find valid signing key packet.');
+    }
     return keyPacket;
   }
 
