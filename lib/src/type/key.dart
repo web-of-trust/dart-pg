@@ -97,12 +97,13 @@ abstract class Key {
     if (revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
         if (signature == null || revocation.issuerKeyID.keyID == signature.issuerKeyID.keyID) {
-          return revocation.verify(
+          if (revocation.verify(
             keyPacket,
-            keyData: keyPacket,
-            signatureType: SignatureType.keyRevocation,
+            keyPacket.writeForHash(),
             date: date,
-          );
+          )) {
+            return true;
+          }
         }
       }
     }

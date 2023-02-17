@@ -9,6 +9,7 @@ import 'package:pointycastle/pointycastle.dart';
 import '../crypto/signer/dsa.dart';
 import '../enums.dart';
 import '../helpers.dart';
+import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'key/key_params.dart';
 import 'key_packet.dart';
@@ -177,30 +178,29 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  /// Signs provided data. This needs to be done prior to serialization.
-  SignaturePacket sign(
-    final SecretKeyPacket key, {
-    final LiteralDataPacket? literalData,
-    final UserIDPacket? userIdData,
-    final UserAttributePacket? userAttributeData,
-    final KeyPacket? keyData,
-    final KeyPacket? bindKeyData,
+  factory SignaturePacket.createSignature(
+    final SecretKeyPacket signKey,
+    final SignatureType signatureType,
+    final Uint8List dataToSign, {
+    final HashAlgorithm? preferredHash,
+    List<SignatureSubpacket> subpackets = const [],
+    final int keyExpirationTime = 0,
     final DateTime? date,
-    final bool detached = false,
+    final Uint8List? attachedHeader,
   }) {
-    final version = key.version;
-    final keyAlgorithm = key.algorithm;
-    final creationTime = SignatureCreationTime.fromTime(date ?? DateTime.now());
-    final issuerFingerprint = IssuerFingerprint.fromKey(key);
-    final issuerKeyID = IssuerKeyID(key.keyID.id);
+    final version = signKey.version;
+    final keyAlgorithm = signKey.algorithm;
+    final hashAlgorithm = preferredHash ?? _getPreferredHash(signKey);
 
     final hashedSubpackets = [
-      creationTime,
-      issuerFingerprint,
-      issuerKeyID,
-      ...this.hashedSubpackets.takeWhile((subpacket) =>
-          (subpacket is! SignatureCreationTime || subpacket is! IssuerFingerprint || subpacket is! IssuerKeyID)),
+      SignatureCreationTime.fromTime(date ?? DateTime.now()),
+      IssuerFingerprint.fromKey(signKey),
+      IssuerKeyID(signKey.keyID.id),
+      ...subpackets,
     ];
+    if (keyExpirationTime > 0) {
+      hashedSubpackets.add(KeyExpirationTime.fromTime(keyExpirationTime));
+    }
 
     final signatureData = Uint8List.fromList([
       version,
@@ -209,99 +209,197 @@ class SignaturePacket extends ContainedPacket {
       hashAlgorithm.value,
       ..._writeSubpackets(hashedSubpackets),
     ]);
-
     final message = Uint8List.fromList([
-      ..._toSign(
-        signatureType,
-        literalData: literalData,
-        userIdData: userIdData,
-        userAttributeData: userAttributeData,
-        keyData: keyData,
-        bindKeyData: bindKeyData,
-      ),
+      ...dataToSign,
       ...signatureData,
       ..._calculateTrailer(
         signatureType,
         signatureData,
         version,
-        literalData: literalData,
-        detached: detached,
+        attachedHeader: attachedHeader,
       )
     ]);
-    final hash = Helper.hashDigest(message, hashAlgorithm);
-    final Uint8List signature;
-    switch (keyAlgorithm) {
-      case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaEncrypt:
-      case KeyAlgorithm.rsaSign:
-        final privateKey = (key.secretParams as RSASecretParams).privateKey;
-        signature = _rsaSign(privateKey, message);
-        break;
-      case KeyAlgorithm.dsa:
-        final keyParams = key.publicParams as DSAPublicParams;
-        final p = keyParams.primeP;
-        final q = keyParams.groupOrder;
-        final g = keyParams.groupGenerator;
-        final x = (key.secretParams as DSASecretParams).secretExponent;
-        final privateKey = DSAPrivateKey(x, p, q, g);
-        signature = _dsaSign(privateKey, message);
-        break;
-      case KeyAlgorithm.ecdsa:
-        final d = (key.secretParams as ECSecretParams).d;
-        final publicKey = (key.publicParams as ECPublicParams).publicKey;
-        final privateKey = ECPrivateKey(d, publicKey.parameters);
-        signature = _ecdsaSign(privateKey, message);
-        break;
-      case KeyAlgorithm.eddsa:
-        throw UnsupportedError('Unsupported public key algorithm for signing.');
-      default:
-        throw Exception('Unknown public key algorithm for signing.');
-    }
-
     return SignaturePacket(
       version,
       signatureType,
       keyAlgorithm,
       hashAlgorithm,
-      hash.sublist(0, 2),
-      signature,
+      Helper.hashDigest(message, hashAlgorithm).sublist(0, 2),
+      _signMessage(signKey, hashAlgorithm, message),
       hashedSubpackets: hashedSubpackets,
-      unhashedSubpackets: unhashedSubpackets,
     );
   }
 
-  /// Verifies the signature packet.
-  bool verify(
-    final KeyPacket key, {
-    final LiteralDataPacket? literalData,
-    final UserIDPacket? userIdData,
-    final UserAttributePacket? userAttributeData,
-    final KeyPacket? keyData,
-    final KeyPacket? bindKeyData,
-    final SignatureType? signatureType,
+  factory SignaturePacket.createSelfCertificate(
+    final SecretKeyPacket signKey, {
+    final UserIDPacket? userID,
+    final UserAttributePacket? userAttribute,
+    final int keyExpirationTime = 0,
+    final DateTime? date,
+  }) {
+    final bytes = userID?.toPacketData() ?? userAttribute?.toPacketData();
+    if (bytes == null) {
+      throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
+    }
+    return SignaturePacket.createSignature(
+      signKey,
+      SignatureType.certGeneric,
+      Uint8List.fromList([
+        ...signKey.writeForHash(),
+        (userID != null) ? 0xb4 : 0xd1,
+        ...bytes.length.pack32(),
+        ...bytes,
+      ]),
+      subpackets: [
+        KeyFlags.fromFlags(KeyFlag.certifyKeys.value | KeyFlag.signData.value),
+        PreferredSymmetricAlgorithms(Uint8List.fromList([
+          SymmetricAlgorithm.aes128.value,
+          SymmetricAlgorithm.aes192.value,
+          SymmetricAlgorithm.aes256.value,
+        ])),
+        PreferredHashAlgorithms(Uint8List.fromList([
+          HashAlgorithm.sha256.value,
+          HashAlgorithm.sha512.value,
+        ])),
+        PreferredCompressionAlgorithms(Uint8List.fromList([
+          CompressionAlgorithm.zlib.value,
+          CompressionAlgorithm.zip.value,
+          CompressionAlgorithm.uncompressed.value,
+        ])),
+        Features(Uint8List.fromList([
+          SupportFeature.modificationDetection.value,
+        ])),
+      ],
+      keyExpirationTime: keyExpirationTime,
+      date: date,
+    );
+  }
+
+  factory SignaturePacket.createKeyBinding(
+    final SecretKeyPacket signKey,
+    final KeyPacket bindKey, {
+    final int keyExpirationTime = 0,
+    final DateTime? date,
+  }) {
+    return SignaturePacket.createSignature(
+      signKey,
+      SignatureType.keyBinding,
+      Uint8List.fromList([
+        ...signKey.writeForHash(),
+        ...bindKey.writeForHash(),
+      ]),
+      keyExpirationTime: keyExpirationTime,
+      date: date,
+    );
+  }
+
+  factory SignaturePacket.createSubkeyBinding(
+    final SecretKeyPacket signKey,
+    final SecretSubkeyPacket subkey, {
+    final int keyExpirationTime = 0,
+    final bool subkeySign = false,
+    final DateTime? date,
+  }) {
+    final subpackets = <SignatureSubpacket>[];
+    if (subkeySign) {
+      subpackets.add(KeyFlags.fromFlags(KeyFlag.signData.value));
+      subpackets.add(EmbeddedSignature.fromSignature(SignaturePacket.createSignature(
+        subkey,
+        SignatureType.keyBinding,
+        Uint8List.fromList([
+          ...signKey.writeForHash(),
+          ...subkey.writeForHash(),
+        ]),
+        keyExpirationTime: keyExpirationTime,
+        date: date,
+      )));
+    } else {
+      subpackets.add(KeyFlags.fromFlags(KeyFlag.encryptCommunication.value | KeyFlag.encryptStorage.value));
+    }
+    return SignaturePacket.createSignature(
+      signKey,
+      SignatureType.subkeyBinding,
+      Uint8List.fromList([
+        ...signKey.writeForHash(),
+        ...subkey.writeForHash(),
+      ]),
+      subpackets: subpackets,
+      preferredHash: _getPreferredHash(subkey),
+      keyExpirationTime: keyExpirationTime,
+      date: date,
+    );
+  }
+
+  factory SignaturePacket.createKeyRevocation(
+    final SecretKeyPacket signKey, {
+    RevocationReasonTag reason = RevocationReasonTag.noReason,
+    String description = '',
+    final DateTime? date,
+  }) {
+    return SignaturePacket.createSignature(
+      signKey,
+      SignatureType.keyRevocation,
+      Uint8List.fromList([
+        ...signKey.writeForHash(),
+      ]),
+      subpackets: [RevocationReason.fromRevocation(reason, description)],
+      date: date,
+    );
+  }
+
+  factory SignaturePacket.createLiteralData(
+    final SecretKeyPacket signKey,
+    final LiteralDataPacket literalData, {
+    final String userID = '',
     final DateTime? date,
     final bool detached = false,
   }) {
-    if (keyAlgorithm != key.algorithm) {
+    return SignaturePacket.createSignature(
+      signKey,
+      literalData.text.isNotEmpty ? SignatureType.text : SignatureType.binary,
+      Uint8List.fromList([
+        ...literalData.getBytes(),
+      ]),
+      subpackets: userID.isNotEmpty ? <SignatureSubpacket>[SignerUserID.fromUserID(userID)] : [],
+      date: date,
+      attachedHeader: !detached ? literalData.writeHeader() : null,
+    );
+  }
+
+  @override
+  Uint8List toPacketData() => Uint8List.fromList([
+        ...signatureData,
+        ..._writeSubpackets(unhashedSubpackets),
+        ...signedHashValue,
+        ...signature,
+      ]);
+
+  /// Verifies the signature packet.
+  bool verify(
+    final KeyPacket verifyKey,
+    final Uint8List dataToVerify, {
+    final DateTime? date,
+    final Uint8List? attachedHeader,
+  }) {
+    if (keyAlgorithm != verifyKey.algorithm) {
       throw ArgumentError('Public key algorithm used to sign signature does not match issuer key algorithm.');
     }
-
     if (signatureExpirationTime != null &&
         signatureExpirationTime!.expirationTime.compareTo(date ?? DateTime.now()) < 0) {
       /// Signature is expired
       return false;
     }
 
-    final message = toHash(
-      signatureType ?? this.signatureType,
-      literalData: literalData,
-      userIdData: userIdData,
-      userAttributeData: userAttributeData,
-      keyData: keyData,
-      bindKeyData: bindKeyData,
-      detached: detached,
-    );
-
+    final message = Uint8List.fromList([
+      ...dataToVerify,
+      ...signatureData,
+      ..._calculateTrailer(
+        signatureType,
+        signatureData,
+        version,
+        attachedHeader: attachedHeader,
+      )
+    ]);
     final hash = Helper.hashDigest(message, hashAlgorithm);
     if (signedHashValue[0] != hash[0] || signedHashValue[1] != hash[1]) {
       throw Exception('Signed digest did not match');
@@ -311,13 +409,13 @@ class SignaturePacket extends ContainedPacket {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final publicKey = (key.publicParams as RSAPublicParams).publicKey;
+        final publicKey = (verifyKey.publicParams as RSAPublicParams).publicKey;
         return _rsaVerify(publicKey, message);
       case KeyAlgorithm.dsa:
-        final publicKey = (key.publicParams as DSAPublicParams).publicKey;
+        final publicKey = (verifyKey.publicParams as DSAPublicParams).publicKey;
         return _dsaVerify(publicKey, message);
       case KeyAlgorithm.ecdsa:
-        final publicKey = (key.publicParams as ECPublicParams).publicKey;
+        final publicKey = (verifyKey.publicParams as ECPublicParams).publicKey;
         return _ecdsaVerify(publicKey, message);
       case KeyAlgorithm.eddsa:
         throw UnsupportedError('Unsupported public key algorithm for verification.');
@@ -326,93 +424,15 @@ class SignaturePacket extends ContainedPacket {
     }
   }
 
-  Uint8List toHash(
-    final SignatureType signatureType, {
-    final LiteralDataPacket? literalData,
-    final UserIDPacket? userIdData,
-    final UserAttributePacket? userAttributeData,
-    final KeyPacket? keyData,
-    final KeyPacket? bindKeyData,
-    final bool detached = false,
-  }) {
-    return Uint8List.fromList([
-      ..._toSign(
-        signatureType,
-        literalData: literalData,
-        userIdData: userIdData,
-        userAttributeData: userAttributeData,
-        keyData: keyData,
-        bindKeyData: bindKeyData,
-      ),
-      ...signatureData,
-      ..._calculateTrailer(
-        signatureType,
-        signatureData,
-        version,
-        literalData: literalData,
-        detached: detached,
-      ),
-    ]);
-  }
-
-  static Uint8List _toSign(
-    final SignatureType signatureType, {
-    final LiteralDataPacket? literalData,
-    final UserIDPacket? userIdData,
-    final UserAttributePacket? userAttributeData,
-    final KeyPacket? keyData,
-    final KeyPacket? bindKeyData,
-  }) {
-    switch (signatureType) {
-      case SignatureType.binary:
-      case SignatureType.text:
-        return literalData?.getBytes() ?? Uint8List(0);
-      case SignatureType.certGeneric:
-      case SignatureType.certPersona:
-      case SignatureType.certCasual:
-      case SignatureType.certPositive:
-      case SignatureType.certRevocation:
-        final tag = (userIdData != null) ? 0xb4 : 0xd1;
-        final bytes = userIdData?.toPacketData() ?? userAttributeData?.toPacketData();
-        if (bytes == null) {
-          throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
-        }
-        return Uint8List.fromList([
-          ..._toSign(SignatureType.key, keyData: keyData),
-          tag,
-          ...bytes.length.pack32(),
-          ...bytes,
-        ]);
-      case SignatureType.subkeyBinding:
-      case SignatureType.subkeyRevocation:
-      case SignatureType.keyBinding:
-        return Uint8List.fromList([
-          ..._toSign(SignatureType.key, keyData: keyData),
-          ..._toSign(SignatureType.key, keyData: bindKeyData),
-        ]);
-      case SignatureType.key:
-        return keyData?.writeForHash() ?? Uint8List(0);
-      case SignatureType.keyRevocation:
-        return _toSign(SignatureType.key, keyData: keyData);
-      default:
-        return Uint8List(0);
-    }
-  }
-
   static Uint8List _calculateTrailer(
     final SignatureType signatureType,
     final Uint8List signatureData,
     final int version, {
-    final LiteralDataPacket? literalData,
-    final bool detached = false,
+    final Uint8List? attachedHeader,
   }) {
     final List<int> header;
     if (version == 5 && (signatureType == SignatureType.binary || signatureType == SignatureType.text)) {
-      if (detached) {
-        header = List.filled(6, 0);
-      } else {
-        header = literalData?.writeHeader() ?? [];
-      }
+      header = attachedHeader ?? List.filled(6, 0);
     } else {
       header = [];
     }
@@ -425,9 +445,57 @@ class SignaturePacket extends ContainedPacket {
     ]);
   }
 
-  Uint8List _rsaSign(final RSAPrivateKey privateKey, final Uint8List message) {
-    final signer = Signer('${hashAlgorithm.digestName}/RSA')
-      ..init(true, PrivateKeyParameter<RSAPrivateKey>(privateKey));
+  static HashAlgorithm _getPreferredHash(final KeyPacket key) {
+    switch (key.algorithm) {
+      case KeyAlgorithm.ecdh:
+      case KeyAlgorithm.ecdsa:
+      case KeyAlgorithm.eddsa:
+        final oid = (key.publicParams as ECPublicParams).oid;
+        final curve = CurveInfo.values.firstWhere(
+          (info) => info.identifierString == oid.objectIdentifierAsString,
+          orElse: () => OpenPGP.preferredCurve,
+        );
+        return curve.hashAlgorithm;
+      default:
+        return OpenPGP.preferredHashAlgorithm;
+    }
+  }
+
+  /// Signs provided data. This needs to be done prior to serialization.
+  static Uint8List _signMessage(final SecretKeyPacket key, HashAlgorithm hash, final Uint8List message) {
+    final Uint8List signature;
+    switch (key.algorithm) {
+      case KeyAlgorithm.rsaEncryptSign:
+      case KeyAlgorithm.rsaEncrypt:
+      case KeyAlgorithm.rsaSign:
+        final privateKey = (key.secretParams as RSASecretParams).privateKey;
+        signature = _rsaSign(privateKey, hash, message);
+        break;
+      case KeyAlgorithm.dsa:
+        final keyParams = key.publicParams as DSAPublicParams;
+        final p = keyParams.primeP;
+        final q = keyParams.groupOrder;
+        final g = keyParams.groupGenerator;
+        final x = (key.secretParams as DSASecretParams).secretExponent;
+        final privateKey = DSAPrivateKey(x, p, q, g);
+        signature = _dsaSign(privateKey, hash, message);
+        break;
+      case KeyAlgorithm.ecdsa:
+        final d = (key.secretParams as ECSecretParams).d;
+        final publicKey = (key.publicParams as ECPublicParams).publicKey;
+        final privateKey = ECPrivateKey(d, publicKey.parameters);
+        signature = _ecdsaSign(privateKey, hash, message);
+        break;
+      case KeyAlgorithm.eddsa:
+        throw UnsupportedError('Unsupported public key algorithm for signing.');
+      default:
+        throw Exception('Unknown public key algorithm for signing.');
+    }
+    return signature;
+  }
+
+  static Uint8List _rsaSign(final RSAPrivateKey key, HashAlgorithm hash, final Uint8List message) {
+    final signer = Signer('${hash.digestName}/RSA')..init(true, PrivateKeyParameter<RSAPrivateKey>(key));
     final signature = signer.generateSignature(message) as RSASignature;
     return Uint8List.fromList([
       ...(signature.bytes.lengthInBytes * 8).pack16(),
@@ -435,15 +503,14 @@ class SignaturePacket extends ContainedPacket {
     ]);
   }
 
-  bool _rsaVerify(final RSAPublicKey publicKey, final Uint8List message) {
-    final signer = Signer('${hashAlgorithm.digestName}/RSA')..init(false, PublicKeyParameter<RSAPublicKey>(publicKey));
+  bool _rsaVerify(final RSAPublicKey key, final Uint8List message) {
+    final signer = Signer('${hashAlgorithm.digestName}/RSA')..init(false, PublicKeyParameter<RSAPublicKey>(key));
     final s = Helper.readMPI(signature);
     return signer.verifySignature(message, RSASignature(s.toUnsignedBytes()));
   }
 
-  Uint8List _dsaSign(final DSAPrivateKey privateKey, final Uint8List message) {
-    final signer = DSASigner(Digest(hashAlgorithm.digestName))
-      ..init(true, PrivateKeyParameter<DSAPrivateKey>(privateKey));
+  static Uint8List _dsaSign(final DSAPrivateKey key, HashAlgorithm hash, final Uint8List message) {
+    final signer = DSASigner(Digest(hash.digestName))..init(true, PrivateKeyParameter<DSAPrivateKey>(key));
     final signature = signer.generateSignature(message);
     return signature.encode();
   }
@@ -458,9 +525,8 @@ class SignaturePacket extends ContainedPacket {
     return signer.verifySignature(message, DSASignature(r, s));
   }
 
-  Uint8List _ecdsaSign(final ECPrivateKey privateKey, final Uint8List message) {
-    final signer = Signer('${hashAlgorithm.digestName}/ECDSA')
-      ..init(true, PrivateKeyParameter<ECPrivateKey>(privateKey));
+  static Uint8List _ecdsaSign(final ECPrivateKey key, HashAlgorithm hash, final Uint8List message) {
+    final signer = Signer('${hash.digestName}/DET-ECDSA')..init(true, PrivateKeyParameter<ECPrivateKey>(key));
     final signature = signer.generateSignature(message) as ECSignature;
     return Uint8List.fromList([
       ...signature.r.bitLength.pack16(),
@@ -470,8 +536,8 @@ class SignaturePacket extends ContainedPacket {
     ]);
   }
 
-  bool _ecdsaVerify(final ECPublicKey publicKey, final Uint8List message) {
-    final signer = Signer('${hashAlgorithm.digestName}/ECDSA')..init(false, PublicKeyParameter<ECPublicKey>(publicKey));
+  bool _ecdsaVerify(final ECPublicKey key, final Uint8List message) {
+    final signer = Signer('${hashAlgorithm.digestName}/DET-ECDSA')..init(false, PublicKeyParameter<ECPublicKey>(key));
 
     final r = Helper.readMPI(signature);
     final s = Helper.readMPI(signature.sublist(r.byteLength + 2));
@@ -685,12 +751,4 @@ class SignaturePacket extends ContainedPacket {
     final typedSubpackets = subpackets.whereType<T>();
     return typedSubpackets.isNotEmpty ? typedSubpackets.first : null;
   }
-
-  @override
-  Uint8List toPacketData() => Uint8List.fromList([
-        ...signatureData,
-        ..._writeSubpackets(unhashedSubpackets),
-        ...signedHashValue,
-        ...signature,
-      ]);
 }

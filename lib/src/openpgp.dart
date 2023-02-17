@@ -40,12 +40,12 @@ class OpenPGP {
 
   /// Signs a cleartext message & return detached signature
   static Signature signDetached(String message, List<PrivateKey> signingKeys, {DateTime? date}) {
-    return SignedMessage.sign(message, signingKeys, date: date, detached: true).signature;
+    return SignedMessage.createSignedMessage(message, signingKeys, date: date, detached: true).signature;
   }
 
   /// Signs a cleartext message.
   static SignedMessage sign(String message, List<PrivateKey> signingKeys, {DateTime? date}) {
-    return SignedMessage.sign(message, signingKeys, date: date);
+    return SignedMessage.createSignedMessage(message, signingKeys, date: date);
   }
 
   /// Generates a new OpenPGP key pair. Supports RSA and ECC keys.

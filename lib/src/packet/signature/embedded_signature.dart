@@ -5,10 +5,13 @@
 import 'dart:typed_data';
 
 import '../../enums.dart';
+import '../signature_packet.dart';
 import '../signature_subpacket.dart';
 
 /// Packet embedded signature
 class EmbeddedSignature extends SignatureSubpacket {
   EmbeddedSignature(Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.embeddedSignature, data);
+
+  factory EmbeddedSignature.fromSignature(SignaturePacket signature) => EmbeddedSignature(signature.toPacketData());
 }

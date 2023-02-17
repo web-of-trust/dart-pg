@@ -9,7 +9,6 @@ import '../packet/contained_packet.dart';
 import '../packet/key_packet_generator.dart';
 import '../packet/packet_list.dart';
 import '../packet/key_packet.dart';
-import '../packet/signature_generator.dart';
 import '../packet/signature_packet.dart';
 import '../packet/user_id.dart';
 import 'key.dart';
@@ -91,9 +90,9 @@ class PrivateKey extends Key {
       final userIDPacket = UserIDPacket(userID);
       packets.addAll([
         userIDPacket,
-        SignatureGenerator.createCertificateSignature(
-          userIDPacket,
+        SignaturePacket.createSelfCertificate(
           secretKey,
+          userID: userIDPacket,
           keyExpirationTime: keyExpirationTime,
           date: date,
         )
@@ -103,9 +102,9 @@ class PrivateKey extends Key {
     /// Wrap secret subkey with binding signature
     packets.addAll([
       secretSubkey,
-      SignatureGenerator.createBindingSignature(
-        secretSubkey,
+      SignaturePacket.createSubkeyBinding(
         secretKey,
+        secretSubkey,
         keyExpirationTime: keyExpirationTime,
         subkeySign: subkeySign,
         date: date,
@@ -150,7 +149,7 @@ class PrivateKey extends Key {
     final String description = '',
     final DateTime? date,
   }) {
-    return SignatureGenerator.createRevocationSignature(
+    return SignaturePacket.createKeyRevocation(
       keyPacket,
       reason: reason,
       description: description,

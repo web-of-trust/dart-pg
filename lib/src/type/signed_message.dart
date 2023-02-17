@@ -8,7 +8,6 @@ import '../armor/armor.dart';
 import '../enums.dart';
 import '../packet/literal_data.dart';
 import '../packet/packet_list.dart';
-import '../packet/signature_generator.dart';
 import '../packet/signature_packet.dart';
 import 'cleartext_message.dart';
 import 'key.dart';
@@ -31,7 +30,7 @@ class SignedMessage extends CleartextMessage {
     return SignedMessage(armor.text, Signature(packetList));
   }
 
-  factory SignedMessage.sign(
+  factory SignedMessage.createSignedMessage(
     final String message,
     final List<PrivateKey> signingKeys, {
     final String userID = '',
@@ -47,7 +46,7 @@ class SignedMessage extends CleartextMessage {
       Signature(
         PacketList(
           signingKeys.map(
-            (key) => SignatureGenerator.createLiteralDataSignature(
+            (key) => SignaturePacket.createLiteralData(
               key.getSigningKeyPacket(),
               literalData,
               userID: userID,
