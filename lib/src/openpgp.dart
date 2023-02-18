@@ -39,14 +39,12 @@ class OpenPGP {
   static const rsaPublicExponent = 65537;
 
   /// Signs a cleartext message & return detached signature
-  static Signature signDetached(String message, List<PrivateKey> signingKeys, {DateTime? date}) {
-    return SignedMessage.createSignedMessage(message, signingKeys, date: date, detached: true).signature;
-  }
+  static Signature signDetached(String message, List<PrivateKey> signingKeys, {DateTime? date}) =>
+      SignedMessage.createSignedMessage(message, signingKeys, date: date, detached: true).signature;
 
   /// Signs a cleartext message.
-  static SignedMessage sign(String message, List<PrivateKey> signingKeys, {DateTime? date}) {
-    return SignedMessage.createSignedMessage(message, signingKeys, date: date);
-  }
+  static SignedMessage sign(String message, List<PrivateKey> signingKeys, {DateTime? date}) =>
+      SignedMessage.createSignedMessage(message, signingKeys, date: date);
 
   /// Generates a new OpenPGP key pair. Supports RSA and ECC keys.
   /// By default, primary and subkeys will be of same type.
@@ -62,27 +60,25 @@ class OpenPGP {
     bool subkeySign = false,
     String? subkeyPassphrase,
     DateTime? date,
-  }) {
-    return PrivateKey.generate(
-      userIDs,
-      passphrase,
-      type: type,
-      rsaBits: rsaBits,
-      curve: curve,
-      keyExpirationTime: keyExpirationTime,
-      subkeySign: subkeySign,
-      subkeyPassphrase: subkeyPassphrase,
-      date: date,
-    );
-  }
+  }) =>
+      PrivateKey.generate(
+        userIDs,
+        passphrase,
+        type: type,
+        rsaBits: rsaBits,
+        curve: curve,
+        keyExpirationTime: keyExpirationTime,
+        subkeySign: subkeySign,
+        subkeyPassphrase: subkeyPassphrase,
+        date: date,
+      );
 
   /// Reads an (optionally armored) OpenPGP private key and returns a PrivateKey object
-  static PrivateKey readPrivateKey(String armored) {
-    return PrivateKey.fromArmored(armored);
-  }
+  static PrivateKey readPrivateKey(String armored) => PrivateKey.fromArmored(armored);
 
   /// Reads an (optionally armored) OpenPGP public key and returns a PublicKey object
-  static PublicKey readPublicKey(String armored) {
-    return PublicKey.fromArmored(armored);
-  }
+  static PublicKey readPublicKey(String armored) => PublicKey.fromArmored(armored);
+
+  /// Reads an (optionally armored) OpenPGP signature and returns a Signature object
+  static Signature readSignature(String armored) => Signature.fromArmored(armored);
 }
