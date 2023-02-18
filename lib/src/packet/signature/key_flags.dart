@@ -27,11 +27,11 @@ class KeyFlags extends SignatureSubpacket {
     final bytes = Uint8List(4);
     var size = 0;
     for (int i = 0; i != 4; i++) {
-      bytes[0] = (flags >> (i * 8)) & 0xff;
+      bytes[i] = (flags >> (i * 8)) & 0xff;
       if (bytes[i] != 0) {
         size = i;
       }
     }
-    return bytes.sublist(0, size);
+    return bytes.sublist(0, size + 1);
   }
 }

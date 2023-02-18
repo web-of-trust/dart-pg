@@ -13,9 +13,12 @@ class Features extends SignatureSubpacket {
   factory Features.fromFeatures(int features, {bool critical = false}) =>
       Features(Uint8List.fromList([features]), critical: critical);
 
-  bool get supprtModificationDetection => (data[0] & SupportFeature.modificationDetection.value) != 0;
+  bool get supprtModificationDetection =>
+      (data[0] & SupportFeature.modificationDetection.value) == SupportFeature.modificationDetection.value;
 
-  bool get supportEncryptedData => (data[0] & SupportFeature.aeadEncryptedData.value) != 0;
+  bool get supportAeadEncryptedData =>
+      (data[0] & SupportFeature.aeadEncryptedData.value) == SupportFeature.aeadEncryptedData.value;
 
-  bool get supportVersion5PublicKey => (data[0] & SupportFeature.version5PublicKey.value) != 0;
+  bool get supportVersion5PublicKey =>
+      (data[0] & SupportFeature.version5PublicKey.value) == SupportFeature.version5PublicKey.value;
 }

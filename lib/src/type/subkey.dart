@@ -61,7 +61,8 @@ class Subkey {
         if (bindingSignatures.isNotEmpty) {
           value = false;
           for (final signature in bindingSignatures) {
-            if (signature.keyFlags != null && (signature.keyFlags!.flags & KeyFlag.signData.value) != 0) {
+            if (signature.keyFlags != null &&
+                (signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
               value = true;
               break;
             }
