@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:dart_pg/src/armor/armor.dart';
 import 'package:dart_pg/src/enums.dart';
+import 'package:dart_pg/src/helpers.dart';
+
 import 'package:dart_pg/src/packet/key/dsa_public_params.dart';
 import 'package:dart_pg/src/packet/key/dsa_secret_params.dart';
 import 'package:dart_pg/src/packet/key/ec_secret_params.dart';
@@ -68,156 +70,105 @@ void main() {
 
   group('public key packet tests', () {
     test('rsa test', () {
-      final armor = Armor.decode(rsaPublicKey);
-      expect(armor.type, ArmorType.publicKey);
-      final packetList = PacketList.packetDecode(armor.data);
-      for (final packet in packetList) {
-        if (packet.tag == PacketTag.publicKey) {
-          final key = packet as PublicKeyPacket;
-          expect(key.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
-          expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
-        }
-        if (packet.tag == PacketTag.publicSubkey) {
-          final subkey = packet as PublicSubkeyPacket;
-          expect(subkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
-          expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
-        }
-        if (packet.tag == PacketTag.userID) {
-          final userID = packet as UserIDPacket;
-          expect(userID.name, 'rsa pgp key');
-          expect(userID.email, 'test@dummy.com');
-        }
-      }
+      final publicKey = PublicKeyPacket.fromPacketData(
+          base64.decode(rsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      expect(publicKey.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
+      expect(publicKey.algorithm, KeyAlgorithm.rsaEncryptSign);
+
+      final publicSubkey = PublicSubkeyPacket.fromPacketData(
+          base64.decode(rsaPublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      expect(publicSubkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
+      expect(publicSubkey.algorithm, KeyAlgorithm.rsaEncryptSign);
     });
 
     test('dsa elgamal test', () {
-      final armor = Armor.decode(dsaPublicKey);
-      expect(armor.type, ArmorType.publicKey);
-      final packetList = PacketList.packetDecode(armor.data);
-      for (final packet in packetList) {
-        if (packet.tag == PacketTag.publicKey) {
-          final key = packet as PublicKeyPacket;
-          expect(key.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
-          expect(key.algorithm, KeyAlgorithm.dsa);
-        }
-        if (packet.tag == PacketTag.publicSubkey) {
-          final subkey = packet as PublicSubkeyPacket;
-          expect(subkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
-          expect(subkey.algorithm, KeyAlgorithm.elgamal);
-        }
-        if (packet.tag == PacketTag.userID) {
-          final userID = packet as UserIDPacket;
-          expect(userID.name, 'dsa elgamal pgp key');
-          expect(userID.email, 'test@dummy.com');
-        }
-      }
+      final publicKey = PublicKeyPacket.fromPacketData(
+          base64.decode(dsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      expect(publicKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
+      expect(publicKey.algorithm, KeyAlgorithm.dsa);
+
+      final publicSubkey = PublicSubkeyPacket.fromPacketData(
+          base64.decode(elgamalPublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      expect(publicSubkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
+      expect(publicSubkey.algorithm, KeyAlgorithm.elgamal);
     });
 
     test('ecc test', () {
-      final armor = Armor.decode(eccPublicKey);
-      expect(armor.type, ArmorType.publicKey);
-      final packetList = PacketList.packetDecode(armor.data);
-      for (final packet in packetList) {
-        if (packet.tag == PacketTag.publicKey) {
-          final key = packet as PublicKeyPacket;
-          expect(key.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
-          expect(key.algorithm, KeyAlgorithm.ecdsa);
-        }
-        if (packet.tag == PacketTag.publicSubkey) {
-          final subkey = packet as PublicSubkeyPacket;
-          expect(subkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
-          expect(subkey.algorithm, KeyAlgorithm.ecdh);
-        }
-        if (packet.tag == PacketTag.userID) {
-          final userID = packet as UserIDPacket;
-          expect(userID.name, 'ecc pgp key');
-          expect(userID.email, 'test@dummy.com');
-        }
-      }
+      final publicKey = PublicKeyPacket.fromPacketData(
+          base64.decode(ecdsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      expect(publicKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
+      expect(publicKey.algorithm, KeyAlgorithm.ecdsa);
+
+      final publicSubkey = PublicSubkeyPacket.fromPacketData(
+          base64.decode(ecdhPublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      expect(publicSubkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
+      expect(publicSubkey.algorithm, KeyAlgorithm.ecdh);
     });
   });
 
   group('secret key packet tests', () {
     test('rsa test', (() {
-      final armor = Armor.decode(rsaPrivateKey);
-      expect(armor.type, ArmorType.privateKey);
-      final packetList = PacketList.packetDecode(armor.data);
-      for (final packet in packetList) {
-        if (packet.tag == PacketTag.secretKey) {
-          final key = packet as SecretKeyPacket;
-          final publicParams = key.publicKey.publicParams as RSAPublicParams;
-          final secretParams = key.decrypt(passphrase).secretParams as RSASecretParams;
+      final secretKey = SecretKeyPacket.fromPacketData(
+          base64.decode(rsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      final publicParams = secretKey.publicKey.publicParams as RSAPublicParams;
+      final secretParams = secretKey.decrypt(passphrase).secretParams as RSASecretParams;
 
-          expect(key.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
-          expect(key.algorithm, KeyAlgorithm.rsaEncryptSign);
-          expect(secretParams.pInv, secretParams.primeP.modInverse(secretParams.primeQ));
-          expect(publicParams.modulus, secretParams.modulus);
-        }
-        if (packet.tag == PacketTag.secretSubkey) {
-          final subkey = packet as SecretSubkeyPacket;
-          final publicParams = subkey.publicKey.publicParams as RSAPublicParams;
-          final secretParams = subkey.decrypt(passphrase).secretParams as RSASecretParams;
+      expect(secretKey.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
+      expect(secretKey.algorithm, KeyAlgorithm.rsaEncryptSign);
+      expect(secretParams.pInv, secretParams.primeP.modInverse(secretParams.primeQ));
+      expect(publicParams.modulus, secretParams.modulus);
 
-          expect(subkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
-          expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
-          expect(secretParams.pInv, secretParams.primeP.modInverse(secretParams.primeQ));
-          expect(publicParams.modulus, secretParams.modulus);
-        }
-      }
+      final secretSubkey = SecretSubkeyPacket.fromPacketData(
+          base64.decode(rsaSecretSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      final subkeyPublicParams = secretSubkey.publicKey.publicParams as RSAPublicParams;
+      final subkeySecretParams = secretSubkey.decrypt(passphrase).secretParams as RSASecretParams;
+
+      expect(secretSubkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
+      expect(secretSubkey.algorithm, KeyAlgorithm.rsaEncryptSign);
+      expect(subkeySecretParams.pInv, subkeySecretParams.primeP.modInverse(subkeySecretParams.primeQ));
+      expect(subkeyPublicParams.modulus, subkeySecretParams.modulus);
     }));
 
     test('dsa elgamal test', () {
-      final armor = Armor.decode(dsaPrivateKey);
-      expect(armor.type, ArmorType.privateKey);
-      final packetList = PacketList.packetDecode(armor.data);
-      for (final packet in packetList) {
-        if (packet.tag == PacketTag.secretKey) {
-          final key = packet as SecretKeyPacket;
-          final publicParams = key.publicKey.publicParams as DSAPublicParams;
-          final secretParams = key.decrypt(passphrase).secretParams as DSASecretParams;
+      final secretKey = SecretKeyPacket.fromPacketData(
+          base64.decode(dsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      final publicParams = secretKey.publicKey.publicParams as DSAPublicParams;
+      final secretParams = secretKey.decrypt(passphrase).secretParams as DSASecretParams;
 
-          expect(key.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
-          expect(key.algorithm, KeyAlgorithm.dsa);
-          expect(publicParams.publicExponent,
-              publicParams.groupGenerator.modPow(secretParams.secretExponent, publicParams.primeP));
-        }
-        if (packet.tag == PacketTag.secretSubkey) {
-          final subkey = packet as SecretSubkeyPacket;
-          final publicParams = subkey.publicKey.publicParams as ElGamalPublicParams;
-          final secretParams = subkey.decrypt(passphrase).secretParams as ElGamalSecretParams;
+      expect(secretKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
+      expect(secretKey.algorithm, KeyAlgorithm.dsa);
+      expect(publicParams.publicExponent,
+          publicParams.groupGenerator.modPow(secretParams.secretExponent, publicParams.primeP));
 
-          expect(subkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
-          expect(subkey.algorithm, KeyAlgorithm.elgamal);
-          expect(publicParams.publicExponent,
-              publicParams.groupGenerator.modPow(secretParams.secretExponent, publicParams.primeP));
-        }
-      }
+      final secretSubkey = SecretSubkeyPacket.fromPacketData(
+          base64.decode(elgamalSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      final subkeyPublicParams = secretSubkey.publicKey.publicParams as ElGamalPublicParams;
+      final subkeySecretParams = secretSubkey.decrypt(passphrase).secretParams as ElGamalSecretParams;
+
+      expect(secretSubkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
+      expect(secretSubkey.algorithm, KeyAlgorithm.elgamal);
+      expect(subkeyPublicParams.publicExponent,
+          subkeyPublicParams.groupGenerator.modPow(subkeySecretParams.secretExponent, subkeyPublicParams.primeP));
     });
 
     test('ecc test', () {
-      final armor = Armor.decode(eccPrivateKey);
-      expect(armor.type, ArmorType.privateKey);
-      final packetList = PacketList.packetDecode(armor.data);
-      for (final packet in packetList) {
-        if (packet.tag == PacketTag.secretKey) {
-          final key = packet as SecretKeyPacket;
-          final publicParams = key.publicKey.publicParams as ECDSAPublicParams;
-          final secretParams = key.decrypt(passphrase).secretParams as ECSecretParams;
+      final secretKey = SecretKeyPacket.fromPacketData(
+          base64.decode(ecdsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      final publicParams = secretKey.publicKey.publicParams as ECDSAPublicParams;
+      final secretParams = secretKey.decrypt(passphrase).secretParams as ECSecretParams;
 
-          expect(key.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
-          expect(key.algorithm, KeyAlgorithm.ecdsa);
-          expect(publicParams.publicKey.Q, publicParams.publicKey.parameters!.G * secretParams.d);
-        }
-        if (packet.tag == PacketTag.secretSubkey) {
-          final subkey = packet as SecretSubkeyPacket;
-          final publicParams = subkey.publicKey.publicParams as ECDHPublicParams;
-          final secretParams = subkey.decrypt(passphrase).secretParams as ECSecretParams;
+      expect(secretKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
+      expect(secretKey.algorithm, KeyAlgorithm.ecdsa);
+      expect(publicParams.publicKey.Q, publicParams.publicKey.parameters!.G * secretParams.d);
 
-          expect(subkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
-          expect(subkey.algorithm, KeyAlgorithm.ecdh);
-          expect(publicParams.publicKey.Q, publicParams.publicKey.parameters!.G * secretParams.d);
-        }
-      }
+      final secretSubkey = SecretSubkeyPacket.fromPacketData(
+          base64.decode(ecdhSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      final subkeyPublicParams = secretSubkey.publicKey.publicParams as ECDHPublicParams;
+      final subkeySecretParams = secretSubkey.decrypt(passphrase).secretParams as ECSecretParams;
+
+      expect(secretSubkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
+      expect(secretSubkey.algorithm, KeyAlgorithm.ecdh);
+      expect(subkeyPublicParams.publicKey.Q, subkeyPublicParams.publicKey.parameters!.G * subkeySecretParams.d);
     });
 
     test('encrypt test', (() {

@@ -40,7 +40,6 @@ class SignedMessage extends CleartextMessage {
     if (signingKeys.isEmpty) {
       throw Exception('No signing keys provided');
     }
-    final literalData = LiteralDataPacket(Uint8List(0), text: message);
     return SignedMessage(
       message,
       Signature(
@@ -48,7 +47,7 @@ class SignedMessage extends CleartextMessage {
           signingKeys.map(
             (key) => SignaturePacket.createLiteralData(
               key.getSigningKeyPacket(),
-              literalData,
+              LiteralDataPacket(Uint8List(0), text: message),
               userID: userID,
               date: date,
               detached: detached,
