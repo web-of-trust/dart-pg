@@ -159,7 +159,7 @@ class SignaturePacket extends ContainedPacket {
     final unhashedLength = bytes.sublist(pos, pos + 2).toUint16();
     pos += 2;
     final unhashedSubpackets = _readSubpackets(bytes.sublist(pos, pos + unhashedLength));
-    pos += hashedLength;
+    pos += unhashedLength;
 
     /// Two-octet field holding left 16 bits of signed hash value.
     final signedHashValue = bytes.sublist(pos, pos + 2);
@@ -459,9 +459,10 @@ class SignaturePacket extends ContainedPacket {
 
     return Uint8List.fromList([
       ...header,
-      ...[version, 0xff],
+      version,
+      0xff,
       ...(version == 5) ? List.filled(4, 0) : <int>[],
-      ...signatureData.length.pack32(),
+      ...signatureData.lengthInBytes.pack32(),
     ]);
   }
 
@@ -566,7 +567,7 @@ class SignaturePacket extends ContainedPacket {
   }
 
   /// Creates list of bytes with subpacket data
-  static Uint8List _writeSubpackets(final List<SignatureSubpacket> subpackets) {
+  static Uint8List _writeSubpackets(final Iterable<SignatureSubpacket> subpackets) {
     final bytes = subpackets.map((subpacket) => subpacket.toSubpacket()).expand((byte) => byte);
     return Uint8List.fromList([...bytes.length.pack16(), ...bytes]);
   }

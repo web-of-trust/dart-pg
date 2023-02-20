@@ -148,7 +148,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     final packetData = toPacketData();
     return Uint8List.fromList([
       (version == 5) ? 0x9a : 0x99,
-      ...(version == 5) ? packetData.length.pack32() : packetData.length.pack16(),
+      ...(version == 5) ? packetData.lengthInBytes.pack32() : packetData.lengthInBytes.pack16(),
       ...packetData,
     ]);
   }
@@ -160,7 +160,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
       version,
       ...creationTime.toBytes(),
       algorithm.value,
-      ...(version == 5) ? keyData.length.pack32() : [],
+      ...(version == 5) ? keyData.lengthInBytes.pack32() : [],
       ...keyData,
     ]);
   }
