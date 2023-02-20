@@ -76,7 +76,9 @@ class KeyPairGenerator {
         Helper.secureRandom(),
       ),
     );
-    return keyGen.generateKeyPair() as AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>;
+    final keyPair = keyGen.generateKeyPair();
+    return AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>(
+        keyPair.publicKey as RSAPublicKey, keyPair.privateKey as RSAPrivateKey);
   }
 
   static AsymmetricKeyPair<ECPublicKey, ECPrivateKey> _generateECKeyPair([
@@ -94,7 +96,9 @@ class KeyPairGenerator {
             Helper.secureRandom(),
           ),
         );
-        return keyGen.generateKeyPair() as AsymmetricKeyPair<ECPublicKey, ECPrivateKey>;
+        final keyPair = keyGen.generateKeyPair();
+        return AsymmetricKeyPair<ECPublicKey, ECPrivateKey>(
+            keyPair.publicKey as ECPublicKey, keyPair.privateKey as ECPrivateKey);
     }
   }
 }

@@ -50,11 +50,11 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
   /// Return the maximum size for an input block to this engine.
   @override
-  int get inputBlockSize => _forEncryption ? (_bitSize - 1) ~/ 8 : 2 * ((_bitSize + 7) ~/ 8);
+  int get inputBlockSize => _forEncryption ? (_bitSize - 1) ~/ 8 : 2 * ((_bitSize + 7) >> 3);
 
   /// Return the maximum size for an output block to this engine.
   @override
-  int get outputBlockSize => _forEncryption ? 2 * ((_bitSize + 7) ~/ 8) : (_bitSize - 1) ~/ 8;
+  int get outputBlockSize => _forEncryption ? 2 * ((_bitSize + 7) >> 3) : (_bitSize - 1) ~/ 8;
 
   @override
   Uint8List process(Uint8List data) {

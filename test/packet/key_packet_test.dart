@@ -20,7 +20,7 @@ import 'package:test/test.dart';
 import '../test_data.dart';
 
 void main() {
-  group('public key packet tests', () {
+  group('public key packet', () {
     test('rsa test', () {
       final publicKey = PublicKeyPacket.fromPacketData(
           base64.decode(rsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
@@ -58,7 +58,7 @@ void main() {
     });
   });
 
-  group('secret key packet tests', () {
+  group('secret key packet', () {
     test('rsa test', (() {
       final secretKey = SecretKeyPacket.fromPacketData(
           base64.decode(rsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));

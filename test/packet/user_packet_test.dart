@@ -9,15 +9,13 @@ import 'package:faker/faker.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('user packet tests', (() {
-    final faker = Faker();
-
+  group('User packet', (() {
     test('user id test', (() {
       final name = faker.person.name();
       final email = faker.internet.email();
       final comment = faker.lorem.words(3).join(' ');
 
-      final userID = UserIDPacket([name, '($comment)', email].join(' '));
+      final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
       expect(userID.name, name);
       expect(userID.email, email);
       expect(userID.comment, comment);

@@ -8,8 +8,6 @@ import 'package:faker/faker.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final faker = Faker();
-
   group('ElGamal encryption tests', () {
     test('Enc 512 Test', () {
       final p512 = BigInt.parse(

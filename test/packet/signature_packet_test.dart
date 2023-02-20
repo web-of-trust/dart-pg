@@ -15,11 +15,10 @@ import 'package:test/test.dart';
 import '../test_data.dart';
 
 void main() {
-  group('signature packet tests', () {
-    final faker = Faker();
+  group('Signature packet', () {
     final random = Helper.secureRandom();
 
-    test('key flag sub packet', () {
+    test('key flag sub test', () {
       final keyFlags = KeyFlags.fromFlags(
         KeyFlag.certifyKeys.value |
             KeyFlag.signData.value |
@@ -34,7 +33,7 @@ void main() {
       }
     });
 
-    test('features sub packet', () {
+    test('features sub packet test', () {
       final features = Features.fromFeatures(SupportFeature.modificationDetection.value |
           SupportFeature.aeadEncryptedData.value |
           SupportFeature.version5PublicKey.value);
@@ -43,7 +42,7 @@ void main() {
       expect(features.supportVersion5PublicKey, true);
     });
 
-    test('signature sub packet write & read', () {
+    test('write & read sub packet', () {
       final random = Helper.secureRandom();
       final initSubpackets =
           SignatureSubpacketType.values.map((type) => SignatureSubpacket(type, random.nextBytes(10))).toList();
@@ -77,7 +76,7 @@ void main() {
       }
     });
 
-    test('sign & verify', () {
+    test('sign & verify test', () {
       final name = faker.person.name();
       final email = faker.internet.email();
       final comment = faker.lorem.words(3).join(' ');
@@ -89,7 +88,7 @@ void main() {
 
       expect(signature.verify(secretKey.publicKey, dataToSign), isTrue);
 
-      final userID = UserIDPacket([name, '($comment)', email].join(' '));
+      final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
       final selfCertificate = SignaturePacket.createSelfCertificate(secretKey, userID: userID);
       expect(selfCertificate.verifyUserCertification(secretKey.publicKey, userID: userID), isTrue);
     });
