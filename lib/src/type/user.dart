@@ -34,7 +34,7 @@ class User {
     if (revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
         if (signature == null || revocation.issuerKeyID.keyID == signature.issuerKeyID.keyID) {
-          if (revocation.verifyCertRevocation(
+          if (revocation.verifyUserCertification(
             keyPacket,
             userID: userID,
             userAttribute: userAttribute,
@@ -46,6 +46,26 @@ class User {
       }
     }
     return false;
+  }
+
+  bool verify(
+    KeyPacket keyPacket, {
+    final DateTime? date,
+  }) {
+    if (isRevoked(keyPacket, date: date)) {
+      return false;
+    }
+    for (final signature in selfCertifications) {
+      if (!signature.verifyUserCertification(
+        keyPacket,
+        userID: userID,
+        userAttribute: userAttribute,
+        date: date,
+      )) {
+        return false;
+      }
+    }
+    return true;
   }
 
   PacketList toPacketList() {

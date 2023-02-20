@@ -119,7 +119,7 @@ abstract class Key {
     return true;
   }
 
-  KeyPacket getEncryptionKey({
+  KeyPacket getEncryptionKeyPacket({
     final String keyID = '',
     final DateTime? date,
   }) {
@@ -174,7 +174,7 @@ abstract class Key {
         if (signature == null || revocation.issuerKeyID.keyID == signature.issuerKeyID.keyID) {
           if (revocation.verify(
             keyPacket,
-            keyPacket.writeForHash(),
+            keyPacket.writeForSign(),
             date: date,
           )) {
             return true;

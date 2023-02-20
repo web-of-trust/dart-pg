@@ -11,20 +11,21 @@ import 'package:test/test.dart';
 void main() {
   group('user packet tests', (() {
     final faker = Faker();
+
     test('user id test', (() {
       final name = faker.person.name();
       final email = faker.internet.email();
       final comment = faker.lorem.words(3).join(' ');
 
-      final userId = UserIDPacket([name, '($comment)', email].join(' '));
-      expect(userId.name, name);
-      expect(userId.email, email);
-      expect(userId.comment, comment);
+      final userID = UserIDPacket([name, '($comment)', email].join(' '));
+      expect(userID.name, name);
+      expect(userID.email, email);
+      expect(userID.comment, comment);
 
-      final cloneUserId = UserIDPacket.fromPacketData(userId.toPacketData());
-      expect(userId.name, cloneUserId.name);
-      expect(userId.email, cloneUserId.email);
-      expect(userId.comment, cloneUserId.comment);
+      final cloneUserId = UserIDPacket.fromPacketData(userID.toPacketData());
+      expect(userID.name, cloneUserId.name);
+      expect(userID.email, cloneUserId.email);
+      expect(userID.comment, cloneUserId.comment);
     }));
 
     test('user attribute test', (() {

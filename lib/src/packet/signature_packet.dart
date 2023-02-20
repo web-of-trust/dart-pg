@@ -237,7 +237,7 @@ class SignaturePacket extends ContainedPacket {
     final int keyExpirationTime = 0,
     final DateTime? date,
   }) {
-    final bytes = userID?.toPacketData() ?? userAttribute?.toPacketData();
+    final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
       throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
     }
@@ -245,9 +245,7 @@ class SignaturePacket extends ContainedPacket {
       signKey,
       SignatureType.certGeneric,
       Uint8List.fromList([
-        ...signKey.writeForHash(),
-        (userID != null) ? 0xb4 : 0xd1,
-        ...bytes.length.pack32(),
+        ...signKey.writeForSign(),
         ...bytes,
       ]),
       subpackets: [
@@ -285,8 +283,8 @@ class SignaturePacket extends ContainedPacket {
       signKey,
       SignatureType.keyBinding,
       Uint8List.fromList([
-        ...signKey.writeForHash(),
-        ...bindKey.writeForHash(),
+        ...signKey.writeForSign(),
+        ...bindKey.writeForSign(),
       ]),
       keyExpirationTime: keyExpirationTime,
       date: date,
@@ -307,8 +305,8 @@ class SignaturePacket extends ContainedPacket {
         subkey,
         SignatureType.keyBinding,
         Uint8List.fromList([
-          ...signKey.writeForHash(),
-          ...subkey.writeForHash(),
+          ...signKey.writeForSign(),
+          ...subkey.writeForSign(),
         ]),
         keyExpirationTime: keyExpirationTime,
         date: date,
@@ -320,8 +318,8 @@ class SignaturePacket extends ContainedPacket {
       signKey,
       SignatureType.subkeyBinding,
       Uint8List.fromList([
-        ...signKey.writeForHash(),
-        ...subkey.writeForHash(),
+        ...signKey.writeForSign(),
+        ...subkey.writeForSign(),
       ]),
       subpackets: subpackets,
       preferredHash: _getPreferredHash(subkey),
@@ -340,7 +338,7 @@ class SignaturePacket extends ContainedPacket {
       signKey,
       SignatureType.keyRevocation,
       Uint8List.fromList([
-        ...signKey.writeForHash(),
+        ...signKey.writeForSign(),
       ]),
       subpackets: [RevocationReason.fromRevocation(reason, description)],
       date: date,
@@ -424,7 +422,7 @@ class SignaturePacket extends ContainedPacket {
     }
   }
 
-  bool verifyCertRevocation(
+  bool verifyUserCertification(
     final KeyPacket verifyKey, {
     UserIDPacket? userID,
     UserAttributePacket? userAttribute,
@@ -437,7 +435,7 @@ class SignaturePacket extends ContainedPacket {
     return verify(
       verifyKey,
       Uint8List.fromList([
-        ...verifyKey.writeForHash(),
+        ...verifyKey.writeForSign(),
         (userID != null) ? 0xb4 : 0xd1,
         ...bytes.length.pack32(),
         ...bytes,

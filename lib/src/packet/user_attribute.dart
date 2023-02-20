@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 
 import '../enums.dart';
+import '../helpers.dart';
 import 'contained_packet.dart';
 import 'image_attribute.dart';
 import 'subpacket_reader.dart';
@@ -28,6 +29,15 @@ class UserAttributePacket extends ContainedPacket {
   @override
   Uint8List toPacketData() =>
       Uint8List.fromList(attributes.map((attr) => attr.toSubpacket()).expand((byte) => byte).toList(growable: false));
+
+  Uint8List writeForSign() {
+    final bytes = toPacketData();
+    return Uint8List.fromList([
+      0xd1,
+      ...bytes.lengthInBytes.pack32(),
+      ...bytes,
+    ]);
+  }
 
   static List<UserAttributeSubpacket> _readSubpackets(final Uint8List bytes) {
     final attributes = <UserAttributeSubpacket>[];

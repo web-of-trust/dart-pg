@@ -219,8 +219,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   }
 
   @override
-  Uint8List writeForHash() {
-    return publicKey.writeForHash();
+  Uint8List writeForSign() {
+    return publicKey.writeForSign();
   }
 
   @override

@@ -106,8 +106,8 @@ class Subkey {
       if (!signature.verify(
         keyPacket,
         Uint8List.fromList([
-          ...primaryKey.writeForHash(),
-          ...keyPacket.writeForHash(),
+          ...primaryKey.writeForSign(),
+          ...keyPacket.writeForSign(),
         ]),
         date: date,
       )) {
@@ -128,8 +128,8 @@ class Subkey {
           if (revocation.verify(
             keyPacket,
             Uint8List.fromList([
-              ...primaryKey.writeForHash(),
-              ...keyPacket.writeForHash(),
+              ...primaryKey.writeForSign(),
+              ...keyPacket.writeForSign(),
             ]),
             date: date,
           )) {

@@ -1,14 +1,24 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dart_pg/src/enums.dart';
 import 'package:dart_pg/src/helpers.dart';
+import 'package:dart_pg/src/packet/key_packet.dart';
+import 'package:dart_pg/src/packet/signature_packet.dart';
 
 import 'package:dart_pg/src/packet/signature_subpacket.dart';
 import 'package:dart_pg/src/packet/subpacket_reader.dart';
+import 'package:dart_pg/src/packet/user_id.dart';
+import 'package:faker/faker.dart';
 import 'package:test/test.dart';
+
+import '../test_data.dart';
 
 void main() {
   group('signature packet tests', () {
+    final faker = Faker();
+    final random = Helper.secureRandom();
+
     test('key flag sub packet', () {
       final keyFlags = KeyFlags.fromFlags(
         KeyFlag.certifyKeys.value |
@@ -65,6 +75,23 @@ void main() {
         expect(subpacket.type, subpackets[index].type);
         expect(subpacket.data, equals(subpackets[index].data));
       }
+    });
+
+    test('sign & verify', () {
+      final name = faker.person.name();
+      final email = faker.internet.email();
+      final comment = faker.lorem.words(3).join(' ');
+
+      final secretKey = SecretKeyPacket.fromPacketData(
+          base64.decode(secretKeyPacketWithoutPassphase.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      final dataToSign = random.nextBytes(100);
+      final signature = SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
+
+      expect(signature.verify(secretKey.publicKey, dataToSign), isTrue);
+
+      final userID = UserIDPacket([name, '($comment)', email].join(' '));
+      final selfCertificate = SignaturePacket.createSelfCertificate(secretKey, userID: userID);
+      expect(selfCertificate.verifyUserCertification(secretKey.publicKey, userID: userID), isTrue);
     });
   });
 }

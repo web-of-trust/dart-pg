@@ -34,6 +34,15 @@ class UserIDPacket extends ContainedPacket {
     return userID.stringToBytes();
   }
 
+  Uint8List writeForSign() {
+    final bytes = toPacketData();
+    return Uint8List.fromList([
+      0xb4,
+      ...bytes.lengthInBytes.pack32(),
+      ...bytes,
+    ]);
+  }
+
   static String _extractName(final String userID) {
     final name = <String>[];
     final chars = userID.split('');

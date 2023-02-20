@@ -103,7 +103,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   /// Computes and set the fingerprint of the key
   void _calculateFingerprintAndKeyID() {
-    final toHash = writeForHash();
+    final toHash = writeForSign();
     if (version == 4) {
       _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
       _keyID = KeyID(_fingerprint.sublist(12, 20));
@@ -144,7 +144,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   }
 
   @override
-  Uint8List writeForHash() {
+  Uint8List writeForSign() {
     final packetData = toPacketData();
     return Uint8List.fromList([
       (version == 5) ? 0x9a : 0x99,
