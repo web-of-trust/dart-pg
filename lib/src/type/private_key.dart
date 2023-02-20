@@ -169,8 +169,8 @@ class PrivateKey extends Key {
         }
       }
     }
-    if (keyID.isNotEmpty && keyID != keyPacket.keyID.toString()) {
-      throw ArgumentError('Could not find valid signing key packet.');
+    if (!isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+      throw Exception('Could not find valid signing key packet.');
     }
     return keyPacket;
   }

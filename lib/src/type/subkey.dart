@@ -58,17 +58,38 @@ class Subkey {
         value = false;
         break;
       default:
-        if (bindingSignatures.isNotEmpty) {
-          value = false;
-          for (final signature in bindingSignatures) {
-            if (signature.keyFlags != null &&
-                (signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
-              value = true;
-              break;
-            }
+        value = true;
+        for (final signature in bindingSignatures) {
+          if (signature.keyFlags == null) {
+            continue;
+          } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
+            value = false;
+            break;
           }
-        } else {
-          value = true;
+        }
+    }
+    return value;
+  }
+
+  bool get isEncryptionKey {
+    bool value;
+    switch (keyPacket.algorithm) {
+      case KeyAlgorithm.rsaSign:
+      case KeyAlgorithm.dsa:
+      case KeyAlgorithm.ecdsa:
+      case KeyAlgorithm.eddsa:
+      case KeyAlgorithm.aedsa:
+        value = false;
+        break;
+      default:
+        value = true;
+        for (final signature in bindingSignatures) {
+          if (signature.keyFlags == null) {
+            continue;
+          } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
+            value = false;
+            break;
+          }
         }
     }
     return value;
