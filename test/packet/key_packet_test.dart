@@ -90,7 +90,7 @@ void main() {
       expect(secretKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
       expect(secretKey.algorithm, KeyAlgorithm.dsa);
       expect(publicParams.publicExponent,
-          publicParams.groupGenerator.modPow(secretParams.secretExponent, publicParams.primeP));
+          publicParams.generator.modPow(secretParams.secretExponent, publicParams.prime));
 
       final secretSubkey = SecretSubkeyPacket.fromPacketData(
           base64.decode(elgamalSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
@@ -100,7 +100,7 @@ void main() {
       expect(secretSubkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
       expect(secretSubkey.algorithm, KeyAlgorithm.elgamal);
       expect(subkeyPublicParams.publicExponent,
-          subkeyPublicParams.groupGenerator.modPow(subkeySecretParams.secretExponent, subkeyPublicParams.primeP));
+          subkeyPublicParams.generator.modPow(subkeySecretParams.secretExponent, subkeyPublicParams.prime));
     });
 
     test('ecc test', () {

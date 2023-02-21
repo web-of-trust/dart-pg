@@ -132,10 +132,10 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
       return keyParams.modulus.bitLength;
     }
     if (keyParams is DSAPublicParams) {
-      return keyParams.primeP.bitLength;
+      return keyParams.prime.bitLength;
     }
     if (keyParams is ElGamalPublicParams) {
-      return keyParams.primeP.bitLength;
+      return keyParams.prime.bitLength;
     }
     if (keyParams is ECPublicParams) {
       return keyParams.publicKey.parameters!.curve.fieldSize;

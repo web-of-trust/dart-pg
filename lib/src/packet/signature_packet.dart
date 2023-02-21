@@ -494,9 +494,9 @@ class SignaturePacket extends ContainedPacket {
         break;
       case KeyAlgorithm.dsa:
         final keyParams = key.publicParams as DSAPublicParams;
-        final p = keyParams.primeP;
-        final q = keyParams.groupOrder;
-        final g = keyParams.groupGenerator;
+        final p = keyParams.prime;
+        final q = keyParams.order;
+        final g = keyParams.generator;
         final x = (key.secretParams as DSASecretParams).secretExponent;
         final privateKey = DSAPrivateKey(x, p, q, g);
         signature = _dsaSign(privateKey, hash, message);

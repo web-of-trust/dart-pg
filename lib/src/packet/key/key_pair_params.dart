@@ -4,9 +4,9 @@
 
 import 'key_params.dart';
 
-class KeyPairParams<B extends KeyParams, V extends KeyParams> {
-  final B publicParams;
-  final V secretParams;
+class KeyPairParams<P extends KeyParams, S extends KeyParams> {
+  final P publicParams;
+  final S secretParams;
 
   KeyPairParams(this.publicParams, this.secretParams);
 
