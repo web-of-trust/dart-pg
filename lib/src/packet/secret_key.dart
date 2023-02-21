@@ -11,6 +11,7 @@ import '../enums.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
 import 'key/key_id.dart';
+import 'key/key_pair_generator.dart';
 import 'key/key_params.dart';
 import 'key/s2k.dart';
 import 'contained_packet.dart';
@@ -90,6 +91,25 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     );
   }
 
+factory SecretKeyPacket.generate(
+    final KeyAlgorithm algorithm, {
+    final int rsaBits = OpenPGP.preferredRSABits,
+    final CurveInfo curve = OpenPGP.preferredCurve,
+    final DateTime? date,
+  }) {
+    final keyPair = KeyPairGenerator.generateKeyPairParams(algorithm, rsaBits: rsaBits, curve: curve);
+
+    return SecretKeyPacket(
+      PublicKeyPacket(
+        OpenPGP.version5Keys ? 5 : 4,
+        date ?? DateTime.now(),
+        keyPair.publicParams,
+        algorithm: algorithm,
+      ),
+      keyPair.secretParams.encode(),
+      secretParams: keyPair.secretParams,
+    );
+  }
   PublicKeyPacket get publicKey => _publicKey;
 
   @override

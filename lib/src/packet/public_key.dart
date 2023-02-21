@@ -91,7 +91,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
         publicParams = ECDSAPublicParams.fromPacketData(bytes.sublist(pos));
         break;
       default:
-        throw UnsupportedError('Unknown PGP public key algorithm encountered');
+        throw UnsupportedError('Unsupported PGP public key algorithm encountered');
     }
     return PublicKeyPacket(
       version,

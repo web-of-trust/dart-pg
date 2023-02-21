@@ -2,6 +2,8 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'package:pointycastle/asn1.dart';
+
 import 'hash_algorithm.dart';
 import 'symmetric_algorithm.dart';
 
@@ -16,9 +18,9 @@ enum CurveInfo {
   ed25519('1.3.6.1.4.1.11591.15.1'),
   curve25519('1.3.6.1.4.1.3029.1.5.1');
 
-  final String identifierString;
+  final String identifier;
 
-  const CurveInfo(this.identifierString);
+  const CurveInfo(this.identifier);
 
   String get curveName {
     switch (this) {
@@ -43,28 +45,7 @@ enum CurveInfo {
     }
   }
 
-  List<int> get identifier {
-    switch (this) {
-      case prime256v1:
-        return [1, 2, 840, 10045, 3, 1, 7];
-      case secp384r1:
-        return [1, 3, 132, 0, 34];
-      case secp521r1:
-        return [1, 3, 132, 0, 35];
-      case secp256k1:
-        return [1, 3, 132, 0, 10];
-      case brainpoolp256r1:
-        return [1, 3, 36, 3, 3, 2, 8, 1, 1, 7];
-      case brainpoolp384r1:
-        return [1, 3, 36, 3, 3, 2, 8, 1, 1, 11];
-      case brainpoolp512r1:
-        return [1, 3, 36, 3, 3, 2, 8, 1, 1, 13];
-      case ed25519:
-        return [1, 3, 6, 1, 4, 1, 11591, 15, 1];
-      case curve25519:
-        return [1, 3, 6, 1, 4, 1, 3029, 1, 5, 1];
-    }
-  }
+  ASN1ObjectIdentifier get oid => ASN1ObjectIdentifier.fromIdentifierString(identifier);
 
   HashAlgorithm get hashAlgorithm {
     switch (this) {

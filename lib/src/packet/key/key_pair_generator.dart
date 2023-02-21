@@ -35,19 +35,17 @@ class KeyPairGenerator {
         );
       case KeyAlgorithm.ecdsa:
         final keyPair = _generateECKeyPair(curve);
-        final oid = ASN1ObjectIdentifier.fromIdentifierString(curve.identifierString);
         final q = keyPair.publicKey.Q!;
         return KeyPairParams(
-          ECDSAPublicParams(oid, q.getEncoded(q.isCompressed).toBigIntWithSign(1)),
+          ECDSAPublicParams(curve.oid, q.getEncoded(q.isCompressed).toBigIntWithSign(1)),
           ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.ecdh:
         final keyPair = _generateECKeyPair(curve);
-        final oid = ASN1ObjectIdentifier.fromIdentifierString(curve.identifierString);
         final q = keyPair.publicKey.Q!;
         return KeyPairParams(
           ECDHPublicParams(
-            oid,
+            curve.oid,
             q.getEncoded(q.isCompressed).toBigIntWithSign(1),
             curve.hashAlgorithm,
             curve.symmetricAlgorithm,
@@ -56,7 +54,7 @@ class KeyPairGenerator {
         );
       case KeyAlgorithm.dsa:
       case KeyAlgorithm.elgamal:
-        throw UnsupportedError('public key algorithm ${algorithm.name} is unsupported for key generation.');
+        throw UnsupportedError('Public key algorithm ${algorithm.name} is unsupported for key generation.');
       default:
         throw Exception('Unknown public key algorithm for key generation.');
     }

@@ -29,7 +29,7 @@ abstract class ECPublicParams extends KeyParams {
   }
 
   static ECPublicKey _publicKeyFromOid(ASN1ObjectIdentifier oid, BigInt q) {
-    final curve = CurveInfo.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
+    final curve = CurveInfo.values.firstWhere((info) => info.identifier == oid.objectIdentifierAsString);
     switch (curve) {
       case CurveInfo.ed25519:
       case CurveInfo.curve25519:

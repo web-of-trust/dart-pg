@@ -6,7 +6,6 @@ import '../armor/armor.dart';
 import '../enums.dart';
 import '../openpgp.dart';
 import '../packet/contained_packet.dart';
-import '../packet/key_packet_generator.dart';
 import '../packet/packet_list.dart';
 import '../packet/key_packet.dart';
 import '../packet/signature_packet.dart';
@@ -70,13 +69,13 @@ class PrivateKey extends Key {
     final keyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdsa;
     final subkeyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdh;
 
-    final secretKey = KeyPacketGenerator.generateSecretKey(
+    final secretKey = SecretKeyPacket.generate(
       keyAlgorithm,
       rsaBits: rsaBits,
       curve: curve,
       date: date,
     ).encrypt(passphrase);
-    final secretSubkey = KeyPacketGenerator.generateSecretSubkey(
+    final secretSubkey = SecretSubkeyPacket.generate(
       subkeyAlgorithm,
       rsaBits: rsaBits,
       curve: curve,
