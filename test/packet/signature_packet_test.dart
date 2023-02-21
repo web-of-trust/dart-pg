@@ -82,7 +82,7 @@ void main() {
       final comment = faker.lorem.words(3).join(' ');
 
       final secretKey = SecretKeyPacket.fromPacketData(
-          base64.decode(secretKeyPacketWithoutPassphase.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+          base64.decode(secretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final dataToSign = random.nextBytes(100);
       final signature = SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
 

@@ -125,7 +125,7 @@ void main() {
 
     test('encrypt test', (() {
       final secretKey = SecretKeyPacket.fromPacketData(
-          base64.decode(secretKeyPacketWithoutPassphase.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+          base64.decode(secretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final publicParams = secretKey.publicKey.publicParams as RSAPublicParams;
       final secretParams = secretKey.secretParams as RSASecretParams;
 
@@ -136,7 +136,7 @@ void main() {
 
       expect(secretKey.isDecrypted, true);
       expect(secretKey.s2kUsage, S2kUsage.none);
-      expect(secretKey.symmetricAlgorithm, SymmetricAlgorithm.plaintext);
+      expect(secretKey.symmetric, SymmetricAlgorithm.plaintext);
       expect(secretKey.iv, isNull);
       expect(secretKey.s2k, isNull);
 
@@ -145,7 +145,7 @@ void main() {
       expect(encryptedKey.secretParams, secretKey.secretParams);
 
       expect(encryptedKey.s2kUsage, S2kUsage.sha1);
-      expect(encryptedKey.symmetricAlgorithm, SymmetricAlgorithm.aes256);
+      expect(encryptedKey.symmetric, SymmetricAlgorithm.aes256);
       expect(encryptedKey.iv, isNotNull);
       expect(encryptedKey.s2k, isNotNull);
 
@@ -159,7 +159,7 @@ void main() {
       expect(decryptedParams.pInv, secretParams.pInv);
 
       final secretSubkey = SecretSubkeyPacket.fromPacketData(
-          base64.decode(secretSubkeyPacketWithoutPassphase.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+          base64.decode(secretSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final subkeyPublicParams = secretSubkey.publicKey.publicParams as RSAPublicParams;
       final subkeySecretParams = secretSubkey.secretParams as RSASecretParams;
 
@@ -170,7 +170,7 @@ void main() {
 
       expect(secretSubkey.isDecrypted, true);
       expect(secretSubkey.s2kUsage, S2kUsage.none);
-      expect(secretSubkey.symmetricAlgorithm, SymmetricAlgorithm.plaintext);
+      expect(secretSubkey.symmetric, SymmetricAlgorithm.plaintext);
       expect(secretSubkey.iv, isNull);
       expect(secretSubkey.s2k, isNull);
 
@@ -179,7 +179,7 @@ void main() {
       expect(subkeyEncryptedKey.secretParams, secretSubkey.secretParams);
 
       expect(subkeyEncryptedKey.s2kUsage, S2kUsage.sha1);
-      expect(subkeyEncryptedKey.symmetricAlgorithm, SymmetricAlgorithm.aes256);
+      expect(subkeyEncryptedKey.symmetric, SymmetricAlgorithm.aes256);
       expect(subkeyEncryptedKey.iv, isNotNull);
       expect(subkeyEncryptedKey.s2k, isNotNull);
 

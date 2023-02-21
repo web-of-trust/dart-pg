@@ -26,7 +26,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
   final S2kUsage s2kUsage;
 
-  final SymmetricAlgorithm symmetricAlgorithm;
+  final SymmetricAlgorithm symmetric;
 
   final S2K? s2k;
 
@@ -38,7 +38,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     this._publicKey,
     this.keyData, {
     this.s2kUsage = S2kUsage.sha1,
-    this.symmetricAlgorithm = OpenPGP.preferredSymmetric,
+    this.symmetric = OpenPGP.preferredSymmetric,
     this.s2k,
     this.iv,
     this.secretParams,
@@ -54,23 +54,23 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     pos++;
 
     final S2K? s2k;
-    final SymmetricAlgorithm symmetricAlgorithm;
+    final SymmetricAlgorithm symmetric;
     switch (s2kUsage) {
       case S2kUsage.checksum:
       case S2kUsage.sha1:
-        symmetricAlgorithm = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == bytes[pos]);
+        symmetric = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == bytes[pos]);
         pos++;
         s2k = S2K.fromPacketData(bytes.sublist(pos));
         pos += s2k.length;
         break;
       default:
-        symmetricAlgorithm = SymmetricAlgorithm.plaintext;
+        symmetric = SymmetricAlgorithm.plaintext;
         s2k = null;
     }
 
     Uint8List? iv;
     if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
-      final blockSize = symmetricAlgorithm.blockSize;
+      final blockSize = symmetric.blockSize;
       iv = bytes.sublist(pos, pos + blockSize);
       pos += blockSize;
     }
@@ -84,7 +84,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       publicKey,
       bytes.sublist(pos),
       s2kUsage: s2kUsage,
-      symmetricAlgorithm: symmetricAlgorithm,
+      symmetric: symmetric,
       s2k: s2k,
       iv: iv,
       secretParams: secretParams,
@@ -174,7 +174,7 @@ factory SecretKeyPacket.generate(
         publicKey,
         cipherText,
         s2kUsage: s2kUsage,
-        symmetricAlgorithm: symmetricAlgorithm,
+        symmetric: symmetric,
         s2k: s2k,
         iv: iv,
         secretParams: secretParams,
@@ -188,13 +188,13 @@ factory SecretKeyPacket.generate(
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key = s2k?.produceKey(passphrase, symmetricAlgorithm) ?? Uint8List((symmetricAlgorithm.keySize + 7) >> 3);
-        final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm))
+        final key = s2k?.produceKey(passphrase, symmetric) ?? Uint8List((symmetric.keySize + 7) >> 3);
+        final cipher = BufferedCipher(_cipherEngine(symmetric))
           ..init(
             false,
             ParametersWithIV(
               KeyParameter(key),
-              iv ?? Uint8List(symmetricAlgorithm.blockSize),
+              iv ?? Uint8List(symmetric.blockSize),
             ),
           );
 
@@ -213,7 +213,7 @@ factory SecretKeyPacket.generate(
         publicKey,
         keyData,
         s2kUsage: s2kUsage,
-        symmetricAlgorithm: symmetricAlgorithm,
+        symmetric: symmetric,
         s2k: s2k,
         iv: iv,
         secretParams: _parseSecretParams(clearText, publicKey.algorithm),
@@ -231,7 +231,7 @@ factory SecretKeyPacket.generate(
         publicKey,
         keyData,
         s2kUsage: s2kUsage,
-        symmetricAlgorithm: symmetricAlgorithm,
+        symmetric: symmetric,
         s2k: s2k,
         iv: iv,
       );
@@ -250,7 +250,7 @@ factory SecretKeyPacket.generate(
       bytes = [
         ...publicKey.toPacketData(),
         s2kUsage.value,
-        symmetricAlgorithm.value,
+        symmetric.value,
         ...s2k!.encode(),
         ...iv ?? [],
         ...keyData,

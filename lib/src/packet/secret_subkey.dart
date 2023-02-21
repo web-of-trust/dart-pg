@@ -16,7 +16,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     PublicSubkeyPacket publicKey,
     Uint8List keyData, {
     super.s2kUsage,
-    super.symmetricAlgorithm,
+    super.symmetric,
     super.s2k,
     super.iv,
     super.secretParams,
@@ -89,7 +89,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
         publicKey,
         keyData,
         s2kUsage: s2kUsage,
-        symmetricAlgorithm: symmetricAlgorithm,
+        symmetric: symmetric,
         s2k: s2k,
         iv: iv,
       );
@@ -108,7 +108,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
       ),
       secretKey.keyData,
       s2kUsage: secretKey.s2kUsage,
-      symmetricAlgorithm: secretKey.symmetricAlgorithm,
+      symmetric: secretKey.symmetric,
       s2k: secretKey.s2k,
       iv: secretKey.iv,
       secretParams: secretKey.secretParams,
