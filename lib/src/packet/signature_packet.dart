@@ -355,9 +355,7 @@ class SignaturePacket extends ContainedPacket {
     return SignaturePacket.createSignature(
       signKey,
       literalData.text.isNotEmpty ? SignatureType.text : SignatureType.binary,
-      Uint8List.fromList([
-        ...literalData.getBytes(),
-      ]),
+      literalData.writeForSign(),
       subpackets: userID.isNotEmpty ? <SignatureSubpacket>[SignerUserID.fromUserID(userID)] : [],
       date: date,
       attachedHeader: !detached ? literalData.writeHeader() : null,
@@ -379,6 +377,9 @@ class SignaturePacket extends ContainedPacket {
     final DateTime? date,
     final Uint8List? attachedHeader,
   }) {
+    if (issuerKeyID.keyID != verifyKey.keyID.toString()) {
+      throw ArgumentError('Signature was not issued by the given public key.');
+    }
     if (keyAlgorithm != verifyKey.algorithm) {
       throw ArgumentError('Public key algorithm used to sign signature does not match issuer key algorithm.');
     }
@@ -428,7 +429,7 @@ class SignaturePacket extends ContainedPacket {
     UserAttributePacket? userAttribute,
     final DateTime? date,
   }) {
-    final bytes = userID?.toPacketData() ?? userAttribute?.toPacketData();
+    final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
       throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
     }
@@ -436,10 +437,20 @@ class SignaturePacket extends ContainedPacket {
       verifyKey,
       Uint8List.fromList([
         ...verifyKey.writeForSign(),
-        (userID != null) ? 0xb4 : 0xd1,
-        ...bytes.length.pack32(),
         ...bytes,
       ]),
+      date: date,
+    );
+  }
+
+  bool verifyLiteralData(
+    final KeyPacket verifyKey,
+    LiteralDataPacket literalData, {
+    final DateTime? date,
+  }) {
+    return verify(
+      verifyKey,
+      literalData.writeForSign(),
       date: date,
     );
   }

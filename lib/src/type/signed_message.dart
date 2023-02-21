@@ -12,6 +12,7 @@ import '../packet/signature_packet.dart';
 import 'cleartext_message.dart';
 import 'key.dart';
 import 'signature.dart';
+import 'verification.dart';
 
 /// Class that represents an OpenPGP cleartext signed message.
 /// See {@link https://tools.ietf.org/html/rfc4880#section-7}
@@ -38,7 +39,7 @@ class SignedMessage extends CleartextMessage {
     final bool detached = false,
   }) {
     if (signingKeys.isEmpty) {
-      throw Exception('No signing keys provided');
+      throw ArgumentError('No signing keys provided');
     }
     return SignedMessage(
       message,
@@ -62,17 +63,20 @@ class SignedMessage extends CleartextMessage {
 
   /// Returns ASCII armored text of signed signature
   String armor() {
-    final hashes = signature.packetList.map((packet) => (packet as SignaturePacket).hashAlgorithm.name.toLowerCase());
+    final hashes = signature.packetList.map((packet) => (packet as SignaturePacket).hashAlgorithm.name.toUpperCase());
     return Armor.encode(
       ArmorType.signedMessage,
       signature.packetList.packetEncode(),
       text: text,
-      hashAlgo: hashes.join(),
+      hashAlgo: hashes.join(', '),
     );
   }
 
   /// Verify signatures of cleartext signed message
-  bool verify(final List<PublicKey> keys, [final DateTime? date]) {
-    return false;
+  List<Verification> verify(final List<PublicKey> verificationKeys, [final DateTime? date]) {
+    if (verificationKeys.isEmpty) {
+      throw ArgumentError('No verification keys provided');
+    }
+    return [];
   }
 }

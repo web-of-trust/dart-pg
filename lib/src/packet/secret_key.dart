@@ -291,7 +291,7 @@ factory SecretKeyPacket.generate(
         engine = CFBBlockCipher(TwofishEngine(), symmetricAlgorithm.blockSize);
         break;
       default:
-        throw UnsupportedError('Unknown symmetric algorithm encountered');
+        throw UnsupportedError('Unsupported symmetric algorithm encountered');
     }
     return engine;
   }
@@ -315,7 +315,7 @@ factory SecretKeyPacket.generate(
         keyParams = ECSecretParams.fromPacketData(packetData);
         break;
       default:
-        throw UnsupportedError('Unknown PGP public key algorithm encountered');
+        throw UnsupportedError('Unsupported public key algorithm encountered');
     }
     return keyParams;
   }

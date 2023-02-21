@@ -160,6 +160,9 @@ class PrivateKey extends Key {
     final String keyID = '',
     final DateTime? date,
   }) {
+    if (!verifyPrimaryKey(date: date)) {
+      throw Exception('Primary key is invalid');
+    }
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
