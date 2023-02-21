@@ -445,11 +445,13 @@ class SignaturePacket extends ContainedPacket {
     final KeyPacket verifyKey,
     LiteralDataPacket literalData, {
     final DateTime? date,
+    final bool detached = false,
   }) {
     return verify(
       verifyKey,
       literalData.writeForSign(),
       date: date,
+      attachedHeader: !detached ? literalData.writeHeader() : null,
     );
   }
 

@@ -3,10 +3,12 @@
 // file that was distributed with this source code.
 
 import 'enums.dart';
+import 'type/cleartext_message.dart';
 import 'type/private_key.dart';
 import 'type/public_key.dart';
 import 'type/signature.dart';
 import 'type/signed_message.dart';
+import 'type/verification.dart';
 
 class OpenPGP {
   static const version = 'Dart PG v1.0.0';
@@ -43,15 +45,15 @@ class OpenPGP {
   /// The generated primary key will have signing capabilities.
   /// By default, one subkey with encryption capabilities is also generated.
   static Future<PrivateKey> generateKey(
-    List<String> userIDs,
-    String passphrase, {
-    KeyType type = KeyType.rsa,
-    int rsaBits = OpenPGP.preferredRSABits,
-    CurveInfo curve = OpenPGP.preferredCurve,
-    int keyExpirationTime = 0,
-    bool subkeySign = false,
-    String? subkeyPassphrase,
-    DateTime? date,
+    final List<String> userIDs,
+    final String passphrase, {
+    final KeyType type = KeyType.rsa,
+    final int rsaBits = OpenPGP.preferredRSABits,
+    final CurveInfo curve = OpenPGP.preferredCurve,
+    final int keyExpirationTime = 0,
+    final bool subkeySign = false,
+    final String? subkeyPassphrase,
+    final DateTime? date,
   }) async =>
       PrivateKey.generate(
         userIDs,
@@ -67,29 +69,52 @@ class OpenPGP {
 
   /// Reads an armored & unlock OpenPGP private key with the given passphrase.
   static Future<PrivateKey> decryptPrivateKey(
-    String armored,
-    String passphrase, [
+    final String armored,
+    final String passphrase, [
     final List<String> subkeyPassphrases = const [],
   ]) async =>
       PrivateKey.fromArmored(armored).decrypt(passphrase, subkeyPassphrases);
 
   /// Reads an armored OpenPGP private key and returns a PrivateKey object
-  static Future<PrivateKey> readPrivateKey(String armored) async => PrivateKey.fromArmored(armored);
+  static Future<PrivateKey> readPrivateKey(final String armored) async => PrivateKey.fromArmored(armored);
 
   /// Reads an armored OpenPGP public key and returns a PublicKey object
-  static Future<PublicKey> readPublicKey(String armored) async => PublicKey.fromArmored(armored);
+  static Future<PublicKey> readPublicKey(final String armored) async => PublicKey.fromArmored(armored);
 
   /// Signs a cleartext message.
-  static Future<SignedMessage> sign(String text, List<PrivateKey> signingKeys, {DateTime? date}) async =>
+  static Future<SignedMessage> sign(
+    final String text,
+    final List<PrivateKey> signingKeys, {
+    final DateTime? date,
+  }) async =>
       SignedMessage.signCleartext(text, signingKeys, date: date);
 
   /// Signs a cleartext message & return detached signature
-  static Future<Signature> signDetached(String text, List<PrivateKey> signingKeys, {DateTime? date}) async =>
+  static Future<Signature> signDetached(
+    final String text,
+    final List<PrivateKey> signingKeys, {
+    final DateTime? date,
+  }) async =>
       SignedMessage.signCleartext(text, signingKeys, date: date, detached: true).signature;
 
+  static Future<List<Verification>> verify(
+    final String armored,
+    final List<PublicKey> verificationKeys, {
+    final DateTime? date,
+  }) async =>
+      SignedMessage.fromArmored(armored).verify(verificationKeys, date: date);
+
+  static Future<List<Verification>> verifyDetached(
+    final String text,
+    final String armored,
+    final List<PublicKey> verificationKeys, {
+    final DateTime? date,
+  }) async =>
+      CleartextMessage(text).verifyDetached(Signature.fromArmored(armored), verificationKeys, date: date);
+
   /// Reads an armored OpenPGP signature and returns a Signature object
-  static Future<Signature> readSignature(String armored) async => Signature.fromArmored(armored);
+  static Future<Signature> readSignature(final String armored) async => Signature.fromArmored(armored);
 
   /// Reads an armored OpenPGP signed message and returns a SignedMessage object
-  static Future<SignedMessage> readSignedMessage(String armored) async => SignedMessage.fromArmored(armored);
+  static Future<SignedMessage> readSignedMessage(final String armored) async => SignedMessage.fromArmored(armored);
 }

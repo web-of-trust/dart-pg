@@ -25,7 +25,6 @@ class CleartextMessage {
     final Signature signature,
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
-    final bool detached = false,
   }) {
     if (verificationKeys.isEmpty) {
       throw ArgumentError('No verification keys provided');
@@ -39,7 +38,12 @@ class CleartextMessage {
         verifications.add(Verification(
           keyPacket.keyID.keyID,
           Signature(PacketList([signaturePacket])),
-          signaturePacket.verifyLiteralData(keyPacket, literalData),
+          signaturePacket.verifyLiteralData(
+            keyPacket,
+            literalData,
+            date: date,
+            detached: true,
+          ),
         ));
       }
     }
