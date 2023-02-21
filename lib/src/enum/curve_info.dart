@@ -9,18 +9,20 @@ import 'symmetric_algorithm.dart';
 
 enum CurveInfo {
   prime256v1('1.2.840.10045.3.1.7'),
+  secp256k1('1.3.132.0.10'),
   secp384r1('1.3.132.0.34'),
   secp521r1('1.3.132.0.35'),
-  secp256k1('1.3.132.0.10'),
   brainpoolp256r1('1.3.36.3.3.2.8.1.1.7'),
   brainpoolp384r1('1.3.36.3.3.2.8.1.1.11'),
   brainpoolp512r1('1.3.36.3.3.2.8.1.1.13'),
   ed25519('1.3.6.1.4.1.11591.15.1'),
   curve25519('1.3.6.1.4.1.3029.1.5.1');
 
-  final String identifier;
+  final String identifierString;
 
-  const CurveInfo(this.identifier);
+  const CurveInfo(this.identifierString);
+
+  ASN1ObjectIdentifier get oid => ASN1ObjectIdentifier(identifier);
 
   String get curveName {
     switch (this) {
@@ -44,8 +46,28 @@ enum CurveInfo {
         return 'Curve 25519';
     }
   }
-
-  ASN1ObjectIdentifier get oid => ASN1ObjectIdentifier.fromIdentifierString(identifier);
+  List<int> get identifier {
+    switch (this) {
+      case prime256v1:
+        return [1, 2, 840, 10045, 3, 1, 7];
+      case secp384r1:
+        return [1, 3, 132, 0, 34];
+      case secp521r1:
+        return [1, 3, 132, 0, 35];
+      case secp256k1:
+        return [1, 3, 132, 0, 10];
+      case brainpoolp256r1:
+        return [1, 3, 36, 3, 3, 2, 8, 1, 1, 7];
+      case brainpoolp384r1:
+        return [1, 3, 36, 3, 3, 2, 8, 1, 1, 11];
+      case brainpoolp512r1:
+        return [1, 3, 36, 3, 3, 2, 8, 1, 1, 13];
+      case ed25519:
+        return [1, 3, 6, 1, 4, 1, 11591, 15, 1];
+      case curve25519:
+        return [1, 3, 6, 1, 4, 1, 3029, 1, 5, 1];
+    }
+  }
 
   HashAlgorithm get hashAlgorithm {
     switch (this) {

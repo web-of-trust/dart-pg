@@ -473,7 +473,7 @@ class SignaturePacket extends ContainedPacket {
       case KeyAlgorithm.eddsa:
         final oid = (key.publicParams as ECPublicParams).oid;
         final curve = CurveInfo.values.firstWhere(
-          (info) => info.identifier == oid.objectIdentifierAsString,
+          (info) => info.identifierString == oid.objectIdentifierAsString,
           orElse: () => OpenPGP.preferredCurve,
         );
         return curve.hashAlgorithm;
