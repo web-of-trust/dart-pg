@@ -38,7 +38,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     this._publicKey,
     this.keyData, {
     this.s2kUsage = S2kUsage.sha1,
-    this.symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
+    this.symmetricAlgorithm = OpenPGP.preferredSymmetric,
     this.s2k,
     this.iv,
     this.secretParams,
@@ -147,8 +147,8 @@ factory SecretKeyPacket.generate(
   SecretKeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
-    final HashAlgorithm hash = OpenPGP.preferredHashAlgorithm,
+    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+    final HashAlgorithm hash = OpenPGP.preferredHash,
     final S2kType type = S2kType.iterated,
   }) {
     if (secretParams != null) {
@@ -156,14 +156,14 @@ factory SecretKeyPacket.generate(
         throw ArgumentError('passphrase are required for key encryption');
       }
       assert(s2kUsage != S2kUsage.none);
-      assert(symmetricAlgorithm != SymmetricAlgorithm.plaintext);
+      assert(symmetric != SymmetricAlgorithm.plaintext);
 
       final random = Helper.secureRandom();
       final s2k = S2K(random.nextBytes(8), hash: hash, type: type);
-      final iv = random.nextBytes(symmetricAlgorithm.blockSize);
+      final iv = random.nextBytes(symmetric.blockSize);
 
-      final key = s2k.produceKey(passphrase, symmetricAlgorithm);
-      final cipher = BufferedCipher(_cipherEngine(symmetricAlgorithm))
+      final key = s2k.produceKey(passphrase, symmetric);
+      final cipher = BufferedCipher(_cipherEngine(symmetric))
         ..init(true, ParametersWithIV(KeyParameter(key), iv));
 
       final clearText = secretParams!.encode();

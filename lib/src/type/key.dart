@@ -132,6 +132,27 @@ abstract class Key {
     return true;
   }
 
+  KeyPacket getSigningKeyPacket({
+    final String keyID = '',
+    final DateTime? date,
+  }) {
+    if (!verifyPrimaryKey(date: date)) {
+      throw Exception('Primary key is invalid');
+    }
+    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
+    for (final subkey in subkeys) {
+      if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
+        if (subkey.isSigningKey && subkey.verify(keyPacket, date: date)) {
+          return subkey.keyPacket;
+        }
+      }
+    }
+    if (!isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+      throw Exception('Could not find valid signing key packet.');
+    }
+    return keyPacket;
+  }
+
   KeyPacket getEncryptionKeyPacket({
     final String keyID = '',
     final DateTime? date,

@@ -31,8 +31,8 @@ class SignedMessage extends CleartextMessage {
     return SignedMessage(armor.text, Signature(packetList));
   }
 
-  factory SignedMessage.createSignedMessage(
-    final String message,
+  factory SignedMessage.signCleartext(
+    final String text,
     final List<PrivateKey> signingKeys, {
     final String userID = '',
     final DateTime? date,
@@ -42,13 +42,13 @@ class SignedMessage extends CleartextMessage {
       throw ArgumentError('No signing keys provided');
     }
     return SignedMessage(
-      message,
+      text,
       Signature(
         PacketList(
           signingKeys.map(
             (key) => SignaturePacket.createLiteralData(
               key.getSigningKeyPacket(),
-              LiteralDataPacket(Uint8List(0), text: message),
+              LiteralDataPacket(Uint8List(0), text: text),
               userID: userID,
               date: date,
               detached: detached,

@@ -71,7 +71,7 @@ void main() {
         ArmorType.signedMessage,
         bytes,
         text: text,
-        hashAlgo: OpenPGP.preferredHashAlgorithm.digestName,
+        hashAlgo: OpenPGP.preferredHash.digestName,
       );
 
       final beginReg = RegExp(r'BEGIN PGP SIGNED MESSAGE-');

@@ -54,7 +54,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   SecretSubkeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
+    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
     final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
   }) {
@@ -62,7 +62,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
       return _fromSecretKey(super.encrypt(
         passphrase,
         s2kUsage: s2kUsage,
-        symmetricAlgorithm: symmetricAlgorithm,
+        symmetric: symmetric,
         hash: hash,
         type: type,
       ));

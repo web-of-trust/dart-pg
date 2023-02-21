@@ -62,8 +62,8 @@ class PrivateKey extends Key {
     final String? subkeyPassphrase,
     final DateTime? date,
   }) {
-    if (userIDs.isEmpty) {
-      throw Exception('UserIDs are required for key generation');
+    if (userIDs.isEmpty || passphrase.isEmpty) {
+      throw Exception('UserIDs and passphrase are required for key generation');
     }
 
     final keyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdsa;
@@ -156,25 +156,12 @@ class PrivateKey extends Key {
     );
   }
 
+  @override
   SecretKeyPacket getSigningKeyPacket({
     final String keyID = '',
     final DateTime? date,
   }) {
-    if (!verifyPrimaryKey(date: date)) {
-      throw Exception('Primary key is invalid');
-    }
-    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
-    for (final subkey in subkeys) {
-      if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if ((subkey.keyPacket is SecretKeyPacket) && subkey.isSigningKey && subkey.verify(keyPacket, date: date)) {
-          return subkey.keyPacket as SecretKeyPacket;
-        }
-      }
-    }
-    if (!isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
-      throw Exception('Could not find valid signing key packet.');
-    }
-    return keyPacket;
+    return super.getSigningKeyPacket(keyID: keyID, date: date) as SecretKeyPacket;
   }
 
   /// Lock a private key with the given passphrase.
@@ -183,8 +170,8 @@ class PrivateKey extends Key {
     final String passphrase, {
     final List<String> subkeyPassphrases = const [],
     final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetricAlgorithm = OpenPGP.preferredSymmetricAlgorithm,
-    final HashAlgorithm hash = OpenPGP.preferredHashAlgorithm,
+    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+    final HashAlgorithm hash = OpenPGP.preferredHash,
     final S2kType type = S2kType.iterated,
   }) {
     if (passphrase.isEmpty) {
@@ -194,7 +181,7 @@ class PrivateKey extends Key {
       keyPacket.encrypt(
         passphrase,
         s2kUsage: s2kUsage,
-        symmetricAlgorithm: symmetricAlgorithm,
+        symmetric: symmetric,
         hash: hash,
         type: type,
       ),
@@ -209,7 +196,7 @@ class PrivateKey extends Key {
             (subkey.keyPacket as SecretSubkeyPacket).encrypt(
               subkeyPassphrase,
               s2kUsage: s2kUsage,
-              symmetricAlgorithm: symmetricAlgorithm,
+              symmetric: symmetric,
               hash: hash,
               type: type,
             ),

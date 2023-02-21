@@ -489,7 +489,7 @@ class SignaturePacket extends ContainedPacket {
         );
         return curve.hashAlgorithm;
       default:
-        return OpenPGP.preferredHashAlgorithm;
+        return OpenPGP.preferredHash;
     }
   }
 

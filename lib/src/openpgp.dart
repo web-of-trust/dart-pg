@@ -9,7 +9,7 @@ import 'type/signature.dart';
 import 'type/signed_message.dart';
 
 class OpenPGP {
-  static const version = 'Dart Privacy Guard 1.0.0';
+  static const version = 'Dart PG v1.0.0';
 
   static const comment = 'Dart Privacy Guard';
 
@@ -22,10 +22,10 @@ class OpenPGP {
   static const version5Keys = false;
 
   /// Default hash algorithm
-  static const preferredHashAlgorithm = HashAlgorithm.sha256;
+  static const preferredHash = HashAlgorithm.sha256;
 
   /// Default encryption cipher
-  static const preferredSymmetricAlgorithm = SymmetricAlgorithm.aes256;
+  static const preferredSymmetric = SymmetricAlgorithm.aes256;
 
   static const preferredCurve = CurveInfo.brainpoolp512r1;
 
@@ -39,12 +39,12 @@ class OpenPGP {
   static const rsaPublicExponent = 65537;
 
   /// Signs a cleartext message & return detached signature
-  static Signature signDetached(String message, List<PrivateKey> signingKeys, {DateTime? date}) =>
-      SignedMessage.createSignedMessage(message, signingKeys, date: date, detached: true).signature;
+  static Signature signDetached(String text, List<PrivateKey> signingKeys, {DateTime? date}) =>
+      SignedMessage.signCleartext(text, signingKeys, date: date, detached: true).signature;
 
   /// Signs a cleartext message.
-  static SignedMessage sign(String message, List<PrivateKey> signingKeys, {DateTime? date}) =>
-      SignedMessage.createSignedMessage(message, signingKeys, date: date);
+  static SignedMessage sign(String text, List<PrivateKey> signingKeys, {DateTime? date}) =>
+      SignedMessage.signCleartext(text, signingKeys, date: date);
 
   /// Generates a new OpenPGP key pair. Supports RSA and ECC keys.
   /// By default, primary and subkeys will be of same type.
