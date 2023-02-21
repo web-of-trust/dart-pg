@@ -15,6 +15,8 @@ class KeyID {
 
   factory KeyID.wildcard() => KeyID(Uint8List.fromList(List.filled(8, 0, growable: false)));
 
+  String get keyID => id.toHexadecimal();
+
   @override
-  String toString() => id.toHexadecimal();
+  String toString() => keyID;
 }

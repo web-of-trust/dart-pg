@@ -38,19 +38,11 @@ class OpenPGP {
   /// RSA public exponent
   static const rsaPublicExponent = 65537;
 
-  /// Signs a cleartext message & return detached signature
-  static Signature signDetached(String text, List<PrivateKey> signingKeys, {DateTime? date}) =>
-      SignedMessage.signCleartext(text, signingKeys, date: date, detached: true).signature;
-
-  /// Signs a cleartext message.
-  static SignedMessage sign(String text, List<PrivateKey> signingKeys, {DateTime? date}) =>
-      SignedMessage.signCleartext(text, signingKeys, date: date);
-
   /// Generates a new OpenPGP key pair. Supports RSA and ECC keys.
   /// By default, primary and subkeys will be of same type.
   /// The generated primary key will have signing capabilities.
   /// By default, one subkey with encryption capabilities is also generated.
-  static PrivateKey generateKey(
+  static Future<PrivateKey> generateKey(
     List<String> userIDs,
     String passphrase, {
     KeyType type = KeyType.rsa,
@@ -60,7 +52,7 @@ class OpenPGP {
     bool subkeySign = false,
     String? subkeyPassphrase,
     DateTime? date,
-  }) =>
+  }) async =>
       PrivateKey.generate(
         userIDs,
         passphrase,
@@ -73,12 +65,31 @@ class OpenPGP {
         date: date,
       );
 
-  /// Reads an (optionally armored) OpenPGP private key and returns a PrivateKey object
-  static PrivateKey readPrivateKey(String armored) => PrivateKey.fromArmored(armored);
+  /// Reads an armored & unlock OpenPGP private key with the given passphrase.
+  static Future<PrivateKey> decryptPrivateKey(
+    String armored,
+    String passphrase, [
+    final List<String> subkeyPassphrases = const [],
+  ]) async =>
+      PrivateKey.fromArmored(armored).decrypt(passphrase, subkeyPassphrases);
 
-  /// Reads an (optionally armored) OpenPGP public key and returns a PublicKey object
-  static PublicKey readPublicKey(String armored) => PublicKey.fromArmored(armored);
+  /// Reads an armored OpenPGP private key and returns a PrivateKey object
+  static Future<PrivateKey> readPrivateKey(String armored) async => PrivateKey.fromArmored(armored);
 
-  /// Reads an (optionally armored) OpenPGP signature and returns a Signature object
-  static Signature readSignature(String armored) => Signature.fromArmored(armored);
+  /// Reads an armored OpenPGP public key and returns a PublicKey object
+  static Future<PublicKey> readPublicKey(String armored) async => PublicKey.fromArmored(armored);
+
+  /// Signs a cleartext message.
+  static Future<SignedMessage> sign(String text, List<PrivateKey> signingKeys, {DateTime? date}) async =>
+      SignedMessage.signCleartext(text, signingKeys, date: date);
+
+  /// Signs a cleartext message & return detached signature
+  static Future<Signature> signDetached(String text, List<PrivateKey> signingKeys, {DateTime? date}) async =>
+      SignedMessage.signCleartext(text, signingKeys, date: date, detached: true).signature;
+
+  /// Reads an armored OpenPGP signature and returns a Signature object
+  static Future<Signature> readSignature(String armored) async => Signature.fromArmored(armored);
+
+  /// Reads an armored OpenPGP signed message and returns a SignedMessage object
+  static Future<SignedMessage> readSignedMessage(String armored) async => SignedMessage.fromArmored(armored);
 }

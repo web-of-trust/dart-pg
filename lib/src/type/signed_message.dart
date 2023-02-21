@@ -34,7 +34,6 @@ class SignedMessage extends CleartextMessage {
   factory SignedMessage.signCleartext(
     final String text,
     final List<PrivateKey> signingKeys, {
-    final String userID = '',
     final DateTime? date,
     final bool detached = false,
   }) {
@@ -49,7 +48,6 @@ class SignedMessage extends CleartextMessage {
             (key) => SignaturePacket.createLiteralData(
               key.getSigningKeyPacket(),
               LiteralDataPacket(Uint8List(0), text: text),
-              userID: userID,
               date: date,
               detached: detached,
             ),
@@ -63,20 +61,36 @@ class SignedMessage extends CleartextMessage {
 
   /// Returns ASCII armored text of signed signature
   String armor() {
-    final hashes = signature.packetList.map((packet) => (packet as SignaturePacket).hashAlgorithm.name.toUpperCase());
+    final hashes = signature.signaturePackets.map((packet) => packet.hashAlgorithm.name.toUpperCase());
     return Armor.encode(
       ArmorType.signedMessage,
-      signature.packetList.packetEncode(),
+      PacketList(signature.signaturePackets).packetEncode(),
       text: text,
       hashAlgo: hashes.join(', '),
     );
   }
 
   /// Verify signatures of cleartext signed message
-  List<Verification> verify(final List<PublicKey> verificationKeys, [final DateTime? date]) {
+  List<Verification> verify(
+    final List<PublicKey> verificationKeys, {
+    final DateTime? date,
+    final bool detached = false,
+  }) {
     if (verificationKeys.isEmpty) {
       throw ArgumentError('No verification keys provided');
     }
-    return [];
+    final verifications = <Verification>[];
+    final literalData = LiteralDataPacket(Uint8List(0), text: text);
+    for (final signaturePacket in signature.signaturePackets) {
+      for (final key in verificationKeys) {
+        final keyPacket = key.getSigningKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
+        verifications.add(Verification(
+          keyPacket.keyID.keyID,
+          Signature(PacketList([signaturePacket])),
+          signaturePacket.verifyLiteralData(keyPacket, literalData),
+        ));
+      }
+    }
+    return verifications;
   }
 }

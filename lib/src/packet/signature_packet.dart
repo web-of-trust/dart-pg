@@ -348,7 +348,6 @@ class SignaturePacket extends ContainedPacket {
   factory SignaturePacket.createLiteralData(
     final SecretKeyPacket signKey,
     final LiteralDataPacket literalData, {
-    final String userID = '',
     final DateTime? date,
     final bool detached = false,
   }) {
@@ -356,7 +355,6 @@ class SignaturePacket extends ContainedPacket {
       signKey,
       literalData.text.isNotEmpty ? SignatureType.text : SignatureType.binary,
       literalData.writeForSign(),
-      subpackets: userID.isNotEmpty ? <SignatureSubpacket>[SignerUserID.fromUserID(userID)] : [],
       date: date,
       attachedHeader: !detached ? literalData.writeHeader() : null,
     );

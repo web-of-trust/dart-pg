@@ -213,7 +213,7 @@ class Armor {
     if (OpenPGP.showComment) {
       headers.add('Comment: ${OpenPGP.comment}\n');
     }
-    if (customComment.trim().isNotEmpty) {
+    if (customComment.trim().isNotEmpty && OpenPGP.showComment) {
       headers.add('Comment: $customComment\n');
     }
     headers.add('\n');
