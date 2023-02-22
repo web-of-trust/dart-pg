@@ -26,7 +26,7 @@ void main() {
       final text = faker.randomGenerator.string(100);
       final signature = SignedMessage.signCleartext(text, [signingKey]).signature;
       final cleartextMessage = CleartextMessage(text);
-      final verifications = cleartextMessage.verifyDetached(signature, [verificationKey]);
+      final verifications = cleartextMessage.verifySignature(signature, [verificationKey]);
       for (var verification in verifications) {
         expect(verification.keyID, verificationKey.keyID.keyID);
         expect(verification.verified, isTrue);

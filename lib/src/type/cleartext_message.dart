@@ -2,8 +2,6 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'dart:typed_data';
-
 import '../packet/literal_data.dart';
 import '../packet/packet_list.dart';
 import 'key.dart';
@@ -20,8 +18,8 @@ class CleartextMessage {
 
   String get normalizeText => _text.replaceAll(RegExp(r'\r\n', multiLine: true), '\n');
 
-  /// Verify detached message signature
-  List<Verification> verifyDetached(
+  /// Verify detached signature
+  List<Verification> verifySignature(
     final Signature signature,
     final List<PublicKey> verificationKeys, {
     final DateTime? date,

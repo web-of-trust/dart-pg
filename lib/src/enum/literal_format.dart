@@ -3,9 +3,13 @@
 // file that was distributed with this source code.
 
 enum LiteralFormat {
+  /// Binary data 'b'
   binary(98),
+  /// Text data 't'
   text(116),
+  /// Utf8 data 'u'
   utf8(117),
+  /// MIME message body part 'm'
   mime(109);
 
   final int value;

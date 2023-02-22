@@ -2,8 +2,6 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'dart:typed_data';
-
 import '../armor/armor.dart';
 import '../enums.dart';
 import '../packet/literal_data.dart';
@@ -73,6 +71,6 @@ class SignedMessage extends CleartextMessage {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    return verifyDetached(signature, verificationKeys, date: date);
+    return verifySignature(signature, verificationKeys, date: date);
   }
 }

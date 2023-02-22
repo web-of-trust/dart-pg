@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+/// Signature subpacket type
 enum SignatureSubpacketType {
   signatureCreationTime(2),
   signatureExpirationTime(3),
