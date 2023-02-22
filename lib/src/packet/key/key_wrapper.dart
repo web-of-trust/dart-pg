@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
 
+/// Implementation of RFC 3394 AES Key Wrap & Key Unwrap funcions
 class KeyWrapper {
   final BlockCipher cipherEngine;
 
