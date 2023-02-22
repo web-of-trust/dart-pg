@@ -52,11 +52,9 @@ class ECDHPublicParams extends ECPublicParams {
   @override
   Uint8List encode() => Uint8List.fromList([
         ...super.encode(),
-        ...[
-          0x3,
-          reserved,
-          kdfHash.value,
-          kdfSymmetric.value,
-        ]
+        0x3,
+        reserved,
+        kdfHash.value,
+        kdfSymmetric.value,
       ]);
 }

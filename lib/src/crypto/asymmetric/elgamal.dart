@@ -87,7 +87,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
     } else {
       /// encryption
       final block = (inOff != 0 || inLen != input.length) ? input.sublist(0, inLen) : input;
-      final inp = block.toBigInt();
+      final inp = block.toBigIntWithSign(1);
 
       if (inp > p) {
         throw ArgumentError('input too large for $algorithmName cipher.');

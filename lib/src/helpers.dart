@@ -267,4 +267,13 @@ class Helper {
         throw UnsupportedError('Digest type not supported.');
     }
   }
+
+  /// Calculates a 16bit sum of a Uint8List by adding each character codes modulus 65535
+  static Uint8List calculateChecksum(final Uint8List data) {
+    var s = 0;
+    for (var i = 0; i < data.lengthInBytes; i++) {
+      s = (s + data[i]) & 0xffff;
+    }
+    return s.pack16();
+  }
 }

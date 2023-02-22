@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import '../enums.dart';
 import '../openpgp.dart';
-import 'key/key_pair_generator.dart';
+import 'key/key_pair_params.dart';
 import 'public_subkey.dart';
 import 'secret_key.dart';
 import 'subkey_packet.dart';
@@ -33,7 +33,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     final CurveInfo curve = OpenPGP.preferredCurve,
     final DateTime? date,
   }) {
-    final keyPair = KeyPairGenerator.generateKeyPairParams(algorithm, rsaBits: rsaBits, curve: curve);
+    final keyPair = KeyPairParams.generate(algorithm, rsaBits: rsaBits, curve: curve);
 
     return SecretSubkeyPacket(
       PublicSubkeyPacket(

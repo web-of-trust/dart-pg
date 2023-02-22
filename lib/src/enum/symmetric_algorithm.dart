@@ -2,6 +2,11 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'package:pointycastle/api.dart';
+import 'package:pointycastle/export.dart';
+
+import '../crypto/symmetric/base_cipher.dart';
+
 /// Symmetric-Key Algorithms
 /// See https://tools.ietf.org/html/rfc4880#section-9.2
 enum SymmetricAlgorithm {
@@ -60,6 +65,31 @@ enum SymmetricAlgorithm {
       case camellia256:
       case twofish:
         return 16;
+    }
+  }
+
+  BlockCipher get cipherEngine {
+    switch (this) {
+      case aes128:
+      case aes192:
+      case aes256:
+        return BlockCipher('AES/CFB-${blockSize * 8}');
+      case blowfish:
+        return CFBBlockCipher(BlowfishEngine(), blockSize);
+      case camellia128:
+      case camellia192:
+      case camellia256:
+        return CFBBlockCipher(CamelliaEngine(), blockSize);
+      case cast5:
+        return CFBBlockCipher(CAST5Engine(), blockSize);
+      case idea:
+        return CFBBlockCipher(IDEAEngine(), blockSize);
+      case tripledes:
+        return CFBBlockCipher(TripleDESEngine(), blockSize);
+      case twofish:
+        return CFBBlockCipher(TwofishEngine(), blockSize);
+      default:
+        throw UnsupportedError('Unsupported symmetric algorithm encountered');
     }
   }
 }

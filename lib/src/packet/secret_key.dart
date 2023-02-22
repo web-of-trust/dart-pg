@@ -11,7 +11,7 @@ import '../enums.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
 import 'key/key_id.dart';
-import 'key/key_pair_generator.dart';
+import 'key/key_pair_params.dart';
 import 'key/key_params.dart';
 import 'key/s2k.dart';
 import 'contained_packet.dart';
@@ -97,7 +97,7 @@ factory SecretKeyPacket.generate(
     final CurveInfo curve = OpenPGP.preferredCurve,
     final DateTime? date,
   }) {
-    final keyPair = KeyPairGenerator.generateKeyPairParams(algorithm, rsaBits: rsaBits, curve: curve);
+    final keyPair = KeyPairParams.generate(algorithm, rsaBits: rsaBits, curve: curve);
 
     return SecretKeyPacket(
       PublicKeyPacket(
@@ -163,7 +163,7 @@ factory SecretKeyPacket.generate(
       final iv = random.nextBytes(symmetric.blockSize);
 
       final key = s2k.produceKey(passphrase, symmetric);
-      final cipher = BufferedCipher(_cipherEngine(symmetric))
+      final cipher = BufferedCipher(symmetric.cipherEngine)
         ..init(true, ParametersWithIV(KeyParameter(key), iv));
 
       final clearText = secretParams!.encode();
@@ -189,7 +189,7 @@ factory SecretKeyPacket.generate(
       final Uint8List clearText;
       if (isEncrypted) {
         final key = s2k?.produceKey(passphrase, symmetric) ?? Uint8List((symmetric.keySize + 7) >> 3);
-        final cipher = BufferedCipher(_cipherEngine(symmetric))
+        final cipher = BufferedCipher(symmetric.cipherEngine)
           ..init(
             false,
             ParametersWithIV(
@@ -260,40 +260,6 @@ factory SecretKeyPacket.generate(
     }
 
     return Uint8List.fromList(bytes);
-  }
-
-  static BlockCipher _cipherEngine(final SymmetricAlgorithm symmetricAlgorithm) {
-    final BlockCipher engine;
-    switch (symmetricAlgorithm) {
-      case SymmetricAlgorithm.aes128:
-      case SymmetricAlgorithm.aes192:
-      case SymmetricAlgorithm.aes256:
-        engine = BlockCipher('AES/CFB-${symmetricAlgorithm.blockSize * 8}');
-        break;
-      case SymmetricAlgorithm.blowfish:
-        engine = CFBBlockCipher(BlowfishEngine(), symmetricAlgorithm.blockSize);
-        break;
-      case SymmetricAlgorithm.camellia128:
-      case SymmetricAlgorithm.camellia192:
-      case SymmetricAlgorithm.camellia256:
-        engine = CFBBlockCipher(CamelliaEngine(), symmetricAlgorithm.blockSize);
-        break;
-      case SymmetricAlgorithm.cast5:
-        engine = CFBBlockCipher(CAST5Engine(), symmetricAlgorithm.blockSize);
-        break;
-      case SymmetricAlgorithm.idea:
-        engine = CFBBlockCipher(IDEAEngine(), symmetricAlgorithm.blockSize);
-        break;
-      case SymmetricAlgorithm.tripledes:
-        engine = CFBBlockCipher(TripleDESEngine(), symmetricAlgorithm.blockSize);
-        break;
-      case SymmetricAlgorithm.twofish:
-        engine = CFBBlockCipher(TwofishEngine(), symmetricAlgorithm.blockSize);
-        break;
-      default:
-        throw UnsupportedError('Unsupported symmetric algorithm encountered');
-    }
-    return engine;
   }
 
   static KeyParams _parseSecretParams(final Uint8List packetData, final KeyAlgorithm algorithm) {
