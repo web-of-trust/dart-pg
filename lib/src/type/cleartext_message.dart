@@ -34,16 +34,18 @@ class CleartextMessage {
 
     for (final signaturePacket in signature.signaturePackets) {
       for (final key in verificationKeys) {
-        final keyPacket = key.getSigningKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
-        verifications.add(Verification(
-          keyPacket.keyID.keyID,
-          Signature(PacketList([signaturePacket])),
-          signaturePacket.verifyLiteralData(
-            keyPacket,
-            literalData,
-            date: date,
-          ),
-        ));
+        try {
+          final keyPacket = key.getSigningKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
+          verifications.add(Verification(
+            keyPacket.keyID.keyID,
+            Signature(PacketList([signaturePacket])),
+            signaturePacket.verifyLiteralData(
+              keyPacket,
+              literalData,
+              date: date,
+            ),
+          ));
+        } catch (_) {}
       }
     }
 

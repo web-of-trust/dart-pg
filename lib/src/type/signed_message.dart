@@ -73,27 +73,6 @@ class SignedMessage extends CleartextMessage {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    if (verificationKeys.isEmpty) {
-      throw ArgumentError('No verification keys provided');
-    }
-    final verifications = <Verification>[];
-    final literalData = LiteralDataPacket(Uint8List(0), text: text);
-
-    for (final signaturePacket in signature.signaturePackets) {
-      for (final key in verificationKeys) {
-        final keyPacket = key.getSigningKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
-        verifications.add(Verification(
-          keyPacket.keyID.keyID,
-          Signature(PacketList([signaturePacket])),
-          signaturePacket.verifyLiteralData(
-            keyPacket,
-            literalData,
-            date: date,
-          ),
-        ));
-      }
-    }
-
-    return verifications;
+    return verifyDetached(signature, verificationKeys, date: date);
   }
 }

@@ -15,31 +15,35 @@ abstract class ContainedPacket {
   Uint8List toPacketData();
 
   Uint8List packetEncode({final bool oldFormat = false, final bool partial = false}) {
-    final packetHeader = <int>[];
     final packetBody = toPacketData();
     final bodyLen = packetBody.length;
 
+    final List<int> packetHeader;
     if (oldFormat) {
       final hdr = 0x80 | (tag.value << 2);
       if (partial) {
-        packetHeader.add(hdr | 0x03);
+        packetHeader = [hdr | 0x03];
       } else {
         if (bodyLen <= 0xff) {
-          packetHeader.addAll([hdr, bodyLen]);
+          packetHeader = [hdr, bodyLen];
         } else if (bodyLen <= 0xffff) {
-          packetHeader.addAll([hdr | 0x01, ...bodyLen.pack16()]);
+          packetHeader = [hdr | 0x01, ...bodyLen.pack16()];
         } else {
-          packetHeader.addAll([hdr | 0x02, ...bodyLen.pack32()]);
+          packetHeader = [hdr | 0x02, ...bodyLen.pack32()];
         }
       }
     } else {
-      packetHeader.add(0x80 | 0x40 | tag.value);
+      final hdr = 0x80 | 0x40 | tag.value;
       if (bodyLen < 192) {
-        packetHeader.add(bodyLen);
+        packetHeader = [hdr, bodyLen];
       } else if (bodyLen <= 8383) {
-        packetHeader.addAll([(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192]);
+        packetHeader = [
+          hdr,
+          (((bodyLen - 192) >> 8) & 0xff) + 192,
+          bodyLen - 192,
+        ];
       } else {
-        packetHeader.addAll([0xff, ...bodyLen.pack32()]);
+        packetHeader = [hdr, 0xff, ...bodyLen.pack32()];
       }
     }
     return Uint8List.fromList([...packetHeader, ...packetBody]);
