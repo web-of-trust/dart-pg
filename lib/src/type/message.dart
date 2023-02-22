@@ -8,6 +8,7 @@ import '../armor/armor.dart';
 import '../enums.dart';
 import '../helpers.dart';
 import '../packet/packet_list.dart';
+import 'key.dart';
 
 /// Class that represents an OpenPGP message.
 /// Can be an encrypted message, signed message, compressed message or literal message
@@ -21,6 +22,14 @@ class Message {
   /// Returns ASCII armored text of message
   String armor() => Armor.encode(ArmorType.message, packetList.packetEncode());
 
-  static Uint8List generateSessionKey(SymmetricAlgorithm symmetric) =>
+  static Uint8List generateSessionKey(final SymmetricAlgorithm symmetric) =>
       Helper.secureRandom().nextBytes((symmetric.keySize + 7) >> 3);
+
+  static encryptSessionKey(
+    final Uint8List sessionKey,
+    final SymmetricAlgorithm symmetric,
+    final List<PublicKey> encryptionKeys, {
+    final String? passwords,
+    final DateTime? date,
+  }) {}
 }

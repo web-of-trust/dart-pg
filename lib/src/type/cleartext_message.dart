@@ -8,8 +8,9 @@ import 'key.dart';
 import 'signature.dart';
 import 'verification.dart';
 
+/// Class that represents a cleartext message.
 class CleartextMessage {
-  /// The cleartext of the signed message
+  /// The cleartext of the message
   final String _text;
 
   CleartextMessage(String text) : _text = text.trimRight().replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n');

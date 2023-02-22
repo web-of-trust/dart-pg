@@ -5,43 +5,50 @@
 import 'dart:typed_data';
 
 import '../enums.dart';
+import '../openpgp.dart';
 import 'contained_packet.dart';
+import 'key/key_id.dart';
 
 /// PublicKeyEncryptedSessionKey represents a public-key encrypted session key.
 /// See RFC 4880, section 5.1.
 class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   final int version;
 
-  final Uint8List keyID;
+  final KeyID keyID;
 
   final KeyAlgorithm keyAlgorithm;
 
   final Uint8List encrypted;
 
   PublicKeyEncryptedSessionKeyPacket(
-    this.version,
     this.keyID,
     this.keyAlgorithm,
     this.encrypted, {
+    this.version = OpenPGP.pkeskVersion,
     super.tag = PacketTag.publicKeyEncryptedSessionKey,
   });
 
   factory PublicKeyEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
-    final keyID = bytes.sublist(pos, pos + 8);
+    if (version != OpenPGP.pkeskVersion) {
+      throw UnsupportedError('Version $version of the PKESK packet is unsupported.');
+    }
 
+    final keyID = bytes.sublist(pos, pos + 8);
     pos += 8;
+
     final keyAlgorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
     pos++;
-    return PublicKeyEncryptedSessionKeyPacket(version, keyID, keyAlgorithm, bytes.sublist(pos));
+
+    return PublicKeyEncryptedSessionKeyPacket(KeyID(keyID), keyAlgorithm, bytes.sublist(pos), version: version);
   }
 
   @override
   Uint8List toPacketData() {
     return Uint8List.fromList([
       version,
-      ...keyID,
+      ...keyID.id,
       keyAlgorithm.value,
       ...encrypted,
     ]);
