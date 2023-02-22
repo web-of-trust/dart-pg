@@ -25,11 +25,11 @@ class LiteralDataPacket extends ContainedPacket {
   LiteralDataPacket(
     this.data, {
     this.format = LiteralFormat.utf8,
-    DateTime? creationTime,
+    DateTime? time,
     this.text = '',
     this.filename = '',
     super.tag = PacketTag.literalData,
-  }) : time = creationTime ?? DateTime.now();
+  }) : time = time ?? DateTime.now();
 
   factory LiteralDataPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
@@ -43,15 +43,22 @@ class LiteralDataPacket extends ContainedPacket {
 
     pos += 4;
     final data = bytes.sublist(pos);
+    final text = (format == LiteralFormat.text || format == LiteralFormat.utf8) ? utf8.decode(data) : '';
 
     return LiteralDataPacket(
       data,
       format: format,
       filename: filename,
-      creationTime: time,
-      text: utf8.decode(data),
+      time: time,
+      text: text,
     );
   }
+
+  factory LiteralDataPacket.fromText(String text) => LiteralDataPacket(
+        Uint8List(0),
+        text: text,
+        format: LiteralFormat.text,
+      );
 
   @override
   Uint8List toPacketData() {

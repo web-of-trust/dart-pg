@@ -349,7 +349,7 @@ class SignaturePacket extends ContainedPacket {
   }) {
     return SignaturePacket.createSignature(
       signKey,
-      literalData.text.isNotEmpty ? SignatureType.text : SignatureType.binary,
+      literalData.format == LiteralFormat.text ? SignatureType.text : SignatureType.binary,
       literalData.writeForSign(),
       date: date,
     );

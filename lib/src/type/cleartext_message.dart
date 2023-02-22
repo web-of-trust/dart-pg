@@ -30,7 +30,7 @@ class CleartextMessage {
       throw ArgumentError('No verification keys provided');
     }
     final verifications = <Verification>[];
-    final literalData = LiteralDataPacket(Uint8List(0), text: text);
+    final literalData = LiteralDataPacket.fromText(text);
 
     for (final signaturePacket in signature.signaturePackets) {
       for (final key in verificationKeys) {

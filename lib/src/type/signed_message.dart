@@ -46,7 +46,7 @@ class SignedMessage extends CleartextMessage {
           signingKeys.map(
             (key) => SignaturePacket.createLiteralData(
               key.getSigningKeyPacket(),
-              LiteralDataPacket(Uint8List(0), text: text),
+              LiteralDataPacket.fromText(text),
               date: date,
             ),
           ),
