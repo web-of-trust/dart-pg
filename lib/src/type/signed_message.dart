@@ -25,7 +25,7 @@ class SignedMessage extends CleartextMessage {
   factory SignedMessage.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
     if (armor.type != ArmorType.signedMessage) {
-      throw Exception('Armored text not of signed message type');
+      throw ArgumentError('Armored text not of signed message type');
     }
     final packetList = PacketList.packetDecode(armor.data);
     return SignedMessage(armor.text, Signature(packetList));
@@ -35,7 +35,6 @@ class SignedMessage extends CleartextMessage {
     final String text,
     final List<PrivateKey> signingKeys, {
     final DateTime? date,
-    final bool detached = false,
   }) {
     if (signingKeys.isEmpty) {
       throw ArgumentError('No signing keys provided');
@@ -49,7 +48,6 @@ class SignedMessage extends CleartextMessage {
               key.getSigningKeyPacket(),
               LiteralDataPacket(Uint8List(0), text: text),
               date: date,
-              detached: detached,
             ),
           ),
         ),

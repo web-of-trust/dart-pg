@@ -46,7 +46,7 @@ class KeyReader {
         case PacketTag.publicKey:
         case PacketTag.secretKey:
           if (keyPacket != null) {
-            throw Exception('Key block contains multiple keys');
+            throw StateError('Key block contains multiple keys');
           }
           if (packet is KeyPacket) {
             keyPacket = packet;

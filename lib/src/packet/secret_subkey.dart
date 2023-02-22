@@ -37,7 +37,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
 
     return SecretSubkeyPacket(
       PublicSubkeyPacket(
-        OpenPGP.version5Keys ? 5 : 4,
+        OpenPGP.keyVersion,
         date ?? DateTime.now(),
         keyPair.publicParams,
         algorithm: algorithm,

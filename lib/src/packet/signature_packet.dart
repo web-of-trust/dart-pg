@@ -67,11 +67,7 @@ class SignaturePacket extends ContainedPacket {
       return issuerKeyID;
     } else if (issuerFingerprint != null) {
       final fingerprint = issuerFingerprint!.data.sublist(1);
-      if (issuerFingerprint!.keyVersion == 5) {
-        return IssuerKeyID(fingerprint.sublist(0, 8));
-      } else {
-        return IssuerKeyID(fingerprint.sublist(12, 20));
-      }
+      return IssuerKeyID(fingerprint.sublist(12, 20));
     } else {
       return IssuerKeyID.wildcard();
     }
@@ -132,8 +128,10 @@ class SignaturePacket extends ContainedPacket {
 
   factory SignaturePacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
+
+    /// A one-octet version number (3 or 4 or 5).
     final version = bytes[pos++];
-    if (version != 4 && version != 5) {
+    if (version != 4) {
       throw UnsupportedError('Version $version of the signature packet is unsupported.');
     }
 
@@ -214,9 +212,8 @@ class SignaturePacket extends ContainedPacket {
       ...signatureData,
       ..._calculateTrailer(
         signatureType,
-        signatureData,
+        signatureData.lengthInBytes,
         version,
-        attachedHeader: attachedHeader,
       )
     ]);
     return SignaturePacket(
@@ -349,14 +346,12 @@ class SignaturePacket extends ContainedPacket {
     final SecretKeyPacket signKey,
     final LiteralDataPacket literalData, {
     final DateTime? date,
-    final bool detached = false,
   }) {
     return SignaturePacket.createSignature(
       signKey,
       literalData.text.isNotEmpty ? SignatureType.text : SignatureType.binary,
       literalData.writeForSign(),
       date: date,
-      attachedHeader: !detached ? literalData.writeHeader() : null,
     );
   }
 
@@ -373,7 +368,6 @@ class SignaturePacket extends ContainedPacket {
     final KeyPacket verifyKey,
     final Uint8List dataToVerify, {
     final DateTime? date,
-    final Uint8List? attachedHeader,
   }) {
     if (issuerKeyID.keyID != verifyKey.keyID.toString()) {
       throw ArgumentError('Signature was not issued by the given public key.');
@@ -392,14 +386,13 @@ class SignaturePacket extends ContainedPacket {
       ...signatureData,
       ..._calculateTrailer(
         signatureType,
-        signatureData,
+        signatureData.lengthInBytes,
         version,
-        attachedHeader: attachedHeader,
       )
     ]);
     final hash = Helper.hashDigest(message, hashAlgorithm);
     if (signedHashValue[0] != hash[0] || signedHashValue[1] != hash[1]) {
-      throw Exception('Signed digest did not match');
+      throw StateError('Signed digest did not match');
     }
 
     switch (keyAlgorithm) {
@@ -417,7 +410,7 @@ class SignaturePacket extends ContainedPacket {
       case KeyAlgorithm.eddsa:
         throw UnsupportedError('Unsupported public key algorithm for verification.');
       default:
-        throw Exception('Unknown public key algorithm for verification.');
+        throw StateError('Unknown public key algorithm for verification.');
     }
   }
 
@@ -445,35 +438,20 @@ class SignaturePacket extends ContainedPacket {
     final KeyPacket verifyKey,
     LiteralDataPacket literalData, {
     final DateTime? date,
-    final bool detached = false,
   }) {
     return verify(
       verifyKey,
       literalData.writeForSign(),
       date: date,
-      attachedHeader: !detached ? literalData.writeHeader() : null,
     );
   }
 
   static Uint8List _calculateTrailer(
-    final SignatureType signatureType,
-    final Uint8List signatureData,
-    final int version, {
-    final Uint8List? attachedHeader,
-  }) {
-    final List<int> header;
-    if (version == 5 && (signatureType == SignatureType.binary || signatureType == SignatureType.text)) {
-      header = attachedHeader ?? List.filled(6, 0);
-    } else {
-      header = [];
-    }
-
+      final SignatureType signatureType, int dataLength, final int version) {
     return Uint8List.fromList([
-      ...header,
       version,
       0xff,
-      ...(version == 5) ? List.filled(4, 0) : <int>[],
-      ...signatureData.lengthInBytes.pack32(),
+      ...dataLength.pack32(),
     ]);
   }
 
@@ -521,7 +499,7 @@ class SignaturePacket extends ContainedPacket {
       case KeyAlgorithm.eddsa:
         throw UnsupportedError('Unsupported public key algorithm for signing.');
       default:
-        throw Exception('Unknown public key algorithm for signing.');
+        throw StateError('Unknown public key algorithm for signing.');
     }
     return signature;
   }

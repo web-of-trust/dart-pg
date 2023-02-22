@@ -63,7 +63,7 @@ class PrivateKey extends Key {
     final DateTime? date,
   }) {
     if (userIDs.isEmpty || passphrase.isEmpty) {
-      throw Exception('UserIDs and passphrase are required for key generation');
+      throw ArgumentError('UserIDs and passphrase are required for key generation');
     }
 
     final keyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdsa;

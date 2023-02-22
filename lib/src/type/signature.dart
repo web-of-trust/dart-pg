@@ -16,7 +16,7 @@ class Signature {
   factory Signature.fromArmored(String armored) {
     final armor = Armor.decode(armored);
     if (armor.type != ArmorType.signature) {
-      throw Exception('Armored text not of signature type');
+      throw ArgumentError('Armored text not of signature type');
     }
     return Signature(PacketList.packetDecode(armor.data));
   }

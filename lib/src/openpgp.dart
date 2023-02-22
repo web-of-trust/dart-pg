@@ -21,7 +21,7 @@ class OpenPGP {
 
   static const checksumRequired = true;
 
-  static const version5Keys = false;
+  static const keyVersion = 4;
 
   /// Default hash algorithm
   static const preferredHash = HashAlgorithm.sha256;
@@ -95,7 +95,7 @@ class OpenPGP {
     final List<PrivateKey> signingKeys, {
     final DateTime? date,
   }) async =>
-      SignedMessage.signCleartext(text, signingKeys, date: date, detached: true).signature;
+      SignedMessage.signCleartext(text, signingKeys, date: date).signature;
 
   static Future<List<Verification>> verify(
     final String armored,

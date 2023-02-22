@@ -101,7 +101,7 @@ factory SecretKeyPacket.generate(
 
     return SecretKeyPacket(
       PublicKeyPacket(
-        OpenPGP.version5Keys ? 5 : 4,
+        OpenPGP.keyVersion,
         date ?? DateTime.now(),
         keyPair.publicParams,
         algorithm: algorithm,

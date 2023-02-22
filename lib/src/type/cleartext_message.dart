@@ -42,7 +42,6 @@ class CleartextMessage {
             keyPacket,
             literalData,
             date: date,
-            detached: true,
           ),
         ));
       }

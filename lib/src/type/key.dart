@@ -137,7 +137,7 @@ abstract class Key {
     final DateTime? date,
   }) {
     if (!verifyPrimaryKey(date: date)) {
-      throw Exception('Primary key is invalid');
+      throw StateError('Primary key is invalid');
     }
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
@@ -148,7 +148,7 @@ abstract class Key {
       }
     }
     if (!isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
-      throw Exception('Could not find valid signing key packet.');
+      throw StateError('Could not find valid signing key packet.');
     }
     return keyPacket;
   }
@@ -158,7 +158,7 @@ abstract class Key {
     final DateTime? date,
   }) {
     if (!verifyPrimaryKey(date: date)) {
-      throw Exception('Primary key is invalid');
+      throw StateError('Primary key is invalid');
     }
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
@@ -169,7 +169,7 @@ abstract class Key {
       }
     }
     if (isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
-      throw Exception('Could not find valid encryption key packet.');
+      throw StateError('Could not find valid encryption key packet.');
     }
     return keyPacket;
   }
@@ -184,7 +184,7 @@ abstract class Key {
         continue;
       }
       if (userID.isNotEmpty && user.userID!.userID != userID) {
-        throw Exception('Could not find user that matches that user ID');
+        throw StateError('Could not find user that matches that user ID');
       }
       final selfCertifications = user.selfCertifications
         ..sort((a, b) => a.creationTime.creationTime.compareTo(b.creationTime.creationTime));
@@ -196,7 +196,7 @@ abstract class Key {
       return user;
     }
     if (validUsers.isEmpty) {
-      throw Exception('Could not find primary user');
+      throw StateError('Could not find primary user');
     }
     return validUsers[0];
   }

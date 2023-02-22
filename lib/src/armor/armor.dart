@@ -91,7 +91,7 @@ class Armor {
     final data = base64.decode(dataLines.join().trim());
 
     if ((checksum != _crc24Checksum(data)) && (checksum.isNotEmpty || checksumRequired)) {
-      throw Exception('Ascii armor integrity check failed');
+      throw StateError('Ascii armor integrity check failed');
     }
 
     return Armor(type ?? ArmorType.multipartSection, data, headers: headers, text: text);
@@ -184,7 +184,7 @@ class Armor {
   static ArmorType _getType(final String text) {
     final matches = RegExp(beginPattern).allMatches(text);
     if (matches.isEmpty) {
-      throw Exception('Unknown ASCII armor type');
+      throw ArgumentError('Unknown ASCII armor type');
     }
     final match = matches.elementAt(0)[0]!;
     if (r'MESSAGE, PART \d+\/\d+'.hasMatch(match)) {

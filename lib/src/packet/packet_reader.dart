@@ -21,7 +21,7 @@ class PacketReader {
 
   factory PacketReader.fromPacket(final Uint8List bytes, [final int start = 0]) {
     if (bytes.length <= start || bytes.sublist(start).length < 2 || (bytes[start] & 0x80) == 0) {
-      throw Exception('Error during parsing. This message / key probably does not conform to a valid OpenPGP format.');
+      throw ArgumentError('Error during parsing. This data probably does not conform to a valid OpenPGP format.');
     }
 
     var pos = start;

@@ -56,7 +56,7 @@ class KeyPairGenerator {
       case KeyAlgorithm.elgamal:
         throw UnsupportedError('Public key algorithm ${algorithm.name} is unsupported for key generation.');
       default:
-        throw Exception('Unknown public key algorithm for key generation.');
+        throw UnimplementedError('Unknown public key algorithm for key generation.');
     }
   }
 

@@ -42,7 +42,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     this.algorithm = KeyAlgorithm.rsaEncryptSign,
     super.tag = PacketTag.publicKey,
   }) {
-    if (version != 4 && version != 5) {
+    if (version != 4) {
       throw UnsupportedError('Version $version of the key packet is unsupported.');
     }
     _calculateFingerprintAndKeyID();
@@ -51,9 +51,9 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   factory PublicKeyPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
 
-    /// A one-octet version number (4 or 5).
+    /// A one-octet version number (3 or 4 or 5).
     final version = bytes[pos++];
-    if (version != 4 && version != 5) {
+    if (version != 4) {
       throw UnsupportedError('Version $version of the key packet is unsupported.');
     }
 
@@ -64,10 +64,6 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     // A one-octet number denoting the public-key algorithm of this key.
     final algorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
     pos++;
-    if (version == 5) {
-      /// - A four-octet scalar octet count for the following key material.
-      pos += 4;
-    }
 
     /// A series of values comprising the key material.
     /// This is algorithm-specific and described in section XXXX.
@@ -104,13 +100,8 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   /// Computes and set the fingerprint of the key
   void _calculateFingerprintAndKeyID() {
     final toHash = writeForSign();
-    if (version == 4) {
-      _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
-      _keyID = KeyID(_fingerprint.sublist(12, 20));
-    } else {
-      _fingerprint = Uint8List.fromList(sha256.convert(toHash).bytes);
-      _keyID = KeyID(_fingerprint.sublist(0, 8));
-    }
+    _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
+    _keyID = KeyID(_fingerprint.sublist(12, 20));
   }
 
   @override
@@ -147,8 +138,8 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   Uint8List writeForSign() {
     final packetData = toPacketData();
     return Uint8List.fromList([
-      (version == 5) ? 0x9a : 0x99,
-      ...(version == 5) ? packetData.lengthInBytes.pack32() : packetData.lengthInBytes.pack16(),
+      0x99,
+      ...packetData.lengthInBytes.pack16(),
       ...packetData,
     ]);
   }
@@ -160,7 +151,6 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
       version,
       ...creationTime.toBytes(),
       algorithm.value,
-      ...(version == 5) ? keyData.lengthInBytes.pack32() : [],
       ...keyData,
     ]);
   }

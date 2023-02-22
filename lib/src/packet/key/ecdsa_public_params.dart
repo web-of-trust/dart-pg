@@ -16,7 +16,7 @@ class ECDSAPublicParams extends ECPublicParams {
     var pos = 0;
     final length = bytes[pos++];
     if (length == 0 || length == 0xFF) {
-      throw Exception('Future extensions not yet implemented');
+      throw UnimplementedError('Future extensions not yet implemented');
     }
     if (length > 127) {
       throw UnsupportedError('Unsupported OID');
