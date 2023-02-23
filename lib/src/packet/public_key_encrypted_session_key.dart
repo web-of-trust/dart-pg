@@ -188,7 +188,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  static RSASkParams _rsaEncrypt(final RSAPublicKey key, final Uint8List plainData) {
+  static SkParams _rsaEncrypt(final RSAPublicKey key, final Uint8List plainData) {
     final engine = AsymmetricBlockCipher('RSA')..init(true, PublicKeyParameter<RSAPublicKey>(key));
     return RSASkParams(_processInBlocks(engine, plainData).toBigIntWithSign(1));
   }
@@ -198,7 +198,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     return _processInBlocks(engine, cipherData);
   }
 
-  static ElGamalSkParams _elgamalEncrypt(final ElGamalPublicKey key, final Uint8List plainData) {
+  static SkParams _elgamalEncrypt(final ElGamalPublicKey key, final Uint8List plainData) {
     final engine = ElGamalEngine()..init(true, PublicKeyParameter<ElGamalPublicKey>(key));
     final cipherData = Uint8List(engine.outputBlockSize);
     engine.processBlock(plainData, 0, plainData.length, cipherData, 0);
@@ -209,13 +209,14 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   static Uint8List _elgamalDecrypt(final ElGamalPrivateKey key, final Uint8List cipherData) {
-    final engine = ElGamalEngine()..init(true, PrivateKeyParameter<ElGamalPrivateKey>(key));
+    final engine = ElGamalEngine()..init(false, PrivateKeyParameter<ElGamalPrivateKey>(key));
     final plainData = Uint8List(engine.outputBlockSize);
     engine.processBlock(cipherData, 0, cipherData.length, plainData, 0);
     return plainData;
   }
 
-  static ECDHSkParams _ecdhEncrypt(
+  /// Encrypt and wrap a session key
+  static SkParams _ecdhEncrypt(
     final ECDHPublicParams publicParams,
     final Uint8List plainData,
     final Uint8List fingerprint,
@@ -247,13 +248,14 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
+  /// Decrypt and unwrap the value derived from session key
   static Uint8List _ecdhDecrypt(
     final ECPrivateKey privateKey,
     final ECDHPublicParams publicParams,
     final ECDHSkParams sessionKeyParams,
     final Uint8List fingerprint,
   ) {
-    final point = privateKey.parameters!.curve.decodePoint(sessionKeyParams.publicKey.toUnsignedBytes());
+    final point = privateKey.parameters!.curve.decodePoint(sessionKeyParams.ephemeralKey.toUnsignedBytes());
     final publicKey = ECPublicKey(point, privateKey.parameters);
     final agreement = ECDHBasicAgreement()..init(privateKey);
     final sharedKey = agreement.calculateAgreement(publicKey);
@@ -317,11 +319,13 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     return (output.length == outputOffset) ? output : output.sublist(0, outputOffset);
   }
 
+  /// Add pkcs5 padding to a message
   static Uint8List _pkcs5Encode(Uint8List message) {
     final c = 8 - (message.lengthInBytes % 8);
     return Uint8List.fromList(List.filled(message.length + c, c))..setAll(0, message);
   }
 
+  /// Remove pkcs5 padding from a message
   static Uint8List _pkcs5Decode(Uint8List message) {
     final length = message.length;
     if (length > 0) {

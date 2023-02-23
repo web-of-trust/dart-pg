@@ -7,12 +7,12 @@ import 'dart:typed_data';
 import '../../helpers.dart';
 import 'sk_params.dart';
 
-/// Elgamal encrypted session key Params
+/// Algorithm Specific Params for Elgamal encryption
 class ElGamalSkParams extends SkParams {
-  /// MPI of Elgamal value g**k mod p
+  /// MPI of Elgamal (Diffie-Hellman) value g**k mod p.
   final BigInt gamma;
 
-  /// MPI of Elgamal value m * y**k mod p
+  /// MPI of Elgamal (Diffie-Hellman) value m * y**k mod p.
   final BigInt phi;
 
   ElGamalSkParams(this.gamma, this.phi);

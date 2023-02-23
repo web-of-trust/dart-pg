@@ -7,30 +7,30 @@ import 'dart:typed_data';
 import '../../helpers.dart';
 import 'sk_params.dart';
 
-/// ECDH encrypted session key params
+/// Algorithm Specific Params for ECDH encryption
 class ECDHSkParams extends SkParams {
   /// MPI containing the ephemeral key used to establish the shared secret
-  final BigInt publicKey;
+  final BigInt ephemeralKey;
 
   /// ECDH symmetric key
   Uint8List wrappedKey;
 
-  ECDHSkParams(this.publicKey, this.wrappedKey);
+  ECDHSkParams(this.ephemeralKey, this.wrappedKey);
 
   factory ECDHSkParams.fromPacketData(Uint8List bytes) {
     final ephemeralKey = Helper.readMPI(bytes);
 
     var pos = ephemeralKey.byteLength + 2;
     final length = bytes[pos++];
-    final symkey = bytes.sublist(pos, pos + length);
+    final wrappedKey = bytes.sublist(pos, pos + length);
 
-    return ECDHSkParams(ephemeralKey, symkey);
+    return ECDHSkParams(ephemeralKey, wrappedKey);
   }
 
   @override
   Uint8List encode() => Uint8List.fromList([
-        ...publicKey.bitLength.pack16(),
-        ...publicKey.toUnsignedBytes(),
+        ...ephemeralKey.bitLength.pack16(),
+        ...ephemeralKey.toUnsignedBytes(),
         wrappedKey.lengthInBytes,
         ...wrappedKey,
       ]);

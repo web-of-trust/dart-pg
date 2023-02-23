@@ -7,9 +7,9 @@ import 'dart:typed_data';
 import '../../helpers.dart';
 import 'sk_params.dart';
 
-/// RSA encrypted session key params
+/// Algorithm Specific Params for RSA encryption
 class RSASkParams extends SkParams {
-  /// MPI of RSA encrypted value m**e mod n.
+  /// multiprecision integer (MPI) of RSA encrypted value m**e mod n.
   final BigInt encrypted;
 
   RSASkParams(this.encrypted);

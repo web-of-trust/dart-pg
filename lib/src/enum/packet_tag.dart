@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+/// A list of packet types and numeric tags associated with them.
 enum PacketTag {
   publicKeyEncryptedSessionKey(1),
   signature(2),

@@ -8,7 +8,7 @@ import '../enums.dart';
 import 'key/s2k.dart';
 import 'contained_packet.dart';
 
-/// SymmetricKeyEncrypted represents a passphrase protected session key.
+/// SymEncryptedSessionKey represents a passphrase protected session key.
 /// See RFC 4880, section 5.3.
 class SymEncryptedSessionKeyPacket extends ContainedPacket {
   final int version;
