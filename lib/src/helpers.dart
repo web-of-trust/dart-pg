@@ -249,6 +249,12 @@ class Helper {
       ..seed(pc.KeyParameter(Uint8List.fromList(List.generate(32, ((_) => _random.nextInt(0xffffffff))))));
   }
 
+  static Uint8List generatePrefix(final SymmetricAlgorithm symmetric) {
+    final prefix = secureRandom().nextBytes(symmetric.blockSize);
+    final repeat = [prefix[prefix.length - 2], prefix[prefix.length - 1]];
+    return Uint8List.fromList([...prefix, ...repeat]);
+  }
+
   static Uint8List generateSessionKey(final SymmetricAlgorithm symmetric) =>
       secureRandom().nextBytes((symmetric.keySize + 7) >> 3);
 

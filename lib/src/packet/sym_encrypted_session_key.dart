@@ -67,34 +67,16 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   factory SymEncryptedSessionKeyPacket.encryptSessionKey(
-    String passphrase, {
-    SymmetricAlgorithm encryptionSymmetric = OpenPGP.preferredSymmetric,
-    SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
+    final String passphrase,
+    final Uint8List sessionKey, {
+    final SymmetricAlgorithm encryptionSymmetric = OpenPGP.preferredSymmetric,
+    final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
     final HashAlgorithm hash = OpenPGP.preferredHash,
     final S2kType type = S2kType.iterated,
   }) {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
     final key = s2k.produceKey(passphrase, encryptionSymmetric);
     final cipher = BufferedCipher(encryptionSymmetric.cipherEngine)..init(true, KeyParameter(key));
-    final sessionKey = Helper.generateSessionKey(sessionKeySymmetric);
-    return SymEncryptedSessionKeyPacket(
-      s2k,
-      cipher.process(Uint8List.fromList([sessionKeySymmetric.value, ...sessionKey])),
-      sessionKey,
-      encryptionSymmetric: encryptionSymmetric,
-      sessionKeySymmetric: sessionKeySymmetric,
-    );
-  }
-
-  SymEncryptedSessionKeyPacket encrypt(
-    String passphrase, {
-    final HashAlgorithm hash = OpenPGP.preferredHash,
-    final S2kType type = S2kType.iterated,
-  }) {
-    final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
-    final key = s2k.produceKey(passphrase, encryptionSymmetric);
-    final cipher = BufferedCipher(encryptionSymmetric.cipherEngine)..init(true, KeyParameter(key));
-
     final toEncrypt = sessionKey.isNotEmpty
         ? Uint8List.fromList([sessionKeySymmetric.value, ...sessionKey])
         : Uint8List.fromList([
@@ -104,14 +86,27 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     return SymEncryptedSessionKeyPacket(
       s2k,
       cipher.process(toEncrypt),
-      toEncrypt.sublist(1),
-      version: version,
+      sessionKey,
       encryptionSymmetric: encryptionSymmetric,
       sessionKeySymmetric: sessionKeySymmetric,
     );
   }
 
-  SymEncryptedSessionKeyPacket decrypt(String passphrase) {
+  SymEncryptedSessionKeyPacket encrypt(
+    final String passphrase, {
+    final HashAlgorithm hash = OpenPGP.preferredHash,
+    final S2kType type = S2kType.iterated,
+  }) =>
+      SymEncryptedSessionKeyPacket.encryptSessionKey(
+        passphrase,
+        sessionKey,
+        encryptionSymmetric: encryptionSymmetric,
+        sessionKeySymmetric: sessionKeySymmetric,
+        hash: hash,
+        type: type,
+      );
+
+  SymEncryptedSessionKeyPacket decrypt(final String passphrase) {
     if (encrypted.isNotEmpty) {
       final key = s2k.produceKey(passphrase, encryptionSymmetric);
       final cipher = BufferedCipher(encryptionSymmetric.cipherEngine)..init(false, KeyParameter(key));
