@@ -32,7 +32,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
     }
     if (params is AsymmetricKeyParameter<ElGamalAsymmetricKey>) {
       _key = params.key;
-      _bitSize = _key!.p.bitLength;
+      _bitSize = _key!.prime.bitLength;
 
       if (_forEncryption) {
         if (_key is! ElGamalPublicKey) {
@@ -74,7 +74,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
     if (inLen > maxLength) {
       throw ArgumentError('input too large for $algorithmName cipher.');
     }
-    final p = _key!.p;
+    final prime = _key!.prime;
 
     if (_key is ElGamalPrivateKey) {
       /// decryption
@@ -82,22 +82,22 @@ class ElGamalEngine implements AsymmetricBlockCipher {
       final phi = input.sublist(inLen ~/ 2).toBigIntWithSign(1);
 
       final priv = _key as ElGamalPrivateKey;
-      final m = (gamma.modPow(p - (BigInt.one + priv.x), p) * phi) % p;
+      final m = (gamma.modPow(prime - (BigInt.one + priv.x), prime) * phi) % prime;
       output.setAll(outOff, m.toUnsignedBytes());
     } else {
       /// encryption
       final block = (inOff != 0 || inLen != input.length) ? input.sublist(0, inLen) : input;
       final inp = block.toBigIntWithSign(1);
 
-      if (inp > p) {
+      if (inp > prime) {
         throw ArgumentError('input too large for $algorithmName cipher.');
       }
 
-      final k = _generateK(p);
+      final k = _generateK(prime);
 
       final pub = _key as ElGamalPublicKey;
-      final gamma = pub.g.modPow(k, p);
-      final phi = (inp * (pub.y.modPow(k, p))) % p;
+      final gamma = pub.generator.modPow(k, prime);
+      final phi = (inp * (pub.y.modPow(k, prime))) % prime;
 
       output.setAll(outOff, [
         ...gamma.toUnsignedBytes().sublist(0, outputBlockSize ~/ 2),
@@ -122,19 +122,19 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
 abstract class ElGamalAsymmetricKey implements AsymmetricKey {
   /// prime
-  final BigInt p;
+  final BigInt prime;
 
   /// group generator
-  final BigInt g;
+  final BigInt generator;
 
-  ElGamalAsymmetricKey(this.p, this.g);
+  ElGamalAsymmetricKey(this.prime, this.generator);
 }
 
 class ElGamalPublicKey extends ElGamalAsymmetricKey implements PublicKey {
   /// public exponent y = g ** x mod p
   final BigInt y;
 
-  ElGamalPublicKey(this.y, super.p, super.g);
+  ElGamalPublicKey(this.y, super.prime, super.generator);
 }
 
 class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
@@ -144,7 +144,8 @@ class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
   /// public key
   final ElGamalPublicKey publicKey;
 
-  ElGamalPrivateKey(this.x, super.p, super.g) : publicKey = ElGamalPublicKey(g.modPow(x, p), p, g);
+  ElGamalPrivateKey(this.x, super.prime, super.generator)
+      : publicKey = ElGamalPublicKey(generator.modPow(x, prime), prime, generator);
 
   BigInt get y => publicKey.y;
 }
