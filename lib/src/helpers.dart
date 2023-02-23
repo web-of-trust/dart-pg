@@ -248,6 +248,9 @@ class Helper {
       ..seed(pc.KeyParameter(Uint8List.fromList(List.generate(32, ((_) => random.nextInt(0xffffffff))))));
   }
 
+  static Uint8List generateSessionKey(final SymmetricAlgorithm symmetric) =>
+      secureRandom().nextBytes((symmetric.keySize + 7) >> 3);
+
   static Uint8List hashDigest(final Uint8List input, [HashAlgorithm hash = HashAlgorithm.sha256]) {
     switch (hash) {
       case HashAlgorithm.sha1:

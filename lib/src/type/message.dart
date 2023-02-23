@@ -6,7 +6,6 @@ import 'dart:typed_data';
 
 import '../armor/armor.dart';
 import '../enums.dart';
-import '../helpers.dart';
 import '../packet/packet_list.dart';
 import 'key.dart';
 
@@ -21,9 +20,6 @@ class Message {
 
   /// Returns ASCII armored text of message
   String armor() => Armor.encode(ArmorType.message, packetList.packetEncode());
-
-  static Uint8List generateSessionKey(final SymmetricAlgorithm symmetric) =>
-      Helper.secureRandom().nextBytes((symmetric.keySize + 7) >> 3);
 
   static encryptSessionKey(
     final Uint8List sessionKey,

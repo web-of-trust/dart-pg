@@ -25,6 +25,8 @@ class OpenPGP {
 
   static const pkeskVersion = 3;
 
+  static const skeskVersion = 4;
+
   /// Default hash algorithm
   static const preferredHash = HashAlgorithm.sha256;
 

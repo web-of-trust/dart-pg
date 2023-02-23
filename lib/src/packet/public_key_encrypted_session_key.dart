@@ -20,7 +20,29 @@ import 'key_packet.dart';
 /// PublicKeyEncryptedSessionKey represents a public-key encrypted session key.
 /// See RFC 4880, section 5.1.
 class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
-  static const _anonymousSender = 'Anonymous Sender    ';
+  /// 20 octets representing the UTF-8 encoding of the string 'Anonymous Sender    '
+  static const _anonymousSender = [
+    0x41,
+    0x6e,
+    0x6f,
+    0x6e,
+    0x79,
+    0x6d,
+    0x6f,
+    0x75,
+    0x73,
+    0x20,
+    0x53,
+    0x65,
+    0x6e,
+    0x64,
+    0x65,
+    0x72,
+    0x20,
+    0x20,
+    0x20,
+    0x20,
+  ];
 
   final int version;
 
@@ -42,8 +64,8 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     this.publicKeyAlgorithm,
     this.sessionKeyParams,
     this.sessionKey, {
-    this.sessionKeySymmetric = OpenPGP.preferredSymmetric,
     this.version = OpenPGP.pkeskVersion,
+    this.sessionKeySymmetric = OpenPGP.preferredSymmetric,
     super.tag = PacketTag.publicKeyEncryptedSessionKey,
   });
 
@@ -272,33 +294,29 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   /// Key Derivation Function (RFC 6637)
-  static Uint8List _kdf(HashAlgorithm hash, BigInt sharedKey, int keySize, Uint8List param) {
-    return Helper.hashDigest(
-      Uint8List.fromList([
-        0,
-        0,
-        0,
-        1,
-        ...sharedKey.toUnsignedBytes(),
-        ...param,
-      ]),
-      hash,
-    ).sublist(0, keySize);
-  }
+  static Uint8List _kdf(HashAlgorithm hash, BigInt sharedKey, int keySize, Uint8List param) => Helper.hashDigest(
+        Uint8List.fromList([
+          0,
+          0,
+          0,
+          1,
+          ...sharedKey.toUnsignedBytes(),
+          ...param,
+        ]),
+        hash,
+      ).sublist(0, keySize);
 
   /// Build Param for ECDH algorithm (RFC 6637)
-  static Uint8List _buildEcdhParam(final ECDHPublicParams publicParams, Uint8List fingerprint) {
-    return Uint8List.fromList([
-      ...publicParams.oid.encode().sublist(1),
-      KeyAlgorithm.ecdh.value,
-      0x3,
-      publicParams.reserved,
-      publicParams.kdfHash.value,
-      publicParams.kdfSymmetric.value,
-      ..._anonymousSender.stringToBytes(),
-      ...fingerprint.sublist(0, 20),
-    ]);
-  }
+  static Uint8List _buildEcdhParam(final ECDHPublicParams publicParams, Uint8List fingerprint) => Uint8List.fromList([
+        ...publicParams.oid.encode().sublist(1),
+        KeyAlgorithm.ecdh.value,
+        0x3,
+        publicParams.reserved,
+        publicParams.kdfHash.value,
+        publicParams.kdfSymmetric.value,
+        ..._anonymousSender,
+        ...fingerprint.sublist(0, 20),
+      ]);
 
   static Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
     final numBlocks = input.length ~/ engine.inputBlockSize + ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
