@@ -18,12 +18,11 @@ class UserIDPacket extends ContainedPacket {
 
   final String comment;
 
-  UserIDPacket(
-    this.userID, {
-    super.tag = PacketTag.userID,
-  })  : name = _extractName(userID),
+  UserIDPacket(this.userID)
+      : name = _extractName(userID),
         email = _extractEmail(userID),
-        comment = _extractComment(userID);
+        comment = _extractComment(userID),
+        super(PacketTag.userID);
 
   factory UserIDPacket.fromPacketData(final Uint8List bytes) {
     return UserIDPacket(utf8.decode(bytes));

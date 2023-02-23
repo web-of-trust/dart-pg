@@ -10,10 +10,7 @@ import 'contained_packet.dart';
 class TrustPacket extends ContainedPacket {
   final Uint8List levelAndTrustAmount;
 
-  TrustPacket(
-    this.levelAndTrustAmount, {
-    super.tag = PacketTag.trust,
-  });
+  TrustPacket(this.levelAndTrustAmount) : super(PacketTag.trust);
 
   factory TrustPacket.fromTrustCode(final int trustCode) => TrustPacket(Uint8List.fromList([trustCode & 0xff]));
 

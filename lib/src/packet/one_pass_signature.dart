@@ -29,9 +29,8 @@ class OnePassSignaturePacket extends ContainedPacket {
     this.hashAlgorithm,
     this.keyAlgorithm,
     this.issuerKeyID,
-    this.nested, {
-    super.tag = PacketTag.onePassSignature,
-  });
+    this.nested,
+  ) : super(PacketTag.onePassSignature);
 
   factory OnePassSignaturePacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;

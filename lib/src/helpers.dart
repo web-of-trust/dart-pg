@@ -237,15 +237,16 @@ extension DateTimeHelper on DateTime {
 }
 
 class Helper {
+  static final _random = Random.secure();
+
   static BigInt readMPI(Uint8List bytes) {
     final bitLength = bytes.sublist(0, 2).toUint16();
     return bytes.sublist(2, ((bitLength + 7) >> 3) + 2).toBigIntWithSign(1);
   }
 
   static pc.SecureRandom secureRandom() {
-    final random = Random.secure();
     return pc.SecureRandom('Fortuna')
-      ..seed(pc.KeyParameter(Uint8List.fromList(List.generate(32, ((_) => random.nextInt(0xffffffff))))));
+      ..seed(pc.KeyParameter(Uint8List.fromList(List.generate(32, ((_) => _random.nextInt(0xffffffff))))));
   }
 
   static Uint8List generateSessionKey(final SymmetricAlgorithm symmetric) =>

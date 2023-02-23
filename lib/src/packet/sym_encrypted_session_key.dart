@@ -38,8 +38,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     this.version = OpenPGP.skeskVersion,
     this.encryptionSymmetric = OpenPGP.preferredSymmetric,
     this.sessionKeySymmetric = OpenPGP.preferredSymmetric,
-    super.tag = PacketTag.symEncryptedSessionKey,
-  });
+  }) : super(PacketTag.symEncryptedSessionKey);
 
   factory SymEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;

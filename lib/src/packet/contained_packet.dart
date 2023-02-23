@@ -10,7 +10,7 @@ import '../helpers.dart';
 abstract class ContainedPacket {
   final PacketTag tag;
 
-  ContainedPacket({required this.tag});
+  ContainedPacket(this.tag);
 
   Uint8List toPacketData();
 

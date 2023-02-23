@@ -12,9 +12,7 @@ import 'contained_packet.dart';
 class MarkerPacket extends ContainedPacket {
   static const marker = 'PGP';
 
-  MarkerPacket({
-    super.tag = PacketTag.marker,
-  });
+  MarkerPacket() : super(PacketTag.marker);
 
   @override
   Uint8List toPacketData() {

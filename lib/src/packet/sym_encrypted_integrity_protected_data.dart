@@ -18,11 +18,8 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
 
   final Uint8List encrypted;
 
-  SymEncryptedIntegrityProtectedDataPacket(
-    this.version,
-    this.encrypted, {
-    super.tag = PacketTag.symEncryptedIntegrityProtectedData,
-  });
+  SymEncryptedIntegrityProtectedDataPacket(this.version, this.encrypted)
+      : super(PacketTag.symEncryptedIntegrityProtectedData);
 
   factory SymEncryptedIntegrityProtectedDataPacket.fromPacketData(final Uint8List bytes) =>
       SymEncryptedIntegrityProtectedDataPacket(bytes[0], bytes.sublist(1));

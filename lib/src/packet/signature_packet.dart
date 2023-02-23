@@ -49,14 +49,14 @@ class SignaturePacket extends ContainedPacket {
     this.signature, {
     this.hashedSubpackets = const [],
     this.unhashedSubpackets = const [],
-    super.tag = PacketTag.signature,
-  }) : signatureData = Uint8List.fromList([
+  })  : signatureData = Uint8List.fromList([
           version,
           signatureType.value,
           keyAlgorithm.value,
           hashAlgorithm.value,
           ..._writeSubpackets(hashedSubpackets),
-        ]);
+        ]),
+        super(PacketTag.signature);
 
   SignatureCreationTime get creationTime =>
       _getSubpacket<SignatureCreationTime>(hashedSubpackets) ?? SignatureCreationTime.fromTime(DateTime.now());
@@ -446,8 +446,7 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  static Uint8List _calculateTrailer(
-      final SignatureType signatureType, int dataLength, final int version) {
+  static Uint8List _calculateTrailer(final SignatureType signatureType, int dataLength, final int version) {
     return Uint8List.fromList([
       version,
       0xff,

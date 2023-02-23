@@ -42,8 +42,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     this.s2k,
     this.iv,
     this.secretParams,
-    super.tag = PacketTag.secretKey,
-  });
+    PacketTag tag = PacketTag.secretKey,
+  }) : super(tag);
 
   factory SecretKeyPacket.fromPacketData(final Uint8List bytes) {
     final publicKey = PublicKeyPacket.fromPacketData(bytes);
@@ -91,7 +91,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     );
   }
 
-factory SecretKeyPacket.generate(
+  factory SecretKeyPacket.generate(
     final KeyAlgorithm algorithm, {
     final int rsaBits = OpenPGP.preferredRSABits,
     final CurveInfo curve = OpenPGP.preferredCurve,
@@ -163,8 +163,7 @@ factory SecretKeyPacket.generate(
       final iv = random.nextBytes(symmetric.blockSize);
 
       final key = s2k.produceKey(passphrase, symmetric);
-      final cipher = BufferedCipher(symmetric.cipherEngine)
-        ..init(true, ParametersWithIV(KeyParameter(key), iv));
+      final cipher = BufferedCipher(symmetric.cipherEngine)..init(true, ParametersWithIV(KeyParameter(key), iv));
 
       final clearText = secretParams!.encode();
       final clearTextWithHash = Uint8List.fromList([...clearText, ...Helper.hashDigest(clearText, HashAlgorithm.sha1)]);

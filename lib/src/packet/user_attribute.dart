@@ -14,10 +14,7 @@ import 'user_attribute_subpacket.dart';
 class UserAttributePacket extends ContainedPacket {
   final List<UserAttributeSubpacket> attributes;
 
-  UserAttributePacket(
-    this.attributes, {
-    super.tag = PacketTag.userAttribute,
-  });
+  UserAttributePacket(this.attributes) : super(PacketTag.userAttribute);
 
   ImageAttributeSubpacket? get userImage {
     final attrs = attributes.whereType<ImageAttributeSubpacket>();

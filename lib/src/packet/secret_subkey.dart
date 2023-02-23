@@ -20,8 +20,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     super.s2k,
     super.iv,
     super.secretParams,
-    super.tag = PacketTag.secretSubkey,
-  }) : super(publicKey, keyData);
+  }) : super(publicKey, keyData, tag: PacketTag.secretSubkey);
 
   factory SecretSubkeyPacket.fromPacketData(final Uint8List bytes) {
     final secretKey = SecretKeyPacket.fromPacketData(bytes);

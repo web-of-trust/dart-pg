@@ -28,9 +28,8 @@ class AEADEncryptedDataPacket extends ContainedPacket {
     this.aeadAlgorithm,
     this.chunkSizeByte,
     this.iv,
-    this.encrypted, {
-    super.tag = PacketTag.aeadEncryptedData,
-  });
+    this.encrypted,
+  ) : super(PacketTag.aeadEncryptedData);
 
   factory AEADEncryptedDataPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;

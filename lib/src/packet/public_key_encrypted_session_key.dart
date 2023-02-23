@@ -66,8 +66,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     this.sessionKey, {
     this.version = OpenPGP.pkeskVersion,
     this.sessionKeySymmetric = OpenPGP.preferredSymmetric,
-    super.tag = PacketTag.publicKeyEncryptedSessionKey,
-  });
+  }) : super(PacketTag.publicKeyEncryptedSessionKey);
 
   factory PublicKeyEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;

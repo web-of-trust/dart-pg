@@ -40,8 +40,8 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     this.publicParams, {
     this.expirationDays = 0,
     this.algorithm = KeyAlgorithm.rsaEncryptSign,
-    super.tag = PacketTag.publicKey,
-  }) {
+    PacketTag tag = PacketTag.publicKey,
+  }) : super(tag) {
     if (version != 4) {
       throw UnsupportedError('Version $version of the key packet is unsupported.');
     }

@@ -18,8 +18,7 @@ class CompressedDataPacket extends ContainedPacket {
     this.compressed, {
     this.algorithm = CompressionAlgorithm.uncompressed,
     this.deflateLevel = 6,
-    super.tag = PacketTag.compressedData,
-  });
+  }) : super(PacketTag.compressedData);
 
   factory CompressedDataPacket.fromPacketData(final Uint8List bytes) {
     final algorithm = CompressionAlgorithm.values.firstWhere((algo) => algo.value == bytes[0]);

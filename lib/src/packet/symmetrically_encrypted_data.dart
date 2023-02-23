@@ -13,10 +13,7 @@ import 'contained_packet.dart';
 class SymmetricallyEncryptedDataPacket extends ContainedPacket {
   final Uint8List encrypted;
 
-  SymmetricallyEncryptedDataPacket(
-    this.encrypted, {
-    super.tag = PacketTag.symmetricallyEncryptedData,
-  });
+  SymmetricallyEncryptedDataPacket(this.encrypted) : super(PacketTag.symmetricallyEncryptedData);
 
   factory SymmetricallyEncryptedDataPacket.fromPacketData(final Uint8List bytes) =>
       SymmetricallyEncryptedDataPacket(bytes);

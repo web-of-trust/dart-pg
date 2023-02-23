@@ -28,8 +28,8 @@ class LiteralDataPacket extends ContainedPacket {
     DateTime? time,
     this.text = '',
     this.filename = '',
-    super.tag = PacketTag.literalData,
-  }) : time = time ?? DateTime.now();
+  })  : time = time ?? DateTime.now(),
+        super(PacketTag.literalData);
 
   factory LiteralDataPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
