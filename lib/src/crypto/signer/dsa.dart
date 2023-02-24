@@ -61,7 +61,7 @@ class DSASigner implements Signer {
     }
 
     final pri = _key as DSAPrivateKey;
-    final q = pri.q;
+    final q = pri.order;
     final e = _calculateE(q, _hashMessageIfNeeded(message));
 
     BigInt r;
@@ -77,7 +77,7 @@ class DSASigner implements Signer {
           k = _calculateK(q);
           kInv = k.modInverse(q);
           // r = (g**k mod p) mod q
-          r = pri.g.modPow(k, pri.p) % q;
+          r = pri.generator.modPow(k, pri.prime) % q;
         } catch (_) {
           r = BigInt.zero;
         }
@@ -92,7 +92,7 @@ class DSASigner implements Signer {
   @override
   bool verifySignature(Uint8List message, covariant DSASignature signature) {
     final pub = _key as DSAPublicKey;
-    final q = pub.q;
+    final q = pub.order;
 
     if (signature.r.sign < 0 || signature.r.compareTo(q) >= 0) {
       return false;
@@ -111,12 +111,12 @@ class DSASigner implements Signer {
     final u2 = (signature.r * w) % q;
 
     // t1 = g**u1 mod p
-    final t1 = pub.g.modPow(u1, pub.p);
+    final t1 = pub.generator.modPow(u1, pub.prime);
     // t2 = y**u2 mod p
-    final t2 = pub.y.modPow(u2, pub.p);
+    final t2 = pub.y.modPow(u2, pub.prime);
 
     // v = (g**1 * y**u2 mod p) mod q
-    final v = ((t1 * t2) % pub.p) % q;
+    final v = ((t1 * t2) % pub.prime) % q;
 
     return v.compareTo(signature.r) == 0;
   }
@@ -173,23 +173,23 @@ class DSASignature implements Signature {
 }
 
 abstract class DSAAsymmetricKey implements AsymmetricKey {
-  /// prime
-  final BigInt p;
+  /// prime p
+  final BigInt prime;
 
-  /// group order
-  final BigInt q;
+  /// group order q
+  final BigInt order;
 
-  /// group generator
-  final BigInt g;
+  /// group generator g
+  final BigInt generator;
 
-  DSAAsymmetricKey(this.p, this.q, this.g);
+  DSAAsymmetricKey(this.prime, this.order, this.generator);
 }
 
 class DSAPublicKey extends DSAAsymmetricKey implements PublicKey {
   /// public exponent y = g ** x mod p
   final BigInt y;
 
-  DSAPublicKey(this.y, super.p, super.q, super.g);
+  DSAPublicKey(this.y, super.prime, super.order, super.generator);
 }
 
 class DSAPrivateKey extends DSAAsymmetricKey implements PrivateKey {
@@ -199,7 +199,8 @@ class DSAPrivateKey extends DSAAsymmetricKey implements PrivateKey {
   /// public key
   final DSAPublicKey publicKey;
 
-  DSAPrivateKey(this.x, super.p, super.q, super.g) : publicKey = DSAPublicKey(g.modPow(x, p), p, q, g);
+  DSAPrivateKey(this.x, super.prime, super.order, super.generator)
+      : publicKey = DSAPublicKey(generator.modPow(x, prime), prime, order, generator);
 
   BigInt get y => publicKey.y;
 }
