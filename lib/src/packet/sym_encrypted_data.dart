@@ -9,6 +9,7 @@ import 'package:pointycastle/api.dart';
 import '../crypto/symmetric/base_cipher.dart';
 import '../enums.dart';
 import '../helpers.dart';
+import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'packet_list.dart';
 
@@ -27,10 +28,10 @@ class SymEncryptedDataPacket extends ContainedPacket {
   factory SymEncryptedDataPacket.fromPacketData(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
 
   factory SymEncryptedDataPacket.encryptPackets(
-    final SymmetricAlgorithm symmetric,
     final Uint8List key,
-    final PacketList packets,
-  ) {
+    final PacketList packets, {
+    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+  }) {
     final cipher = BufferedCipher(symmetric.cipherEngine)
       ..init(
         true,
@@ -57,15 +58,21 @@ class SymEncryptedDataPacket extends ContainedPacket {
   }
 
   /// Encrypt the symmetrically-encrypted packet data
-  SymEncryptedDataPacket encrypt(final SymmetricAlgorithm symmetric, final Uint8List key) {
+  SymEncryptedDataPacket encrypt(
+    final Uint8List key, {
+    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+  }) {
     if (packets != null && packets!.isNotEmpty) {
-      return SymEncryptedDataPacket.encryptPackets(symmetric, key, packets!);
+      return SymEncryptedDataPacket.encryptPackets(key, packets!, symmetric: symmetric);
     }
     return this;
   }
 
   /// Decrypt the symmetrically-encrypted packet data
-  SymEncryptedDataPacket decrypt(final SymmetricAlgorithm symmetric, final Uint8List key) {
+  SymEncryptedDataPacket decrypt(
+    final Uint8List key, {
+    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+  }) {
     final blockSize = symmetric.blockSize;
     final cipher = BufferedCipher(symmetric.cipherEngine)
       ..init(false, ParametersWithIV(KeyParameter(key), encrypted.sublist(2, blockSize + 2)));
