@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:dart_pg/src/helpers.dart';
 import 'package:dart_pg/src/packet/literal_data.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';

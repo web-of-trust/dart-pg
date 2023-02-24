@@ -85,16 +85,27 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  SymEncryptedSessionKeyPacket encrypt(final String passphrase) => SymEncryptedSessionKeyPacket.encryptSessionKey(
-        passphrase,
-        encryptionSymmetric: encryptionSymmetric,
-        sessionKeySymmetric: sessionKeySymmetric,
-        hash: s2k.hash,
-        type: s2k.type,
-      );
+  SymEncryptedSessionKeyPacket encrypt(final String passphrase) {
+    final s2k = S2K(
+      Helper.secureRandom().nextBytes(8),
+      hash: this.s2k.hash,
+      type: this.s2k.type,
+    );
+    final key = s2k.produceKey(passphrase, encryptionSymmetric);
+    final cipher = BufferedCipher(encryptionSymmetric.cipherEngine)..init(true, KeyParameter(key));
+    final sessionKey = this.sessionKey.isEmpty ? Helper.generateSessionKey(sessionKeySymmetric) : this.sessionKey;
+
+    return SymEncryptedSessionKeyPacket(
+      s2k,
+      cipher.process(Uint8List.fromList([sessionKeySymmetric.value, ...sessionKey])),
+      sessionKey,
+      encryptionSymmetric: encryptionSymmetric,
+      sessionKeySymmetric: sessionKeySymmetric,
+    );
+  }
 
   SymEncryptedSessionKeyPacket decrypt(final String passphrase) {
-    if (encrypted.isNotEmpty) {
+    if (sessionKey.isEmpty && encrypted.isNotEmpty) {
       final key = s2k.produceKey(passphrase, encryptionSymmetric);
       final cipher = BufferedCipher(encryptionSymmetric.cipherEngine)..init(false, KeyParameter(key));
       final decrypted = cipher.process(encrypted);
