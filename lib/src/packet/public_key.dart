@@ -7,6 +7,7 @@ import 'package:crypto/crypto.dart';
 
 import '../enums.dart';
 import '../helpers.dart';
+import '../openpgp.dart';
 import 'key/key_id.dart';
 import 'key/key_params.dart';
 import 'contained_packet.dart';
@@ -16,7 +17,7 @@ import 'key_packet.dart';
 /// See RFC 4880, section 5.5.2.
 class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   @override
-  final int version;
+  final int version = OpenPGP.keyVersion;
 
   @override
   final DateTime creationTime;
@@ -35,16 +36,11 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   late final KeyID _keyID;
 
   PublicKeyPacket(
-    this.version,
     this.creationTime,
     this.publicParams, {
     this.expirationDays = 0,
     this.algorithm = KeyAlgorithm.rsaEncryptSign,
-    PacketTag tag = PacketTag.publicKey,
-  }) : super(tag) {
-    if (version != 4) {
-      throw UnsupportedError('Version $version of the key packet is unsupported.');
-    }
+  }) : super(PacketTag.publicKey) {
     _calculateFingerprintAndKeyID();
   }
 
@@ -90,7 +86,6 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
         throw UnsupportedError('Unsupported PGP public key algorithm encountered');
     }
     return PublicKeyPacket(
-      version,
       creationTime,
       publicParams,
       algorithm: algorithm,

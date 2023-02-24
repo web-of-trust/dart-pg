@@ -12,6 +12,9 @@ import 'secret_key.dart';
 import 'subkey_packet.dart';
 
 class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
+  @override
+  PacketTag get tag => PacketTag.secretSubkey;
+
   SecretSubkeyPacket(
     PublicSubkeyPacket publicKey,
     Uint8List keyData, {
@@ -20,7 +23,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     super.s2k,
     super.iv,
     super.secretParams,
-  }) : super(publicKey, keyData, tag: PacketTag.secretSubkey);
+  }) : super(publicKey, keyData);
 
   factory SecretSubkeyPacket.fromPacketData(final Uint8List bytes) {
     final secretKey = SecretKeyPacket.fromPacketData(bytes);
@@ -36,7 +39,6 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
 
     return SecretSubkeyPacket(
       PublicSubkeyPacket(
-        OpenPGP.keyVersion,
         date ?? DateTime.now(),
         keyPair.publicParams,
         algorithm: algorithm,
@@ -99,7 +101,6 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     final publicKey = secretKey.publicKey;
     return SecretSubkeyPacket(
       PublicSubkeyPacket(
-        publicKey.version,
         publicKey.creationTime,
         publicKey.publicParams,
         expirationDays: publicKey.expirationDays,

@@ -11,7 +11,7 @@ import 'key/key_id.dart';
 /// OnePassSignature represents a one-pass signature packet.
 /// See RFC 4880, section 5.4.
 class OnePassSignaturePacket extends ContainedPacket {
-  final int version;
+  static const version = 3;
 
   final SignatureType signatureType;
 
@@ -24,7 +24,6 @@ class OnePassSignaturePacket extends ContainedPacket {
   final int nested;
 
   OnePassSignaturePacket(
-    this.version,
     this.signatureType,
     this.hashAlgorithm,
     this.keyAlgorithm,
@@ -35,6 +34,10 @@ class OnePassSignaturePacket extends ContainedPacket {
   factory OnePassSignaturePacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
+    if (version != 3) {
+      throw UnsupportedError('Version $version of the one-pass signature packet is unsupported.');
+    }
+
     final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);
     pos++;
     final hashAlgorithm = HashAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
@@ -43,7 +46,12 @@ class OnePassSignaturePacket extends ContainedPacket {
     pos++;
     final issuerKeyID = bytes.sublist(pos, pos + 8);
     return OnePassSignaturePacket(
-        version, signatureType, hashAlgorithm, keyAlgorithm, KeyID(issuerKeyID), bytes[pos + 8]);
+      signatureType,
+      hashAlgorithm,
+      keyAlgorithm,
+      KeyID(issuerKeyID),
+      bytes[pos + 8],
+    );
   }
 
   @override

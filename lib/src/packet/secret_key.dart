@@ -42,8 +42,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     this.s2k,
     this.iv,
     this.secretParams,
-    PacketTag tag = PacketTag.secretKey,
-  }) : super(tag);
+  }) : super(PacketTag.secretKey);
 
   factory SecretKeyPacket.fromPacketData(final Uint8List bytes) {
     final publicKey = PublicKeyPacket.fromPacketData(bytes);
@@ -101,7 +100,6 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
     return SecretKeyPacket(
       PublicKeyPacket(
-        OpenPGP.keyVersion,
         date ?? DateTime.now(),
         keyPair.publicParams,
         algorithm: algorithm,

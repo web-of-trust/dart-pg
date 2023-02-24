@@ -16,7 +16,7 @@ import 'contained_packet.dart';
 /// SymEncryptedSessionKey represents a passphrase protected session key.
 /// See RFC 4880, section 5.3.
 class SymEncryptedSessionKeyPacket extends ContainedPacket {
-  final int version;
+  static const version = OpenPGP.skeskVersion;
 
   /// Algorithm to encrypt the session key with
   final SymmetricAlgorithm encryptionSymmetric;
@@ -35,7 +35,6 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     this.s2k,
     this.encrypted,
     this.sessionKey, {
-    this.version = OpenPGP.skeskVersion,
     this.encryptionSymmetric = OpenPGP.preferredSymmetric,
     this.sessionKeySymmetric = OpenPGP.preferredSymmetric,
   }) : super(PacketTag.symEncryptedSessionKey);
@@ -60,7 +59,6 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
       s2k,
       bytes.sublist(pos + s2k.length),
       Uint8List(0),
-      version: version,
       encryptionSymmetric: encryptionSymmetric,
       sessionKeySymmetric: encryptionSymmetric,
     );
@@ -116,7 +114,6 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
         s2k,
         encrypted,
         decrypted.sublist(1),
-        version: version,
         encryptionSymmetric: encryptionSymmetric,
         sessionKeySymmetric: sessionKeySymmetric,
       );

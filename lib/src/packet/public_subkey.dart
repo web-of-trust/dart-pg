@@ -9,18 +9,19 @@ import 'public_key.dart';
 import 'subkey_packet.dart';
 
 class PublicSubkeyPacket extends PublicKeyPacket implements SubkeyPacket {
+  @override
+  PacketTag get tag => PacketTag.publicSubkey;
+
   PublicSubkeyPacket(
-    super.version,
     super.createdTime,
     super.publicParams, {
     super.expirationDays,
     super.algorithm,
-  }) : super(tag: PacketTag.publicSubkey);
+  });
 
   factory PublicSubkeyPacket.fromPacketData(final Uint8List bytes) {
     final publicKey = PublicKeyPacket.fromPacketData(bytes);
     return PublicSubkeyPacket(
-      publicKey.version,
       publicKey.creationTime,
       publicKey.publicParams,
       expirationDays: publicKey.expirationDays,
