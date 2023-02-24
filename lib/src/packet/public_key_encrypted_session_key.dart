@@ -44,7 +44,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     0x20,
   ];
 
-  final int version;
+  static const version = OpenPGP.pkeskVersion;
 
   final KeyID publicKeyID;
 
@@ -64,7 +64,6 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     this.publicKeyAlgorithm,
     this.sessionKeyParams,
     this.sessionKey, {
-    this.version = OpenPGP.pkeskVersion,
     this.sessionKeySymmetric = OpenPGP.preferredSymmetric,
   }) : super(PacketTag.publicKeyEncryptedSessionKey);
 
@@ -102,7 +101,6 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
       keyAlgorithm,
       params,
       Uint8List.fromList([]),
-      version: version,
     );
   }
 

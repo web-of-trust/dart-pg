@@ -12,7 +12,7 @@ enum PacketTag {
   publicKey(6),
   secretSubkey(7),
   compressedData(8),
-  symmetricallyEncryptedData(9),
+  symEncryptedData(9),
   marker(10),
   literalData(11),
   trust(12),

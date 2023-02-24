@@ -22,7 +22,7 @@ import 'secret_subkey.dart';
 import 'signature_packet.dart';
 import 'sym_encrypted_integrity_protected_data.dart';
 import 'sym_encrypted_session_key.dart';
-import 'symmetrically_encrypted_data.dart';
+import 'sym_encrypted_data.dart';
 import 'trust_packet.dart';
 import 'user_attribute.dart';
 import 'user_id.dart';
@@ -65,8 +65,8 @@ class PacketList extends ListBase<ContainedPacket> {
         case PacketTag.compressedData:
           packets.add(CompressedDataPacket.fromPacketData(reader.data));
           break;
-        case PacketTag.symmetricallyEncryptedData:
-          packets.add(SymmetricallyEncryptedDataPacket.fromPacketData(reader.data));
+        case PacketTag.symEncryptedData:
+          packets.add(SymEncryptedDataPacket.fromPacketData(reader.data));
           break;
         case PacketTag.marker:
           packets.add(MarkerPacket());

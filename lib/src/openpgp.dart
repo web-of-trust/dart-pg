@@ -21,11 +21,17 @@ class OpenPGP {
 
   static const checksumRequired = true;
 
+  /// Public key packet version
   static const keyVersion = 4;
 
+  /// Public key encrypted session key packet version
   static const pkeskVersion = 3;
 
+  /// Symmetrically encrypted session key packet version
   static const skeskVersion = 4;
+
+  /// Encrypted integrity protected data packet version
+  static const seipVersion = 1;
 
   /// Default hash algorithm
   static const preferredHash = HashAlgorithm.sha256;
