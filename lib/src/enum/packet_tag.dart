@@ -20,8 +20,7 @@ enum PacketTag {
   publicSubkey(14),
   userAttribute(17),
   symEncryptedIntegrityProtectedData(18),
-  modificationDetectionCode(19),
-  aeadEncryptedData(20);
+  modificationDetectionCode(19);
 
   final int value;
 

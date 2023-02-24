@@ -120,8 +120,6 @@ class SignaturePacket extends ContainedPacket {
   IssuerFingerprint? get issuerFingerprint =>
       _getSubpacket<IssuerFingerprint>(hashedSubpackets) ?? _getSubpacket<IssuerFingerprint>(unhashedSubpackets);
 
-  PreferredAEADAlgorithms? get preferredAEADAlgorithms => _getSubpacket<PreferredAEADAlgorithms>(hashedSubpackets);
-
   bool get signatureNeverExpires => signatureExpirationTime == null;
 
   bool get keyNeverExpires => keyExpirationTime == null;
@@ -731,13 +729,6 @@ class SignaturePacket extends ContainedPacket {
             break;
           case SignatureSubpacketType.issuerFingerprint:
             subpackets.add(IssuerFingerprint(
-              data,
-              critical: critical,
-              isLongLength: reader.isLongLength,
-            ));
-            break;
-          case SignatureSubpacketType.preferredAEADAlgorithms:
-            subpackets.add(PreferredAEADAlgorithms(
               data,
               critical: critical,
               isLongLength: reader.isLongLength,

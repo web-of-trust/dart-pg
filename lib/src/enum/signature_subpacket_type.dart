@@ -28,10 +28,7 @@ enum SignatureSubpacketType {
   features(30),
   signatureTarget(31),
   embeddedSignature(32),
-  issuerFingerprint(33),
-  preferredAEADAlgorithms(34),
-  intendedRecipientFingerprint(35),
-  attestedCertifications(37);
+  issuerFingerprint(33);
 
   final int value;
 

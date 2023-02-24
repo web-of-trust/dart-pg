@@ -68,6 +68,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     return Uint8List.fromList([version, ...encrypted]);
   }
 
+  /// Encrypt the payload in the packet.
   SymEncryptedIntegrityProtectedDataPacket encrypt(final SymmetricAlgorithm symmetric, final Uint8List key) {
     if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedIntegrityProtectedDataPacket.encryptPackets(symmetric, key, packets!);
