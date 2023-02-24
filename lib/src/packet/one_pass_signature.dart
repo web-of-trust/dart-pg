@@ -8,8 +8,13 @@ import '../enums.dart';
 import 'contained_packet.dart';
 import 'key/key_id.dart';
 
-/// OnePassSignature represents a one-pass signature packet.
+/// OnePassSignature represents a One-Pass Signature packet.
 /// See RFC 4880, section 5.4.
+///
+/// The One-Pass Signature packet precedes the signed data and contains enough information
+/// to allow the receiver to begin calculating any hashes needed to verify the signature.
+/// It allows the Signature packet to be placed at the end of the message,
+/// so that the signercan compute the entire signed message in one pass.
 class OnePassSignaturePacket extends ContainedPacket {
   static const version = 3;
 

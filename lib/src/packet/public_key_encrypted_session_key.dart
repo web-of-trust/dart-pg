@@ -17,8 +17,18 @@ import 'key/key_params.dart';
 import 'key/sk_params.dart';
 import 'key_packet.dart';
 
-/// PublicKeyEncryptedSessionKey represents a public-key encrypted session key.
+/// PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key packet.
+///
 /// See RFC 4880, section 5.1.
+/// A Public-Key Encrypted Session Key packet holds the session key used to encrypt a message.
+/// Zero or more Public-Key Encrypted Session Key packets and/or Symmetric-Key Encrypted Session Key
+/// packets may precede a Symmetrically Encrypted Data Packet, which holds an encrypted message.
+/// The message is encrypted with the session key, and the session key is itself
+/// encrypted and stored in the Encrypted Session Key packet(s).
+/// The Symmetrically Encrypted Data Packet is preceded by one Public-Key Encrypted
+/// Session Key packet for each OpenPGP key to which the message is encrypted.
+/// The recipient of the message finds a session key that is encrypted to their public key,
+/// decrypts the session key, and then uses the session key to decrypt the message.
 class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   /// 20 octets representing the UTF-8 encoding of the string 'Anonymous Sender    '
   static const _anonymousSender = [

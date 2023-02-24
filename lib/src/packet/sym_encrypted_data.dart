@@ -13,9 +13,13 @@ import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'packet_list.dart';
 
-/// SymEncryptedData packet (tag 9) represents a symmetrically encrypted byte string.
+/// SymEncryptedData packet (tag 9) represents a Symmetrically Encrypted Data packet.
 /// The encrypted contents will consist of more OpenPGP packets.
+///
 /// See RFC 4880, sections 5.7 and 5.13.
+/// The Symmetrically Encrypted Data packet contains data encrypted with a symmetric-key algorithm.
+/// When it has been decrypted, it contains other packets (usually a literal data packet or compressed data packet,
+/// but in theory other Symmetrically Encrypted Data packets or sequences of packets that form whole OpenPGP messages).
 class SymEncryptedDataPacket extends ContainedPacket {
   /// Encrypted secret-key data
   final Uint8List encrypted;

@@ -9,8 +9,10 @@ import '../enums.dart';
 import '../helpers.dart';
 import 'contained_packet.dart';
 
-/// LiteralData represents an encrypted file.
+/// Implementation of the Literal Data Packet (Tag 11)
+///
 /// See RFC 4880, section 5.9.
+/// A Literal Data packet contains the body of a message; data that is not to be further interpreted.
 class LiteralDataPacket extends ContainedPacket {
   final LiteralFormat format;
 

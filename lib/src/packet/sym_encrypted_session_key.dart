@@ -13,8 +13,17 @@ import '../openpgp.dart';
 import 'key/s2k.dart';
 import 'contained_packet.dart';
 
-/// SymEncryptedSessionKey represents a passphrase protected session key.
+/// SymEncryptedSessionKey represents a Symmetric-Key Encrypted Session Key packet.
+///
 /// See RFC 4880, section 5.3.
+/// The Symmetric-Key Encrypted Session Key packet holds the
+/// symmetric-key encryption of a session key used to encrypt a message.
+/// Zero or more Public-Key Encrypted Session Key packets and/or
+/// Symmetric-Key Encrypted Session Key packets may precede a
+/// Symmetrically Encrypted Data packet that holds an encrypted message.
+/// The message is encrypted with a session key, and the session key is
+/// itself encrypted and stored in the Encrypted Session Key packet or
+/// the Symmetric-Key Encrypted Session Key packet.
 class SymEncryptedSessionKeyPacket extends ContainedPacket {
   static const version = OpenPGP.skeskVersion;
 

@@ -9,6 +9,11 @@ import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'packet_list.dart';
 
+/// Implementation of the Compressed Data Packet (Tag 8)
+///
+/// The Compressed Data packet contains compressed data.
+/// Typically, this packet is found as the contents of an encrypted packet,
+/// or following a Signature or One-Pass Signature packet, and contains a literal data packet.
 class CompressedDataPacket extends ContainedPacket {
   static const deflateLevel = OpenPGP.deflateLevel;
 
