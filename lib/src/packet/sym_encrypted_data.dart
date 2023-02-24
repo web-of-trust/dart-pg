@@ -43,7 +43,10 @@ class SymEncryptedDataPacket extends ContainedPacket {
       ParametersWithIV(KeyParameter(key), prefix.sublist(2)),
     );
     return SymEncryptedDataPacket(
-      cipher.process(packets.packetEncode()),
+      Uint8List.fromList([
+        ...prefix,
+        ...cipher.process(packets.packetEncode()),
+      ]),
       packets: packets,
     );
   }
