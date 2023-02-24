@@ -65,8 +65,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   factory SymEncryptedSessionKeyPacket.encryptSessionKey(
-    final String passphrase,
-    final Uint8List sessionKey, {
+    final String passphrase, {
     final SymmetricAlgorithm encryptionSymmetric = OpenPGP.preferredSymmetric,
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
     final HashAlgorithm hash = OpenPGP.preferredHash,
@@ -75,33 +74,23 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
     final key = s2k.produceKey(passphrase, encryptionSymmetric);
     final cipher = BufferedCipher(encryptionSymmetric.cipherEngine)..init(true, KeyParameter(key));
-    final toEncrypt = sessionKey.isNotEmpty
-        ? Uint8List.fromList([sessionKeySymmetric.value, ...sessionKey])
-        : Uint8List.fromList([
-            sessionKeySymmetric.value,
-            ...Helper.generateSessionKey(sessionKeySymmetric),
-          ]);
+    final sessionKey = Helper.generateSessionKey(sessionKeySymmetric);
+
     return SymEncryptedSessionKeyPacket(
       s2k,
-      cipher.process(toEncrypt),
+      cipher.process(Uint8List.fromList([sessionKeySymmetric.value, ...sessionKey])),
       sessionKey,
       encryptionSymmetric: encryptionSymmetric,
       sessionKeySymmetric: sessionKeySymmetric,
     );
   }
 
-  SymEncryptedSessionKeyPacket encrypt(
-    final String passphrase, {
-    final HashAlgorithm hash = OpenPGP.preferredHash,
-    final S2kType type = S2kType.iterated,
-  }) =>
-      SymEncryptedSessionKeyPacket.encryptSessionKey(
+  SymEncryptedSessionKeyPacket encrypt(final String passphrase) => SymEncryptedSessionKeyPacket.encryptSessionKey(
         passphrase,
-        sessionKey,
         encryptionSymmetric: encryptionSymmetric,
         sessionKeySymmetric: sessionKeySymmetric,
-        hash: hash,
-        type: type,
+        hash: s2k.hash,
+        type: s2k.type,
       );
 
   SymEncryptedSessionKeyPacket decrypt(final String passphrase) {
