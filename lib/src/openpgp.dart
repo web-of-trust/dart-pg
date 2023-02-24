@@ -33,12 +33,19 @@ class OpenPGP {
   /// Encrypted integrity protected data packet version
   static const seipVersion = 1;
 
+  /// Default zip/zlib compression level, between 1 and 9
+  static const deflateLevel = 6;
+
   /// Default hash algorithm
   static const preferredHash = HashAlgorithm.sha256;
 
   /// Default encryption cipher
   static const preferredSymmetric = SymmetricAlgorithm.aes256;
 
+  /// Default compression algorithm
+  static const preferredCompression = CompressionAlgorithm.uncompressed;
+
+  /// Default curve
   static const preferredCurve = CurveInfo.brainpoolp512r1;
 
   /// Default RSA bits length

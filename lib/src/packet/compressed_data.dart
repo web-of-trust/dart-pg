@@ -5,19 +5,25 @@
 import 'dart:typed_data';
 
 import '../enums.dart';
+import '../openpgp.dart';
 import 'contained_packet.dart';
+import 'packet_list.dart';
 
 class CompressedDataPacket extends ContainedPacket {
+  static const deflateLevel = OpenPGP.deflateLevel;
+
   final CompressionAlgorithm algorithm;
 
-  final int deflateLevel;
-
+  /// Compressed packet data
   final Uint8List compressed;
+
+  /// Decompressed packets contained within.
+  final PacketList? packets;
 
   CompressedDataPacket(
     this.compressed, {
-    this.algorithm = CompressionAlgorithm.uncompressed,
-    this.deflateLevel = 6,
+    this.algorithm = OpenPGP.preferredCompression,
+    this.packets,
   }) : super(PacketTag.compressedData);
 
   factory CompressedDataPacket.fromPacketData(final Uint8List bytes) {

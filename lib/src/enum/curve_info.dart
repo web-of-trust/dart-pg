@@ -46,6 +46,7 @@ enum CurveInfo {
         return 'Curve 25519';
     }
   }
+
   List<int> get identifier {
     switch (this) {
       case prime256v1:

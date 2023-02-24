@@ -11,6 +11,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:pointycastle/api.dart' as pc;
 
 import 'enums.dart';
+import 'openpgp.dart';
 
 extension StringHelper on String {
   List<String> chunk(final int chunkSize) {
@@ -249,13 +250,13 @@ class Helper {
       ..seed(pc.KeyParameter(Uint8List.fromList(List.generate(32, ((_) => _random.nextInt(0xffffffff))))));
   }
 
-  static Uint8List generatePrefix(final SymmetricAlgorithm symmetric) {
+  static Uint8List generatePrefix([final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric]) {
     final prefix = secureRandom().nextBytes(symmetric.blockSize);
     final repeat = [prefix[prefix.length - 2], prefix[prefix.length - 1]];
     return Uint8List.fromList([...prefix, ...repeat]);
   }
 
-  static Uint8List generateSessionKey(final SymmetricAlgorithm symmetric) =>
+  static Uint8List generateSessionKey([final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric]) =>
       secureRandom().nextBytes((symmetric.keySize + 7) >> 3);
 
   static Uint8List hashDigest(final Uint8List input, [HashAlgorithm hash = HashAlgorithm.sha256]) {
