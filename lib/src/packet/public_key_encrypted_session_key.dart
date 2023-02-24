@@ -105,10 +105,10 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   factory PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
-    final Uint8List sessionKey,
     final PublicKeyPacket key, {
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
   }) {
+    final sessionKey = Helper.generateSessionKey(sessionKeySymmetric);
     final data = Uint8List.fromList([
       sessionKeySymmetric.value,
       ...sessionKey,
