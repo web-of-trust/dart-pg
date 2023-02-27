@@ -11,7 +11,7 @@ void main() {
   group('symmetrically', () {
     final literalData = LiteralDataPacket.fromText(faker.randomGenerator.string(100));
     final packets = PacketList([literalData]);
-    final key = Helper.generateSessionKey();
+    final key = Helper.generateEncryptionKey();
     final passphrase = 'hello';
 
     test('encrypted data test', () {

@@ -256,7 +256,7 @@ class Helper {
     return Uint8List.fromList([...prefix, ...repeat]);
   }
 
-  static Uint8List generateSessionKey([final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric]) =>
+  static Uint8List generateEncryptionKey([final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric]) =>
       secureRandom().nextBytes((symmetric.keySize + 7) >> 3);
 
   static Uint8List hashDigest(final Uint8List input, [HashAlgorithm hash = HashAlgorithm.sha256]) {

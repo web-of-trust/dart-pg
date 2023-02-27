@@ -38,6 +38,8 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   /// Session key
   final SessionKey? sessionKey;
 
+  bool get isDecrypted => sessionKey != null;
+
   SymEncryptedSessionKeyPacket(
     this.s2k,
     this.encrypted, {
@@ -78,7 +80,10 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
     final key = s2k.produceKey(passphrase, symmetric);
     final cipher = BufferedCipher(symmetric.cipherEngine)..init(true, KeyParameter(key));
-    final sessionKey = SessionKey(Helper.generateSessionKey(sessionKeySymmetric), sessionKeySymmetric);
+    final sessionKey = SessionKey(
+      Helper.generateEncryptionKey(sessionKeySymmetric),
+      sessionKeySymmetric,
+    );
 
     return SymEncryptedSessionKeyPacket(
       s2k,
@@ -89,7 +94,9 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   SymEncryptedSessionKeyPacket decrypt(final String passphrase) {
-    if (sessionKey == null) {
+    if (isDecrypted) {
+      return this;
+    } else {
       final key = s2k.produceKey(passphrase, symmetric);
       final cipher = BufferedCipher(symmetric.cipherEngine)..init(false, KeyParameter(key));
       final decrypted = cipher.process(encrypted);
@@ -100,8 +107,6 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
         symmetric: symmetric,
         sessionKey: SessionKey(decrypted.sublist(1), sessionKeySymmetric),
       );
-    } else {
-      return this;
     }
   }
 

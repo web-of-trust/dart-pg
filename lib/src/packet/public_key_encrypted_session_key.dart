@@ -42,6 +42,8 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   /// Session key
   final SessionKey? sessionKey;
 
+  bool get isDecrypted => sessionKey != null;
+
   PublicKeyEncryptedSessionKeyPacket(
     this.publicKeyID,
     this.publicKeyAlgorithm,
@@ -89,7 +91,10 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     final PublicKeyPacket key, {
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
   }) {
-    final sessionKey = SessionKey(Helper.generateSessionKey(sessionKeySymmetric), sessionKeySymmetric);
+    final sessionKey = SessionKey(
+      Helper.generateEncryptionKey(sessionKeySymmetric),
+      sessionKeySymmetric,
+    );
     final SessionKeyParams params;
     switch (key.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
@@ -130,44 +135,51 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   PublicKeyEncryptedSessionKeyPacket decrypt(final SecretKeyPacket key) {
-    // check that session key algo matches the secret key algo
-    if (publicKeyAlgorithm == key.algorithm) {
-      throw StateError('PKESK decryption error');
-    }
+    if (isDecrypted) {
+      return this;
+    } else {
+      // check that session key algo matches the secret key algo and secret key is decrypted
+      if (publicKeyAlgorithm != key.algorithm || !key.isDecrypted) {
+        throw StateError('PKESK decryption error');
+      }
 
-    // final Uint8List decoded;
-    final SessionKey? sessionKey;
-    switch (key.algorithm) {
-      case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaEncrypt:
-        final privateKey = (key.secretParams as RSASecretParams).privateKey;
-        sessionKey = (sessionKeyParams as RSASessionKeyParams).decrypt(privateKey);
-        break;
-      case KeyAlgorithm.elgamal:
-        final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
-        final secretExponent = (key.secretParams as ElGamalSecretParams).secretExponent;
-        sessionKey = (sessionKeyParams as ElGamalSessionKeyParams).decrypt(
-          ElGamalPrivateKey(secretExponent, publicKey.prime, publicKey.generator),
-        );
-        break;
-      case KeyAlgorithm.ecdh:
-        final publicParams = key.publicParams as ECDHPublicParams;
-        final privateKey = ECPrivateKey(
-          (key.secretParams as ECSecretParams).d,
-          publicParams.publicKey.parameters,
-        );
-        sessionKey =
-            (sessionKeyParams as ECDHSessionKeyParams).decrypt(privateKey, publicParams, key.fingerprint.hexToBytes());
-        break;
-      default:
-        throw UnsupportedError('Unsupported PGP public key algorithm encountered');
-    }
+      // final Uint8List decoded;
+      final SessionKey? sessionKey;
+      switch (key.algorithm) {
+        case KeyAlgorithm.rsaEncryptSign:
+        case KeyAlgorithm.rsaEncrypt:
+          final privateKey = (key.secretParams as RSASecretParams).privateKey;
+          sessionKey = (sessionKeyParams as RSASessionKeyParams).decrypt(privateKey);
+          break;
+        case KeyAlgorithm.elgamal:
+          final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
+          final secretExponent = (key.secretParams as ElGamalSecretParams).secretExponent;
+          sessionKey = (sessionKeyParams as ElGamalSessionKeyParams).decrypt(
+            ElGamalPrivateKey(secretExponent, publicKey.prime, publicKey.generator),
+          );
+          break;
+        case KeyAlgorithm.ecdh:
+          final publicParams = key.publicParams as ECDHPublicParams;
+          final privateKey = ECPrivateKey(
+            (key.secretParams as ECSecretParams).d,
+            publicParams.publicKey.parameters,
+          );
+          sessionKey = (sessionKeyParams as ECDHSessionKeyParams).decrypt(
+            privateKey,
+            publicParams,
+            key.fingerprint.hexToBytes(),
+          );
+          break;
+        default:
+          throw UnsupportedError('Unsupported PGP public key algorithm encountered');
+      }
 
-    return PublicKeyEncryptedSessionKeyPacket(
-      publicKeyID,
-      publicKeyAlgorithm,
-      sessionKeyParams,
-      sessionKey: sessionKey,
-    );
+      return PublicKeyEncryptedSessionKeyPacket(
+        publicKeyID,
+        publicKeyAlgorithm,
+        sessionKeyParams,
+        sessionKey: sessionKey,
+      );
+    }
   }
 }
