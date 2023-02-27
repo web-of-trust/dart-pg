@@ -33,9 +33,9 @@ void main() {
     test('passphrase protected session key test', () {
       final skesk = SymEncryptedSessionKeyPacket.encryptSessionKey(passphrase);
       final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
-        skesk.sessionKey,
+        skesk.sessionKey!.key,
         packets,
-        symmetric: skesk.sessionKeySymmetric,
+        symmetric: skesk.sessionKey!.symmetric,
       );
 
       final encryptedList = PacketList([skesk, seip]);
@@ -45,8 +45,8 @@ void main() {
       expect(skesk.sessionKey, equals(skeskPacket.sessionKey));
 
       final decrypted = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().elementAt(0).decrypt(
-            skesk.sessionKey,
-            symmetric: skeskPacket.sessionKeySymmetric,
+            skesk.sessionKey!.key,
+            symmetric: skeskPacket.sessionKey!.symmetric,
           );
       final literalPacket = decrypted.packets![0];
       expect(literalPacket.toPacketData(), equals(literalData.toPacketData()));

@@ -23,6 +23,14 @@ class KeyFlags extends SignatureSubpacket {
     return value;
   }
 
+  bool get isCertifyKeys => flags & KeyFlag.certifyKeys.value == KeyFlag.certifyKeys.value;
+
+  bool get isSignData => flags & KeyFlag.signData.value == KeyFlag.signData.value;
+
+  bool get isEncryptCommunication => flags & KeyFlag.encryptCommunication.value == KeyFlag.encryptCommunication.value;
+
+  bool get isEncryptStorage => flags & KeyFlag.encryptStorage.value == KeyFlag.encryptStorage.value;
+
   static Uint8List _flagsToBytes(int flags) {
     final bytes = Uint8List(4);
     var size = 0;

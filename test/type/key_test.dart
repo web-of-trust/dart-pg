@@ -120,13 +120,12 @@ void main() {
     final name = faker.person.name();
     final email = faker.internet.email();
     final comment = faker.lorem.words(3).join(' ');
+    final userID = [name, '($comment)', '<$email>'].join(' ');
     final passphrase = faker.internet.password();
 
     test('rsa', () {
       final privateKey = PrivateKey.generate(
-        [
-          [name, '($comment)', '<$email>'].join(' ')
-        ],
+        [userID],
         passphrase,
         type: KeyType.rsa,
       );
@@ -143,13 +142,15 @@ void main() {
       final subkey = privateKey.subkeys[0];
       expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
       expect(subkey.verify(privateKey.keyPacket), isTrue);
+
+      final bindingSignature = subkey.bindingSignatures[0];
+      expect(bindingSignature.keyFlags!.isEncryptCommunication, isTrue);
+      expect(bindingSignature.keyFlags!.isEncryptStorage, isTrue);
     });
 
     test('prime256v1 curve', () {
       final privateKey = PrivateKey.generate(
-        [
-          [name, '($comment)', '<$email>'].join(' ')
-        ],
+        [userID],
         passphrase,
         type: KeyType.ecc,
         curve: CurveInfo.prime256v1,
@@ -184,9 +185,7 @@ void main() {
 
     test('secp256k1 curve', () {
       final privateKey = PrivateKey.generate(
-        [
-          [name, '($comment)', '<$email>'].join(' ')
-        ],
+        [userID],
         passphrase,
         type: KeyType.ecc,
         curve: CurveInfo.secp256k1,
@@ -221,9 +220,7 @@ void main() {
 
     test('secp384r1 curve', () {
       final privateKey = PrivateKey.generate(
-        [
-          [name, '($comment)', '<$email>'].join(' ')
-        ],
+        [userID],
         passphrase,
         type: KeyType.ecc,
         curve: CurveInfo.secp384r1,
@@ -256,9 +253,7 @@ void main() {
 
     test('secp521r1 curve', () {
       final privateKey = PrivateKey.generate(
-        [
-          [name, '($comment)', '<$email>'].join(' ')
-        ],
+        [userID],
         passphrase,
         type: KeyType.ecc,
         curve: CurveInfo.secp521r1,
@@ -291,9 +286,7 @@ void main() {
 
     test('brainpoolp256r1 curve', () {
       final privateKey = PrivateKey.generate(
-        [
-          [name, '($comment)', '<$email>'].join(' ')
-        ],
+        [userID],
         passphrase,
         type: KeyType.ecc,
         curve: CurveInfo.brainpoolp256r1,
@@ -326,9 +319,7 @@ void main() {
 
     test('brainpoolp384r1 curve', () {
       final privateKey = PrivateKey.generate(
-        [
-          [name, '($comment)', '<$email>'].join(' ')
-        ],
+        [userID],
         passphrase,
         type: KeyType.ecc,
         curve: CurveInfo.brainpoolp384r1,
@@ -361,9 +352,7 @@ void main() {
 
     test('brainpoolp512r1 curve', () {
       final privateKey = PrivateKey.generate(
-        [
-          [name, '($comment)', '<$email>'].join(' ')
-        ],
+        [userID],
         passphrase,
         type: KeyType.ecc,
         curve: CurveInfo.brainpoolp512r1,

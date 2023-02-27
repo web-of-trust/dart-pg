@@ -12,6 +12,7 @@ import '../helpers.dart';
 import '../openpgp.dart';
 import 'key/s2k.dart';
 import 'contained_packet.dart';
+import 'key/session_key.dart';
 
 /// SymEncryptedSessionKey represents a Symmetric-Key Encrypted Session Key packet.
 ///
@@ -28,24 +29,20 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   static const version = OpenPGP.skeskVersion;
 
   /// Algorithm to encrypt the session key with
-  final SymmetricAlgorithm encryptionSymmetric;
+  final SymmetricAlgorithm symmetric;
 
   final S2K s2k;
 
   final Uint8List encrypted;
 
   /// Session key
-  final Uint8List sessionKey;
-
-  /// Algorithm to encrypt the message with
-  final SymmetricAlgorithm sessionKeySymmetric;
+  final SessionKey? sessionKey;
 
   SymEncryptedSessionKeyPacket(
     this.s2k,
-    this.encrypted,
-    this.sessionKey, {
-    this.encryptionSymmetric = OpenPGP.preferredSymmetric,
-    this.sessionKeySymmetric = OpenPGP.preferredSymmetric,
+    this.encrypted, {
+    this.symmetric = OpenPGP.preferredSymmetric,
+    this.sessionKey,
   }) : super(PacketTag.symEncryptedSessionKey);
 
   factory SymEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
@@ -58,7 +55,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     }
 
     /// A one-octet number describing the symmetric algorithm used.
-    final encryptionSymmetric = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    final symmetric = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
     pos++;
 
     /// A string-to-key (S2K) specifier, length as defined above.
@@ -67,45 +64,41 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     return SymEncryptedSessionKeyPacket(
       s2k,
       bytes.sublist(pos + s2k.length),
-      Uint8List(0),
-      encryptionSymmetric: encryptionSymmetric,
-      sessionKeySymmetric: encryptionSymmetric,
+      symmetric: symmetric,
     );
   }
 
   factory SymEncryptedSessionKeyPacket.encryptSessionKey(
     final String passphrase, {
-    final SymmetricAlgorithm encryptionSymmetric = OpenPGP.preferredSymmetric,
+    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
     final HashAlgorithm hash = OpenPGP.preferredHash,
     final S2kType type = S2kType.iterated,
   }) {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
-    final key = s2k.produceKey(passphrase, encryptionSymmetric);
-    final cipher = BufferedCipher(encryptionSymmetric.cipherEngine)..init(true, KeyParameter(key));
-    final sessionKey = Helper.generateSessionKey(sessionKeySymmetric);
+    final key = s2k.produceKey(passphrase, symmetric);
+    final cipher = BufferedCipher(symmetric.cipherEngine)..init(true, KeyParameter(key));
+    final sessionKey = SessionKey(Helper.generateSessionKey(sessionKeySymmetric), sessionKeySymmetric);
 
     return SymEncryptedSessionKeyPacket(
       s2k,
-      cipher.process(Uint8List.fromList([sessionKeySymmetric.value, ...sessionKey])),
-      sessionKey,
-      encryptionSymmetric: encryptionSymmetric,
-      sessionKeySymmetric: sessionKeySymmetric,
+      cipher.process(sessionKey.encode()),
+      symmetric: symmetric,
+      sessionKey: sessionKey,
     );
   }
 
   SymEncryptedSessionKeyPacket decrypt(final String passphrase) {
-    if (sessionKey.isEmpty && encrypted.isNotEmpty) {
-      final key = s2k.produceKey(passphrase, encryptionSymmetric);
-      final cipher = BufferedCipher(encryptionSymmetric.cipherEngine)..init(false, KeyParameter(key));
+    if (sessionKey == null) {
+      final key = s2k.produceKey(passphrase, symmetric);
+      final cipher = BufferedCipher(symmetric.cipherEngine)..init(false, KeyParameter(key));
       final decrypted = cipher.process(encrypted);
       final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == decrypted[0]);
       return SymEncryptedSessionKeyPacket(
         s2k,
         encrypted,
-        decrypted.sublist(1),
-        encryptionSymmetric: encryptionSymmetric,
-        sessionKeySymmetric: sessionKeySymmetric,
+        symmetric: symmetric,
+        sessionKey: SessionKey(decrypted.sublist(1), sessionKeySymmetric),
       );
     } else {
       return this;
@@ -116,7 +109,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   Uint8List toPacketData() {
     return Uint8List.fromList([
       version,
-      encrypted.isEmpty ? sessionKeySymmetric.value : encryptionSymmetric.value,
+      symmetric.value,
       ...s2k.encode(),
       ...encrypted,
     ]);

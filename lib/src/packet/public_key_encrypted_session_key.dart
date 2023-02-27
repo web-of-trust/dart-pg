@@ -11,10 +11,10 @@ import '../enums.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
 import 'contained_packet.dart';
-import 'key/aes_key_wrapper.dart';
 import 'key/key_id.dart';
 import 'key/key_params.dart';
-import 'key/sk_params.dart';
+import 'key/session_key.dart';
+import 'key/session_key_params.dart';
 import 'key_packet.dart';
 
 /// PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key packet.
@@ -30,30 +30,6 @@ import 'key_packet.dart';
 /// The recipient of the message finds a session key that is encrypted to their public key,
 /// decrypts the session key, and then uses the session key to decrypt the message.
 class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
-  /// 20 octets representing the UTF-8 encoding of the string 'Anonymous Sender    '
-  static const _anonymousSender = [
-    0x41,
-    0x6e,
-    0x6f,
-    0x6e,
-    0x79,
-    0x6d,
-    0x6f,
-    0x75,
-    0x73,
-    0x20,
-    0x53,
-    0x65,
-    0x6e,
-    0x64,
-    0x65,
-    0x72,
-    0x20,
-    0x20,
-    0x20,
-    0x20,
-  ];
-
   static const version = OpenPGP.pkeskVersion;
 
   final KeyID publicKeyID;
@@ -61,20 +37,16 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   final KeyAlgorithm publicKeyAlgorithm;
 
   /// Encrypted session key params
-  final SkParams sessionKeyParams;
+  final SessionKeyParams sessionKeyParams;
 
   /// Session key
-  final Uint8List sessionKey;
-
-  /// Algorithm to encrypt the message with
-  final SymmetricAlgorithm sessionKeySymmetric;
+  final SessionKey? sessionKey;
 
   PublicKeyEncryptedSessionKeyPacket(
     this.publicKeyID,
     this.publicKeyAlgorithm,
-    this.sessionKeyParams,
-    this.sessionKey, {
-    this.sessionKeySymmetric = OpenPGP.preferredSymmetric,
+    this.sessionKeyParams, {
+    this.sessionKey,
   }) : super(PacketTag.publicKeyEncryptedSessionKey);
 
   factory PublicKeyEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
@@ -90,17 +62,17 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     final keyAlgorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
     pos++;
 
-    final SkParams params;
+    final SessionKeyParams params;
     switch (keyAlgorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
-        params = RSASkParams.fromPacketData(bytes.sublist(pos));
+        params = RSASessionKeyParams.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.elgamal:
-        params = ElGamalSkParams.fromPacketData(bytes.sublist(pos));
+        params = ElGamalSessionKeyParams.fromPacketData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdh:
-        params = ECDHSkParams.fromPacketData(bytes.sublist(pos));
+        params = ECDHSessionKeyParams.fromPacketData(bytes.sublist(pos));
         break;
       default:
         throw UnsupportedError('Unsupported PGP public key algorithm encountered');
@@ -110,7 +82,6 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
       KeyID(keyID),
       keyAlgorithm,
       params,
-      Uint8List.fromList([]),
     );
   }
 
@@ -118,26 +89,24 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     final PublicKeyPacket key, {
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
   }) {
-    final sessionKey = Helper.generateSessionKey(sessionKeySymmetric);
-    final data = Uint8List.fromList([
-      sessionKeySymmetric.value,
-      ...sessionKey,
-      ...Helper.calculateChecksum(sessionKey),
-    ]);
-
-    final SkParams params;
+    final sessionKey = SessionKey(Helper.generateSessionKey(sessionKeySymmetric), sessionKeySymmetric);
+    final SessionKeyParams params;
     switch (key.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
         final publicKey = (key.publicParams as RSAPublicParams).publicKey;
-        params = _rsaEncrypt(publicKey, data);
+        params = RSASessionKeyParams.encryptSessionKey(publicKey, sessionKey);
         break;
       case KeyAlgorithm.elgamal:
         final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
-        params = _elgamalEncrypt(publicKey, data);
+        params = ElGamalSessionKeyParams.encryptSessionKey(publicKey, sessionKey);
         break;
       case KeyAlgorithm.ecdh:
-        params = _ecdhEncrypt((key.publicParams as ECDHPublicParams), data, key.fingerprint.hexToBytes());
+        params = ECDHSessionKeyParams.encryptSessionKey(
+          (key.publicParams as ECDHPublicParams),
+          sessionKey,
+          key.fingerprint.hexToBytes(),
+        );
         break;
       default:
         throw UnsupportedError('Unsupported PGP public key algorithm encountered');
@@ -146,8 +115,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
       key.keyID,
       key.algorithm,
       params,
-      sessionKey,
-      sessionKeySymmetric: sessionKeySymmetric,
+      sessionKey: sessionKey,
     );
   }
 
@@ -167,19 +135,19 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
       throw StateError('PKESK decryption error');
     }
 
-    final Uint8List decoded;
+    // final Uint8List decoded;
+    final SessionKey? sessionKey;
     switch (key.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
         final privateKey = (key.secretParams as RSASecretParams).privateKey;
-        decoded = _rsaDecrypt(privateKey, sessionKeyParams.encode());
+        sessionKey = (sessionKeyParams as RSASessionKeyParams).decrypt(privateKey);
         break;
       case KeyAlgorithm.elgamal:
         final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
         final secretExponent = (key.secretParams as ElGamalSecretParams).secretExponent;
-        decoded = _elgamalDecrypt(
+        sessionKey = (sessionKeyParams as ElGamalSessionKeyParams).decrypt(
           ElGamalPrivateKey(secretExponent, publicKey.prime, publicKey.generator),
-          sessionKeyParams.encode(),
         );
         break;
       case KeyAlgorithm.ecdh:
@@ -188,181 +156,18 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
           (key.secretParams as ECSecretParams).d,
           publicParams.publicKey.parameters,
         );
-        decoded = _ecdhDecrypt(
-          privateKey,
-          publicParams,
-          sessionKeyParams as ECDHSkParams,
-          key.fingerprint.hexToBytes(),
-        );
+        sessionKey =
+            (sessionKeyParams as ECDHSessionKeyParams).decrypt(privateKey, publicParams, key.fingerprint.hexToBytes());
         break;
       default:
         throw UnsupportedError('Unsupported PGP public key algorithm encountered');
-    }
-
-    final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == decoded[0]);
-    final sessionKey = decoded.sublist(1, decoded.length - 2);
-    final checksum = decoded.sublist(decoded.length - 2);
-    final computedChecksum = Helper.calculateChecksum(sessionKey);
-    final isValidChecksum = (computedChecksum[0] == checksum[0]) && (computedChecksum[1] == checksum[1]);
-    if (!isValidChecksum) {
-      throw StateError('PKESK decryption error');
     }
 
     return PublicKeyEncryptedSessionKeyPacket(
       publicKeyID,
       publicKeyAlgorithm,
       sessionKeyParams,
-      sessionKey,
-      sessionKeySymmetric: sessionKeySymmetric,
+      sessionKey: sessionKey,
     );
-  }
-
-  static SkParams _rsaEncrypt(final RSAPublicKey key, final Uint8List plainData) {
-    final engine = AsymmetricBlockCipher('RSA')..init(true, PublicKeyParameter<RSAPublicKey>(key));
-    return RSASkParams(_processInBlocks(engine, plainData).toBigIntWithSign(1));
-  }
-
-  static Uint8List _rsaDecrypt(final RSAPrivateKey key, final Uint8List cipherData) {
-    final engine = AsymmetricBlockCipher('RSA')..init(false, PrivateKeyParameter<RSAPrivateKey>(key));
-    return _processInBlocks(engine, cipherData);
-  }
-
-  static SkParams _elgamalEncrypt(final ElGamalPublicKey key, final Uint8List plainData) {
-    final engine = ElGamalEngine()..init(true, PublicKeyParameter<ElGamalPublicKey>(key));
-    final cipherData = Uint8List(engine.outputBlockSize);
-    engine.processBlock(plainData, 0, plainData.length, cipherData, 0);
-    return ElGamalSkParams(
-      cipherData.sublist(0, engine.outputBlockSize ~/ 2).toBigIntWithSign(1),
-      cipherData.sublist(engine.outputBlockSize ~/ 2).toBigIntWithSign(1),
-    );
-  }
-
-  static Uint8List _elgamalDecrypt(final ElGamalPrivateKey key, final Uint8List cipherData) {
-    final engine = ElGamalEngine()..init(false, PrivateKeyParameter<ElGamalPrivateKey>(key));
-    final plainData = Uint8List(engine.outputBlockSize);
-    engine.processBlock(cipherData, 0, cipherData.length, plainData, 0);
-    return plainData;
-  }
-
-  /// Encrypt and wrap a session key
-  static SkParams _ecdhEncrypt(
-    final ECDHPublicParams publicParams,
-    final Uint8List plainData,
-    final Uint8List fingerprint,
-  ) {
-    /// Generate the ephemeral key pair
-    final keyGen = KeyGenerator('EC')
-      ..init(
-        ParametersWithRandom(
-          ECKeyGeneratorParameters(publicParams.publicKey.parameters!),
-          Helper.secureRandom(),
-        ),
-      );
-    final keyPair = keyGen.generateKeyPair();
-    final agreement = ECDHBasicAgreement()..init(keyPair.privateKey as ECPrivateKey);
-
-    final sharedKey = agreement.calculateAgreement(publicParams.publicKey);
-    final publicKey = keyPair.publicKey as ECPublicKey;
-
-    final param = _buildEcdhParam(publicParams, fingerprint);
-    final keySize = (publicParams.kdfSymmetric.keySize + 7) >> 3;
-    final wrappedKey = AesKeyWrapper.wrap(
-      _kdf(publicParams.kdfHash, sharedKey, keySize, param),
-      _pkcs5Encode(plainData),
-    );
-
-    return ECDHSkParams(
-      publicKey.Q!.getEncoded(false).toBigIntWithSign(1),
-      wrappedKey,
-    );
-  }
-
-  /// Decrypt and unwrap the value derived from session key
-  static Uint8List _ecdhDecrypt(
-    final ECPrivateKey privateKey,
-    final ECDHPublicParams publicParams,
-    final ECDHSkParams sessionKeyParams,
-    final Uint8List fingerprint,
-  ) {
-    final point = privateKey.parameters!.curve.decodePoint(sessionKeyParams.ephemeralKey.toUnsignedBytes());
-    final publicKey = ECPublicKey(point, privateKey.parameters);
-    final agreement = ECDHBasicAgreement()..init(privateKey);
-    final sharedKey = agreement.calculateAgreement(publicKey);
-
-    final param = _buildEcdhParam(publicParams, fingerprint);
-    final keySize = (publicParams.kdfSymmetric.keySize + 7) >> 3;
-
-    return _pkcs5Decode(
-      AesKeyWrapper.unwrap(
-        _kdf(publicParams.kdfHash, sharedKey, keySize, param),
-        sessionKeyParams.wrappedKey,
-      ),
-    );
-  }
-
-  /// Key Derivation Function (RFC 6637)
-  static Uint8List _kdf(HashAlgorithm hash, BigInt sharedKey, int keySize, Uint8List param) => Helper.hashDigest(
-        Uint8List.fromList([
-          0,
-          0,
-          0,
-          1,
-          ...sharedKey.toUnsignedBytes(),
-          ...param,
-        ]),
-        hash,
-      ).sublist(0, keySize);
-
-  /// Build Param for ECDH algorithm (RFC 6637)
-  static Uint8List _buildEcdhParam(final ECDHPublicParams publicParams, Uint8List fingerprint) => Uint8List.fromList([
-        ...publicParams.oid.encode().sublist(1),
-        KeyAlgorithm.ecdh.value,
-        0x3,
-        publicParams.reserved,
-        publicParams.kdfHash.value,
-        publicParams.kdfSymmetric.value,
-        ..._anonymousSender,
-        ...fingerprint.sublist(0, 20),
-      ]);
-
-  static Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
-    final numBlocks = input.length ~/ engine.inputBlockSize + ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
-
-    final output = Uint8List(numBlocks * engine.outputBlockSize);
-
-    var inputOffset = 0;
-    var outputOffset = 0;
-    while (inputOffset < input.length) {
-      final chunkSize =
-          (inputOffset + engine.inputBlockSize <= input.length) ? engine.inputBlockSize : input.length - inputOffset;
-
-      outputOffset += engine.processBlock(input, inputOffset, chunkSize, output, outputOffset);
-
-      inputOffset += chunkSize;
-    }
-
-    return (output.length == outputOffset) ? output : output.sublist(0, outputOffset);
-  }
-
-  /// Add pkcs5 padding to a message
-  static Uint8List _pkcs5Encode(Uint8List message) {
-    final c = 8 - (message.lengthInBytes % 8);
-    return Uint8List.fromList(List.filled(message.length + c, c))..setAll(0, message);
-  }
-
-  /// Remove pkcs5 padding from a message
-  static Uint8List _pkcs5Decode(Uint8List message) {
-    final length = message.length;
-    if (length > 0) {
-      final c = message[length - 1];
-      if (c >= 1) {
-        final provided = message.sublist(length - c);
-        final computed = Uint8List.fromList(List.filled(c, c));
-        if (provided.equals(computed)) {
-          return message.sublist(0, length - c);
-        }
-      }
-    }
-    return Uint8List(0);
   }
 }

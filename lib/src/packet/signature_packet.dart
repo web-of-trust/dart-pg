@@ -182,7 +182,6 @@ class SignaturePacket extends ContainedPacket {
     List<SignatureSubpacket> subpackets = const [],
     final int keyExpirationTime = 0,
     final DateTime? date,
-    final Uint8List? attachedHeader,
   }) {
     final version = signKey.version;
     final keyAlgorithm = signKey.algorithm;
