@@ -11,14 +11,15 @@ import '../../crypto/symmetric/rfc3394_wrap.dart';
 /// Implementation of RFC 3394 AES Key Wrap & Key Unwrap funcions
 class AesKeyWrapper {
   static Uint8List wrap(final Uint8List key, final Uint8List data) {
-    final engine = Rfc3394WrapEngine(BlockCipher('AES/CFB-${key.length * 8}'));
+    final engine = Rfc3394WrapEngine(BlockCipher('AES/ECB'));
     engine.init(true, KeyParameter(key));
-    return engine.wrap(data, 0, data.lengthInBytes);
+
+    return engine.wrap(data, 0);
   }
 
   static Uint8List unwrap(final Uint8List key, final Uint8List data) {
-    final engine = Rfc3394WrapEngine(BlockCipher('AES/CFB-${key.length * 8}'));
+    final engine = Rfc3394WrapEngine(BlockCipher('AES/ECB'));
     engine.init(false, KeyParameter(key));
-    return engine.unwrap(data, 0, data.lengthInBytes);
+    return engine.unwrap(data, 0);
   }
 }

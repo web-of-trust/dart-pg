@@ -91,7 +91,7 @@ void main() {
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
       final selfCertificate = SignaturePacket.createSelfCertificate(secretKey, userID: userID);
       expect(selfCertificate.verifyUserCertification(secretKey.publicKey, userID: userID), isTrue);
-      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.signData.value);
+      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.certifyKeys.value);
       expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
     });
   });

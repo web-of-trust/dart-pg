@@ -22,7 +22,7 @@ abstract class SessionKeyParams {
     final computedChecksum = sessionKey.checksum();
     final isValidChecksum = (computedChecksum[0] == checksum[0]) && (computedChecksum[1] == checksum[1]);
     if (!isValidChecksum) {
-      throw StateError('PKESK decryption error');
+      throw StateError('Session key decryption error');
     }
     return sessionKey;
   }

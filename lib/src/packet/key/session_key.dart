@@ -20,4 +20,15 @@ class SessionKey {
   Uint8List encode() => Uint8List.fromList([symmetric.value, ...key]);
 
   Uint8List checksum() => Helper.calculateChecksum(key);
+
+  @override
+  bool operator ==(other) {
+    if (other is! SessionKey) return false;
+    return (other.symmetric == symmetric) && (other.key.equals(key));
+  }
+
+  @override
+  int get hashCode {
+    return symmetric.hashCode + key.hashCode;
+  }
 }

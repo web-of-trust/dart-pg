@@ -31,10 +31,13 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
   factory ElGamalSessionKeyParams.encryptSessionKey(final ElGamalPublicKey key, final SessionKey sessionKey) {
     final engine = ElGamalEngine()..init(true, PublicKeyParameter<ElGamalPublicKey>(key));
     final cipherData = Uint8List(engine.outputBlockSize);
-    final plainData = Uint8List.fromList([
+    final plainData = Helper.emeEncode(
+      Uint8List.fromList([
       ...sessionKey.encode(),
       ...sessionKey.checksum(),
-    ]);
+      ]),
+      key.prime.byteLength,
+    );
     engine.processBlock(plainData, 0, plainData.length, cipherData, 0);
     return ElGamalSessionKeyParams(
       cipherData.sublist(0, engine.outputBlockSize ~/ 2).toBigIntWithSign(1),
@@ -58,6 +61,6 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
       ...phi.toUnsignedBytes(),
     ]);
     engine.processBlock(cipherData, 0, cipherData.length, plainData, 0);
-    return decodeSessionKey(plainData);
+    return decodeSessionKey(Helper.emeDecode(plainData));
   }
 }

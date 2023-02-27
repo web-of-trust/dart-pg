@@ -287,4 +287,45 @@ class Helper {
     }
     return s.pack16();
   }
+
+  /// Create a EME-PKCS1-v1_5 padded message
+  static Uint8List emeEncode(final Uint8List message, final int keyLength) {
+    final mLength = message.length;
+    // length checking
+    if (mLength > keyLength - 11) {
+      throw StateError('Message too long');
+    }
+    final ps = _getPKCS1Padding(keyLength - mLength - 3);
+    final encoded = Uint8List(keyLength);
+    encoded[1] = 2;
+    encoded.setAll(2, ps);
+    encoded.setAll(keyLength - mLength, message);
+    return encoded;
+  }
+
+  /// Decode a EME-PKCS1-v1_5 padded message
+  static emeDecode(final Uint8List encoded) {
+    var offset = 2;
+    var separatorNotFound = 1;
+    for (var j = offset; j < encoded.length; j++) {
+      separatorNotFound &= (encoded[j] != 0) ? 1 : 0;
+      offset += separatorNotFound;
+    }
+    return encoded.sublist(offset + 1);
+  }
+
+  static Uint8List _getPKCS1Padding(length) {
+    final random = secureRandom();
+    final result = Uint8List(length);
+    var count = 0;
+    while (count < length) {
+      final randomBytes = random.nextBytes(length - count);
+      for (var i = 0; i < randomBytes.length; i++) {
+        if (randomBytes[i] != 0) {
+          result[count++] = randomBytes[i];
+        }
+      }
+    }
+    return result;
+  }
 }

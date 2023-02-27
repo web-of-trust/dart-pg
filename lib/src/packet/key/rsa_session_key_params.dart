@@ -23,11 +23,15 @@ class RSASessionKeyParams extends SessionKeyParams {
     final engine = AsymmetricBlockCipher('RSA')..init(true, PublicKeyParameter<RSAPublicKey>(key));
     return RSASessionKeyParams(
       _processInBlocks(
-          engine,
+        engine,
+        Helper.emeEncode(
           Uint8List.fromList([
             ...sessionKey.encode(),
             ...sessionKey.checksum(),
-          ])).toBigIntWithSign(1),
+          ]),
+          key.modulus!.byteLength,
+        ),
+      ).toBigIntWithSign(1),
     );
   }
 
@@ -39,7 +43,7 @@ class RSASessionKeyParams extends SessionKeyParams {
 
   SessionKey decrypt(final RSAPrivateKey key) {
     final engine = AsymmetricBlockCipher('RSA')..init(false, PrivateKeyParameter<RSAPrivateKey>(key));
-    return decodeSessionKey(_processInBlocks(engine, encrypted.toUnsignedBytes()));
+    return decodeSessionKey(Helper.emeDecode(_processInBlocks(engine, encrypted.toUnsignedBytes())));
   }
 
   static Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
