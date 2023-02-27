@@ -21,20 +21,19 @@ class AesKeyWrapper {
     0xa6,
   ]);
 
+  static final _aes = BlockCipher('AES/ECB');
+
   static Uint8List wrap(final Uint8List key, final Uint8List data) {
     if (data.lengthInBytes < 16) {
       throw StateError('Data to be wrapped should be at least 128 bits');
     }
-
     if (data.lengthInBytes % 8 != 0) {
       throw StateError('Data to be wrapped must be a multiple of 8 bytes');
     }
 
-    final engine = BlockCipher('AES/ECB');
-    engine.init(true, KeyParameter(key));
-
+    _aes.init(true, KeyParameter(key));
     final a = Uint8List.fromList(_iv);
-    final r = data;
+    final r = Uint8List.fromList(data);
     final n = data.lengthInBytes ~/ 8;
     for (var j = 0; j <= 5; j++) {
       for (var i = 1; i <= n; i++) {
@@ -42,7 +41,7 @@ class AesKeyWrapper {
           ...a,
           ...r.sublist((i - 1) * 8, i * 8),
         ]);
-        engine.processBlock(buffer, 0, buffer, 0);
+        _aes.processBlock(buffer, 0, buffer, 0);
 
         a.setAll(0, buffer.sublist(0, 8));
         a[7] ^= (n * j + i) & 0xff;
@@ -56,14 +55,11 @@ class AesKeyWrapper {
     if (data.lengthInBytes < 16) {
       throw StateError('Data to be unwrapped should be at least 128 bits');
     }
-
     if (data.lengthInBytes % 8 != 0) {
       throw StateError('Data to be unwrapped must be a multiple of 8 bytes');
     }
 
-    final engine = BlockCipher('AES/ECB');
-    engine.init(false, KeyParameter(key));
-
+    _aes.init(false, KeyParameter(key));
     final a = data.sublist(0, 8);
     final r = data.sublist(8);
     final n = (data.lengthInBytes ~/ 8) - 1;
@@ -74,7 +70,7 @@ class AesKeyWrapper {
           ...a,
           ...r.sublist((i - 1) * 8, i * 8),
         ]);
-        engine.processBlock(buffer, 0, buffer, 0);
+        _aes.processBlock(buffer, 0, buffer, 0);
 
         a.setAll(0, buffer.sublist(0, 8));
         r.setAll((i - 1) * 8, buffer.sublist(8, 16));

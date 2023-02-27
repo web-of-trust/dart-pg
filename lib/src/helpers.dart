@@ -240,24 +240,24 @@ extension DateTimeHelper on DateTime {
 class Helper {
   static final _random = Random.secure();
 
+  static final _secureRandom = pc.SecureRandom('Fortuna')
+    ..seed(pc.KeyParameter(Uint8List.fromList(List.generate(32, ((_) => _random.nextInt(0xffffffff))))));
+
   static BigInt readMPI(Uint8List bytes) {
     final bitLength = bytes.sublist(0, 2).toUint16();
     return bytes.sublist(2, ((bitLength + 7) >> 3) + 2).toBigIntWithSign(1);
   }
 
-  static pc.SecureRandom secureRandom() {
-    return pc.SecureRandom('Fortuna')
-      ..seed(pc.KeyParameter(Uint8List.fromList(List.generate(32, ((_) => _random.nextInt(0xffffffff))))));
-  }
+  static pc.SecureRandom secureRandom() => _secureRandom;
 
   static Uint8List generatePrefix([final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric]) {
-    final prefix = secureRandom().nextBytes(symmetric.blockSize);
+    final prefix = _secureRandom.nextBytes(symmetric.blockSize);
     final repeat = [prefix[prefix.length - 2], prefix[prefix.length - 1]];
     return Uint8List.fromList([...prefix, ...repeat]);
   }
 
   static Uint8List generateEncryptionKey([final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric]) =>
-      secureRandom().nextBytes((symmetric.keySize + 7) >> 3);
+      _secureRandom.nextBytes((symmetric.keySize + 7) >> 3);
 
   static Uint8List hashDigest(final Uint8List input, [HashAlgorithm hash = HashAlgorithm.sha256]) {
     switch (hash) {
@@ -315,11 +315,10 @@ class Helper {
   }
 
   static Uint8List _getPKCS1Padding(length) {
-    final random = secureRandom();
     final result = Uint8List(length);
     var count = 0;
     while (count < length) {
-      final randomBytes = random.nextBytes(length - count);
+      final randomBytes = _secureRandom.nextBytes(length - count);
       for (var i = 0; i < randomBytes.length; i++) {
         if (randomBytes[i] != 0) {
           result[count++] = randomBytes[i];
