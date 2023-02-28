@@ -344,9 +344,18 @@ class SignaturePacket extends ContainedPacket {
     final LiteralDataPacket literalData, {
     final DateTime? date,
   }) {
+    final SignatureType signatureType;
+    switch (literalData.format) {
+      case LiteralFormat.text:
+      case LiteralFormat.utf8:
+        signatureType = SignatureType.text;
+        break;
+      default:
+        signatureType = SignatureType.binary;
+    }
     return SignaturePacket.createSignature(
       signKey,
-      literalData.format == LiteralFormat.text ? SignatureType.text : SignatureType.binary,
+      signatureType,
       literalData.writeForSign(),
       date: date,
     );

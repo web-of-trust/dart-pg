@@ -27,7 +27,7 @@ class LiteralDataPacket extends ContainedPacket {
   LiteralDataPacket(
     this.data, {
     this.format = LiteralFormat.utf8,
-    DateTime? time,
+    final DateTime? time,
     this.text = '',
     this.filename = '',
   })  : time = time ?? DateTime.now(),
@@ -56,10 +56,15 @@ class LiteralDataPacket extends ContainedPacket {
     );
   }
 
-  factory LiteralDataPacket.fromText(String text) => LiteralDataPacket(
+  factory LiteralDataPacket.fromText(
+    final String text, {
+    final DateTime? time,
+  }) =>
+      LiteralDataPacket(
         Uint8List(0),
         text: text,
-        format: LiteralFormat.text,
+        format: LiteralFormat.utf8,
+        time: time,
       );
 
   @override

@@ -25,8 +25,33 @@ class Message {
 
   Message(this.packetList);
 
+  factory Message.createTextMessage(
+    final String text, {
+    final DateTime? time,
+  }) =>
+      Message(PacketList([LiteralDataPacket.fromText(text, time: time)]));
+
+  factory Message.createBinaryMessage(
+    final Uint8List data, {
+    final String filename = '',
+    final DateTime? time,
+  }) =>
+      Message(PacketList([
+        LiteralDataPacket(
+          data,
+          format: LiteralFormat.binary,
+          filename: filename,
+          time: time,
+        )
+      ]));
+
   /// Returns ASCII armored text of message
   String armor() => Armor.encode(ArmorType.message, packetList.packetEncode());
+
+  /// Append signature to unencrypted message
+  Message appendSignature(SignaturePacket signature) {
+    return Message(PacketList([...packetList, signature]));
+  }
 
   /// Sign the message (the literal data packet of the message)
   Message sign(
@@ -56,7 +81,15 @@ class Message {
     }
 
     final literalData = literalDataPackets.elementAt(0);
-    final signatureType = literalData.format == LiteralFormat.text ? SignatureType.text : SignatureType.binary;
+    final SignatureType signatureType;
+    switch (literalData.format) {
+      case LiteralFormat.text:
+      case LiteralFormat.utf8:
+        signatureType = SignatureType.text;
+        break;
+      default:
+        signatureType = SignatureType.binary;
+    }
     packets.addAll(signingKeys.map((key) {
       final index = signingKeys.indexOf(key);
       final keyPacket = key.getSigningKeyPacket(date: date);
@@ -120,6 +153,10 @@ class Message {
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
+
+    final onePassSignatures = packetList.whereType<OnePassSignaturePacket>();
+    final signatureList = packetList.whereType<SignaturePacket>();
+    if (onePassSignatures.isNotEmpty && signatureList.isEmpty) {}
   }
 
   /// Verify detached message signature
