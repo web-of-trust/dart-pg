@@ -28,10 +28,9 @@ class CleartextMessage {
     if (verificationKeys.isEmpty) {
       throw ArgumentError('No verification keys provided');
     }
-    final verifications = <Verification>[];
-    final literalData = LiteralDataPacket.fromText(text);
 
-    for (final signaturePacket in signature.signaturePackets) {
+    final verifications = <Verification>[];
+    for (final signaturePacket in signature.packets) {
       for (final key in verificationKeys) {
         try {
           final keyPacket = key.getSigningKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
@@ -40,7 +39,7 @@ class CleartextMessage {
             Signature(PacketList([signaturePacket])),
             signaturePacket.verifyLiteralData(
               keyPacket,
-              literalData,
+              LiteralDataPacket.fromText(text),
               date: date,
             ),
           ));

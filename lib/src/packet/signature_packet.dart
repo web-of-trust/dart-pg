@@ -185,7 +185,7 @@ class SignaturePacket extends ContainedPacket {
   }) {
     final version = signKey.version;
     final keyAlgorithm = signKey.algorithm;
-    final hashAlgorithm = preferredHash ?? _getPreferredHash(signKey);
+    final hashAlgorithm = preferredHash ?? getPreferredHash(signKey);
 
     final hashedSubpackets = [
       SignatureCreationTime.fromTime(date ?? DateTime.now()),
@@ -316,7 +316,7 @@ class SignaturePacket extends ContainedPacket {
         ...subkey.writeForSign(),
       ]),
       subpackets: subpackets,
-      preferredHash: _getPreferredHash(subkey),
+      preferredHash: getPreferredHash(subkey),
       keyExpirationTime: keyExpirationTime,
       date: date,
     );
@@ -451,7 +451,7 @@ class SignaturePacket extends ContainedPacket {
     ]);
   }
 
-  static HashAlgorithm _getPreferredHash(final KeyPacket key) {
+  static HashAlgorithm getPreferredHash(final KeyPacket key) {
     switch (key.algorithm) {
       case KeyAlgorithm.ecdh:
       case KeyAlgorithm.ecdsa:

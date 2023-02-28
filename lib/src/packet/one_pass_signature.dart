@@ -7,6 +7,8 @@ import 'dart:typed_data';
 import '../enums.dart';
 import 'contained_packet.dart';
 import 'key/key_id.dart';
+import 'key_packet.dart';
+import 'signature_packet.dart';
 
 /// OnePassSignature represents a One-Pass Signature packet.
 /// See RFC 4880, section 5.4.
@@ -14,7 +16,7 @@ import 'key/key_id.dart';
 /// The One-Pass Signature packet precedes the signed data and contains enough information
 /// to allow the receiver to begin calculating any hashes needed to verify the signature.
 /// It allows the Signature packet to be placed at the end of the message,
-/// so that the signercan compute the entire signed message in one pass.
+/// so that the signer can compute the entire signed message in one pass.
 class OnePassSignaturePacket extends ContainedPacket {
   static const version = 3;
 
@@ -69,5 +71,21 @@ class OnePassSignaturePacket extends ContainedPacket {
       ...issuerKeyID.id,
       nested,
     ]);
+  }
+
+  /// Verifies the corresponding signature packet.
+  bool verify(
+    SignaturePacket signature,
+    final KeyPacket verifyKey,
+    final Uint8List dataToVerify, {
+    final DateTime? date,
+  }) {
+    if (signature.signatureType != signatureType ||
+        signature.hashAlgorithm != hashAlgorithm ||
+        signature.keyAlgorithm != keyAlgorithm ||
+        signature.issuerKeyID.keyID != issuerKeyID.keyID) {
+      throw StateError('Corresponding signature packet does not match one-pass signature packet');
+    }
+    return signature.verify(verifyKey, dataToVerify, date: date);
   }
 }
