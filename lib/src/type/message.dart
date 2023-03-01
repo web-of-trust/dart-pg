@@ -30,7 +30,17 @@ class Message {
   /// The packets that form this message
   final PacketList packetList;
 
-  Message(this.packetList);
+  final List<Verification> verifications;
+
+  Message(this.packetList, [this.verifications = const []]);
+
+  factory Message.fromArmored(final String armored) {
+    final armor = Armor.decode(armored);
+    if (armor.type != ArmorType.message) {
+      throw ArgumentError('Armored text not of message type');
+    }
+    return Message(PacketList.packetDecode(armor.data));
+  }
 
   factory Message.createTextMessage(
     final String text, {
@@ -163,7 +173,9 @@ class Message {
     );
   }
 
-  List<Verification> verify(
+  /// Verify message signatures
+  /// Return new message with verifications
+  Message verify(
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
@@ -172,16 +184,20 @@ class Message {
       throw StateError('No literal data packet to verify.');
     }
 
-    return Verification.createVerifications(
-      literalDataPackets.elementAt(0),
-      packetList.whereType<SignaturePacket>(),
-      verificationKeys,
-      date: date,
+    return Message(
+      packetList,
+      Verification.createVerifications(
+        literalDataPackets.elementAt(0),
+        packetList.whereType<SignaturePacket>(),
+        verificationKeys,
+        date: date,
+      ),
     );
   }
 
   /// Verify detached message signature
-  List<Verification> verifySignature(
+  /// Return new message with verifications
+  Message verifySignature(
     final Signature signature,
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
@@ -190,12 +206,14 @@ class Message {
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
-
-    return Verification.createVerifications(
-      literalDataPackets.elementAt(0),
-      signature.packets,
-      verificationKeys,
-      date: date,
+    return Message(
+      packetList,
+      Verification.createVerifications(
+        literalDataPackets.elementAt(0),
+        signature.packets,
+        verificationKeys,
+        date: date,
+      ),
     );
   }
 
@@ -234,7 +252,7 @@ class Message {
     ]));
   }
 
-  /// Decrypt the message. Either a private key, or a password must be specified.
+  /// Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
   /// Return new message with decrypted content.
   Message decrypt(
     final List<PrivateKey> decryptionKeys, {

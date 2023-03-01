@@ -12,23 +12,29 @@ class CleartextMessage {
   /// The cleartext of the message
   final String _text;
 
-  CleartextMessage(String text) : _text = text.trimRight().replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n');
+  final List<Verification> verifications;
+
+  CleartextMessage(String text, [this.verifications = const []])
+      : _text = text.trimRight().replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n');
 
   String get text => _text;
 
   String get normalizeText => _text.replaceAll(RegExp(r'\r\n', multiLine: true), '\n');
 
   /// Verify detached signature
-  List<Verification> verifySignature(
+  /// Return cleartext message with verifications
+  CleartextMessage verifySignature(
     final Signature signature,
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) {
-    return Verification.createVerifications(
-      LiteralDataPacket.fromText(text),
-      signature.packets,
-      verificationKeys,
-      date: date,
-    );
-  }
+  }) =>
+      CleartextMessage(
+        text,
+        Verification.createVerifications(
+          LiteralDataPacket.fromText(text),
+          signature.packets,
+          verificationKeys,
+          date: date,
+        ),
+      );
 }

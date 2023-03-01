@@ -18,7 +18,7 @@ class SignedMessage extends CleartextMessage {
   /// The detached signature or an empty signature for unsigned messages
   final Signature signature;
 
-  SignedMessage(super.text, this.signature);
+  SignedMessage(super.text, this.signature, [super.verifications]);
 
   factory SignedMessage.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
@@ -29,6 +29,7 @@ class SignedMessage extends CleartextMessage {
     return SignedMessage(armor.text, Signature(packetList));
   }
 
+  /// Sign a cleartext.
   factory SignedMessage.signCleartext(
     final String text,
     final List<PrivateKey> signingKeys, {
@@ -68,10 +69,20 @@ class SignedMessage extends CleartextMessage {
   }
 
   /// Verify signatures of cleartext signed message
-  List<Verification> verify(
+  /// Return signed message with verifications
+  SignedMessage verify(
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    return verifySignature(signature, verificationKeys, date: date);
+    return SignedMessage(
+      text,
+      signature,
+      Verification.createVerifications(
+        LiteralDataPacket.fromText(text),
+        signature.packets,
+        verificationKeys,
+        date: date,
+      ),
+    );
   }
 }
