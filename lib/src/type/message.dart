@@ -11,6 +11,7 @@ import '../packet/key/key_id.dart';
 import '../packet/literal_data.dart';
 import '../packet/one_pass_signature.dart';
 import '../packet/packet_list.dart';
+import '../packet/public_key_encrypted_session_key.dart';
 import '../packet/signature_packet.dart';
 import 'key.dart';
 import 'signature.dart';
@@ -51,6 +52,20 @@ class Message {
   /// Append signature to unencrypted message
   Message appendSignature(SignaturePacket signature) {
     return Message(PacketList([...packetList, signature]));
+  }
+
+  /// Gets the key IDs of the keys that signed the message
+  Iterable<KeyID> get signingKeyIDs {
+    final onePassSignatures = packetList.whereType<OnePassSignaturePacket>();
+    if (onePassSignatures.isNotEmpty) {
+      return onePassSignatures.map((packet) => packet.issuerKeyID);
+    }
+    return packetList.whereType<SignaturePacket>().map((packet) => KeyID(packet.issuerKeyID.data));
+  }
+
+  /// Gets the key IDs of the keys to which the session key is encrypted
+  Iterable<KeyID> get encryptionKeyIDs {
+    return packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().map((packet) => packet.publicKeyID);
   }
 
   /// Sign the message (the literal data packet of the message)
@@ -142,21 +157,21 @@ class Message {
     );
   }
 
-  verify(
+  List<Verification> verify(
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    if (verificationKeys.isEmpty) {
-      throw ArgumentError('No verification keys provided');
-    }
     final literalDataPackets = packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
 
-    final onePassSignatures = packetList.whereType<OnePassSignaturePacket>();
-    final signatureList = packetList.whereType<SignaturePacket>();
-    if (onePassSignatures.isNotEmpty && signatureList.isEmpty) {}
+    return Verification.createVerifications(
+      literalDataPackets.elementAt(0),
+      packetList.whereType<SignaturePacket>(),
+      verificationKeys,
+      date: date,
+    );
   }
 
   /// Verify detached message signature
@@ -165,40 +180,16 @@ class Message {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    if (verificationKeys.isEmpty) {
-      throw ArgumentError('No verification keys provided');
-    }
     final literalDataPackets = packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
 
-    final verifications = <Verification>[];
-    for (final signaturePacket in signature.packets) {
-      for (final key in verificationKeys) {
-        try {
-          final keyPacket = key.getSigningKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
-          verifications.add(Verification(
-            keyPacket.keyID.keyID,
-            Signature(PacketList([signaturePacket])),
-            signaturePacket.verifyLiteralData(
-              keyPacket,
-              literalDataPackets.elementAt(0),
-              date: date,
-            ),
-          ));
-        } catch (_) {}
-      }
-    }
-
-    return verifications;
+    return Verification.createVerifications(
+      literalDataPackets.elementAt(0),
+      signature.packets,
+      verificationKeys,
+      date: date,
+    );
   }
-
-  static encryptSessionKey(
-    final Uint8List sessionKey,
-    final SymmetricAlgorithm symmetric,
-    final List<PublicKey> encryptionKeys, {
-    final String? passwords,
-    final DateTime? date,
-  }) {}
 }

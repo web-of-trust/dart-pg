@@ -3,7 +3,6 @@
 // file that was distributed with this source code.
 
 import '../packet/literal_data.dart';
-import '../packet/packet_list.dart';
 import 'key.dart';
 import 'signature.dart';
 import 'verification.dart';
@@ -25,28 +24,11 @@ class CleartextMessage {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    if (verificationKeys.isEmpty) {
-      throw ArgumentError('No verification keys provided');
-    }
-
-    final verifications = <Verification>[];
-    for (final signaturePacket in signature.packets) {
-      for (final key in verificationKeys) {
-        try {
-          final keyPacket = key.getSigningKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
-          verifications.add(Verification(
-            keyPacket.keyID.keyID,
-            Signature(PacketList([signaturePacket])),
-            signaturePacket.verifyLiteralData(
-              keyPacket,
-              LiteralDataPacket.fromText(text),
-              date: date,
-            ),
-          ));
-        } catch (_) {}
-      }
-    }
-
-    return verifications;
+    return Verification.createVerifications(
+      LiteralDataPacket.fromText(text),
+      signature.packets,
+      verificationKeys,
+      date: date,
+    );
   }
 }

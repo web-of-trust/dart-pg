@@ -2,6 +2,10 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import '../packet/literal_data.dart';
+import '../packet/packet_list.dart';
+import '../packet/signature_packet.dart';
+import 'key.dart';
 import 'signature.dart';
 
 /// Class that represents validity of signature.
@@ -13,4 +17,33 @@ class Verification {
   final bool verified;
 
   Verification(this.keyID, this.signature, this.verified);
+
+  static List<Verification> createVerifications(
+    LiteralDataPacket literalData,
+    Iterable<SignaturePacket> signaturePackets,
+    Iterable<PublicKey> verificationKeys, {
+    final DateTime? date,
+  }) {
+    if (verificationKeys.isEmpty) {
+      throw ArgumentError('No verification keys provided');
+    }
+    final verifications = <Verification>[];
+    for (var signaturePacket in signaturePackets) {
+      for (final key in verificationKeys) {
+        try {
+          final keyPacket = key.getSigningKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
+          verifications.add(Verification(
+            keyPacket.keyID.keyID,
+            Signature(PacketList([signaturePacket])),
+            signaturePacket.verifyLiteralData(
+              keyPacket,
+              literalData,
+              date: date,
+            ),
+          ));
+        } catch (_) {}
+      }
+    }
+    return verifications;
+  }
 }

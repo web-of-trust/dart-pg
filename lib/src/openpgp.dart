@@ -4,6 +4,7 @@
 
 import 'enums.dart';
 import 'type/cleartext_message.dart';
+import 'type/message.dart';
 import 'type/private_key.dart';
 import 'type/public_key.dart';
 import 'type/signature.dart';
@@ -99,7 +100,7 @@ class OpenPGP {
   static Future<PublicKey> readPublicKey(final String armored) async => PublicKey.fromArmored(armored);
 
   /// Signs a cleartext message.
-  static Future<SignedMessage> sign(
+  static Future<SignedMessage> signCleartext(
     final String text,
     final List<PrivateKey> signingKeys, {
     final DateTime? date,
@@ -107,7 +108,7 @@ class OpenPGP {
       SignedMessage.signCleartext(text, signingKeys, date: date);
 
   /// Signs a cleartext message & return detached signature
-  static Future<Signature> signDetached(
+  static Future<Signature> signCleartextDetached(
     final String text,
     final List<PrivateKey> signingKeys, {
     final DateTime? date,
@@ -134,4 +135,10 @@ class OpenPGP {
 
   /// Reads an armored OpenPGP signed message and returns a SignedMessage object
   static Future<SignedMessage> readSignedMessage(final String armored) async => SignedMessage.fromArmored(armored);
+
+  static encryptMessage(
+    Message message,
+    List<PublicKey> encryptionKeys,
+    List<PrivateKey> signingKeys,
+  ) {}
 }
