@@ -132,7 +132,7 @@ abstract class Key {
     return true;
   }
 
-  KeyPacket getSigningKeyPacket({
+  SecretKeyPacket getSigningKeyPacket({
     final String keyID = '',
     final DateTime? date,
   }) {
@@ -143,17 +143,17 @@ abstract class Key {
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
         if (subkey.isSigningKey && subkey.verify(keyPacket, date: date)) {
-          return subkey.keyPacket;
+          return subkey.keyPacket as SecretKeyPacket;
         }
       }
     }
     if (!isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
       throw StateError('Could not find valid signing key packet.');
     }
-    return keyPacket;
+    return keyPacket as SecretKeyPacket;
   }
 
-  KeyPacket getEncryptionKeyPacket({
+  PublicKeyPacket getEncryptionKeyPacket({
     final String keyID = '',
     final DateTime? date,
   }) {
@@ -164,14 +164,14 @@ abstract class Key {
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
         if (subkey.isEncryptionKey && subkey.verify(keyPacket, date: date)) {
-          return subkey.keyPacket;
+          return subkey.keyPacket.publicKey;
         }
       }
     }
     if (isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
       throw StateError('Could not find valid encryption key packet.');
     }
-    return keyPacket;
+    return keyPacket.publicKey;
   }
 
   User getPrimaryUser({

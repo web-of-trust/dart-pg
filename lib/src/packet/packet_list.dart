@@ -99,6 +99,13 @@ class PacketList extends ListBase<ContainedPacket> {
   Uint8List packetEncode() =>
       Uint8List.fromList(packets.map((packet) => packet.packetEncode()).expand((byte) => byte).toList(growable: false));
 
+  PacketList filterByTags([List<PacketTag> tags = const []]) {
+    if (tags.isNotEmpty) {
+      return PacketList(packets.takeWhile((packet) => tags.contains(packet.tag)));
+    }
+    return this;
+  }
+
   @override
   int get length => packets.length;
 

@@ -110,6 +110,9 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   @override
   bool get isDecrypted => true;
+  
+  @override
+  PublicKeyPacket get publicKey => this;
 
   @override
   int get keyStrength {

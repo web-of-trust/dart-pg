@@ -88,37 +88,38 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   factory PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
-    final PublicKeyPacket key, {
+    final PublicKeyPacket publicKey, {
+    final Uint8List? sessionKeyData,
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
   }) {
     final sessionKey = SessionKey(
-      Helper.generateEncryptionKey(sessionKeySymmetric),
+      sessionKeyData ?? Helper.generateEncryptionKey(sessionKeySymmetric),
       sessionKeySymmetric,
     );
     final SessionKeyParams params;
-    switch (key.algorithm) {
+    switch (publicKey.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
-        final publicKey = (key.publicParams as RSAPublicParams).publicKey;
-        params = RSASessionKeyParams.encryptSessionKey(publicKey, sessionKey);
+        final rsaPublicKey = (publicKey.publicParams as RSAPublicParams).publicKey;
+        params = RSASessionKeyParams.encryptSessionKey(rsaPublicKey, sessionKey);
         break;
       case KeyAlgorithm.elgamal:
-        final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
-        params = ElGamalSessionKeyParams.encryptSessionKey(publicKey, sessionKey);
+        final elGamalPublicKey = (publicKey.publicParams as ElGamalPublicParams).publicKey;
+        params = ElGamalSessionKeyParams.encryptSessionKey(elGamalPublicKey, sessionKey);
         break;
       case KeyAlgorithm.ecdh:
         params = ECDHSessionKeyParams.encryptSessionKey(
-          (key.publicParams as ECDHPublicParams),
+          (publicKey.publicParams as ECDHPublicParams),
           sessionKey,
-          key.fingerprint.hexToBytes(),
+          publicKey.fingerprint.hexToBytes(),
         );
         break;
       default:
         throw UnsupportedError('Unsupported PGP public key algorithm encountered');
     }
     return PublicKeyEncryptedSessionKeyPacket(
-      key.keyID,
-      key.algorithm,
+      publicKey.keyID,
+      publicKey.algorithm,
       params,
       sessionKey: sessionKey,
     );

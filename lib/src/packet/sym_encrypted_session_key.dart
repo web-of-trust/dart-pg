@@ -71,17 +71,18 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   factory SymEncryptedSessionKeyPacket.encryptSessionKey(
-    final String passphrase, {
-    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+    final String password, {
+    final Uint8List? sessionKeyData,
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
+    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
     final HashAlgorithm hash = OpenPGP.preferredHash,
     final S2kType type = S2kType.iterated,
   }) {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
-    final key = s2k.produceKey(passphrase, symmetric);
+    final key = s2k.produceKey(password, symmetric);
     final cipher = BufferedCipher(symmetric.cipherEngine)..init(true, KeyParameter(key));
     final sessionKey = SessionKey(
-      Helper.generateEncryptionKey(sessionKeySymmetric),
+      sessionKeyData ?? Helper.generateEncryptionKey(sessionKeySymmetric),
       sessionKeySymmetric,
     );
 

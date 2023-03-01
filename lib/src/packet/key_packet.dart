@@ -8,6 +8,7 @@ import '../enums.dart';
 import 'key/key_id.dart';
 import 'contained_packet.dart';
 import 'key/key_params.dart';
+import 'public_key.dart';
 
 export 'public_key.dart';
 export 'public_subkey.dart';
@@ -34,6 +35,8 @@ abstract class KeyPacket implements ContainedPacket {
   bool get isEncrypted;
 
   bool get isDecrypted;
+
+  PublicKeyPacket get publicKey;
 
   Uint8List writeForSign();
 }

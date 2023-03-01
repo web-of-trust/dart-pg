@@ -108,6 +108,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       secretParams: keyPair.secretParams,
     );
   }
+
+  @override
   PublicKeyPacket get publicKey => _publicKey;
 
   @override

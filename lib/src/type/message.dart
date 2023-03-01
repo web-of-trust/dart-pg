@@ -6,6 +6,8 @@ import 'dart:typed_data';
 
 import '../armor/armor.dart';
 import '../enums.dart';
+import '../helpers.dart';
+import '../openpgp.dart';
 import '../packet/contained_packet.dart';
 import '../packet/key/key_id.dart';
 import '../packet/literal_data.dart';
@@ -13,6 +15,8 @@ import '../packet/one_pass_signature.dart';
 import '../packet/packet_list.dart';
 import '../packet/public_key_encrypted_session_key.dart';
 import '../packet/signature_packet.dart';
+import '../packet/sym_encrypted_integrity_protected_data.dart';
+import '../packet/sym_encrypted_session_key.dart';
 import 'key.dart';
 import 'signature.dart';
 import 'verification.dart';
@@ -191,5 +195,66 @@ class Message {
       verificationKeys,
       date: date,
     );
+  }
+
+  /// Encrypt the message either with public keys, passwords, or both at once.
+  /// Return new message with encrypted content.
+  Message encrypt(
+    final List<PublicKey> encryptionKeys, {
+    final List<String> passwords = const [],
+    final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
+  }) {
+    if (encryptionKeys.isEmpty && passwords.isEmpty) {
+      throw ArgumentError('No encryption keys or passwords provided');
+    }
+    final sessionKeyData = Helper.generateEncryptionKey(sessionKeySymmetric);
+    final pkeskPackets = encryptionKeys.map((key) => PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+          key.getEncryptionKeyPacket(),
+          sessionKeyData: sessionKeyData,
+          sessionKeySymmetric: sessionKeySymmetric,
+        ));
+    final skeskPackets = passwords.map((password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
+          password,
+          sessionKeyData: sessionKeyData,
+          sessionKeySymmetric: sessionKeySymmetric,
+        ));
+    final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+      sessionKeyData,
+      packetList,
+      symmetric: sessionKeySymmetric,
+    );
+
+    return Message(PacketList([
+      ...pkeskPackets,
+      ...skeskPackets,
+      seip,
+    ]));
+  }
+
+  /// Decrypt the message. Either a private key, or a password must be specified.
+  /// Return new message with decrypted content.
+  Message decrypt(
+    final List<PrivateKey> decryptionKeys, {
+    final List<String> passwords = const [],
+  }) {
+    if (decryptionKeys.isEmpty && passwords.isEmpty) {
+      throw ArgumentError('No decryption keys or passwords provided');
+    }
+
+    final encryptedPackets = packetList.filterByTags([
+      PacketTag.symEncryptedData,
+      PacketTag.symEncryptedIntegrityProtectedData,
+    ]);
+    if (encryptedPackets.isEmpty) {
+      throw StateError('No encrypted data found');
+    }
+
+    if (decryptionKeys.isNotEmpty) {
+      final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
+    } else if (passwords.isNotEmpty) {
+      final skeskPackets = packetList.whereType<SymEncryptedSessionKeyPacket>();
+    }
+
+    return Message(PacketList([]));
   }
 }

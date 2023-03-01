@@ -156,14 +156,6 @@ class PrivateKey extends Key {
     );
   }
 
-  @override
-  SecretKeyPacket getSigningKeyPacket({
-    final String keyID = '',
-    final DateTime? date,
-  }) {
-    return super.getSigningKeyPacket(keyID: keyID, date: date) as SecretKeyPacket;
-  }
-
   /// Lock a private key with the given passphrase.
   /// This method does not change the original key.
   PrivateKey encrypt(

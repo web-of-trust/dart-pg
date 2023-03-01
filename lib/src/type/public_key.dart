@@ -49,12 +49,4 @@ class PublicKey extends Key {
 
   @override
   String armor() => Armor.encode(ArmorType.publicKey, toPacketList().packetEncode());
-
-  @override
-  PublicKeyPacket getSigningKeyPacket({
-    final String keyID = '',
-    final DateTime? date,
-  }) {
-    return super.getSigningKeyPacket(keyID: keyID, date: date) as PublicKeyPacket;
-  }
 }
