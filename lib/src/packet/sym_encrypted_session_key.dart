@@ -94,11 +94,11 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  SymEncryptedSessionKeyPacket decrypt(final String passphrase) {
+  SymEncryptedSessionKeyPacket decrypt(final String password) {
     if (isDecrypted) {
       return this;
     } else {
-      final key = s2k.produceKey(passphrase, symmetric);
+      final key = s2k.produceKey(password, symmetric);
       final cipher = BufferedCipher(symmetric.cipherEngine)..init(false, KeyParameter(key));
       final decrypted = cipher.process(encrypted);
       final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == decrypted[0]);

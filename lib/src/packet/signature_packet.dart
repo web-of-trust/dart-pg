@@ -226,6 +226,7 @@ class SignaturePacket extends ContainedPacket {
 
   factory SignaturePacket.createSelfCertificate(
     final SecretKeyPacket signKey, {
+    final HashAlgorithm? preferredHash,
     final UserIDPacket? userID,
     final UserAttributePacket? userAttribute,
     final int keyExpirationTime = 0,
@@ -262,6 +263,7 @@ class SignaturePacket extends ContainedPacket {
           SupportFeature.modificationDetection.value,
         ])),
       ],
+      preferredHash: preferredHash,
       keyExpirationTime: keyExpirationTime,
       date: date,
     );
@@ -270,6 +272,7 @@ class SignaturePacket extends ContainedPacket {
   factory SignaturePacket.createKeyBinding(
     final SecretKeyPacket signKey,
     final KeyPacket bindKey, {
+    final HashAlgorithm? preferredHash,
     final int keyExpirationTime = 0,
     final DateTime? date,
   }) {
@@ -280,6 +283,7 @@ class SignaturePacket extends ContainedPacket {
         ...signKey.writeForSign(),
         ...bindKey.writeForSign(),
       ]),
+      preferredHash: preferredHash,
       keyExpirationTime: keyExpirationTime,
       date: date,
     );
@@ -288,6 +292,7 @@ class SignaturePacket extends ContainedPacket {
   factory SignaturePacket.createSubkeyBinding(
     final SecretKeyPacket signKey,
     final SecretSubkeyPacket subkey, {
+    final HashAlgorithm? preferredHash,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,
     final DateTime? date,
@@ -316,7 +321,7 @@ class SignaturePacket extends ContainedPacket {
         ...subkey.writeForSign(),
       ]),
       subpackets: subpackets,
-      preferredHash: getPreferredHash(subkey),
+      preferredHash: preferredHash ?? getPreferredHash(subkey),
       keyExpirationTime: keyExpirationTime,
       date: date,
     );
@@ -324,6 +329,7 @@ class SignaturePacket extends ContainedPacket {
 
   factory SignaturePacket.createKeyRevocation(
     final SecretKeyPacket signKey, {
+    final HashAlgorithm? preferredHash,
     RevocationReasonTag reason = RevocationReasonTag.noReason,
     String description = '',
     final DateTime? date,
@@ -334,6 +340,7 @@ class SignaturePacket extends ContainedPacket {
       Uint8List.fromList([
         ...signKey.writeForSign(),
       ]),
+      preferredHash: preferredHash,
       subpackets: [RevocationReason.fromRevocation(reason, description)],
       date: date,
     );
@@ -342,6 +349,7 @@ class SignaturePacket extends ContainedPacket {
   factory SignaturePacket.createLiteralData(
     final SecretKeyPacket signKey,
     final LiteralDataPacket literalData, {
+    final HashAlgorithm? preferredHash,
     final DateTime? date,
   }) {
     final SignatureType signatureType;
@@ -357,6 +365,7 @@ class SignaturePacket extends ContainedPacket {
       signKey,
       signatureType,
       literalData.writeForSign(),
+      preferredHash: preferredHash,
       date: date,
     );
   }

@@ -19,4 +19,15 @@ class KeyID {
 
   @override
   String toString() => keyID;
+
+  @override
+  bool operator ==(other) {
+    if (other is! KeyID) return false;
+    return (other.id.equals(id));
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode;
+  }
 }

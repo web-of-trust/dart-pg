@@ -3,6 +3,7 @@
 // file that was distributed with this source code.
 
 import '../enums.dart';
+import '../openpgp.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/key_params.dart';
 import '../packet/key_packet.dart';
@@ -174,6 +175,27 @@ abstract class Key {
     return keyPacket.publicKey;
   }
 
+  SecretKeyPacket getDecryptionKeyPacket({
+    final String keyID = '',
+    final DateTime? date,
+  }) {
+    if (!verifyPrimaryKey(date: date)) {
+      throw StateError('Primary key is invalid');
+    }
+    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
+    for (final subkey in subkeys) {
+      if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
+        if (subkey.isEncryptionKey && subkey.verify(keyPacket, date: date)) {
+          return subkey.keyPacket as SecretKeyPacket;
+        }
+      }
+    }
+    if (isEncryptionKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+      throw StateError('Could not find valid decryption key packet.');
+    }
+    return keyPacket as SecretKeyPacket;
+  }
+
   User getPrimaryUser({
     final String userID = '',
     final DateTime? date,
@@ -220,6 +242,63 @@ abstract class Key {
       }
     }
     return false;
+  }
+
+  HashAlgorithm getPreferredHash({
+    final String userID = '',
+    final DateTime? date,
+  }) {
+    final keyPacket = getSigningKeyPacket(date: date);
+    switch (keyPacket.algorithm) {
+      case KeyAlgorithm.ecdh:
+      case KeyAlgorithm.ecdsa:
+      case KeyAlgorithm.eddsa:
+        final oid = (keyPacket.publicParams as ECPublicParams).oid;
+        final curve = CurveInfo.values.firstWhere(
+          (info) => info.identifierString == oid.objectIdentifierAsString,
+          orElse: () => OpenPGP.preferredCurve,
+        );
+        return curve.hashAlgorithm;
+      default:
+        try {
+          final user = getPrimaryUser(userID: userID, date: date);
+          for (final cert in user.selfCertifications) {
+            if (cert.preferredHashAlgorithms != null && cert.preferredHashAlgorithms!.preferences.isNotEmpty) {
+              return cert.preferredHashAlgorithms!.preferences[0];
+            }
+          }
+        } catch (_) {}
+        return OpenPGP.preferredHash;
+    }
+  }
+
+  SymmetricAlgorithm getPreferredSymmetric({
+    final String userID = '',
+    final DateTime? date,
+  }) {
+    final keyPacket = getEncryptionKeyPacket(date: date);
+    switch (keyPacket.algorithm) {
+      case KeyAlgorithm.ecdh:
+      case KeyAlgorithm.ecdsa:
+      case KeyAlgorithm.eddsa:
+        final oid = (keyPacket.publicParams as ECPublicParams).oid;
+        final curve = CurveInfo.values.firstWhere(
+          (info) => info.identifierString == oid.objectIdentifierAsString,
+          orElse: () => OpenPGP.preferredCurve,
+        );
+        return curve.symmetricAlgorithm;
+      default:
+        try {
+          final user = getPrimaryUser(userID: userID, date: date);
+          for (final cert in user.selfCertifications) {
+            if (cert.preferredSymmetricAlgorithms != null &&
+                cert.preferredSymmetricAlgorithms!.preferences.isNotEmpty) {
+              return cert.preferredSymmetricAlgorithms!.preferences[0];
+            }
+          }
+        } catch (_) {}
+        return OpenPGP.preferredSymmetric;
+    }
   }
 
   PacketList toPacketList() => PacketList([

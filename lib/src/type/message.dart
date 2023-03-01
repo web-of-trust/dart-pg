@@ -10,11 +10,13 @@ import '../helpers.dart';
 import '../openpgp.dart';
 import '../packet/contained_packet.dart';
 import '../packet/key/key_id.dart';
+import '../packet/key/session_key.dart';
 import '../packet/literal_data.dart';
 import '../packet/one_pass_signature.dart';
 import '../packet/packet_list.dart';
 import '../packet/public_key_encrypted_session_key.dart';
 import '../packet/signature_packet.dart';
+import '../packet/sym_encrypted_data.dart';
 import '../packet/sym_encrypted_integrity_protected_data.dart';
 import '../packet/sym_encrypted_session_key.dart';
 import 'key.dart';
@@ -208,6 +210,7 @@ class Message {
       throw ArgumentError('No encryption keys or passwords provided');
     }
     final sessionKeyData = Helper.generateEncryptionKey(sessionKeySymmetric);
+
     final pkeskPackets = encryptionKeys.map((key) => PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
           key.getEncryptionKeyPacket(),
           sessionKeyData: sessionKeyData,
@@ -249,12 +252,65 @@ class Message {
       throw StateError('No encrypted data found');
     }
 
+    final sessionKeys = _decryptSessionKeys(decryptionKeys, passwords: passwords);
+    final encryptedPacket = encryptedPackets[0];
+    if (encryptedPacket is SymEncryptedIntegrityProtectedDataPacket) {
+      for (var sessionKey in sessionKeys) {
+        try {
+          final packets = encryptedPacket.decrypt(sessionKey.key, symmetric: sessionKey.symmetric).packets;
+          if (packets != null) {
+            return Message(packets);
+          }
+        } catch (_) {}
+      }
+    } else if (encryptedPacket is SymEncryptedDataPacket) {
+      for (var sessionKey in sessionKeys) {
+        try {
+          final packets = encryptedPacket.decrypt(sessionKey.key, symmetric: sessionKey.symmetric).packets;
+          if (packets != null) {
+            return Message(packets);
+          }
+        } catch (_) {}
+      }
+    }
+    throw StateError('Decryption failed');
+  }
+
+  List<SessionKey> _decryptSessionKeys(
+    final List<PrivateKey> decryptionKeys, {
+    final List<String> passwords = const [],
+  }) {
+    final sessionKeys = <SessionKey>[];
     if (decryptionKeys.isNotEmpty) {
       final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
+      for (final pkesk in pkeskPackets) {
+        for (final key in decryptionKeys) {
+          if (key.keyID == pkesk.publicKeyID) {
+            try {
+              final sessionKey = pkesk.decrypt(key.getDecryptionKeyPacket()).sessionKey;
+              if (sessionKey != null) {
+                sessionKeys.add(sessionKey);
+              }
+            } catch (_) {}
+          }
+        }
+      }
     } else if (passwords.isNotEmpty) {
       final skeskPackets = packetList.whereType<SymEncryptedSessionKeyPacket>();
+      for (final skesk in skeskPackets) {
+        for (final password in passwords) {
+          try {
+            final sessionKey = skesk.decrypt(password).sessionKey;
+            if (sessionKey != null) {
+              sessionKeys.add(sessionKey);
+            }
+          } catch (_) {}
+        }
+      }
     }
-
-    return Message(PacketList([]));
+    if (sessionKeys.isEmpty) {
+      throw StateError('Session key decryption failed.');
+    }
+    return sessionKeys;
   }
 }
