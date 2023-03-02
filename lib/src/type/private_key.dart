@@ -2,10 +2,13 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:developer';
+
 import '../armor/armor.dart';
 import '../enums.dart';
 import '../openpgp.dart';
 import '../packet/contained_packet.dart';
+import '../packet/key/key_params.dart';
 import '../packet/packet_list.dart';
 import '../packet/key_packet.dart';
 import '../packet/signature_packet.dart';
@@ -142,6 +145,27 @@ class PrivateKey extends Key {
   @override
   String armor() => Armor.encode(ArmorType.privateKey, toPacketList().packetEncode());
 
+  SecretKeyPacket getSigningKeyPacket({
+    final String keyID = '',
+    final DateTime? date,
+  }) {
+    if (!verifyPrimaryKey(date: date)) {
+      throw StateError('Primary key is invalid');
+    }
+    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
+    for (final subkey in subkeys) {
+      if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
+        if (subkey.isSigningKey && subkey.verify(keyPacket, date: date)) {
+          return subkey.keyPacket as SecretKeyPacket;
+        }
+      }
+    }
+    if (!isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+      throw StateError('Could not find valid signing key packet.');
+    }
+    return keyPacket;
+  }
+
   SecretKeyPacket getDecryptionKeyPacket({
     final String keyID = '',
     final DateTime? date,
@@ -161,6 +185,36 @@ class PrivateKey extends Key {
       throw StateError('Could not find valid decryption key packet.');
     }
     return keyPacket;
+  }
+
+  HashAlgorithm getPreferredHash({
+    final String userID = '',
+    final DateTime? date,
+  }) {
+    final keyPacket = getSigningKeyPacket(date: date);
+    switch (keyPacket.algorithm) {
+      case KeyAlgorithm.ecdh:
+      case KeyAlgorithm.ecdsa:
+      case KeyAlgorithm.eddsa:
+        final oid = (keyPacket.publicParams as ECPublicParams).oid;
+        final curve = CurveInfo.values.firstWhere(
+          (info) => info.identifierString == oid.objectIdentifierAsString,
+          orElse: () => OpenPGP.preferredCurve,
+        );
+        return curve.hashAlgorithm;
+      default:
+        try {
+          final user = getPrimaryUser(userID: userID, date: date);
+          for (final cert in user.selfCertifications) {
+            if (cert.preferredHashAlgorithms != null && cert.preferredHashAlgorithms!.preferences.isNotEmpty) {
+              return cert.preferredHashAlgorithms!.preferences[0];
+            }
+          }
+        } catch (e) {
+          log(e.toString());
+        }
+        return OpenPGP.preferredHash;
+    }
   }
 
   /// Creats a revocation certificate.

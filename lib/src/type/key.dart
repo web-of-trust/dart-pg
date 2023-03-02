@@ -2,10 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'dart:developer';
-
 import '../enums.dart';
-import '../openpgp.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/key_params.dart';
 import '../packet/key_packet.dart';
@@ -56,55 +53,61 @@ abstract class Key {
   PublicKey get toPublic;
 
   bool get isSigningKey {
-    bool value;
+    if (keyPacket is PublicKeyPacket) {
+      return false;
+    }
+    bool isSigning;
     switch (keyPacket.algorithm) {
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.elgamal:
       case KeyAlgorithm.ecdh:
       case KeyAlgorithm.diffieHellman:
       case KeyAlgorithm.aedh:
-        value = false;
+        isSigning = false;
         break;
       default:
-        value = true;
+        isSigning = true;
         for (final user in users) {
           for (var signature in user.selfCertifications) {
             if (signature.keyFlags == null) {
               continue;
             } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
-              value = false;
+              isSigning = false;
               break;
             }
           }
         }
     }
-    return value;
+    return isSigning;
   }
 
   bool get isEncryptionKey {
-    bool value;
+    if (keyPacket is SecretKeyPacket) {
+      return false;
+    }
+    bool isEncryption;
     switch (keyPacket.algorithm) {
       case KeyAlgorithm.rsaSign:
       case KeyAlgorithm.dsa:
       case KeyAlgorithm.ecdsa:
       case KeyAlgorithm.eddsa:
       case KeyAlgorithm.aedsa:
-        value = false;
+        isEncryption = false;
         break;
       default:
-        value = true;
+        isEncryption = true;
         for (final user in users) {
           for (var signature in user.selfCertifications) {
             if (signature.keyFlags == null) {
               continue;
             } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
-              value = false;
+              isEncryption = false;
               break;
             }
           }
         }
     }
-    return value;
+    return isEncryption;
   }
 
   /// Returns ASCII armored text of key
@@ -135,48 +138,6 @@ abstract class Key {
     return true;
   }
 
-  SecretKeyPacket getSigningKeyPacket({
-    final String keyID = '',
-    final DateTime? date,
-  }) {
-    if (!verifyPrimaryKey(date: date)) {
-      throw StateError('Primary key is invalid');
-    }
-    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
-    for (final subkey in subkeys) {
-      if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (subkey.isSigningKey && subkey.verify(keyPacket, date: date)) {
-          return subkey.keyPacket as SecretKeyPacket;
-        }
-      }
-    }
-    if (!isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
-      throw StateError('Could not find valid signing key packet.');
-    }
-    return keyPacket as SecretKeyPacket;
-  }
-
-  PublicKeyPacket getEncryptionKeyPacket({
-    final String keyID = '',
-    final DateTime? date,
-  }) {
-    if (!verifyPrimaryKey(date: date)) {
-      throw StateError('Primary key is invalid');
-    }
-    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
-    for (final subkey in subkeys) {
-      if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (subkey.isEncryptionKey && subkey.verify(keyPacket, date: date)) {
-          return subkey.keyPacket.publicKey;
-        }
-      }
-    }
-    if (isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
-      throw StateError('Could not find valid encryption key packet.');
-    }
-    return keyPacket.publicKey;
-  }
-
   User getPrimaryUser({
     final String userID = '',
     final DateTime? date,
@@ -191,8 +152,11 @@ abstract class Key {
       }
       final selfCertifications = user.selfCertifications
         ..sort((a, b) => a.creationTime.creationTime.compareTo(b.creationTime.creationTime));
-      if (user.isRevoked(keyPacket,
-          date: date, signature: selfCertifications.isNotEmpty ? selfCertifications[0] : null)) {
+      if (user.isRevoked(
+        keyPacket,
+        date: date,
+        signature: selfCertifications.isNotEmpty ? selfCertifications[0] : null,
+      )) {
         continue;
       }
       validUsers.add(user);
@@ -223,67 +187,6 @@ abstract class Key {
       }
     }
     return false;
-  }
-
-  HashAlgorithm getPreferredHash({
-    final String userID = '',
-    final DateTime? date,
-  }) {
-    final keyPacket = getSigningKeyPacket(date: date);
-    switch (keyPacket.algorithm) {
-      case KeyAlgorithm.ecdh:
-      case KeyAlgorithm.ecdsa:
-      case KeyAlgorithm.eddsa:
-        final oid = (keyPacket.publicParams as ECPublicParams).oid;
-        final curve = CurveInfo.values.firstWhere(
-          (info) => info.identifierString == oid.objectIdentifierAsString,
-          orElse: () => OpenPGP.preferredCurve,
-        );
-        return curve.hashAlgorithm;
-      default:
-        try {
-          final user = getPrimaryUser(userID: userID, date: date);
-          for (final cert in user.selfCertifications) {
-            if (cert.preferredHashAlgorithms != null && cert.preferredHashAlgorithms!.preferences.isNotEmpty) {
-              return cert.preferredHashAlgorithms!.preferences[0];
-            }
-          }
-        } catch (e) {
-          log(e.toString());
-        }
-        return OpenPGP.preferredHash;
-    }
-  }
-
-  SymmetricAlgorithm getPreferredSymmetric({
-    final String userID = '',
-    final DateTime? date,
-  }) {
-    final keyPacket = getEncryptionKeyPacket(date: date);
-    switch (keyPacket.algorithm) {
-      case KeyAlgorithm.ecdh:
-      case KeyAlgorithm.ecdsa:
-      case KeyAlgorithm.eddsa:
-        final oid = (keyPacket.publicParams as ECPublicParams).oid;
-        final curve = CurveInfo.values.firstWhere(
-          (info) => info.identifierString == oid.objectIdentifierAsString,
-          orElse: () => OpenPGP.preferredCurve,
-        );
-        return curve.symmetricAlgorithm;
-      default:
-        try {
-          final user = getPrimaryUser(userID: userID, date: date);
-          for (final cert in user.selfCertifications) {
-            if (cert.preferredSymmetricAlgorithms != null &&
-                cert.preferredSymmetricAlgorithms!.preferences.isNotEmpty) {
-              return cert.preferredSymmetricAlgorithms!.preferences[0];
-            }
-          }
-        } catch (e) {
-          log(e.toString());
-        }
-        return OpenPGP.preferredSymmetric;
-    }
   }
 
   PacketList toPacketList() => PacketList([
