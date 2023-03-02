@@ -18,8 +18,8 @@ void main() {
       final verifiedMessage = signedMessage.verify([verificationKey]);
       final signature = signedMessage.signature;
 
-      expect(signedMessage.verifications.isEmpty, true);
-      expect(verifiedMessage.verifications.isNotEmpty, true);
+      expect(signedMessage.verifications.isEmpty, isTrue);
+      expect(verifiedMessage.verifications.isNotEmpty, isTrue);
 
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.keyID);
@@ -37,7 +37,7 @@ void main() {
       final cleartextMessage = CleartextMessage(text);
       final verifiedMessage = cleartextMessage.verifySignature(signature, [verificationKey]);
 
-      expect(verifiedMessage.verifications.isNotEmpty, true);
+      expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.keyID);
         expect(verification.verified, isTrue);
@@ -61,8 +61,8 @@ void main() {
       final signaturePackets = signedMessage.signaturePackets;
 
       expect(signedMessage.signingKeyIDs.elementAt(0).keyID, signingKey.keyID.keyID);
-      expect(signedMessage.verifications.isEmpty, true);
-      expect(verifiedMessage.verifications.isNotEmpty, true);
+      expect(signedMessage.verifications.isEmpty, isTrue);
+      expect(verifiedMessage.verifications.isNotEmpty, isTrue);
 
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.keyID);
@@ -80,7 +80,7 @@ void main() {
       final signature = message.signDetached([signingKey]);
       final verifiedMessage = message.verifySignature(signature, [verificationKey]);
 
-      expect(verifiedMessage.verifications.isNotEmpty, true);
+      expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.keyID);
         expect(verification.verified, isTrue);
