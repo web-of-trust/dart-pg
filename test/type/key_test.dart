@@ -175,7 +175,6 @@ void main() {
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
       expect(subkey.verify(privateKey.keyPacket), isTrue);
       expect(subkey.keyStrength, 256);
-      expect(subkey.isEncryptionKey, true);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.prime256v1.identifierString);
@@ -210,7 +209,6 @@ void main() {
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
       expect(subkey.verify(privateKey.keyPacket), isTrue);
       expect(subkey.keyStrength, 256);
-      expect(subkey.isEncryptionKey, true);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.secp256k1.identifierString);
@@ -243,7 +241,6 @@ void main() {
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
       expect(subkey.verify(privateKey.keyPacket), isTrue);
       expect(subkey.keyStrength, 384);
-      expect(subkey.isEncryptionKey, true);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.secp384r1.identifierString);
@@ -276,7 +273,6 @@ void main() {
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
       expect(subkey.verify(privateKey.keyPacket), isTrue);
       expect(subkey.keyStrength, 521);
-      expect(subkey.isEncryptionKey, true);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.secp521r1.identifierString);
@@ -309,7 +305,6 @@ void main() {
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
       expect(subkey.verify(privateKey.keyPacket), isTrue);
       expect(subkey.keyStrength, 256);
-      expect(subkey.isEncryptionKey, true);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp256r1.identifierString);
@@ -342,7 +337,6 @@ void main() {
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
       expect(subkey.verify(privateKey.keyPacket), isTrue);
       expect(subkey.keyStrength, 384);
-      expect(subkey.isEncryptionKey, true);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp384r1.identifierString);
@@ -375,7 +369,6 @@ void main() {
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
       expect(subkey.verify(privateKey.keyPacket), isTrue);
       expect(subkey.keyStrength, 512);
-      expect(subkey.isEncryptionKey, true);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp512r1.identifierString);

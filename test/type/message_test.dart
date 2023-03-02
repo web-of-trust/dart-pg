@@ -15,9 +15,19 @@ void main() {
     test('atached test', () {
       final signedMessage = SignedMessage.signCleartext(text, [signingKey]);
       final verifiedMessage = signedMessage.verify([verificationKey]);
-      for (var verification in verifiedMessage.verifications) {
+      final signature = signedMessage.signature;
+
+      expect(signedMessage.verifications.isEmpty, true);
+      expect(verifiedMessage.verifications.isNotEmpty, true);
+
+      for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.keyID);
         expect(verification.verified, isTrue);
+
+        expect(
+          signature.packets.elementAt(0).signatureData,
+          equals(verification.signature.packets.elementAt(0).signatureData),
+        );
       }
     });
 
@@ -25,10 +35,19 @@ void main() {
       final signature = SignedMessage.signCleartext(text, [signingKey]).signature;
       final cleartextMessage = CleartextMessage(text);
       final verifiedMessage = cleartextMessage.verifySignature(signature, [verificationKey]);
-      for (var verification in verifiedMessage.verifications) {
+
+      expect(verifiedMessage.verifications.isNotEmpty, true);
+      for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.keyID);
         expect(verification.verified, isTrue);
+
+        expect(
+          signature.packets.elementAt(0).signatureData,
+          equals(verification.signature.packets.elementAt(0).signatureData),
+        );
       }
     });
   });
+
+  group('Message encryption', () {});
 }

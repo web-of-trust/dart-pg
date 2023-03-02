@@ -49,4 +49,25 @@ class PublicKey extends Key {
 
   @override
   String armor() => Armor.encode(ArmorType.publicKey, toPacketList().packetEncode());
+
+  PublicKeyPacket getVerificationKeyPacket({
+    final String keyID = '',
+    final DateTime? date,
+  }) {
+    if (!verifyPrimaryKey(date: date)) {
+      throw StateError('Primary key is invalid');
+    }
+    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
+    for (final subkey in subkeys) {
+      if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
+        if (!subkey.isEncryptionKey && subkey.verify(keyPacket, date: date)) {
+          return subkey.keyPacket as PublicKeyPacket;
+        }
+      }
+    }
+    if (isEncryptionKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+      throw StateError('Could not find valid verification key packet.');
+    }
+    return keyPacket;
+  }
 }

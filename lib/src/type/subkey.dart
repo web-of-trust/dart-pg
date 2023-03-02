@@ -48,51 +48,57 @@ class Subkey {
   }
 
   bool get isSigningKey {
-    bool value;
+    if (keyPacket is PublicKeyPacket) {
+      return false;
+    }
+    bool isSigning;
     switch (keyPacket.algorithm) {
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.elgamal:
       case KeyAlgorithm.ecdh:
       case KeyAlgorithm.diffieHellman:
       case KeyAlgorithm.aedh:
-        value = false;
+        isSigning = false;
         break;
       default:
-        value = true;
+        isSigning = true;
         for (final signature in bindingSignatures) {
           if (signature.keyFlags == null) {
             continue;
           } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
-            value = false;
+            isSigning = false;
             break;
           }
         }
     }
-    return value;
+    return isSigning;
   }
 
   bool get isEncryptionKey {
-    bool value;
+    if (keyPacket is SecretKeyPacket) {
+      return false;
+    }
+    bool isEncryption;
     switch (keyPacket.algorithm) {
       case KeyAlgorithm.rsaSign:
       case KeyAlgorithm.dsa:
       case KeyAlgorithm.ecdsa:
       case KeyAlgorithm.eddsa:
       case KeyAlgorithm.aedsa:
-        value = false;
+        isEncryption = false;
         break;
       default:
-        value = true;
+        isEncryption = true;
         for (final signature in bindingSignatures) {
           if (signature.keyFlags == null) {
             continue;
           } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
-            value = false;
+            isEncryption = false;
             break;
           }
         }
     }
-    return value;
+    return isEncryption;
   }
 
   bool verify(

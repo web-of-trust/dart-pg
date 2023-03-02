@@ -177,27 +177,6 @@ abstract class Key {
     return keyPacket.publicKey;
   }
 
-  SecretKeyPacket getDecryptionKeyPacket({
-    final String keyID = '',
-    final DateTime? date,
-  }) {
-    if (!verifyPrimaryKey(date: date)) {
-      throw StateError('Primary key is invalid');
-    }
-    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
-    for (final subkey in subkeys) {
-      if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (subkey.isEncryptionKey && subkey.verify(keyPacket, date: date)) {
-          return subkey.keyPacket as SecretKeyPacket;
-        }
-      }
-    }
-    if (isEncryptionKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
-      throw StateError('Could not find valid decryption key packet.');
-    }
-    return keyPacket as SecretKeyPacket;
-  }
-
   User getPrimaryUser({
     final String userID = '',
     final DateTime? date,

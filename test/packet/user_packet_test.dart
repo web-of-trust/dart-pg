@@ -12,7 +12,7 @@ void main() {
   group('User packet', (() {
     test('user id test', (() {
       final name = faker.person.name();
-      final email = faker.internet.email();
+      final email = faker.internet.email().replaceAll("'", '');
       final comment = faker.lorem.words(3).join(' ');
 
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));

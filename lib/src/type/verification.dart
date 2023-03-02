@@ -33,7 +33,7 @@ class Verification {
     for (var signaturePacket in signaturePackets) {
       for (final key in verificationKeys) {
         try {
-          final keyPacket = key.getSigningKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
+          final keyPacket = key.getVerificationKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
           verifications.add(Verification(
             keyPacket.keyID.keyID,
             Signature(PacketList([signaturePacket])),

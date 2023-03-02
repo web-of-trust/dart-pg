@@ -17,8 +17,8 @@ void main() {
   group('symmetrically', () {
     final literalData = LiteralDataPacket.fromText(faker.randomGenerator.string(1000));
     final packets = PacketList([literalData]);
-    final key = Helper.generateEncryptionKey();
-    final passphrase = 'hello';
+    final key = Helper.generateEncryptionKey(); // encryption key
+    final kek = faker.randomGenerator.string(10); // key encryption key
 
     test('encrypted data test', () {
       final encrypted = SymEncryptedDataPacket.encryptPackets(key, packets);
@@ -36,8 +36,8 @@ void main() {
       expect(ldPacket.toPacketData(), equals(literalData.toPacketData()));
     });
 
-    test('passphrase protected session key test', () {
-      final skesk = SymEncryptedSessionKeyPacket.encryptSessionKey(passphrase);
+    test('password protected session key test', () {
+      final skesk = SymEncryptedSessionKeyPacket.encryptSessionKey(kek);
       final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         skesk.sessionKey!.key,
         packets,
@@ -47,7 +47,7 @@ void main() {
       final encryptedList = PacketList([skesk, seip]);
       final packetList = PacketList.packetDecode(encryptedList.packetEncode());
 
-      final decryptedSkesk = packetList.whereType<SymEncryptedSessionKeyPacket>().elementAt(0).decrypt(passphrase);
+      final decryptedSkesk = packetList.whereType<SymEncryptedSessionKeyPacket>().elementAt(0).decrypt(kek);
       expect(skesk.sessionKey!.symmetric, equals(decryptedSkesk.sessionKey!.symmetric));
       expect(skesk.sessionKey!.key, equals(decryptedSkesk.sessionKey!.key));
 
