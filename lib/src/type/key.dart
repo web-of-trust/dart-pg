@@ -2,6 +2,8 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:developer';
+
 import '../enums.dart';
 import '../openpgp.dart';
 import '../packet/key/key_id.dart';
@@ -267,7 +269,9 @@ abstract class Key {
               return cert.preferredHashAlgorithms!.preferences[0];
             }
           }
-        } catch (_) {}
+        } catch (e) {
+          log(e.toString());
+        }
         return OpenPGP.preferredHash;
     }
   }
@@ -296,7 +300,9 @@ abstract class Key {
               return cert.preferredSymmetricAlgorithms!.preferences[0];
             }
           }
-        } catch (_) {}
+        } catch (e) {
+          log(e.toString());
+        }
         return OpenPGP.preferredSymmetric;
     }
   }

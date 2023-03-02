@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:developer';
 import 'dart:typed_data';
 
 import '../armor/armor.dart';
@@ -291,7 +292,9 @@ class Message {
           if (packets != null) {
             return Message(packets).unwrapCompressed();
           }
-        } catch (_) {}
+        } catch (e) {
+          log(e.toString());
+        }
       }
     } else if (encryptedPacket is SymEncryptedDataPacket) {
       for (var sessionKey in sessionKeys) {
@@ -300,7 +303,9 @@ class Message {
           if (packets != null) {
             return Message(packets).unwrapCompressed();
           }
-        } catch (_) {}
+        } catch (e) {
+          log(e.toString());
+        }
       }
     }
     throw StateError('Decryption failed');

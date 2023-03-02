@@ -2,6 +2,8 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:developer';
+
 import '../packet/literal_data.dart';
 import '../packet/packet_list.dart';
 import '../packet/signature_packet.dart';
@@ -41,7 +43,9 @@ class Verification {
               date: date,
             ),
           ));
-        } catch (_) {}
+        } catch (e) {
+          log(e.toString());
+        }
       }
     }
     return verifications;
