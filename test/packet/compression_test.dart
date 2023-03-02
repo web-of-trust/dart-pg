@@ -36,5 +36,15 @@ void main() {
       expect(compressedPacket.compressed, equals(decompressedPacket.compressed));
       expect(compressedPacket.packets[0].toPacketData(), equals(literalData.toPacketData()));
     });
+
+    test('bzip2 test', () {
+      expect(
+        () => CompressedDataPacket.fromPacketList(
+          PacketList([literalData]),
+          algorithm: CompressionAlgorithm.bzip2,
+        ),
+        throwsUnsupportedError,
+      );
+    });
   });
 }
