@@ -104,6 +104,11 @@ class Message {
     return packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().map((packet) => packet.publicKeyID);
   }
 
+  Iterable<SignaturePacket> get signaturePackets {
+    final packetList = unwrapCompressed().packetList;
+    return packetList.whereType<SignaturePacket>();
+  }
+
   /// Returns ASCII armored text of message
   String armor() => Armor.encode(ArmorType.message, packetList.packetEncode());
 
