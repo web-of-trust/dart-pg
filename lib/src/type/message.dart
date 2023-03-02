@@ -9,7 +9,6 @@ import '../enums.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
 import '../packet/compressed_data.dart';
-import '../packet/contained_packet.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/session_key.dart';
 import '../packet/literal_data.dart';
@@ -82,16 +81,15 @@ class Message {
         )
       ]));
 
-  /// Returns ASCII armored text of message
-  String armor() => Armor.encode(ArmorType.message, packetList.packetEncode());
-
-  /// Append signature to unencrypted message
-  Message appendSignature(SignaturePacket signature) {
-    return Message(PacketList([...packetList, signature]));
+  LiteralDataPacket? get literalData {
+    final packetList = unwrapCompressed().packetList;
+    final packets = packetList.whereType<LiteralDataPacket>();
+    return packets.isNotEmpty ? packets.elementAt(0) : null;
   }
 
   /// Gets the key IDs of the keys that signed the message
   Iterable<KeyID> get signingKeyIDs {
+    final packetList = unwrapCompressed().packetList;
     final onePassSignatures = packetList.whereType<OnePassSignaturePacket>();
     if (onePassSignatures.isNotEmpty) {
       return onePassSignatures.map((packet) => packet.issuerKeyID);
@@ -101,7 +99,16 @@ class Message {
 
   /// Gets the key IDs of the keys to which the session key is encrypted
   Iterable<KeyID> get encryptionKeyIDs {
+    final packetList = unwrapCompressed().packetList;
     return packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().map((packet) => packet.publicKeyID);
+  }
+
+  /// Returns ASCII armored text of message
+  String armor() => Armor.encode(ArmorType.message, packetList.packetEncode());
+
+  /// Append signature to unencrypted message
+  Message appendSignature(SignaturePacket signature) {
+    return Message(PacketList([...unwrapCompressed().packetList, signature]));
   }
 
   /// Sign the message (the literal data packet of the message)

@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:io';
 import 'dart:typed_data';
 
 import '../enums.dart';
@@ -37,18 +38,58 @@ class CompressedDataPacket extends ContainedPacket {
       orElse: () => CompressionAlgorithm.uncompressed,
     );
     final compressed = bytes.sublist(1);
-    return CompressedDataPacket(compressed, PacketList.packetDecode(compressed), algorithm: algorithm);
+    return CompressedDataPacket(
+      compressed,
+      _decompress(compressed, algorithm),
+      algorithm: algorithm,
+    );
   }
 
   factory CompressedDataPacket.fromPacketList(
     final PacketList packets, {
-    CompressionAlgorithm algorithm = OpenPGP.preferredCompression,
+    final CompressionAlgorithm algorithm = OpenPGP.preferredCompression,
   }) {
-    return CompressedDataPacket(packets.packetEncode(), packets, algorithm: algorithm);
+    return CompressedDataPacket(_compress(packets), packets, algorithm: algorithm);
   }
 
   @override
   Uint8List toPacketData() {
     return Uint8List.fromList([algorithm.value, ...compressed]);
+  }
+
+  static Uint8List _compress(
+    final PacketList packets, [
+    final CompressionAlgorithm algorithm = OpenPGP.preferredCompression,
+  ]) {
+    switch (algorithm) {
+      case CompressionAlgorithm.zip:
+        final codec = ZLibCodec(raw: true, level: deflateLevel);
+        return Uint8List.fromList(codec.encode(packets.packetEncode()));
+      case CompressionAlgorithm.zlib:
+        final codec = ZLibCodec(gzip: true, level: deflateLevel);
+        return Uint8List.fromList(codec.encode(packets.packetEncode()));
+      case CompressionAlgorithm.bzip2:
+        throw UnsupportedError('Compression algorithm ${algorithm.name} is unsupported.');
+      default:
+        return packets.packetEncode();
+    }
+  }
+
+  static PacketList _decompress(
+    final Uint8List compressed, [
+    final CompressionAlgorithm algorithm = OpenPGP.preferredCompression,
+  ]) {
+    switch (algorithm) {
+      case CompressionAlgorithm.zip:
+        final codec = ZLibCodec(raw: true, level: deflateLevel);
+        return PacketList.packetDecode(Uint8List.fromList(codec.decode(compressed)));
+      case CompressionAlgorithm.zlib:
+        final codec = ZLibCodec(gzip: true, level: deflateLevel);
+        return PacketList.packetDecode(Uint8List.fromList(codec.decode(compressed)));
+      case CompressionAlgorithm.bzip2:
+        throw UnsupportedError('Compression algorithm ${algorithm.name} is unsupported.');
+      default:
+        return PacketList.packetDecode(compressed);
+    }
   }
 }
