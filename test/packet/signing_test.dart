@@ -75,7 +75,7 @@ void main() {
     });
   });
 
-  group('sign & verify', () {
+  group('signing', () {
     final name = faker.person.name();
     final email = faker.internet.email();
     final comment = faker.lorem.words(3).join(' ');
