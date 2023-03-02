@@ -49,7 +49,7 @@ class CompressedDataPacket extends ContainedPacket {
     final PacketList packets, {
     final CompressionAlgorithm algorithm = OpenPGP.preferredCompression,
   }) {
-    return CompressedDataPacket(_compress(packets), packets, algorithm: algorithm);
+    return CompressedDataPacket(_compress(packets, algorithm), packets, algorithm: algorithm);
   }
 
   @override
@@ -58,9 +58,9 @@ class CompressedDataPacket extends ContainedPacket {
   }
 
   static Uint8List _compress(
-    final PacketList packets, [
-    final CompressionAlgorithm algorithm = OpenPGP.preferredCompression,
-  ]) {
+    final PacketList packets,
+    final CompressionAlgorithm algorithm,
+  ) {
     switch (algorithm) {
       case CompressionAlgorithm.zip:
         final codec = ZLibCodec(raw: true, level: deflateLevel);
@@ -76,9 +76,9 @@ class CompressedDataPacket extends ContainedPacket {
   }
 
   static PacketList _decompress(
-    final Uint8List compressed, [
-    final CompressionAlgorithm algorithm = OpenPGP.preferredCompression,
-  ]) {
+    final Uint8List compressed,
+    final CompressionAlgorithm algorithm,
+  ) {
     switch (algorithm) {
       case CompressionAlgorithm.zip:
         final codec = ZLibCodec(raw: true, level: deflateLevel);

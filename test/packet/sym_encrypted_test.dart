@@ -15,7 +15,7 @@ import '../test_data.dart';
 
 void main() {
   group('symmetrically', () {
-    final literalData = LiteralDataPacket.fromText(faker.randomGenerator.string(100));
+    final literalData = LiteralDataPacket.fromText(faker.randomGenerator.string(1000));
     final packets = PacketList([literalData]);
     final key = Helper.generateEncryptionKey();
     final passphrase = 'hello';
