@@ -63,10 +63,8 @@ class CompressedDataPacket extends ContainedPacket {
   ) {
     switch (algorithm) {
       case CompressionAlgorithm.zip:
-        final codec = ZLibCodec(raw: true, level: deflateLevel);
-        return Uint8List.fromList(codec.encode(packets.packetEncode()));
       case CompressionAlgorithm.zlib:
-        final codec = ZLibCodec(gzip: true, level: deflateLevel);
+        final codec = ZLibCodec(level: deflateLevel, raw: algorithm == CompressionAlgorithm.zip);
         return Uint8List.fromList(codec.encode(packets.packetEncode()));
       case CompressionAlgorithm.bzip2:
         throw UnsupportedError('Compression algorithm ${algorithm.name} is unsupported.');
@@ -81,10 +79,8 @@ class CompressedDataPacket extends ContainedPacket {
   ) {
     switch (algorithm) {
       case CompressionAlgorithm.zip:
-        final codec = ZLibCodec(raw: true, level: deflateLevel);
-        return PacketList.packetDecode(Uint8List.fromList(codec.decode(compressed)));
       case CompressionAlgorithm.zlib:
-        final codec = ZLibCodec(gzip: true, level: deflateLevel);
+        final codec = ZLibCodec(level: deflateLevel, raw: algorithm == CompressionAlgorithm.zip);
         return PacketList.packetDecode(Uint8List.fromList(codec.decode(compressed)));
       case CompressionAlgorithm.bzip2:
         throw UnsupportedError('Compression algorithm ${algorithm.name} is unsupported.');
