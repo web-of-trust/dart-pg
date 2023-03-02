@@ -8,6 +8,7 @@ import '../armor/armor.dart';
 import '../enums.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
+import '../packet/compressed_data.dart';
 import '../packet/contained_packet.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/session_key.dart';
@@ -21,6 +22,7 @@ import '../packet/sym_encrypted_integrity_protected_data.dart';
 import '../packet/sym_encrypted_session_key.dart';
 import 'key.dart';
 import 'signature.dart';
+import 'signed_message.dart';
 import 'verification.dart';
 
 /// Class that represents an OpenPGP message.
@@ -40,6 +42,24 @@ class Message {
       throw ArgumentError('Armored text not of message type');
     }
     return Message(PacketList.packetDecode(armor.data));
+  }
+
+  factory Message.fromSignedMessage(SignedMessage signedMessage) {
+    final signatures = signedMessage.signature.packets.toList(growable: false);
+    return Message(PacketList([
+      LiteralDataPacket.fromText(signedMessage.text),
+      ...signatures.map((packet) {
+        final index = signatures.indexOf(packet);
+        return OnePassSignaturePacket(
+          packet.signatureType,
+          packet.hashAlgorithm,
+          packet.keyAlgorithm,
+          KeyID(packet.issuerKeyID.data),
+          (index == signatures.length - 1) ? 1 : 0,
+        );
+      }),
+      ...signedMessage.signature.packets
+    ]));
   }
 
   factory Message.createTextMessage(
@@ -87,7 +107,6 @@ class Message {
   /// Sign the message (the literal data packet of the message)
   Message sign(
     final List<PrivateKey> signingKeys, {
-    final Signature? signature,
     final DateTime? date,
   }) {
     if (signingKeys.isEmpty) {
@@ -96,19 +115,6 @@ class Message {
     final literalDataPackets = packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to sign.');
-    }
-
-    final packets = <ContainedPacket>[];
-    if (signature != null) {
-      packets.addAll(signature.packets.map(
-        (packet) => OnePassSignaturePacket(
-          packet.signatureType,
-          packet.hashAlgorithm,
-          packet.keyAlgorithm,
-          KeyID(packet.issuerKeyID.data),
-          0,
-        ),
-      ));
     }
 
     final literalData = literalDataPackets.elementAt(0);
@@ -121,31 +127,28 @@ class Message {
       default:
         signatureType = SignatureType.binary;
     }
-    packets.addAll(signingKeys.map((key) {
-      final index = signingKeys.indexOf(key);
-      final keyPacket = key.getSigningKeyPacket(date: date);
-      return OnePassSignaturePacket(
-        signatureType,
-        SignaturePacket.getPreferredHash(keyPacket),
-        keyPacket.algorithm,
-        keyPacket.keyID,
-        (index == signingKeys.length - 1) ? 1 : 0,
-      );
-    }));
-    packets.add(literalData);
 
-    packets.addAll(signingKeys.map(
-      (key) => SignaturePacket.createLiteralData(
-        key.getSigningKeyPacket(),
-        literalDataPackets.elementAt(0),
-        date: date,
+    return Message(PacketList([
+      ...signingKeys.map((key) {
+        final index = signingKeys.indexOf(key);
+        final keyPacket = key.getSigningKeyPacket(date: date);
+        return OnePassSignaturePacket(
+          signatureType,
+          SignaturePacket.getPreferredHash(keyPacket),
+          keyPacket.algorithm,
+          keyPacket.keyID,
+          (index == signingKeys.length - 1) ? 1 : 0,
+        );
+      }),
+      literalData,
+      ...signingKeys.map(
+        (key) => SignaturePacket.createLiteralData(
+          key.getSigningKeyPacket(),
+          literalData,
+          date: date,
+        ),
       ),
-    ));
-    if (signature != null) {
-      packets.addAll(signature.packets);
-    }
-
-    return Message(PacketList(packets));
+    ]));
   }
 
   /// Create a detached signature for the message (the literal data packet of the message)
@@ -179,16 +182,17 @@ class Message {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    final literalDataPackets = packetList.whereType<LiteralDataPacket>();
+    final message = unwrapCompressed();
+    final literalDataPackets = message.packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
 
     return Message(
-      packetList,
+      message.packetList,
       Verification.createVerifications(
         literalDataPackets.elementAt(0),
-        packetList.whereType<SignaturePacket>(),
+        message.packetList.whereType<SignaturePacket>(),
         verificationKeys,
         date: date,
       ),
@@ -202,7 +206,8 @@ class Message {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    final literalDataPackets = packetList.whereType<LiteralDataPacket>();
+    final message = unwrapCompressed();
+    final literalDataPackets = message.packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
@@ -219,8 +224,8 @@ class Message {
 
   /// Encrypt the message either with public keys, passwords, or both at once.
   /// Return new message with encrypted content.
-  Message encrypt(
-    final List<PublicKey> encryptionKeys, {
+  Message encrypt({
+    final List<PublicKey> encryptionKeys = const [],
     final List<String> passwords = const [],
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
   }) {
@@ -254,8 +259,8 @@ class Message {
 
   /// Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
   /// Return new message with decrypted content.
-  Message decrypt(
-    final List<PrivateKey> decryptionKeys, {
+  Message decrypt({
+    final List<PrivateKey> decryptionKeys = const [],
     final List<String> passwords = const [],
   }) {
     if (decryptionKeys.isEmpty && passwords.isEmpty) {
@@ -270,14 +275,14 @@ class Message {
       throw StateError('No encrypted data found');
     }
 
-    final sessionKeys = _decryptSessionKeys(decryptionKeys, passwords: passwords);
+    final sessionKeys = _decryptSessionKeys(decryptionKeys: decryptionKeys, passwords: passwords);
     final encryptedPacket = encryptedPackets[0];
     if (encryptedPacket is SymEncryptedIntegrityProtectedDataPacket) {
       for (var sessionKey in sessionKeys) {
         try {
           final packets = encryptedPacket.decrypt(sessionKey.key, symmetric: sessionKey.symmetric).packets;
           if (packets != null) {
-            return Message(packets);
+            return Message(packets).unwrapCompressed();
           }
         } catch (_) {}
       }
@@ -286,7 +291,7 @@ class Message {
         try {
           final packets = encryptedPacket.decrypt(sessionKey.key, symmetric: sessionKey.symmetric).packets;
           if (packets != null) {
-            return Message(packets);
+            return Message(packets).unwrapCompressed();
           }
         } catch (_) {}
       }
@@ -294,8 +299,31 @@ class Message {
     throw StateError('Decryption failed');
   }
 
-  List<SessionKey> _decryptSessionKeys(
-    final List<PrivateKey> decryptionKeys, {
+  /// Compress the message (the literal and -if signed- signature data packets of the message)
+  /// Return new message with compressed content.
+  Message compress([CompressionAlgorithm algorithm = OpenPGP.preferredCompression]) {
+    if (algorithm != CompressionAlgorithm.uncompressed) {
+      return Message(PacketList([
+        CompressedDataPacket.fromPacketList(
+          packetList,
+          algorithm: algorithm,
+        ),
+      ]));
+    }
+    return this;
+  }
+
+  /// Unwrap compressed message
+  Message unwrapCompressed() {
+    final compressedPackets = packetList.whereType<CompressedDataPacket>();
+    if (compressedPackets.isNotEmpty) {
+      return Message(compressedPackets.elementAt(0).packets);
+    }
+    return this;
+  }
+
+  List<SessionKey> _decryptSessionKeys({
+    final List<PrivateKey> decryptionKeys = const [],
     final List<String> passwords = const [],
   }) {
     final sessionKeys = <SessionKey>[];

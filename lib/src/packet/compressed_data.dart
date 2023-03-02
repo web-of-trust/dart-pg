@@ -23,17 +23,28 @@ class CompressedDataPacket extends ContainedPacket {
   final Uint8List compressed;
 
   /// Decompressed packets contained within.
-  final PacketList? packets;
+  final PacketList packets;
 
   CompressedDataPacket(
-    this.compressed, {
+    this.compressed,
+    this.packets, {
     this.algorithm = OpenPGP.preferredCompression,
-    this.packets,
   }) : super(PacketTag.compressedData);
 
   factory CompressedDataPacket.fromPacketData(final Uint8List bytes) {
-    final algorithm = CompressionAlgorithm.values.firstWhere((algo) => algo.value == bytes[0]);
-    return CompressedDataPacket(bytes.sublist(1), algorithm: algorithm);
+    final algorithm = CompressionAlgorithm.values.firstWhere(
+      (algo) => algo.value == bytes[0],
+      orElse: () => CompressionAlgorithm.uncompressed,
+    );
+    final compressed = bytes.sublist(1);
+    return CompressedDataPacket(compressed, PacketList.packetDecode(compressed), algorithm: algorithm);
+  }
+
+  factory CompressedDataPacket.fromPacketList(
+    final PacketList packets, {
+    CompressionAlgorithm algorithm = OpenPGP.preferredCompression,
+  }) {
+    return CompressedDataPacket(packets.packetEncode(), packets, algorithm: algorithm);
   }
 
   @override

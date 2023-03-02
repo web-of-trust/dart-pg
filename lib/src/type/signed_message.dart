@@ -9,6 +9,7 @@ import '../packet/packet_list.dart';
 import '../packet/signature_packet.dart';
 import 'cleartext_message.dart';
 import 'key.dart';
+import 'message.dart';
 import 'signature.dart';
 import 'verification.dart';
 
@@ -84,5 +85,9 @@ class SignedMessage extends CleartextMessage {
         date: date,
       ),
     );
+  }
+
+  Message toMessage() {
+    return Message.fromSignedMessage(this);
   }
 }

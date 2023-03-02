@@ -163,36 +163,36 @@ class OpenPGP {
   /// At least one of `encryptionKeys`, `passwords`must be specified.
   /// If signing keys are specified, those will be used to sign the message.
   static Future<Message> encrypt(
-    final Message message,
-    final List<PublicKey> encryptionKeys, {
+    final Message message, {
+    final List<PublicKey> encryptionKeys = const [],
     final List<PrivateKey> signingKeys = const [],
     final List<String> passwords = const [],
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
     final DateTime? date,
   }) async =>
       (signingKeys.isNotEmpty)
-          ? message.sign(signingKeys, date: date).encrypt(
-                encryptionKeys,
+          ? message.sign(signingKeys, date: date).compress(OpenPGP.preferredCompression).encrypt(
+                encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
               )
-          : message.encrypt(
-              encryptionKeys,
-              passwords: passwords,
-              sessionKeySymmetric: sessionKeySymmetric,
-            );
+          : message.compress(OpenPGP.preferredCompression).encrypt(
+                encryptionKeys: encryptionKeys,
+                passwords: passwords,
+                sessionKeySymmetric: sessionKeySymmetric,
+              );
 
   /// Decrypt a message with the user's private key, or a password.
   /// One of `decryptionKeys` or `passwords` must be specified
   /// return object containing decrypted message with verifications
   static Future<Message> decrypt(
-    final Message message,
-    final List<PrivateKey> decryptionKeys, {
+    final Message message, {
+    final List<PrivateKey> decryptionKeys = const [],
     final List<PublicKey> verificationKeys = const [],
     final List<String> passwords = const [],
     final DateTime? date,
   }) async =>
       (verificationKeys.isNotEmpty)
-          ? message.decrypt(decryptionKeys, passwords: passwords).verify(verificationKeys, date: date)
-          : message.decrypt(decryptionKeys, passwords: passwords);
+          ? message.decrypt(decryptionKeys: decryptionKeys, passwords: passwords).verify(verificationKeys, date: date)
+          : message.decrypt(decryptionKeys: decryptionKeys, passwords: passwords);
 }
