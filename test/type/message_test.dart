@@ -8,10 +8,11 @@ import '../test_data.dart';
 
 void main() {
   group('Cleartext message sign & verify', () {
+    final signingKey = PrivateKey.fromArmored(privateKey);
+    final verificationKey = PublicKey.fromArmored(publicKey);
+    final text = faker.randomGenerator.string(1000);
+
     test('atached test', () {
-      final signingKey = PrivateKey.fromArmored(privateKey);
-      final verificationKey = PublicKey.fromArmored(publicKey);
-      final text = faker.randomGenerator.string(1000);
       final signedMessage = SignedMessage.signCleartext(text, [signingKey]);
       final verifiedMessage = signedMessage.verify([verificationKey]);
       for (var verification in verifiedMessage.verifications) {
@@ -21,9 +22,6 @@ void main() {
     });
 
     test('detached test', () {
-      final signingKey = PrivateKey.fromArmored(privateKey);
-      final verificationKey = PublicKey.fromArmored(publicKey);
-      final text = faker.randomGenerator.string(1000);
       final signature = SignedMessage.signCleartext(text, [signingKey]).signature;
       final cleartextMessage = CleartextMessage(text);
       final verifiedMessage = cleartextMessage.verifySignature(signature, [verificationKey]);
