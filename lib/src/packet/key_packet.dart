@@ -36,7 +36,37 @@ abstract class KeyPacket implements ContainedPacket {
 
   bool get isDecrypted;
 
+  bool get isSigningKey;
+
+  bool get isEncryptionKey;
+
   PublicKeyPacket get publicKey;
 
   Uint8List writeForSign();
+
+  static isSigningAlgorithm(KeyAlgorithm algorithm) {
+    switch (algorithm) {
+      case KeyAlgorithm.rsaEncrypt:
+      case KeyAlgorithm.elgamal:
+      case KeyAlgorithm.ecdh:
+      case KeyAlgorithm.diffieHellman:
+      case KeyAlgorithm.aedh:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  static isEncryptionAlgorithm(KeyAlgorithm algorithm) {
+    switch (algorithm) {
+      case KeyAlgorithm.rsaSign:
+      case KeyAlgorithm.dsa:
+      case KeyAlgorithm.ecdsa:
+      case KeyAlgorithm.eddsa:
+      case KeyAlgorithm.aedsa:
+        return false;
+      default:
+        return true;
+    }
+  }
 }

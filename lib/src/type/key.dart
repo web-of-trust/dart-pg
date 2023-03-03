@@ -53,61 +53,33 @@ abstract class Key {
   PublicKey get toPublic;
 
   bool get isSigningKey {
-    if (keyPacket is PublicKeyPacket) {
-      return false;
-    }
-    bool isSigning;
-    switch (keyPacket.algorithm) {
-      case KeyAlgorithm.rsaEncrypt:
-      case KeyAlgorithm.elgamal:
-      case KeyAlgorithm.ecdh:
-      case KeyAlgorithm.diffieHellman:
-      case KeyAlgorithm.aedh:
-        isSigning = false;
-        break;
-      default:
-        isSigning = true;
-        for (final user in users) {
-          for (var signature in user.selfCertifications) {
-            if (signature.keyFlags == null) {
-              continue;
-            } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
-              isSigning = false;
-              break;
-            }
+    if (keyPacket.isSigningKey) {
+      for (final user in users) {
+        for (var signature in user.selfCertifications) {
+          if (signature.keyFlags == null) {
+            continue;
+          } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
+            return false;
           }
         }
+      }
     }
-    return isSigning;
+    return keyPacket.isSigningKey;
   }
 
   bool get isEncryptionKey {
-    if (keyPacket is SecretKeyPacket) {
-      return false;
-    }
-    bool isEncryption;
-    switch (keyPacket.algorithm) {
-      case KeyAlgorithm.rsaSign:
-      case KeyAlgorithm.dsa:
-      case KeyAlgorithm.ecdsa:
-      case KeyAlgorithm.eddsa:
-      case KeyAlgorithm.aedsa:
-        isEncryption = false;
-        break;
-      default:
-        isEncryption = true;
-        for (final user in users) {
-          for (var signature in user.selfCertifications) {
-            if (signature.keyFlags == null) {
-              continue;
-            } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
-              isEncryption = false;
-              break;
-            }
+    if (keyPacket.isEncryptionKey) {
+      for (final user in users) {
+        for (var signature in user.selfCertifications) {
+          if (signature.keyFlags == null) {
+            continue;
+          } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
+            return false;
           }
         }
+      }
     }
-    return isEncryption;
+    return keyPacket.isEncryptionKey;
   }
 
   /// Returns ASCII armored text of key

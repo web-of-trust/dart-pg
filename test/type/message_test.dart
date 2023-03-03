@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 import '../test_data.dart';
 
 void main() {
-  group('Cleartext message sign & verify', () {
+  group('Cleartext signing', () {
     final signingKey = PrivateKey.fromArmored(privateKey);
     final verificationKey = PublicKey.fromArmored(publicKey);
     final text = faker.randomGenerator.string(1000);
@@ -50,7 +50,7 @@ void main() {
     });
   });
 
-  group('Message sign & verify', () {
+  group('Message signing', () {
     final signingKey = PrivateKey.fromArmored(privateKey);
     final verificationKey = PublicKey.fromArmored(publicKey);
     final text = faker.randomGenerator.string(1000);

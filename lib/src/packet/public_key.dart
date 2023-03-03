@@ -110,7 +110,17 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   @override
   bool get isDecrypted => true;
-  
+
+  @override
+  bool get isSigningKey {
+    return KeyPacket.isSigningAlgorithm(algorithm);
+  }
+
+  @override
+  bool get isEncryptionKey {
+    return KeyPacket.isEncryptionAlgorithm(algorithm);
+  }
+
   @override
   PublicKeyPacket get publicKey => this;
 

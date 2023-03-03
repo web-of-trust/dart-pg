@@ -118,6 +118,16 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   @override
   bool get isDecrypted => secretParams != null;
 
+  @override
+  bool get isSigningKey {
+    return KeyPacket.isSigningAlgorithm(algorithm);
+  }
+
+  @override
+  bool get isEncryptionKey {
+    return KeyPacket.isEncryptionAlgorithm(algorithm);
+  }
+
   bool get isDummy => s2k != null && s2k!.type == S2kType.gnu;
 
   @override
