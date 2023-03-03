@@ -1,5 +1,6 @@
 import 'package:dart_pg/src/enums.dart';
 import 'package:dart_pg/src/packet/compressed_data.dart';
+import 'package:dart_pg/src/packet/public_key_encrypted_session_key.dart';
 import 'package:dart_pg/src/packet/sym_encrypted_integrity_protected_data.dart';
 import 'package:dart_pg/src/packet/sym_encrypted_session_key.dart';
 import 'package:dart_pg/src/type/cleartext_message.dart';
@@ -134,11 +135,27 @@ void main() {
   group('Message encryption', () {
     final signingKey = PrivateKey.fromArmored(privateKey);
     final verificationKey = PublicKey.fromArmored(publicKey);
-    final text = faker.randomGenerator.string(1000);
+    final encryptionKeys = [
+      PublicKey.fromArmored(rsaPublicKey),
+      PublicKey.fromArmored(dsaPublicKey),
+      PublicKey.fromArmored(eccPublicKey),
+    ];
     final password = faker.randomGenerator.string(100);
 
+    final text = faker.randomGenerator.string(1000);
+    final createTextMessage = Message.createTextMessage(text);
+    final signedMessage = createTextMessage.sign([signingKey]);
+    final encryptedMessage = signedMessage.encrypt(encryptionKeys: encryptionKeys, passwords: [password]);
+
+    test('encrypted test', () {
+      expect(encryptedMessage.literalData, isNull);
+      expect(encryptedMessage.packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().length, encryptionKeys.length);
+      expect(encryptedMessage.packetList.whereType<SymEncryptedSessionKeyPacket>().length, 1);
+      expect(encryptedMessage.packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>(), isNotEmpty);
+    });
+
     test('password only test', () {
-      final encryptedMessage = Message.createTextMessage(text).encrypt(passwords: [password]);
+      final encryptedMessage = createTextMessage.encrypt(passwords: [password]);
       expect(encryptedMessage.literalData, isNull);
       expect(encryptedMessage.packetList.whereType<SymEncryptedSessionKeyPacket>(), isNotEmpty);
       expect(encryptedMessage.packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>(), isNotEmpty);
@@ -148,21 +165,82 @@ void main() {
       expect(decryptedMessage.literalData!.text, text);
     });
 
-    test('password with signing test', () {
-      final encryptedMessage = Message.createTextMessage(text).sign([signingKey]).encrypt(passwords: [password]);
-      expect(encryptedMessage.literalData, isNull);
-      expect(encryptedMessage.packetList.whereType<SymEncryptedSessionKeyPacket>(), isNotEmpty);
-      expect(encryptedMessage.packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>(), isNotEmpty);
-
+    test('password decrypt test', () {
       final decryptedMessage = encryptedMessage.decrypt(passwords: [password]);
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
       final verifiedMessage = decryptedMessage.verify([verificationKey]);
-      expect(verifiedMessage.verifications, isNotEmpty);
+      final signaturePackets = signedMessage.signaturePackets;
+      expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.keyID);
         expect(verification.verified, isTrue);
+
+        expect(
+          signaturePackets.elementAt(0).signatureData,
+          equals(verification.signature.packets.elementAt(0).signatureData),
+        );
+      }
+    });
+
+    test('rsa decrypt test', () {
+      final decryptionKey = PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
+      final decryptedMessage = encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      expect(decryptedMessage.literalData, isNotNull);
+      expect(decryptedMessage.literalData!.text, text);
+
+      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final signaturePackets = signedMessage.signaturePackets;
+      expect(verifiedMessage.verifications.isNotEmpty, isTrue);
+      for (final verification in verifiedMessage.verifications) {
+        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.verified, isTrue);
+
+        expect(
+          signaturePackets.elementAt(0).signatureData,
+          equals(verification.signature.packets.elementAt(0).signatureData),
+        );
+      }
+    });
+
+    test('elgamal decrypt test', () {
+      final decryptionKey = PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
+      final decryptedMessage = encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      expect(decryptedMessage.literalData, isNotNull);
+      expect(decryptedMessage.literalData!.text, text);
+
+      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final signaturePackets = signedMessage.signaturePackets;
+      expect(verifiedMessage.verifications.isNotEmpty, isTrue);
+      for (final verification in verifiedMessage.verifications) {
+        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.verified, isTrue);
+
+        expect(
+          signaturePackets.elementAt(0).signatureData,
+          equals(verification.signature.packets.elementAt(0).signatureData),
+        );
+      }
+    });
+
+    test('ecc decrypt test', () {
+      final decryptionKey = PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
+      final decryptedMessage = encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      expect(decryptedMessage.literalData, isNotNull);
+      expect(decryptedMessage.literalData!.text, text);
+
+      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final signaturePackets = signedMessage.signaturePackets;
+      expect(verifiedMessage.verifications.isNotEmpty, isTrue);
+      for (final verification in verifiedMessage.verifications) {
+        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.verified, isTrue);
+
+        expect(
+          signaturePackets.elementAt(0).signatureData,
+          equals(verification.signature.packets.elementAt(0).signatureData),
+        );
       }
     });
   });

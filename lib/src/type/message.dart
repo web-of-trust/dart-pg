@@ -341,7 +341,8 @@ class Message {
       final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
       for (final pkesk in pkeskPackets) {
         for (final key in decryptionKeys) {
-          if (key.keyID == pkesk.publicKeyID) {
+          final keyPacket = key.getDecryptionKeyPacket();
+          if (keyPacket.keyID == pkesk.publicKeyID) {
             try {
               final sessionKey = pkesk.decrypt(key.getDecryptionKeyPacket()).sessionKey;
               if (sessionKey != null) {
