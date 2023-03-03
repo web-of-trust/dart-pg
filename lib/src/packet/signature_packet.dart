@@ -4,12 +4,8 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/pointycastle.dart';
-
-import '../crypto/signer/dsa.dart';
 import '../enums.dart';
 import '../helpers.dart';
-import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'key/key_params.dart';
 import 'key_packet.dart';
@@ -185,7 +181,7 @@ class SignaturePacket extends ContainedPacket {
   }) {
     final version = signKey.version;
     final keyAlgorithm = signKey.algorithm;
-    final hashAlgorithm = preferredHash ?? getPreferredHash(signKey);
+    final hashAlgorithm = preferredHash ?? signKey.preferredHash;
 
     final hashedSubpackets = [
       SignatureCreationTime.fromTime(date ?? DateTime.now()),
@@ -321,7 +317,7 @@ class SignaturePacket extends ContainedPacket {
         ...subkey.writeForSign(),
       ]),
       subpackets: subpackets,
-      preferredHash: preferredHash ?? getPreferredHash(subkey),
+      preferredHash: preferredHash ?? subkey.preferredHash,
       keyExpirationTime: keyExpirationTime,
       date: date,
     );
@@ -470,22 +466,6 @@ class SignaturePacket extends ContainedPacket {
     ]);
   }
 
-  static HashAlgorithm getPreferredHash(final KeyPacket key) {
-    switch (key.algorithm) {
-      case KeyAlgorithm.ecdh:
-      case KeyAlgorithm.ecdsa:
-      case KeyAlgorithm.eddsa:
-        final oid = (key.publicParams as ECPublicParams).oid;
-        final curve = CurveInfo.values.firstWhere(
-          (info) => info.identifierString == oid.objectIdentifierAsString,
-          orElse: () => OpenPGP.preferredCurve,
-        );
-        return curve.hashAlgorithm;
-      default:
-        return OpenPGP.preferredHash;
-    }
-  }
-
   /// Signs provided data. This needs to be done prior to serialization.
   static Uint8List _signMessage(
     final SecretKeyPacket key,
@@ -500,18 +480,10 @@ class SignaturePacket extends ContainedPacket {
         signature = (key.secretParams as RSASecretParams).sign(message, hash);
         break;
       case KeyAlgorithm.dsa:
-        final keyParams = key.publicParams as DSAPublicParams;
-        final p = keyParams.prime;
-        final q = keyParams.order;
-        final g = keyParams.generator;
-        final x = (key.secretParams as DSASecretParams).secretExponent;
-        signature = (key.secretParams as DSASecretParams).sign(DSAPrivateKey(x, p, q, g), message, hash);
+        signature = (key.secretParams as DSASecretParams).sign(key.publicParams as DSAPublicParams, message, hash);
         break;
       case KeyAlgorithm.ecdsa:
-        final d = (key.secretParams as ECSecretParams).d;
-        final publicKey = (key.publicParams as ECPublicParams).publicKey;
-        final privateKey = ECPrivateKey(d, publicKey.parameters);
-        signature = (key.secretParams as ECSecretParams).sign(privateKey, message, hash);
+        signature = (key.secretParams as ECSecretParams).sign(key.publicParams as ECPublicParams, message, hash);
         break;
       case KeyAlgorithm.eddsa:
         throw UnsupportedError('Unsupported public key algorithm for signing.');

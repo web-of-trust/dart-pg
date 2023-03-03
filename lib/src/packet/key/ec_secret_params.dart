@@ -22,11 +22,12 @@ class ECSecretParams extends KeyParams {
   Uint8List encode() => Uint8List.fromList([...d.bitLength.pack16(), ...d.toUnsignedBytes()]);
 
   Uint8List sign(
-    final ECPrivateKey privateKey,
+    final ECPublicParams publicParams,
     final Uint8List message,
     final HashAlgorithm hash,
   ) {
-    final signer = Signer('${hash.digestName}/DET-ECDSA')..init(true, PrivateKeyParameter<ECPrivateKey>(privateKey));
+    final signer = Signer('${hash.digestName}/DET-ECDSA')
+      ..init(true, PrivateKeyParameter<ECPrivateKey>(ECPrivateKey(d, publicParams.publicKey.parameters)));
     final signature = signer.generateSignature(message) as ECSignature;
     return Uint8List.fromList([
       ...signature.r.bitLength.pack16(),

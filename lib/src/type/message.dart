@@ -141,7 +141,7 @@ class Message {
         final keyPacket = key.getSigningKeyPacket(date: date);
         return OnePassSignaturePacket(
           signatureType,
-          SignaturePacket.getPreferredHash(keyPacket),
+          keyPacket.preferredHash,
           keyPacket.algorithm,
           keyPacket.keyID,
           (index == signingKeys.length - 1) ? 1 : 0,

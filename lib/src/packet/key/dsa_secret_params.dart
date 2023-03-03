@@ -23,12 +23,20 @@ class DSASecretParams extends KeyParams {
   Uint8List encode() => Uint8List.fromList([...secretExponent.bitLength.pack16(), ...secretExponent.toUnsignedBytes()]);
 
   Uint8List sign(
-    final DSAPrivateKey privateKey,
+    final DSAPublicParams publicParams,
     final Uint8List message,
     final HashAlgorithm hash,
   ) {
-    final signer = DSASigner(Digest(hash.digestName))..init(true, PrivateKeyParameter<DSAPrivateKey>(privateKey));
-    final signature = signer.generateSignature(message);
-    return signature.encode();
+    final signer = DSASigner(Digest(hash.digestName))
+      ..init(
+        true,
+        PrivateKeyParameter<DSAPrivateKey>(DSAPrivateKey(
+          secretExponent,
+          publicParams.prime,
+          publicParams.order,
+          publicParams.generator,
+        )),
+      );
+    return signer.generateSignature(message).encode();
   }
 }

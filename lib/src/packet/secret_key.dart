@@ -154,6 +154,22 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   @override
   int get keyStrength => _publicKey.keyStrength;
 
+  HashAlgorithm get preferredHash {
+    switch (algorithm) {
+      case KeyAlgorithm.ecdh:
+      case KeyAlgorithm.ecdsa:
+      case KeyAlgorithm.eddsa:
+        final oid = (publicParams as ECPublicParams).oid;
+        final curve = CurveInfo.values.firstWhere(
+          (info) => info.identifierString == oid.objectIdentifierAsString,
+          orElse: () => OpenPGP.preferredCurve,
+        );
+        return curve.hashAlgorithm;
+      default:
+        return OpenPGP.preferredHash;
+    }
+  }
+
   SecretKeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
@@ -229,21 +245,6 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       );
     } else {
       return this;
-    }
-  }
-
-  SecretKeyPacket clearSecretParams() {
-    if (secretParams == null) {
-      return this;
-    } else {
-      return SecretKeyPacket(
-        publicKey,
-        keyData,
-        s2kUsage: s2kUsage,
-        symmetric: symmetric,
-        s2k: s2k,
-        iv: iv,
-      );
     }
   }
 

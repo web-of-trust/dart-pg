@@ -81,22 +81,6 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     }
   }
 
-  @override
-  SecretSubkeyPacket clearSecretParams() {
-    if (secretParams == null) {
-      return this;
-    } else {
-      return SecretSubkeyPacket(
-        publicKey,
-        keyData,
-        s2kUsage: s2kUsage,
-        symmetric: symmetric,
-        s2k: s2k,
-        iv: iv,
-      );
-    }
-  }
-
   static SecretSubkeyPacket _fromSecretKey(final SecretKeyPacket secretKey) {
     final publicKey = secretKey.publicKey;
     return SecretSubkeyPacket(
