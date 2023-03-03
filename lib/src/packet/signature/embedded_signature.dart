@@ -10,8 +10,9 @@ import '../signature_subpacket.dart';
 
 /// Packet embedded signature
 class EmbeddedSignature extends SignatureSubpacket {
-  EmbeddedSignature(Uint8List data, {super.critical, super.isLongLength})
+  EmbeddedSignature(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.embeddedSignature, data);
 
-  factory EmbeddedSignature.fromSignature(SignaturePacket signature) => EmbeddedSignature(signature.toPacketData());
+  factory EmbeddedSignature.fromSignature(final SignaturePacket signature) =>
+      EmbeddedSignature(signature.toPacketData());
 }

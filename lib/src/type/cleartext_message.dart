@@ -14,7 +14,7 @@ class CleartextMessage {
 
   final List<Verification> verifications;
 
-  CleartextMessage(String text, [this.verifications = const []])
+  CleartextMessage(final String text, [this.verifications = const []])
       : _text = text.trimRight().replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n');
 
   String get text => _text;

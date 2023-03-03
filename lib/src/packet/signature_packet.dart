@@ -179,7 +179,7 @@ class SignaturePacket extends ContainedPacket {
     final SignatureType signatureType,
     final Uint8List dataToSign, {
     final HashAlgorithm? preferredHash,
-    List<SignatureSubpacket> subpackets = const [],
+    final List<SignatureSubpacket> subpackets = const [],
     final int keyExpirationTime = 0,
     final DateTime? date,
   }) {
@@ -330,8 +330,8 @@ class SignaturePacket extends ContainedPacket {
   factory SignaturePacket.createKeyRevocation(
     final SecretKeyPacket signKey, {
     final HashAlgorithm? preferredHash,
-    RevocationReasonTag reason = RevocationReasonTag.noReason,
-    String description = '',
+    final RevocationReasonTag reason = RevocationReasonTag.noReason,
+    final String description = '',
     final DateTime? date,
   }) {
     return SignaturePacket.createSignature(
@@ -431,8 +431,8 @@ class SignaturePacket extends ContainedPacket {
 
   bool verifyUserCertification(
     final KeyPacket verifyKey, {
-    UserIDPacket? userID,
-    UserAttributePacket? userAttribute,
+    final UserIDPacket? userID,
+    final UserAttributePacket? userAttribute,
     final DateTime? date,
   }) {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
@@ -451,7 +451,7 @@ class SignaturePacket extends ContainedPacket {
 
   bool verifyLiteralData(
     final KeyPacket verifyKey,
-    LiteralDataPacket literalData, {
+    final LiteralDataPacket literalData, {
     final DateTime? date,
   }) {
     return verify(
@@ -461,7 +461,11 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  static Uint8List _calculateTrailer(final SignatureType signatureType, int dataLength, final int version) {
+  static Uint8List _calculateTrailer(
+    final SignatureType signatureType,
+    final int dataLength,
+    final int version,
+  ) {
     return Uint8List.fromList([
       version,
       0xff,
@@ -486,7 +490,11 @@ class SignaturePacket extends ContainedPacket {
   }
 
   /// Signs provided data. This needs to be done prior to serialization.
-  static Uint8List _signMessage(final SecretKeyPacket key, HashAlgorithm hash, final Uint8List message) {
+  static Uint8List _signMessage(
+    final SecretKeyPacket key,
+    final HashAlgorithm hash,
+    final Uint8List message,
+  ) {
     final Uint8List signature;
     switch (key.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
@@ -518,7 +526,11 @@ class SignaturePacket extends ContainedPacket {
     return signature;
   }
 
-  static Uint8List _rsaSign(final RSAPrivateKey key, HashAlgorithm hash, final Uint8List message) {
+  static Uint8List _rsaSign(
+    final RSAPrivateKey key,
+    final HashAlgorithm hash,
+    final Uint8List message,
+  ) {
     final signer = Signer('${hash.digestName}/RSA')..init(true, PrivateKeyParameter<RSAPrivateKey>(key));
     final signature = signer.generateSignature(message) as RSASignature;
     return Uint8List.fromList([
@@ -533,7 +545,11 @@ class SignaturePacket extends ContainedPacket {
     return signer.verifySignature(message, RSASignature(s.toUnsignedBytes()));
   }
 
-  static Uint8List _dsaSign(final DSAPrivateKey key, HashAlgorithm hash, final Uint8List message) {
+  static Uint8List _dsaSign(
+    final DSAPrivateKey key,
+    final HashAlgorithm hash,
+    final Uint8List message,
+  ) {
     final signer = DSASigner(Digest(hash.digestName))..init(true, PrivateKeyParameter<DSAPrivateKey>(key));
     final signature = signer.generateSignature(message);
     return signature.encode();
@@ -549,7 +565,11 @@ class SignaturePacket extends ContainedPacket {
     return signer.verifySignature(message, DSASignature(r, s));
   }
 
-  static Uint8List _ecdsaSign(final ECPrivateKey key, HashAlgorithm hash, final Uint8List message) {
+  static Uint8List _ecdsaSign(
+    final ECPrivateKey key,
+    final HashAlgorithm hash,
+    final Uint8List message,
+  ) {
     final signer = Signer('${hash.digestName}/DET-ECDSA')..init(true, PrivateKeyParameter<ECPrivateKey>(key));
     final signature = signer.generateSignature(message) as ECSignature;
     return Uint8List.fromList([

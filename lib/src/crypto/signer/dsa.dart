@@ -24,7 +24,7 @@ class DSASigner implements Signer {
   String get algorithmName => '${_digest?.algorithmName}/DSA';
 
   @override
-  void init(bool forSigning, CipherParameters params) {
+  void init(final bool forSigning, CipherParameters params) {
     _forSigning = forSigning;
     if (params is ParametersWithRandom) {
       _random = params.random;
@@ -55,7 +55,7 @@ class DSASigner implements Signer {
   }
 
   @override
-  DSASignature generateSignature(Uint8List message) {
+  DSASignature generateSignature(final Uint8List message) {
     if (!_forSigning) {
       throw StateError('DSASigner not initialised for signature generation');
     }
@@ -90,7 +90,7 @@ class DSASigner implements Signer {
   }
 
   @override
-  bool verifySignature(Uint8List message, covariant DSASignature signature) {
+  bool verifySignature(final Uint8List message, covariant final DSASignature signature) {
     final pub = _key as DSAPublicKey;
     final q = pub.order;
 
@@ -121,12 +121,12 @@ class DSASigner implements Signer {
     return v.compareTo(signature.r) == 0;
   }
 
-  BigInt _calculateE(BigInt n, Uint8List message) {
+  BigInt _calculateE(final BigInt n, final Uint8List message) {
     final length = min(message.length, n.bitLength ~/ 8);
     return message.sublist(0, length).toBigIntWithSign(1);
   }
 
-  BigInt _calculateK(BigInt n) {
+  BigInt _calculateK(final BigInt n) {
     BigInt k;
     do {
       k = _random.nextBigInteger(n.bitLength);

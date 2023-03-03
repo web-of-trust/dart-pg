@@ -10,10 +10,10 @@ import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
 class KeyServerPreferences extends SignatureSubpacket {
-  KeyServerPreferences(Uint8List data, {super.critical, super.isLongLength})
+  KeyServerPreferences(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.keyServerPreferences, data);
 
-  factory KeyServerPreferences.fromServerPreferences(String serverPreferences, {bool critical = false}) =>
+  factory KeyServerPreferences.fromServerPreferences(final String serverPreferences, {final bool critical = false}) =>
       KeyServerPreferences(serverPreferences.stringToBytes(), critical: critical);
 
   String get serverPreferences => utf8.decode(data);

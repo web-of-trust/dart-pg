@@ -16,8 +16,8 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   PacketTag get tag => PacketTag.secretSubkey;
 
   SecretSubkeyPacket(
-    PublicSubkeyPacket publicKey,
-    Uint8List keyData, {
+    final PublicSubkeyPacket publicKey,
+    final Uint8List keyData, {
     super.s2kUsage,
     super.symmetric,
     super.s2k,

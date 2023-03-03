@@ -30,9 +30,9 @@ import 'user_id.dart';
 class PacketList extends ListBase<ContainedPacket> {
   final List<ContainedPacket> packets;
 
-  PacketList(Iterable<ContainedPacket> packets) : packets = packets.toList(growable: false);
+  PacketList(final Iterable<ContainedPacket> packets) : packets = packets.toList(growable: false);
 
-  factory PacketList.packetDecode(Uint8List bytes) {
+  factory PacketList.packetDecode(final Uint8List bytes) {
     final packets = <ContainedPacket>[];
     var offset = 0;
     while (offset < bytes.length) {
@@ -97,9 +97,11 @@ class PacketList extends ListBase<ContainedPacket> {
   }
 
   Uint8List packetEncode() =>
-      Uint8List.fromList(packets.map((packet) => packet.packetEncode()).expand((byte) => byte).toList(growable: false));
+      Uint8List.fromList(
+        packets.map((packet) => packet.packetEncode()).expand((byte) => byte).toList(growable: false),
+      );
 
-  PacketList filterByTags([List<PacketTag> tags = const []]) {
+  PacketList filterByTags([final List<PacketTag> tags = const []]) {
     if (tags.isNotEmpty) {
       return PacketList(packets.where((packet) => tags.contains(packet.tag)));
     }

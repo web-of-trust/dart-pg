@@ -12,10 +12,10 @@ import '../signature_subpacket.dart';
 
 /// packet giving the issuer key fingerprint.
 class IssuerFingerprint extends SignatureSubpacket {
-  IssuerFingerprint(Uint8List data, {super.critical, super.isLongLength})
+  IssuerFingerprint(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.issuerFingerprint, data);
 
-  factory IssuerFingerprint.fromKey(KeyPacket key) =>
+  factory IssuerFingerprint.fromKey(final KeyPacket key) =>
       IssuerFingerprint(Uint8List.fromList([key.version, ...key.fingerprint.hexToBytes()]));
 
   int get keyVersion => data[0];

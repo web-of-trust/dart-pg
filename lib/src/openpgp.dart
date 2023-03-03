@@ -168,7 +168,8 @@ class OpenPGP {
     final List<PrivateKey> signingKeys = const [],
     final List<String> passwords = const [],
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
-    CompressionAlgorithm compression = OpenPGP.preferredCompression,
+    final SymmetricAlgorithm encryptionKeySymmetric = OpenPGP.preferredSymmetric,
+    final CompressionAlgorithm compression = OpenPGP.preferredCompression,
     final DateTime? date,
   }) async =>
       (signingKeys.isNotEmpty)
@@ -176,11 +177,13 @@ class OpenPGP {
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
+                encryptionKeySymmetric: encryptionKeySymmetric,
               )
           : message.compress(compression).encrypt(
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
+                encryptionKeySymmetric: encryptionKeySymmetric,
               );
 
   /// Decrypt a message with the user's private key, or a password.

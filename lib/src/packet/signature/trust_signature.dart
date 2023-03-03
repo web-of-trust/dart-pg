@@ -9,10 +9,14 @@ import '../signature_subpacket.dart';
 
 /// packet giving trust.
 class TrustSignature extends SignatureSubpacket {
-  TrustSignature(Uint8List data, {super.critical, super.isLongLength})
+  TrustSignature(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.trustSignature, data);
 
-  factory TrustSignature.fromTrust(int trustLevel, int trustAmount, {bool critical = false}) =>
+  factory TrustSignature.fromTrust(
+    final int trustLevel,
+    final int trustAmount, {
+    final bool critical = false,
+  }) =>
       TrustSignature(Uint8List.fromList([trustLevel, trustAmount]), critical: critical);
 
   int get trustLevel => data[0];

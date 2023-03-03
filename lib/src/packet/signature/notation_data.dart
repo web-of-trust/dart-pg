@@ -15,13 +15,14 @@ class NotationData extends SignatureSubpacket {
   static const headerNameLength = 2;
   static const headerValueLength = 2;
 
-  NotationData(Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.notationData, data);
+  NotationData(final Uint8List data, {super.critical, super.isLongLength})
+      : super(SignatureSubpacketType.notationData, data);
 
   factory NotationData.fromNotation(
-    bool humanReadable,
-    String notationName,
-    String notationValue, {
-    bool critical = false,
+    final bool humanReadable,
+    final String notationName,
+    final String notationValue, {
+    final bool critical = false,
   }) =>
       NotationData(
         _notationToBytes(humanReadable, notationName, notationValue),
@@ -44,7 +45,11 @@ class NotationData extends SignatureSubpacket {
     return utf8.decode(data.sublist(valueOffset, valueOffset + valueLength));
   }
 
-  static Uint8List _notationToBytes(bool humanReadable, String notationName, String notationValue) {
+  static Uint8List _notationToBytes(
+    final bool humanReadable,
+    final String notationName,
+    final String notationValue,
+  ) {
     final nameData = utf8.encode(notationName);
     final nameLength = min(nameData.length, 0xffff);
     if (nameLength != nameData.length) {

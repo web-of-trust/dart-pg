@@ -12,14 +12,14 @@ import 'key_reader.dart';
 /// Class that represents an OpenPGP Public Key
 class PublicKey extends Key {
   PublicKey(
-    PublicKeyPacket keyPacket, {
+    final PublicKeyPacket keyPacket, {
     super.revocationSignatures,
     super.directSignatures,
     super.users,
     super.subkeys,
   }) : super(keyPacket);
 
-  factory PublicKey.fromArmored(String armored) {
+  factory PublicKey.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
     if (armor.type != ArmorType.publicKey) {
       throw ArgumentError('Armored text not of public key type');
@@ -27,7 +27,7 @@ class PublicKey extends Key {
     return PublicKey.fromPacketList(PacketList.packetDecode(armor.data));
   }
 
-  factory PublicKey.fromPacketList(PacketList packetList) {
+  factory PublicKey.fromPacketList(final PacketList packetList) {
     final keyReader = KeyReader.fromPacketList(packetList);
     if (keyReader.keyPacket is! PublicKeyPacket) {
       throw ArgumentError('Key packet not of public key type');

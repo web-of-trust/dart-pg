@@ -21,9 +21,9 @@ class Verification {
   Verification(this.keyID, this.signature, this.verified);
 
   static List<Verification> createVerifications(
-    LiteralDataPacket literalData,
-    Iterable<SignaturePacket> signaturePackets,
-    Iterable<PublicKey> verificationKeys, {
+    final LiteralDataPacket literalData,
+    final Iterable<SignaturePacket> signaturePackets,
+    final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
     if (verificationKeys.isEmpty) {

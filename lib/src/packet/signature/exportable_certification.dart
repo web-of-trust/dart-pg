@@ -8,10 +8,10 @@ import '../../enums.dart';
 import '../signature_subpacket.dart';
 
 class ExportableCertification extends SignatureSubpacket {
-  ExportableCertification(Uint8List data, {super.critical, super.isLongLength})
+  ExportableCertification(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.exportableCertification, data);
 
-  factory ExportableCertification.fromExportable(bool exportable, {bool critical = false}) =>
+  factory ExportableCertification.fromExportable(final bool exportable, {final bool critical = false}) =>
       ExportableCertification(Uint8List.fromList([exportable ? 1 : 0]), critical: critical);
 
   bool get isExportable => data[0] != 0;

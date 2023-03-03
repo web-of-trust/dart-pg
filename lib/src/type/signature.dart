@@ -13,7 +13,7 @@ class Signature {
 
   Signature(PacketList packetList) : packets = packetList.whereType<SignaturePacket>();
 
-  factory Signature.fromArmored(String armored) {
+  factory Signature.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
     if (armor.type != ArmorType.signature) {
       throw ArgumentError('Armored text not of signature type');

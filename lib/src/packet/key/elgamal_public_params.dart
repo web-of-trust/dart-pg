@@ -23,7 +23,7 @@ class ElGamalPublicParams extends KeyParams {
   ElGamalPublicParams(this.prime, this.generator, this.publicExponent)
       : publicKey = ElGamalPublicKey(publicExponent, prime, generator);
 
-  factory ElGamalPublicParams.fromPacketData(Uint8List bytes) {
+  factory ElGamalPublicParams.fromPacketData(final Uint8List bytes) {
     final primeP = Helper.readMPI(bytes);
 
     var pos = primeP.byteLength + 2;

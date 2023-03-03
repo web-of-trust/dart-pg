@@ -139,7 +139,7 @@ abstract class Key {
 
   /// Checks if a signature on a key is revoked
   bool isRevoked({
-    SignaturePacket? signature,
+    final SignaturePacket? signature,
     final DateTime? date,
   }) {
     if (revocationSignatures.isNotEmpty) {

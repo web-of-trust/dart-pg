@@ -9,9 +9,9 @@ import '../signature_subpacket.dart';
 
 /// packet giving whether or not is revocable.
 class Revocable extends SignatureSubpacket {
-  Revocable(Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.revocable, data);
+  Revocable(final Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.revocable, data);
 
-  factory Revocable.fromRevocable(bool isRevocable, {bool critical = false}) =>
+  factory Revocable.fromRevocable(final bool isRevocable, {final bool critical = false}) =>
       Revocable(Uint8List.fromList([isRevocable ? 1 : 0]), critical: critical);
 
   bool get isRevocable => data[0] != 0;

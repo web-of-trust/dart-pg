@@ -8,7 +8,7 @@ import '../../enums.dart';
 import '../signature_subpacket.dart';
 
 class PreferredHashAlgorithms extends SignatureSubpacket {
-  PreferredHashAlgorithms(Uint8List data, {super.critical, super.isLongLength})
+  PreferredHashAlgorithms(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.preferredHashAlgorithms, data);
 
   List<HashAlgorithm> get preferences =>

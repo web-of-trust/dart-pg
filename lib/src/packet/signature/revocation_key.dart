@@ -10,14 +10,14 @@ import '../../enums.dart';
 import '../signature_subpacket.dart';
 
 class RevocationKey extends SignatureSubpacket {
-  RevocationKey(Uint8List data, {super.critical, super.isLongLength})
+  RevocationKey(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.revocationKey, data);
 
   factory RevocationKey.fromRevocation(
-    RevocationKeyTag signatureClass,
-    KeyAlgorithm keyAlgorithm,
-    Uint8List fingerprint, {
-    bool critical = false,
+    final RevocationKeyTag signatureClass,
+    final KeyAlgorithm keyAlgorithm,
+    final Uint8List fingerprint, {
+    final bool critical = false,
   }) =>
       RevocationKey(_revocationToBytes(signatureClass, keyAlgorithm, fingerprint), critical: critical);
 
@@ -28,9 +28,9 @@ class RevocationKey extends SignatureSubpacket {
   String get fingerprint => data.sublist(2).toHexadecimal();
 
   static Uint8List _revocationToBytes(
-    RevocationKeyTag signatureClass,
-    KeyAlgorithm keyAlgorithm,
-    Uint8List fingerprint,
+    final RevocationKeyTag signatureClass,
+    final KeyAlgorithm keyAlgorithm,
+    final Uint8List fingerprint,
   ) =>
       Uint8List.fromList([signatureClass.value, keyAlgorithm.value, ...fingerprint]);
 }

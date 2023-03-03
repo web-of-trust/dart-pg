@@ -8,9 +8,9 @@ import '../../enums.dart';
 import '../signature_subpacket.dart';
 
 class Features extends SignatureSubpacket {
-  Features(Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.features, data);
+  Features(final Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.features, data);
 
-  factory Features.fromFeatures(int features, {bool critical = false}) =>
+  factory Features.fromFeatures(final int features, {final bool critical = false}) =>
       Features(Uint8List.fromList([features]), critical: critical);
 
   bool get supprtModificationDetection =>

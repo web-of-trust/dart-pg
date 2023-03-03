@@ -17,7 +17,7 @@ class RSASessionKeyParams extends SessionKeyParams {
 
   RSASessionKeyParams(this.encrypted);
 
-  factory RSASessionKeyParams.fromPacketData(Uint8List bytes) => RSASessionKeyParams(Helper.readMPI(bytes));
+  factory RSASessionKeyParams.fromPacketData(final Uint8List bytes) => RSASessionKeyParams(Helper.readMPI(bytes));
 
   factory RSASessionKeyParams.encryptSessionKey(final RSAPublicKey key, final SessionKey sessionKey) {
     return RSASessionKeyParams(
@@ -51,7 +51,7 @@ class RSASessionKeyParams extends SessionKeyParams {
     );
   }
 
-  static Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
+  static Uint8List _processInBlocks(final AsymmetricBlockCipher engine, final Uint8List input) {
     final numBlocks = input.length ~/ engine.inputBlockSize + ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
 
     final output = Uint8List(numBlocks * engine.outputBlockSize);

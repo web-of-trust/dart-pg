@@ -19,7 +19,7 @@ class ECDHPublicParams extends ECPublicParams {
 
   ECDHPublicParams(super.oid, super.q, this.kdfHash, this.kdfSymmetric, [this.reserved = 0x1]);
 
-  factory ECDHPublicParams.fromPacketData(Uint8List bytes) {
+  factory ECDHPublicParams.fromPacketData(final Uint8List bytes) {
     var pos = 0;
     final length = bytes[pos++];
     if (length == 0 || length == 0xFF) {

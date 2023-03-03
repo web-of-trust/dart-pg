@@ -44,7 +44,7 @@ class Message {
     return Message(PacketList.packetDecode(armor.data));
   }
 
-  factory Message.fromSignedMessage(SignedMessage signedMessage) {
+  factory Message.fromSignedMessage(final SignedMessage signedMessage) {
     final signatures = signedMessage.signature.packets.toList(growable: false);
     return Message(PacketList([
       LiteralDataPacket.fromText(signedMessage.text),
@@ -107,7 +107,7 @@ class Message {
   String armor() => Armor.encode(ArmorType.message, packetList.packetEncode());
 
   /// Append signature to unencrypted message
-  Message appendSignature(SignaturePacket signature) {
+  Message appendSignature(final SignaturePacket signature) {
     return Message(PacketList([...unwrapCompressed().packetList, signature]));
   }
 
@@ -234,6 +234,7 @@ class Message {
     final List<PublicKey> encryptionKeys = const [],
     final List<String> passwords = const [],
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
+    final SymmetricAlgorithm encryptionKeySymmetric = OpenPGP.preferredSymmetric,
   }) {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No encryption keys or passwords provided');
@@ -249,6 +250,7 @@ class Message {
           password,
           sessionKeyData: sessionKeyData,
           sessionKeySymmetric: sessionKeySymmetric,
+          encryptionKeySymmetric: encryptionKeySymmetric,
         ));
     final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
       sessionKeyData,
@@ -311,7 +313,7 @@ class Message {
 
   /// Compress the message (the literal and -if signed- signature data packets of the message)
   /// Return new message with compressed content.
-  Message compress([CompressionAlgorithm algorithm = OpenPGP.preferredCompression]) {
+  Message compress([final CompressionAlgorithm algorithm = OpenPGP.preferredCompression]) {
     if (algorithm != CompressionAlgorithm.uncompressed) {
       return Message(PacketList([
         CompressedDataPacket.fromPacketList(

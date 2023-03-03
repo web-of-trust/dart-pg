@@ -9,14 +9,14 @@ import '../signature_subpacket.dart';
 
 /// RFC 4880, Section 5.2.3.25 - Signature Target subpacket.
 class SignatureTarget extends SignatureSubpacket {
-  SignatureTarget(Uint8List data, {super.critical, super.isLongLength})
+  SignatureTarget(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.signatureTarget, data);
 
   factory SignatureTarget.fromHashData(
-    KeyAlgorithm keyAlgorithm,
-    HashAlgorithm hashAlgorithm,
-    Uint8List hashData, {
-    bool critical = false,
+    final KeyAlgorithm keyAlgorithm,
+    final HashAlgorithm hashAlgorithm,
+    final Uint8List hashData, {
+    final bool critical = false,
   }) =>
       SignatureTarget(_hashDataBytes(keyAlgorithm, hashAlgorithm, hashData), critical: critical);
 
@@ -27,9 +27,9 @@ class SignatureTarget extends SignatureSubpacket {
   Uint8List get hashData => data.sublist(2);
 
   static Uint8List _hashDataBytes(
-    KeyAlgorithm keyAlgorithm,
-    HashAlgorithm hashAlgorithm,
-    Uint8List hashData,
+    final KeyAlgorithm keyAlgorithm,
+    final HashAlgorithm hashAlgorithm,
+    final Uint8List hashData,
   ) =>
       Uint8List.fromList([keyAlgorithm.value, hashAlgorithm.value, ...hashData]);
 }

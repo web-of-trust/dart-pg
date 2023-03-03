@@ -10,10 +10,10 @@ import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
 class RegularExpression extends SignatureSubpacket {
-  RegularExpression(Uint8List data, {super.critical, super.isLongLength})
+  RegularExpression(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.revocable, data);
 
-  factory RegularExpression.fromExpression(String expression, {bool critical = false}) =>
+  factory RegularExpression.fromExpression(final String expression, {final bool critical = false}) =>
       RegularExpression(expression.stringToBytes(), critical: critical);
 
   String get expression => utf8.decode(data);

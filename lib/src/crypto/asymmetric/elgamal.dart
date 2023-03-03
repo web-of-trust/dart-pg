@@ -22,7 +22,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
   String get algorithmName => 'ElGamal';
 
   @override
-  void init(bool forEncryption, CipherParameters params) {
+  void init(final bool forEncryption, CipherParameters params) {
     _forEncryption = forEncryption;
     if (params is ParametersWithRandom) {
       _random = params.random;
@@ -57,7 +57,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
   int get outputBlockSize => _forEncryption ? 2 * ((_bitSize + 7) >> 3) : (_bitSize - 1) ~/ 8;
 
   @override
-  Uint8List process(Uint8List data) {
+  Uint8List process(final Uint8List data) {
     final out = Uint8List(outputBlockSize);
     final len = processBlock(data, 0, data.length, out, 0);
     return out.sublist(0, len);
@@ -65,7 +65,13 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
   /// Process a single block using the basic ElGamal algorithm.
   @override
-  int processBlock(Uint8List input, int inOff, int inLen, Uint8List output, int outOff) {
+  int processBlock(
+    final Uint8List input,
+    final int inOff,
+    final int inLen,
+    final Uint8List output,
+    final int outOff,
+  ) {
     if (_key == null) {
       throw StateError('$algorithmName not initialised');
     }
@@ -111,7 +117,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
   @override
   void reset() {}
 
-  BigInt _generateK(BigInt n) {
+  BigInt _generateK(final BigInt n) {
     BigInt k;
     do {
       k = _random.nextBigInteger(n.bitLength);

@@ -20,7 +20,7 @@ import 'subkey.dart';
 /// Class that represents an OpenPGP Private Key
 class PrivateKey extends Key {
   PrivateKey(
-    SecretKeyPacket keyPacket, {
+    final SecretKeyPacket keyPacket, {
     super.users,
     super.revocationSignatures,
     super.directSignatures,

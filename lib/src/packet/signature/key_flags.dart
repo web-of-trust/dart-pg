@@ -9,9 +9,10 @@ import '../signature_subpacket.dart';
 
 /// Packet holding the key flag values.
 class KeyFlags extends SignatureSubpacket {
-  KeyFlags(Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.keyFlags, data);
+  KeyFlags(final Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.keyFlags, data);
 
-  factory KeyFlags.fromFlags(int flags, {bool critical = false}) => KeyFlags(_flagsToBytes(flags), critical: critical);
+  factory KeyFlags.fromFlags(final int flags, {final bool critical = false}) =>
+      KeyFlags(_flagsToBytes(flags), critical: critical);
 
   /// Return the flag values contained in the first 4 octets
   /// (note: at the moment the standard only uses the first one).
@@ -31,7 +32,7 @@ class KeyFlags extends SignatureSubpacket {
 
   bool get isEncryptStorage => flags & KeyFlag.encryptStorage.value == KeyFlag.encryptStorage.value;
 
-  static Uint8List _flagsToBytes(int flags) {
+  static Uint8List _flagsToBytes(final int flags) {
     final bytes = Uint8List(4);
     var size = 0;
     for (int i = 0; i != 4; i++) {

@@ -31,7 +31,7 @@ class KeyReader {
     this.subkeys = const [],
   });
 
-  factory KeyReader.fromPacketList(PacketList packetList) {
+  factory KeyReader.fromPacketList(final PacketList packetList) {
     final revocationSignatures = <SignaturePacket>[];
     final directSignatures = <SignaturePacket>[];
     final users = <User>[];

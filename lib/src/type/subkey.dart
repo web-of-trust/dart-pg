@@ -71,7 +71,7 @@ class Subkey {
   }
 
   bool verify(
-    KeyPacket primaryKey, {
+    final KeyPacket primaryKey, {
     final DateTime? date,
   }) {
     if (isRevoked(primaryKey, date: date)) {
@@ -93,8 +93,8 @@ class Subkey {
   }
 
   bool isRevoked(
-    KeyPacket primaryKey, {
-    SignaturePacket? signature,
+    final KeyPacket primaryKey, {
+    final SignaturePacket? signature,
     final DateTime? date,
   }) {
     if (revocationSignatures.isNotEmpty) {

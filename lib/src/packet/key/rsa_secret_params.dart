@@ -33,7 +33,7 @@ class RSASecretParams extends KeyParams {
   /// RSA public encryption exponent e
   BigInt get publicExponent => privateKey.publicExponent!;
 
-  factory RSASecretParams.fromPacketData(Uint8List bytes) {
+  factory RSASecretParams.fromPacketData(final Uint8List bytes) {
     final privateExponent = Helper.readMPI(bytes);
 
     var pos = privateExponent.byteLength + 2;

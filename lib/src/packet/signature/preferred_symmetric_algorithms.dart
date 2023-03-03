@@ -8,7 +8,7 @@ import '../../enums.dart';
 import '../signature_subpacket.dart';
 
 class PreferredSymmetricAlgorithms extends SignatureSubpacket {
-  PreferredSymmetricAlgorithms(Uint8List data, {super.critical, super.isLongLength})
+  PreferredSymmetricAlgorithms(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.preferredSymmetricAlgorithms, data);
 
   List<SymmetricAlgorithm> get preferences =>

@@ -10,10 +10,10 @@ import '../signature_subpacket.dart';
 
 /// packet giving signature expiration time.
 class SignatureExpirationTime extends SignatureSubpacket {
-  SignatureExpirationTime(Uint8List data, {super.critical, super.isLongLength})
+  SignatureExpirationTime(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.signatureExpirationTime, data);
 
-  factory SignatureExpirationTime.fromExpirationTime(DateTime time, {bool critical = false}) =>
+  factory SignatureExpirationTime.fromExpirationTime(final DateTime time, {final bool critical = false}) =>
       SignatureExpirationTime(time.toBytes(), critical: critical);
 
   DateTime get expirationTime => data.toDateTime();

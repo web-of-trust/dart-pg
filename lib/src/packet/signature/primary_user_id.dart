@@ -9,10 +9,10 @@ import '../signature_subpacket.dart';
 
 /// packet giving whether or not the signature is signed using the primary user ID for the key.
 class PrimaryUserID extends SignatureSubpacket {
-  PrimaryUserID(Uint8List data, {super.critical, super.isLongLength})
+  PrimaryUserID(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.primaryUserID, data);
 
-  factory PrimaryUserID.fromIsPrimary(bool isPrimary, {bool critical = false}) =>
+  factory PrimaryUserID.fromIsPrimary(final bool isPrimary, {final bool critical = false}) =>
       PrimaryUserID(Uint8List.fromList([isPrimary ? 1 : 0]), critical: critical);
 
   bool get isPrimary => data[0] != 0;

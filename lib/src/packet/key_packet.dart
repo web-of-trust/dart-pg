@@ -44,7 +44,7 @@ abstract class KeyPacket implements ContainedPacket {
 
   Uint8List writeForSign();
 
-  static isSigningAlgorithm(KeyAlgorithm algorithm) {
+  static isSigningAlgorithm(final KeyAlgorithm algorithm) {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.elgamal:
@@ -57,7 +57,7 @@ abstract class KeyPacket implements ContainedPacket {
     }
   }
 
-  static isEncryptionAlgorithm(KeyAlgorithm algorithm) {
+  static isEncryptionAlgorithm(final KeyAlgorithm algorithm) {
     switch (algorithm) {
       case KeyAlgorithm.rsaSign:
       case KeyAlgorithm.dsa:

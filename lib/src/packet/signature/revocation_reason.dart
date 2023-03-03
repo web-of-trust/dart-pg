@@ -10,16 +10,20 @@ import '../signature_subpacket.dart';
 
 /// Represents revocation reason OpenPGP signature sub packet.
 class RevocationReason extends SignatureSubpacket {
-  RevocationReason(Uint8List data, {super.critical, super.isLongLength})
+  RevocationReason(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.revocationReason, data);
 
-  factory RevocationReason.fromRevocation(RevocationReasonTag reason, String description, {bool critical = false}) =>
+  factory RevocationReason.fromRevocation(
+    final RevocationReasonTag reason,
+    final String description, {
+    final bool critical = false,
+  }) =>
       RevocationReason(_revocationToBytes(reason, description), critical: critical);
 
   RevocationReasonTag get reason => RevocationReasonTag.values.firstWhere((reason) => reason.value == data[0]);
 
   String get description => utf8.decode(data.sublist(1));
 
-  static Uint8List _revocationToBytes(RevocationReasonTag reason, String description) =>
+  static Uint8List _revocationToBytes(final RevocationReasonTag reason, final String description) =>
       Uint8List.fromList([reason.value, ...utf8.encode(description)]);
 }

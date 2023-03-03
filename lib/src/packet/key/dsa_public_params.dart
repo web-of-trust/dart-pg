@@ -26,7 +26,7 @@ class DSAPublicParams extends KeyParams {
   DSAPublicParams(this.prime, this.order, this.generator, this.publicExponent)
       : publicKey = DSAPublicKey(publicExponent, prime, order, generator);
 
-  factory DSAPublicParams.fromPacketData(Uint8List bytes) {
+  factory DSAPublicParams.fromPacketData(final Uint8List bytes) {
     final primeP = Helper.readMPI(bytes);
 
     var pos = primeP.byteLength + 2;

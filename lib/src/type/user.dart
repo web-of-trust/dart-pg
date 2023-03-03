@@ -27,8 +27,8 @@ class User {
 
   /// Checks if a given certificate of the user is revoked
   bool isRevoked(
-    KeyPacket keyPacket, {
-    SignaturePacket? signature,
+    final KeyPacket keyPacket, {
+    final SignaturePacket? signature,
     final DateTime? date,
   }) {
     if (revocationSignatures.isNotEmpty) {
@@ -49,7 +49,7 @@ class User {
   }
 
   bool verify(
-    KeyPacket keyPacket, {
+    final KeyPacket keyPacket, {
     final DateTime? date,
   }) {
     if (isRevoked(keyPacket, date: date)) {

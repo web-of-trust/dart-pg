@@ -43,7 +43,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
   final BigInt ephemeralKey;
 
   /// ECDH symmetric key
-  Uint8List wrappedKey;
+  final Uint8List wrappedKey;
 
   ECDHSessionKeyParams(this.ephemeralKey, this.wrappedKey);
 
@@ -121,7 +121,13 @@ class ECDHSessionKeyParams extends SessionKeyParams {
   }
 
   /// Key Derivation Function (RFC 6637)
-  static Uint8List _kdf(HashAlgorithm hash, BigInt sharedKey, int keySize, Uint8List param) => Helper.hashDigest(
+  static Uint8List _kdf(
+    final HashAlgorithm hash,
+    final BigInt sharedKey,
+    final int keySize,
+    final Uint8List param,
+  ) =>
+      Helper.hashDigest(
         Uint8List.fromList([
           0,
           0,
@@ -134,7 +140,8 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       ).sublist(0, keySize);
 
   /// Build Param for ECDH algorithm (RFC 6637)
-  static Uint8List _buildEcdhParam(final ECDHPublicParams publicParams, Uint8List fingerprint) => Uint8List.fromList([
+  static Uint8List _buildEcdhParam(final ECDHPublicParams publicParams, final Uint8List fingerprint) =>
+      Uint8List.fromList([
         ...publicParams.oid.encode().sublist(1),
         KeyAlgorithm.ecdh.value,
         0x3,
@@ -146,13 +153,13 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       ]);
 
   /// Add pkcs5 padding to a message
-  static Uint8List _pkcs5Encode(Uint8List message) {
+  static Uint8List _pkcs5Encode(final Uint8List message) {
     final c = 8 - (message.lengthInBytes % 8);
     return Uint8List.fromList(List.filled(message.length + c, c))..setAll(0, message);
   }
 
   /// Remove pkcs5 padding from a message
-  static Uint8List _pkcs5Decode(Uint8List message) {
+  static Uint8List _pkcs5Decode(final Uint8List message) {
     final length = message.length;
     if (length > 0) {
       final c = message[length - 1];
