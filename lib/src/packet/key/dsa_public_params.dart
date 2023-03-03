@@ -4,7 +4,10 @@
 
 import 'dart:typed_data';
 
+import 'package:pointycastle/api.dart';
+
 import '../../crypto/signer/dsa.dart';
+import '../../enums.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
@@ -52,4 +55,17 @@ class DSAPublicParams extends KeyParams {
         ...publicExponent.bitLength.pack16(),
         ...publicExponent.toUnsignedBytes(),
       ]);
+
+  bool verify(
+    final Uint8List message,
+    final HashAlgorithm hash,
+    final Uint8List signature,
+  ) {
+    final signer = DSASigner(Digest(hash.digestName))..init(false, PublicKeyParameter<DSAPublicKey>(publicKey));
+
+    final r = Helper.readMPI(signature);
+    final s = Helper.readMPI(signature.sublist(r.byteLength + 2));
+
+    return signer.verifySignature(message, DSASignature(r, s));
+  }
 }

@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
+import '../../enums.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
@@ -33,4 +34,13 @@ class RSAPublicParams extends KeyParams {
         ...publicExponent.bitLength.pack16(),
         ...publicExponent.toUnsignedBytes(),
       ]);
+
+  bool verify(
+    final Uint8List message,
+    final HashAlgorithm hash,
+    final Uint8List signature,
+  ) {
+    final signer = Signer('${hash.digestName}/RSA')..init(false, PublicKeyParameter<RSAPublicKey>(publicKey));
+    return signer.verifySignature(message, RSASignature(Helper.readMPI(signature).toUnsignedBytes()));
+  }
 }

@@ -414,14 +414,11 @@ class SignaturePacket extends ContainedPacket {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final publicKey = (verifyKey.publicParams as RSAPublicParams).publicKey;
-        return _rsaVerify(publicKey, message);
+        return (verifyKey.publicParams as RSAPublicParams).verify(message, hashAlgorithm, signature);
       case KeyAlgorithm.dsa:
-        final publicKey = (verifyKey.publicParams as DSAPublicParams).publicKey;
-        return _dsaVerify(publicKey, message);
+        return (verifyKey.publicParams as DSAPublicParams).verify(message, hashAlgorithm, signature);
       case KeyAlgorithm.ecdsa:
-        final publicKey = (verifyKey.publicParams as ECPublicParams).publicKey;
-        return _ecdsaVerify(publicKey, message);
+        return (verifyKey.publicParams as ECDSAPublicParams).verify(message, hashAlgorithm, signature);
       case KeyAlgorithm.eddsa:
         throw UnsupportedError('Unsupported public key algorithm for verification.');
       default:
@@ -500,8 +497,7 @@ class SignaturePacket extends ContainedPacket {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final privateKey = (key.secretParams as RSASecretParams).privateKey;
-        signature = _rsaSign(privateKey, hash, message);
+        signature = (key.secretParams as RSASecretParams).sign(message, hash);
         break;
       case KeyAlgorithm.dsa:
         final keyParams = key.publicParams as DSAPublicParams;
@@ -509,14 +505,13 @@ class SignaturePacket extends ContainedPacket {
         final q = keyParams.order;
         final g = keyParams.generator;
         final x = (key.secretParams as DSASecretParams).secretExponent;
-        final privateKey = DSAPrivateKey(x, p, q, g);
-        signature = _dsaSign(privateKey, hash, message);
+        signature = (key.secretParams as DSASecretParams).sign(DSAPrivateKey(x, p, q, g), message, hash);
         break;
       case KeyAlgorithm.ecdsa:
         final d = (key.secretParams as ECSecretParams).d;
         final publicKey = (key.publicParams as ECPublicParams).publicKey;
         final privateKey = ECPrivateKey(d, publicKey.parameters);
-        signature = _ecdsaSign(privateKey, hash, message);
+        signature = (key.secretParams as ECSecretParams).sign(privateKey, message, hash);
         break;
       case KeyAlgorithm.eddsa:
         throw UnsupportedError('Unsupported public key algorithm for signing.');
@@ -524,69 +519,6 @@ class SignaturePacket extends ContainedPacket {
         throw StateError('Unknown public key algorithm for signing.');
     }
     return signature;
-  }
-
-  static Uint8List _rsaSign(
-    final RSAPrivateKey key,
-    final HashAlgorithm hash,
-    final Uint8List message,
-  ) {
-    final signer = Signer('${hash.digestName}/RSA')..init(true, PrivateKeyParameter<RSAPrivateKey>(key));
-    final signature = signer.generateSignature(message) as RSASignature;
-    return Uint8List.fromList([
-      ...(signature.bytes.lengthInBytes * 8).pack16(),
-      ...signature.bytes,
-    ]);
-  }
-
-  bool _rsaVerify(final RSAPublicKey key, final Uint8List message) {
-    final signer = Signer('${hashAlgorithm.digestName}/RSA')..init(false, PublicKeyParameter<RSAPublicKey>(key));
-    final s = Helper.readMPI(signature);
-    return signer.verifySignature(message, RSASignature(s.toUnsignedBytes()));
-  }
-
-  static Uint8List _dsaSign(
-    final DSAPrivateKey key,
-    final HashAlgorithm hash,
-    final Uint8List message,
-  ) {
-    final signer = DSASigner(Digest(hash.digestName))..init(true, PrivateKeyParameter<DSAPrivateKey>(key));
-    final signature = signer.generateSignature(message);
-    return signature.encode();
-  }
-
-  bool _dsaVerify(final DSAPublicKey publicKey, final Uint8List message) {
-    final signer = DSASigner(Digest(hashAlgorithm.digestName))
-      ..init(false, PublicKeyParameter<DSAPublicKey>(publicKey));
-
-    final r = Helper.readMPI(signature);
-    final s = Helper.readMPI(signature.sublist(r.byteLength + 2));
-
-    return signer.verifySignature(message, DSASignature(r, s));
-  }
-
-  static Uint8List _ecdsaSign(
-    final ECPrivateKey key,
-    final HashAlgorithm hash,
-    final Uint8List message,
-  ) {
-    final signer = Signer('${hash.digestName}/DET-ECDSA')..init(true, PrivateKeyParameter<ECPrivateKey>(key));
-    final signature = signer.generateSignature(message) as ECSignature;
-    return Uint8List.fromList([
-      ...signature.r.bitLength.pack16(),
-      ...signature.r.toUnsignedBytes(),
-      ...signature.s.bitLength.pack16(),
-      ...signature.s.toUnsignedBytes(),
-    ]);
-  }
-
-  bool _ecdsaVerify(final ECPublicKey key, final Uint8List message) {
-    final signer = Signer('${hashAlgorithm.digestName}/DET-ECDSA')..init(false, PublicKeyParameter<ECPublicKey>(key));
-
-    final r = Helper.readMPI(signature);
-    final s = Helper.readMPI(signature.sublist(r.byteLength + 2));
-
-    return signer.verifySignature(message, ECSignature(r, s));
   }
 
   /// Creates list of bytes with subpacket data

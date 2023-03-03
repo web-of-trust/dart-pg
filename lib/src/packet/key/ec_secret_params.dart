@@ -4,6 +4,9 @@
 
 import 'dart:typed_data';
 
+import 'package:pointycastle/export.dart';
+
+import '../../enums.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
@@ -17,4 +20,19 @@ class ECSecretParams extends KeyParams {
 
   @override
   Uint8List encode() => Uint8List.fromList([...d.bitLength.pack16(), ...d.toUnsignedBytes()]);
+
+  Uint8List sign(
+    final ECPrivateKey privateKey,
+    final Uint8List message,
+    final HashAlgorithm hash,
+  ) {
+    final signer = Signer('${hash.digestName}/DET-ECDSA')..init(true, PrivateKeyParameter<ECPrivateKey>(privateKey));
+    final signature = signer.generateSignature(message) as ECSignature;
+    return Uint8List.fromList([
+      ...signature.r.bitLength.pack16(),
+      ...signature.r.toUnsignedBytes(),
+      ...signature.s.bitLength.pack16(),
+      ...signature.s.toUnsignedBytes(),
+    ]);
+  }
 }

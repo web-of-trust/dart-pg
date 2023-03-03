@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
+import '../../enums.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
@@ -59,4 +60,13 @@ class RSASecretParams extends KeyParams {
         ...pInv.bitLength.pack16(),
         ...pInv.toUnsignedBytes(),
       ]);
+
+  Uint8List sign(final Uint8List message, final HashAlgorithm hash) {
+    final signer = Signer('${hash.digestName}/RSA')..init(true, PrivateKeyParameter<RSAPrivateKey>(privateKey));
+    final signature = signer.generateSignature(message) as RSASignature;
+    return Uint8List.fromList([
+      ...(signature.bytes.lengthInBytes * 8).pack16(),
+      ...signature.bytes,
+    ]);
+  }
 }

@@ -4,6 +4,10 @@
 
 import 'dart:typed_data';
 
+import 'package:pointycastle/api.dart';
+
+import '../../crypto/signer/dsa.dart';
+import '../../enums.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
@@ -17,4 +21,14 @@ class DSASecretParams extends KeyParams {
 
   @override
   Uint8List encode() => Uint8List.fromList([...secretExponent.bitLength.pack16(), ...secretExponent.toUnsignedBytes()]);
+
+  Uint8List sign(
+    final DSAPrivateKey privateKey,
+    final Uint8List message,
+    final HashAlgorithm hash,
+  ) {
+    final signer = DSASigner(Digest(hash.digestName))..init(true, PrivateKeyParameter<DSAPrivateKey>(privateKey));
+    final signature = signer.generateSignature(message);
+    return signature.encode();
+  }
 }

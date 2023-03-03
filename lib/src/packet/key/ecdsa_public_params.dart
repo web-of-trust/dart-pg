@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/pointycastle.dart';
 
+import '../../enums.dart';
 import '../../helpers.dart';
 import 'ec_public_params.dart';
 
@@ -28,5 +29,18 @@ class ECDSAPublicParams extends ECPublicParams {
     pos += length;
     final q = Helper.readMPI(bytes.sublist(pos));
     return ECDSAPublicParams(oid, q);
+  }
+
+  bool verify(
+    final Uint8List message,
+    final HashAlgorithm hash,
+    final Uint8List signature,
+  ) {
+    final signer = Signer('${hash.digestName}/DET-ECDSA')..init(false, PublicKeyParameter<ECPublicKey>(publicKey));
+
+    final r = Helper.readMPI(signature);
+    final s = Helper.readMPI(signature.sublist(r.byteLength + 2));
+
+    return signer.verifySignature(message, ECSignature(r, s));
   }
 }
