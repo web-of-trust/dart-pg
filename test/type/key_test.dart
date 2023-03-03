@@ -146,6 +146,16 @@ void main() {
       final bindingSignature = subkey.bindingSignatures[0];
       expect(bindingSignature.keyFlags!.isEncryptCommunication, isTrue);
       expect(bindingSignature.keyFlags!.isEncryptStorage, isTrue);
+
+      expect(
+        () => PrivateKey.generate(
+          [userID],
+          passphrase,
+          type: KeyType.rsa,
+          rsaBits: 1024,
+        ),
+        throwsArgumentError,
+      );
     });
 
     test('prime256v1 curve', () {
@@ -374,6 +384,27 @@ void main() {
       expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp512r1.identifierString);
       expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolp512r1.hashAlgorithm);
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp512r1.symmetricAlgorithm);
+    });
+
+    test('curve25519', () {
+      expect(
+        () => PrivateKey.generate(
+          [userID],
+          passphrase,
+          type: KeyType.ecc,
+          curve: CurveInfo.curve25519,
+        ),
+        throwsUnsupportedError,
+      );
+      expect(
+        () => PrivateKey.generate(
+          [userID],
+          passphrase,
+          type: KeyType.ecc,
+          curve: CurveInfo.ed25519,
+        ),
+        throwsUnsupportedError,
+      );
     });
   });
 }

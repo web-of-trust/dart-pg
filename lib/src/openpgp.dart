@@ -12,6 +12,7 @@ import 'type/public_key.dart';
 import 'type/signature.dart';
 import 'type/signed_message.dart';
 
+/// Export high level API for Dart developers.
 class OpenPGP {
   static const version = 'Dart PG v1.0.0';
 
@@ -48,7 +49,7 @@ class OpenPGP {
   static const preferredCompression = CompressionAlgorithm.uncompressed;
 
   /// Default curve
-  static const preferredCurve = CurveInfo.brainpoolp512r1;
+  static const preferredCurve = CurveInfo.secp521r1;
 
   /// Default RSA bits length
   static const preferredRSABits = 4096;
