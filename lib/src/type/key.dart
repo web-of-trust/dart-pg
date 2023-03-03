@@ -56,9 +56,7 @@ abstract class Key {
     if (keyPacket.isSigningKey) {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
-          if (signature.keyFlags == null) {
-            continue;
-          } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
+          if (signature.keyFlags != null && (signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
             return false;
           }
         }
@@ -71,9 +69,8 @@ abstract class Key {
     if (keyPacket.isEncryptionKey) {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
-          if (signature.keyFlags == null) {
-            continue;
-          } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
+          if (signature.keyFlags != null &&
+              (signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
             return false;
           }
         }

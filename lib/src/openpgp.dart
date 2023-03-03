@@ -168,15 +168,16 @@ class OpenPGP {
     final List<PrivateKey> signingKeys = const [],
     final List<String> passwords = const [],
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
+    CompressionAlgorithm compression = OpenPGP.preferredCompression,
     final DateTime? date,
   }) async =>
       (signingKeys.isNotEmpty)
-          ? message.sign(signingKeys, date: date).compress(OpenPGP.preferredCompression).encrypt(
+          ? message.sign(signingKeys, date: date).compress(compression).encrypt(
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
               )
-          : message.compress(OpenPGP.preferredCompression).encrypt(
+          : message.compress(compression).encrypt(
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,

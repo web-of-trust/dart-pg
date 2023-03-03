@@ -83,8 +83,7 @@ class Message {
       ]));
 
   LiteralDataPacket? get literalData {
-    final packetList = unwrapCompressed().packetList;
-    final packets = packetList.whereType<LiteralDataPacket>();
+    final packets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     return packets.isNotEmpty ? packets.elementAt(0) : null;
   }
 
@@ -99,15 +98,10 @@ class Message {
   }
 
   /// Gets the key IDs of the keys to which the session key is encrypted
-  Iterable<KeyID> get encryptionKeyIDs {
-    final packetList = unwrapCompressed().packetList;
-    return packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().map((packet) => packet.publicKeyID);
-  }
+  Iterable<KeyID> get encryptionKeyIDs =>
+      unwrapCompressed().packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().map((packet) => packet.publicKeyID);
 
-  Iterable<SignaturePacket> get signaturePackets {
-    final packetList = unwrapCompressed().packetList;
-    return packetList.whereType<SignaturePacket>();
-  }
+  Iterable<SignaturePacket> get signaturePackets => unwrapCompressed().packetList.whereType<SignaturePacket>();
 
   /// Returns ASCII armored text of message
   String armor() => Armor.encode(ArmorType.message, packetList.packetEncode());
@@ -195,17 +189,17 @@ class Message {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    final message = unwrapCompressed();
-    final literalDataPackets = message.packetList.whereType<LiteralDataPacket>();
+    final packets = unwrapCompressed().packetList;
+    final literalDataPackets = packets.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
 
     return Message(
-      message.packetList,
+      packetList,
       Verification.createVerifications(
         literalDataPackets.elementAt(0),
-        message.packetList.whereType<SignaturePacket>(),
+        packets.whereType<SignaturePacket>(),
         verificationKeys,
         date: date,
       ),
@@ -219,8 +213,7 @@ class Message {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
-    final message = unwrapCompressed();
-    final literalDataPackets = message.packetList.whereType<LiteralDataPacket>();
+    final literalDataPackets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
@@ -295,7 +288,7 @@ class Message {
         try {
           final packets = encryptedPacket.decrypt(sessionKey.key, symmetric: sessionKey.symmetric).packets;
           if (packets != null) {
-            return Message(packets).unwrapCompressed();
+            return Message(packets);
           }
         } catch (e) {
           log(e.toString());
@@ -306,7 +299,7 @@ class Message {
         try {
           final packets = encryptedPacket.decrypt(sessionKey.key, symmetric: sessionKey.symmetric).packets;
           if (packets != null) {
-            return Message(packets).unwrapCompressed();
+            return Message(packets);
           }
         } catch (e) {
           log(e.toString());

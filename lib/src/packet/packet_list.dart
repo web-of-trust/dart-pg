@@ -101,7 +101,7 @@ class PacketList extends ListBase<ContainedPacket> {
 
   PacketList filterByTags([List<PacketTag> tags = const []]) {
     if (tags.isNotEmpty) {
-      return PacketList(packets.takeWhile((packet) => tags.contains(packet.tag)));
+      return PacketList(packets.where((packet) => tags.contains(packet.tag)));
     }
     return this;
   }

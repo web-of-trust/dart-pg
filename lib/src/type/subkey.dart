@@ -50,9 +50,7 @@ class Subkey {
   bool get isSigningKey {
     if (keyPacket.isSigningKey) {
       for (final signature in bindingSignatures) {
-        if (signature.keyFlags == null) {
-          continue;
-        } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
+        if (signature.keyFlags != null && (signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
           return false;
         }
       }
@@ -63,9 +61,8 @@ class Subkey {
   bool get isEncryptionKey {
     if (keyPacket.isEncryptionKey) {
       for (final signature in bindingSignatures) {
-        if (signature.keyFlags == null) {
-          continue;
-        } else if ((signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
+        if (signature.keyFlags != null &&
+            (signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
           return false;
         }
       }

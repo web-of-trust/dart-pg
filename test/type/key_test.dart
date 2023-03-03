@@ -118,7 +118,7 @@ void main() {
 
   group('Generate key', () {
     final name = faker.person.name();
-    final email = faker.internet.email();
+    final email = faker.internet.email().replaceAll("'", '');
     final comment = faker.lorem.words(3).join(' ');
     final userID = [name, '($comment)', '<$email>'].join(' ');
     final passphrase = faker.internet.password();
