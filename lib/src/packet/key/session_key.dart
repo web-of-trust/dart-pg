@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/symmetric_algorithm.dart';
 import '../../helpers.dart';
 import '../../openpgp.dart';
 

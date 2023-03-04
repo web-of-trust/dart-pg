@@ -4,7 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/signature_subpacket_type.dart';
+import '../../enum/symmetric_algorithm.dart';
 import '../signature_subpacket.dart';
 
 class PreferredSymmetricAlgorithms extends SignatureSubpacket {

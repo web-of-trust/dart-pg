@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
 /// packet giving whether or not the signature is signed using the primary user ID for the key.

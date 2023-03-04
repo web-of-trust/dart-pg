@@ -7,7 +7,8 @@ import 'dart:typed_data';
 import 'package:pointycastle/api.dart';
 
 import '../crypto/symmetric/base_cipher.dart';
-import '../enums.dart';
+import '../enum/packet_tag.dart';
+import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
 import 'contained_packet.dart';

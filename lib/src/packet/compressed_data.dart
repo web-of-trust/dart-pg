@@ -5,7 +5,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import '../enums.dart';
+import '../enum/compression_algorithm.dart';
+import '../enum/packet_tag.dart';
 import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'packet_list.dart';

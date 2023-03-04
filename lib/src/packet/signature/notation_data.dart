@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
 /// Class provided a NotationData object according to RFC2440, Chapter 5.2.3.15. Notation Data

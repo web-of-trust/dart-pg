@@ -4,7 +4,8 @@
 
 import 'package:pointycastle/pointycastle.dart';
 
-import '../../enums.dart';
+import '../../enum/curve_info.dart';
+import '../../enum/key_algorithm.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 import '../../openpgp.dart';

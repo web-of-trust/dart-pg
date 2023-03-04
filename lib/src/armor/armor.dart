@@ -5,7 +5,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../enums.dart';
+import '../enum/armor_type.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
 import 'crc24.dart';

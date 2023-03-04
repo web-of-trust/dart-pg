@@ -4,7 +4,9 @@
 
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/hash_algorithm.dart';
+import '../../enum/key_algorithm.dart';
+import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
 /// RFC 4880, Section 5.2.3.25 - Signature Target subpacket.

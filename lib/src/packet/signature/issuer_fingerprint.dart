@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:dart_pg/src/helpers.dart';
 
-import '../../enums.dart';
+import '../../enum/signature_subpacket_type.dart';
 import '../key_packet.dart';
 import '../signature_subpacket.dart';
 

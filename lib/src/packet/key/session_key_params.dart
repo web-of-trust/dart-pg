@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/symmetric_algorithm.dart';
 import 'session_key.dart';
 
 export 'ecdh_session_key_params.dart';

@@ -4,7 +4,11 @@
 
 import 'dart:typed_data';
 
-import 'enums.dart';
+import 'enum/compression_algorithm.dart';
+import 'enum/curve_info.dart';
+import 'enum/hash_algorithm.dart';
+import 'enum/key_type.dart';
+import 'enum/symmetric_algorithm.dart';
 import 'type/cleartext_message.dart';
 import 'type/message.dart';
 import 'type/private_key.dart';

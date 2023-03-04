@@ -6,7 +6,12 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import '../armor/armor.dart';
-import '../enums.dart';
+import '../enum/armor_type.dart';
+import '../enum/compression_algorithm.dart';
+import '../enum/literal_format.dart';
+import '../enum/packet_tag.dart';
+import '../enum/signature_type.dart';
+import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
 import '../packet/compressed_data.dart';

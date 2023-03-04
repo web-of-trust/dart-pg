@@ -4,7 +4,13 @@
 
 import 'dart:typed_data';
 
-import '../enums.dart';
+import '../enum/curve_info.dart';
+import '../enum/hash_algorithm.dart';
+import '../enum/key_algorithm.dart';
+import '../enum/packet_tag.dart';
+import '../enum/s2k_type.dart';
+import '../enum/s2k_usage.dart';
+import '../enum/symmetric_algorithm.dart';
 import '../openpgp.dart';
 import 'key/key_pair_params.dart';
 import 'public_subkey.dart';

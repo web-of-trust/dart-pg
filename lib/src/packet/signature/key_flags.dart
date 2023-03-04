@@ -4,7 +4,8 @@
 
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/key_flag.dart';
+import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
 /// Packet holding the key flag values.

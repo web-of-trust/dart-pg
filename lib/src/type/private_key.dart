@@ -5,7 +5,16 @@
 import 'dart:developer';
 
 import '../armor/armor.dart';
-import '../enums.dart';
+import '../enum/armor_type.dart';
+import '../enum/curve_info.dart';
+import '../enum/hash_algorithm.dart';
+import '../enum/key_algorithm.dart';
+import '../enum/key_type.dart';
+import '../enum/packet_tag.dart';
+import '../enum/revocation_reason_tag.dart';
+import '../enum/s2k_type.dart';
+import '../enum/s2k_usage.dart';
+import '../enum/symmetric_algorithm.dart';
 import '../openpgp.dart';
 import '../packet/contained_packet.dart';
 import '../packet/key/key_params.dart';

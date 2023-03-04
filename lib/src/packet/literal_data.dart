@@ -5,7 +5,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../enums.dart';
+import '../enum/literal_format.dart';
+import '../enum/packet_tag.dart';
 import '../helpers.dart';
 import 'contained_packet.dart';
 

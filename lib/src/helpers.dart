@@ -10,7 +10,8 @@ import 'package:crypto/crypto.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:pointycastle/api.dart' as pc;
 
-import 'enums.dart';
+import 'enum/hash_algorithm.dart';
+import 'enum/symmetric_algorithm.dart';
 import 'openpgp.dart';
 
 extension StringHelper on String {

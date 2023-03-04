@@ -6,7 +6,9 @@ import 'dart:typed_data';
 
 import 'package:dart_pg/src/helpers.dart';
 
-import '../../enums.dart';
+import '../../enum/key_algorithm.dart';
+import '../../enum/revocation_key_tag.dart';
+import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
 class RevocationKey extends SignatureSubpacket {

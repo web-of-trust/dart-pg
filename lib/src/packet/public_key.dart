@@ -5,7 +5,8 @@
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 
-import '../enums.dart';
+import '../enum/key_algorithm.dart';
+import '../enum/packet_tag.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
 import 'key/key_id.dart';

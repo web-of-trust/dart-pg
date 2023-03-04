@@ -7,7 +7,9 @@ import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
 import '../crypto/asymmetric/elgamal.dart';
-import '../enums.dart';
+import '../enum/key_algorithm.dart';
+import '../enum/packet_tag.dart';
+import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
 import '../openpgp.dart';
 import 'contained_packet.dart';

@@ -4,7 +4,10 @@
 
 import 'dart:typed_data';
 
-import '../enums.dart';
+import '../enum/hash_algorithm.dart';
+import '../enum/key_algorithm.dart';
+import '../enum/packet_tag.dart';
+import '../enum/signature_type.dart';
 import 'contained_packet.dart';
 import 'key/key_id.dart';
 

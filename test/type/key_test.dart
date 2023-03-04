@@ -1,4 +1,6 @@
-import 'package:dart_pg/src/enums.dart';
+import 'package:dart_pg/src/enum/curve_info.dart';
+import 'package:dart_pg/src/enum/key_algorithm.dart';
+import 'package:dart_pg/src/enum/key_type.dart';
 import 'package:dart_pg/src/packet/key/key_params.dart';
 import 'package:dart_pg/src/type/key.dart';
 import 'package:faker/faker.dart';

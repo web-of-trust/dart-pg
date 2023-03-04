@@ -4,7 +4,17 @@
 
 import 'dart:typed_data';
 
-import '../enums.dart';
+import '../enum/compression_algorithm.dart';
+import '../enum/hash_algorithm.dart';
+import '../enum/key_algorithm.dart';
+import '../enum/key_flag.dart';
+import '../enum/literal_format.dart';
+import '../enum/packet_tag.dart';
+import '../enum/revocation_reason_tag.dart';
+import '../enum/signature_subpacket_type.dart';
+import '../enum/signature_type.dart';
+import '../enum/support_feature.dart';
+import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
 import 'contained_packet.dart';
 import 'key/key_params.dart';

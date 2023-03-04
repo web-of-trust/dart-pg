@@ -1,4 +1,4 @@
-import 'package:dart_pg/src/enums.dart';
+import 'package:dart_pg/src/enum/compression_algorithm.dart';
 import 'package:dart_pg/src/packet/compressed_data.dart';
 import 'package:dart_pg/src/packet/public_key_encrypted_session_key.dart';
 import 'package:dart_pg/src/packet/sym_encrypted_integrity_protected_data.dart';

@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/pointycastle.dart';
 
-import '../../enums.dart';
+import '../../enum/curve_info.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 

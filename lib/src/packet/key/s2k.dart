@@ -5,7 +5,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/hash_algorithm.dart';
+import '../../enum/s2k_type.dart';
+import '../../enum/symmetric_algorithm.dart';
 import '../../helpers.dart';
 
 /// Implementation of the String-to-key specifier

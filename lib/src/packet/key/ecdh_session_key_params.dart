@@ -6,7 +6,8 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/export.dart';
 
-import '../../enums.dart';
+import '../../enum/hash_algorithm.dart';
+import '../../enum/key_algorithm.dart';
 import '../../helpers.dart';
 import 'aes_key_wrapper.dart';
 import 'ecdh_public_params.dart';

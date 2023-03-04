@@ -5,7 +5,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/revocation_reason_tag.dart';
+import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
 /// Represents revocation reason OpenPGP signature sub packet.

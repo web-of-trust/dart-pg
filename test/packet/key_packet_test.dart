@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-import 'package:dart_pg/src/enums.dart';
+import 'package:dart_pg/src/enum/key_algorithm.dart';
+import 'package:dart_pg/src/enum/s2k_usage.dart';
+import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
 
 import 'package:dart_pg/src/packet/key/dsa_public_params.dart';
 import 'package:dart_pg/src/packet/key/dsa_secret_params.dart';

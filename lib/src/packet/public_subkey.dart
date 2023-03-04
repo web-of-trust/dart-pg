@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../enums.dart';
+import '../enum/packet_tag.dart';
 import 'public_key.dart';
 import 'subkey_packet.dart';
 

@@ -5,7 +5,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../../enums.dart';
+import '../../enum/signature_subpacket_type.dart';
 import '../../helpers.dart';
 import '../signature_subpacket.dart';
 

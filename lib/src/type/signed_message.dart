@@ -3,7 +3,7 @@
 // file that was distributed with this source code.
 
 import '../armor/armor.dart';
-import '../enums.dart';
+import '../enum/armor_type.dart';
 import '../packet/literal_data.dart';
 import '../packet/packet_list.dart';
 import '../packet/signature_packet.dart';

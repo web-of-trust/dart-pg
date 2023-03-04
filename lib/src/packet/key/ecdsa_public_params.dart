@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/pointycastle.dart';
 
-import '../../enums.dart';
+import '../../enum/hash_algorithm.dart';
 import '../../helpers.dart';
 import 'ec_public_params.dart';
 

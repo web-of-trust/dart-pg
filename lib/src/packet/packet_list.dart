@@ -5,7 +5,7 @@
 import 'dart:collection';
 import 'dart:typed_data';
 
-import '../enums.dart';
+import '../enum/packet_tag.dart';
 import 'compressed_data.dart';
 import 'contained_packet.dart';
 import 'literal_data.dart';

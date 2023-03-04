@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../enums.dart';
+import '../enum/key_algorithm.dart';
 import 'key/key_id.dart';
 import 'contained_packet.dart';
 import 'key/key_params.dart';
