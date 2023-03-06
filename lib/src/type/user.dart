@@ -2,40 +2,45 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import '../packet/key_packet.dart';
 import '../packet/packet_list.dart';
 import '../packet/signature_packet.dart';
 import '../packet/user_attribute.dart';
 import '../packet/user_id.dart';
+import 'key.dart';
 
 /// Class that represents an user ID and the relevant signatures.
 class User {
+  final Key? mainKey;
+
   final UserIDPacket? userID;
 
   final UserAttributePacket? userAttribute;
 
-  final List<SignaturePacket> selfCertifications = [];
+  final List<SignaturePacket> selfCertifications;
 
-  final List<SignaturePacket> otherCertifications = [];
+  final List<SignaturePacket> otherCertifications;
 
-  final List<SignaturePacket> revocationSignatures = [];
+  final List<SignaturePacket> revocationSignatures;
 
   User({
+    this.mainKey,
     this.userID,
     this.userAttribute,
+    this.selfCertifications = const [],
+    this.otherCertifications = const [],
+    this.revocationSignatures = const [],
   });
 
   /// Checks if a given certificate of the user is revoked
-  bool isRevoked(
-    final KeyPacket keyPacket, {
+  bool isRevoked({
     final SignaturePacket? signature,
     final DateTime? date,
   }) {
-    if (revocationSignatures.isNotEmpty) {
+    if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
         if (signature == null || revocation.issuerKeyID.keyID == signature.issuerKeyID.keyID) {
           if (revocation.verifyUserCertification(
-            keyPacket,
+            mainKey!.keyPacket,
             userID: userID,
             userAttribute: userAttribute,
             date: date,
@@ -48,21 +53,22 @@ class User {
     return false;
   }
 
-  bool verify(
-    final KeyPacket keyPacket, {
+  bool verify({
     final DateTime? date,
   }) {
-    if (isRevoked(keyPacket, date: date)) {
+    if (isRevoked(date: date)) {
       return false;
     }
-    for (final signature in selfCertifications) {
-      if (!signature.verifyUserCertification(
-        keyPacket,
-        userID: userID,
-        userAttribute: userAttribute,
-        date: date,
-      )) {
-        return false;
+    if (mainKey != null) {
+      for (final signature in selfCertifications) {
+        if (!signature.verifyUserCertification(
+          mainKey!.keyPacket,
+          userID: userID,
+          userAttribute: userAttribute,
+          date: date,
+        )) {
+          return false;
+        }
       }
     }
     return true;

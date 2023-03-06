@@ -164,7 +164,7 @@ class PrivateKey extends Key {
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (subkey.isSigningKey && subkey.verify(keyPacket, date: date)) {
+        if (subkey.isSigningKey && subkey.verify(date: date)) {
           return subkey.keyPacket as SecretKeyPacket;
         }
       }
@@ -185,7 +185,7 @@ class PrivateKey extends Key {
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (!subkey.isSigningKey && subkey.verify(keyPacket, date: date)) {
+        if (!subkey.isSigningKey && subkey.verify(date: date)) {
           return subkey.keyPacket as SecretKeyPacket;
         }
       }

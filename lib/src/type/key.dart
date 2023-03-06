@@ -26,17 +26,36 @@ abstract class Key {
 
   final List<SignaturePacket> directSignatures;
 
-  final List<User> users;
+  late final List<User> users;
 
-  final List<Subkey> subkeys;
+  late final List<Subkey> subkeys;
 
   Key(
     this.keyPacket, {
     this.revocationSignatures = const [],
     this.directSignatures = const [],
-    this.users = const [],
-    this.subkeys = const [],
-  });
+    final List<User> users = const [],
+    final List<Subkey> subkeys = const [],
+  }) {
+    this.users = users
+        .map((user) => User(
+              mainKey: this,
+              userID: user.userID,
+              userAttribute: user.userAttribute,
+              selfCertifications: user.selfCertifications,
+              otherCertifications: user.otherCertifications,
+              revocationSignatures: user.revocationSignatures,
+            ))
+        .toList(growable: false);
+    this.subkeys = subkeys
+        .map((subkey) => Subkey(
+              subkey.keyPacket,
+              mainKey: this,
+              bindingSignatures: subkey.bindingSignatures,
+              revocationSignatures: subkey.revocationSignatures,
+            ))
+        .toList(growable: false);
+  }
 
   DateTime get creationTime => keyPacket.creationTime;
 
@@ -94,7 +113,7 @@ abstract class Key {
       return false;
     }
     final user = getPrimaryUser(userID: userID, date: date);
-    if (!user.verify(keyPacket, date: date)) {
+    if (!user.verify(date: date)) {
       return false;
     }
     for (final signature in directSignatures) {
@@ -122,9 +141,8 @@ abstract class Key {
         throw StateError('Could not find user that matches that user ID');
       }
       final selfCertifications = user.selfCertifications
-        ..sort((a, b) => a.creationTime.creationTime.compareTo(b.creationTime.creationTime));
+        ..sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
       if (user.isRevoked(
-        keyPacket,
         date: date,
         signature: selfCertifications.isNotEmpty ? selfCertifications[0] : null,
       )) {

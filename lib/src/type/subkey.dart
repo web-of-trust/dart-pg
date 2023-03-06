@@ -6,17 +6,20 @@ import 'dart:typed_data';
 
 import '../enum/key_algorithm.dart';
 import '../enum/key_flag.dart';
+import '../enum/revocation_reason_tag.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/key_params.dart';
-import '../packet/key_packet.dart';
 import '../packet/packet_list.dart';
 import '../packet/signature_packet.dart';
 import '../packet/subkey_packet.dart';
+import 'key.dart';
 
 /// Class that represents a subkey packet and the relevant signatures.
 class Subkey {
   /// subkey packet to hold in the Subkey
   final SubkeyPacket keyPacket;
+
+  final Key? mainKey;
 
   final List<SignaturePacket> revocationSignatures;
 
@@ -24,6 +27,7 @@ class Subkey {
 
   Subkey(
     this.keyPacket, {
+    this.mainKey,
     this.revocationSignatures = const [],
     this.bindingSignatures = const [],
   });
@@ -71,40 +75,40 @@ class Subkey {
     return keyPacket.isEncryptionKey;
   }
 
-  bool verify(
-    final KeyPacket primaryKey, {
+  bool verify({
     final DateTime? date,
   }) {
-    if (isRevoked(primaryKey, date: date)) {
+    if (isRevoked(date: date)) {
       return false;
     }
-    for (final signature in bindingSignatures) {
-      if (!signature.verify(
-        primaryKey,
-        Uint8List.fromList([
-          ...primaryKey.writeForSign(),
-          ...keyPacket.writeForSign(),
-        ]),
-        date: date,
-      )) {
-        return false;
+    if (mainKey != null) {
+      for (final signature in bindingSignatures) {
+        if (!signature.verify(
+          mainKey!.keyPacket,
+          Uint8List.fromList([
+            ...mainKey!.keyPacket.writeForSign(),
+            ...keyPacket.writeForSign(),
+          ]),
+          date: date,
+        )) {
+          return false;
+        }
       }
     }
     return true;
   }
 
-  bool isRevoked(
-    final KeyPacket primaryKey, {
+  bool isRevoked({
     final SignaturePacket? signature,
     final DateTime? date,
   }) {
-    if (revocationSignatures.isNotEmpty) {
+    if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
         if (signature == null || revocation.issuerKeyID.keyID == signature.issuerKeyID.keyID) {
           if (revocation.verify(
-            primaryKey,
+            mainKey!.keyPacket,
             Uint8List.fromList([
-              ...primaryKey.writeForSign(),
+              ...mainKey!.keyPacket.writeForSign(),
               ...keyPacket.writeForSign(),
             ]),
             date: date,
@@ -115,5 +119,41 @@ class Subkey {
       }
     }
     return false;
+  }
+
+  Subkey revoke({
+    RevocationReasonTag reason = RevocationReasonTag.noReason,
+    String description = '',
+    final DateTime? date,
+  }) {
+    if (mainKey != null && mainKey is PrivateKey) {
+      return Subkey(
+        keyPacket,
+        mainKey: mainKey,
+        revocationSignatures: [
+          SignaturePacket.createSubkeyRevocation(
+            (mainKey as PrivateKey).keyPacket,
+            keyPacket,
+            reason: reason,
+            description: description,
+            date: date,
+          )
+        ],
+        bindingSignatures: bindingSignatures,
+      );
+    }
+    return this;
+  }
+
+  DateTime? getExpirationTime() {
+    bindingSignatures.sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
+    for (final signature in bindingSignatures) {
+      if (signature.keyExpirationTime != null) {
+        final expirationTime = signature.keyExpirationTime!.time;
+        final creationTime = signature.creationTime.creationTime;
+        return creationTime.add(Duration(seconds: expirationTime));
+      }
+    }
+    return null;
   }
 }

@@ -60,7 +60,7 @@ class PublicKey extends Key {
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (subkey.isEncryptionKey && subkey.verify(keyPacket, date: date)) {
+        if (subkey.isEncryptionKey && subkey.verify(date: date)) {
           return subkey.keyPacket.publicKey;
         }
       }
@@ -81,7 +81,7 @@ class PublicKey extends Key {
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (!subkey.isEncryptionKey && subkey.verify(keyPacket, date: date)) {
+        if (!subkey.isEncryptionKey && subkey.verify(date: date)) {
           return subkey.keyPacket as PublicKeyPacket;
         }
       }

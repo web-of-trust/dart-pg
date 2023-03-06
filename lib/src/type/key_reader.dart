@@ -68,13 +68,23 @@ class KeyReader {
           break;
         case PacketTag.userID:
           if (packet is UserIDPacket) {
-            user = User(userID: packet);
+            user = User(
+              userID: packet,
+              selfCertifications: [],
+              otherCertifications: [],
+              revocationSignatures: [],
+            );
             users.add(user);
           }
           break;
         case PacketTag.userAttribute:
           if (packet is UserAttributePacket) {
-            user = User(userAttribute: packet);
+            user = User(
+              userAttribute: packet,
+              selfCertifications: [],
+              otherCertifications: [],
+              revocationSignatures: [],
+            );
             users.add(user);
           }
           break;

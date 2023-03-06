@@ -21,6 +21,7 @@ import 'key/key_params.dart';
 import 'key_packet.dart';
 import 'literal_data.dart';
 import 'signature_subpacket.dart';
+import 'subkey_packet.dart';
 import 'subpacket_reader.dart';
 import 'user_attribute.dart';
 import 'user_id.dart';
@@ -345,6 +346,27 @@ class SignaturePacket extends ContainedPacket {
       SignatureType.keyRevocation,
       Uint8List.fromList([
         ...signKey.writeForSign(),
+      ]),
+      preferredHash: preferredHash,
+      subpackets: [RevocationReason.fromRevocation(reason, description)],
+      date: date,
+    );
+  }
+
+  factory SignaturePacket.createSubkeyRevocation(
+    final SecretKeyPacket signKey,
+    final SubkeyPacket subKey, {
+    final HashAlgorithm? preferredHash,
+    final RevocationReasonTag reason = RevocationReasonTag.noReason,
+    final String description = '',
+    final DateTime? date,
+  }) {
+    return SignaturePacket.createSignature(
+      signKey,
+      SignatureType.subkeyRevocation,
+      Uint8List.fromList([
+        ...signKey.writeForSign(),
+        ...subKey.writeForSign(),
       ]),
       preferredHash: preferredHash,
       subpackets: [RevocationReason.fromRevocation(reason, description)],

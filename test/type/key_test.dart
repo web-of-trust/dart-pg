@@ -19,12 +19,12 @@ void main() {
       final user = publicKey.users[0];
       expect(user.userID!.name, 'rsa pgp key');
       expect(user.userID!.email, 'test@dummy.com');
-      expect(user.verify(publicKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = publicKey.subkeys[0];
       expect(subkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
       expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
-      expect(subkey.verify(publicKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
     });
 
     test('dsa elgamal test', () {
@@ -36,12 +36,12 @@ void main() {
       final user = publicKey.users[0];
       expect(user.userID!.name, 'dsa elgamal pgp key');
       expect(user.userID!.email, 'test@dummy.com');
-      expect(user.verify(publicKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = publicKey.subkeys[0];
       expect(subkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
       expect(subkey.algorithm, KeyAlgorithm.elgamal);
-      expect(subkey.verify(publicKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
     });
 
     test('ecc test', () {
@@ -53,12 +53,12 @@ void main() {
       final user = publicKey.users[0];
       expect(user.userID!.name, 'ecc pgp key');
       expect(user.userID!.email, 'test@dummy.com');
-      expect(user.verify(publicKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = publicKey.subkeys[0];
       expect(subkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(publicKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
     });
   });
 
@@ -73,12 +73,12 @@ void main() {
       final user = privateKey.users[0];
       expect(user.userID!.name, 'rsa pgp key');
       expect(user.userID!.email, 'test@dummy.com');
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
       expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
     });
 
     test('dsa elgamal test', () {
@@ -91,12 +91,12 @@ void main() {
       final user = privateKey.users[0];
       expect(user.userID!.name, 'dsa elgamal pgp key');
       expect(user.userID!.email, 'test@dummy.com');
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
       expect(subkey.algorithm, KeyAlgorithm.elgamal);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
     });
 
     test('ecc test', () {
@@ -109,12 +109,12 @@ void main() {
       final user = privateKey.users[0];
       expect(user.userID!.name, 'ecc pgp key');
       expect(user.userID!.email, 'test@dummy.com');
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
     });
   });
 
@@ -139,11 +139,11 @@ void main() {
       expect(user.userID!.name, name);
       expect(user.userID!.email, email);
       expect(user.userID!.comment, comment);
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.algorithm, KeyAlgorithm.rsaEncryptSign);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
 
       final bindingSignature = subkey.bindingSignatures[0];
       expect(bindingSignature.keyFlags!.isEncryptCommunication, isTrue);
@@ -181,11 +181,11 @@ void main() {
       expect(user.userID!.name, name);
       expect(user.userID!.email, email);
       expect(user.userID!.comment, comment);
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
       expect(subkey.keyStrength, 256);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
@@ -215,11 +215,11 @@ void main() {
       expect(user.userID!.name, name);
       expect(user.userID!.email, email);
       expect(user.userID!.comment, comment);
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
       expect(subkey.keyStrength, 256);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
@@ -247,11 +247,11 @@ void main() {
       expect(user.userID!.name, name);
       expect(user.userID!.email, email);
       expect(user.userID!.comment, comment);
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
       expect(subkey.keyStrength, 384);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
@@ -279,11 +279,11 @@ void main() {
       expect(user.userID!.name, name);
       expect(user.userID!.email, email);
       expect(user.userID!.comment, comment);
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
       expect(subkey.keyStrength, 521);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
@@ -311,11 +311,11 @@ void main() {
       expect(user.userID!.name, name);
       expect(user.userID!.email, email);
       expect(user.userID!.comment, comment);
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
       expect(subkey.keyStrength, 256);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
@@ -343,11 +343,11 @@ void main() {
       expect(user.userID!.name, name);
       expect(user.userID!.email, email);
       expect(user.userID!.comment, comment);
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
       expect(subkey.keyStrength, 384);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
@@ -375,11 +375,11 @@ void main() {
       expect(user.userID!.name, name);
       expect(user.userID!.email, email);
       expect(user.userID!.comment, comment);
-      expect(user.verify(privateKey.keyPacket), isTrue);
+      expect(user.verify(), isTrue);
 
       final subkey = privateKey.subkeys[0];
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(privateKey.keyPacket), isTrue);
+      expect(subkey.verify(), isTrue);
       expect(subkey.keyStrength, 512);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
