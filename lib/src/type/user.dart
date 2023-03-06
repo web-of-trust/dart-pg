@@ -74,6 +74,32 @@ class User {
     return true;
   }
 
+  /// Generate third-party certifications over this user and its primary key
+  /// return new user with new certifications.
+  User certify(
+    List<PrivateKey> signingKeys, {
+    final DateTime? date,
+  }) {
+    if (signingKeys.isNotEmpty) {
+      return User(
+        mainKey: mainKey,
+        userID: userID,
+        userAttribute: userAttribute,
+        selfCertifications: selfCertifications,
+        otherCertifications: signingKeys
+            .map((key) => SignaturePacket.createCertifySignature(
+                  key.getSigningKeyPacket(date: date),
+                  userID: userID,
+                  userAttribute: userAttribute,
+                  date: date,
+                ))
+            .toList(growable: false),
+        revocationSignatures: revocationSignatures,
+      );
+    }
+    return this;
+  }
+
   PacketList toPacketList() {
     return PacketList([
       userID ?? userAttribute!,

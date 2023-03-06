@@ -21,7 +21,6 @@ import 'key/key_params.dart';
 import 'key_packet.dart';
 import 'literal_data.dart';
 import 'signature_subpacket.dart';
-import 'subkey_packet.dart';
 import 'subpacket_reader.dart';
 import 'user_attribute.dart';
 import 'user_id.dart';
@@ -269,6 +268,34 @@ class SignaturePacket extends ContainedPacket {
         Features(Uint8List.fromList([
           SupportFeature.modificationDetection.value,
         ])),
+      ],
+      preferredHash: preferredHash,
+      keyExpirationTime: keyExpirationTime,
+      date: date,
+    );
+  }
+
+  factory SignaturePacket.createCertifySignature(
+    final SecretKeyPacket signKey, {
+    final HashAlgorithm? preferredHash,
+    final UserIDPacket? userID,
+    final UserAttributePacket? userAttribute,
+    final int keyExpirationTime = 0,
+    final DateTime? date,
+  }) {
+    final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
+    if (bytes == null) {
+      throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
+    }
+    return SignaturePacket.createSignature(
+      signKey,
+      SignatureType.certGeneric,
+      Uint8List.fromList([
+        ...signKey.writeForSign(),
+        ...bytes,
+      ]),
+      subpackets: [
+        KeyFlags.fromFlags(KeyFlag.certifyKeys.value | KeyFlag.signData.value),
       ],
       preferredHash: preferredHash,
       keyExpirationTime: keyExpirationTime,
