@@ -23,7 +23,6 @@ import '../packet/key_packet.dart';
 import '../packet/signature_packet.dart';
 import '../packet/user_id.dart';
 import 'key.dart';
-import 'key_reader.dart';
 import 'subkey.dart';
 
 /// Class that represents an OpenPGP Private Key
@@ -46,16 +45,16 @@ class PrivateKey extends Key {
   }
 
   factory PrivateKey.fromPacketList(final PacketList packetList) {
-    final keyReader = KeyReader.fromPacketList(packetList);
-    if (keyReader.keyPacket is! SecretKeyPacket) {
-      throw ArgumentError('Key packet not of secret key type');
+    final keyMap = Key.readPacketList(packetList);
+    if (keyMap['keyPacket'] is! SecretKeyPacket) {
+      throw StateError('Key packet not of secret key type');
     }
     return PrivateKey(
-      keyReader.keyPacket as SecretKeyPacket,
-      revocationSignatures: keyReader.revocationSignatures,
-      directSignatures: keyReader.directSignatures,
-      users: keyReader.users,
-      subkeys: keyReader.subkeys,
+      keyMap['keyPacket'] as SecretKeyPacket,
+      revocationSignatures: keyMap['revocationSignatures'],
+      directSignatures: keyMap['directSignatures'],
+      users: keyMap['users'],
+      subkeys: keyMap['subkeys'],
     );
   }
 

@@ -7,7 +7,6 @@ import '../enum/armor_type.dart';
 import '../packet/packet_list.dart';
 import '../packet/key_packet.dart';
 import 'key.dart';
-import 'key_reader.dart';
 
 /// Class that represents an OpenPGP Public Key
 class PublicKey extends Key {
@@ -28,16 +27,16 @@ class PublicKey extends Key {
   }
 
   factory PublicKey.fromPacketList(final PacketList packetList) {
-    final keyReader = KeyReader.fromPacketList(packetList);
-    if (keyReader.keyPacket is! PublicKeyPacket) {
-      throw ArgumentError('Key packet not of public key type');
+    final keyMap = Key.readPacketList(packetList);
+    if (keyMap['keyPacket'] is! PublicKeyPacket) {
+      throw StateError('Key packet not of secret key type');
     }
     return PublicKey(
-      keyReader.keyPacket as PublicKeyPacket,
-      revocationSignatures: keyReader.revocationSignatures,
-      directSignatures: keyReader.directSignatures,
-      users: keyReader.users,
-      subkeys: keyReader.subkeys,
+      keyMap['keyPacket'] as PublicKeyPacket,
+      revocationSignatures: keyMap['revocationSignatures'],
+      directSignatures: keyMap['directSignatures'],
+      users: keyMap['users'],
+      subkeys: keyMap['subkeys'],
     );
   }
 

@@ -14,6 +14,7 @@ export 'public_key.dart';
 export 'public_subkey.dart';
 export 'secret_key.dart';
 export 'secret_subkey.dart';
+export 'subkey_packet.dart';
 
 abstract class KeyPacket implements ContainedPacket {
   int get version;
