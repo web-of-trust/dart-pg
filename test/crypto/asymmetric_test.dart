@@ -36,6 +36,32 @@ void main() {
       expect(engine.outputBlockSize, (2048 ~/ 8) - 1, reason: "2048 outputBlockSize on decryption failed.");
       expect(message, equals(plainText), reason: '2048 bit test failed');
     });
+
+    test('key generator test', () {
+      final keyGen = ElGamalKeyGenerator()
+        ..init(
+          ParametersWithRandom(
+            ElGamalKeyGeneratorParameters(2048, 64),
+            Helper.secureRandom(),
+          ),
+        );
+      final keyPair = keyGen.generateKeyPair();
+
+      final engine = ElGamalEngine();
+      engine.init(true, PublicKeyParameter<ElGamalPublicKey>(keyPair.publicKey));
+      expect(engine.outputBlockSize, 2048 ~/ 4, reason: "2048 outputBlockSize on encryption failed.");
+
+      final message = faker.randomGenerator.string(100).stringToBytes();
+      final plainText = message;
+      final cipherText = Uint8List(engine.outputBlockSize);
+      engine.processBlock(plainText, 0, plainText.length, cipherText, 0);
+
+      engine.init(false, PrivateKeyParameter<ElGamalPrivateKey>(keyPair.privateKey));
+      expect(engine.outputBlockSize, (2048 ~/ 8) - 1, reason: "2048 outputBlockSize on decryption failed.");
+
+      engine.processBlock(cipherText, 0, cipherText.length, plainText, 0);
+      expect(message, equals(plainText), reason: '2048 bit test failed');
+    });
   });
 
   group('DSA signer', (() {

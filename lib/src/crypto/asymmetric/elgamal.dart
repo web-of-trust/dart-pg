@@ -90,7 +90,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
       final priv = _key as ElGamalPrivateKey;
       final m = (gamma.modPow(prime - (BigInt.one + priv.x), prime) * phi) % prime;
-      output.setAll(outOff, m.toUnsignedBytes());
+      output.setAll(outOff, m.toUnsignedBytes().sublist(0, output.length - outOff));
     } else {
       /// encryption
       final block = (inOff != 0 || inLen != input.length) ? input.sublist(0, inLen) : input;
@@ -162,7 +162,7 @@ class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
 
   ElGamalKeyGeneratorParameters(super.bitStrength, this.certainty);
 
-  Map<String, BigInt> generateParameters(SecureRandom random) {
+  BigInt generatePrime(SecureRandom random) {
     final orderLength = bitStrength - 1;
     final minWeight = bitStrength >> 2;
     BigInt prime, order;
@@ -180,10 +180,7 @@ class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
       }
       break;
     }
-    return {
-      'prime': prime,
-      'order': order,
-    };
+    return prime;
   }
 }
 
@@ -197,10 +194,8 @@ class ElGamalKeyGenerator implements KeyGenerator {
 
   @override
   AsymmetricKeyPair<PublicKey, PrivateKey> generateKeyPair() {
-    final params = _params.generateParameters(_random);
-    final prime = params['prime']!;
-    final order = params['order']!;
-    final generator = _selectGenerator(prime, order);
+    final prime = _params.generatePrime(_random);
+    final generator = _selectGenerator(prime);
     final privateKey = ElGamalPrivateKey(_generatePrivateKey(0, prime), prime, generator);
 
     return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
@@ -217,12 +212,12 @@ class ElGamalKeyGenerator implements KeyGenerator {
     }
   }
 
-  BigInt _selectGenerator(final BigInt prime, final BigInt order) {
+  BigInt _selectGenerator(final BigInt prime) {
     BigInt generator;
     final primeMinusTwo = prime - BigInt.two;
     do {
       final h = Helper.randomBigIntInRange(BigInt.two, primeMinusTwo, random: _random);
-      generator = h.modPow(BigInt.two, order);
+      generator = h.modPow(BigInt.two, prime);
     } while (generator.compareTo(BigInt.one) == 0);
     return generator;
   }
@@ -231,7 +226,7 @@ class ElGamalKeyGenerator implements KeyGenerator {
     if (limit != 0) {
       int minWeight = limit >> 2;
       for (;;) {
-        BigInt x = _random.nextBigInteger(limit);
+        BigInt x = _random.nextBigInteger(limit - 1);
         if (x.nafWeight > minWeight) {
           return x;
         }
