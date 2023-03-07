@@ -4,8 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/api.dart';
-import 'package:pointycastle/key_generators/rsa_key_generator.dart';
+import 'package:pointycastle/export.dart';
 
 import '../../helpers.dart';
 
