@@ -135,7 +135,7 @@ class KeyPairParams {
     final keyGen = DSAKeyGenerator()
       ..init(
         ParametersWithRandom(
-          DSAKeyGeneratorParameters(bitStrength, 64),
+          DSAKeyGeneratorParameters(bitStrength, 256, 64),
           Helper.secureRandom(),
         ),
       );

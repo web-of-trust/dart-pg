@@ -207,43 +207,38 @@ class DSAPrivateKey extends DSAAsymmetricKey implements PrivateKey {
 }
 
 class DSAKeyGeneratorParameters extends KeyGeneratorParameters {
+  final int size;
+
   final int certainty;
 
-  DSAKeyGeneratorParameters(super.bitStrength, this.certainty);
+  DSAKeyGeneratorParameters(super.bitStrength, this.size, this.certainty);
 
   Map<String, BigInt> generateParameters(SecureRandom random) {
-    final orderLength = bitStrength - 1;
-    final minWeight = bitStrength >> 2;
-    BigInt prime, order;
-    for (;;) {
-      order = generateProbablePrime(orderLength, certainty, random);
-      prime = (order << 1) + BigInt.one;
-      if (prime.isProbablePrime(certainty)) {
-        continue;
+    final order = generateProbablePrime(size, certainty, random);
+    final divisor = order * BigInt.two;
+    BigInt prime, generator;
+    do {
+      final x = random.nextBigInteger(bitStrength);
+      final c = x % divisor;
+      prime = x - (c - BigInt.one);
+    } while (!prime.isProbablePrime(certainty) || prime.bitLength != bitStrength);
+
+    final p_1 = prime - BigInt.one;
+    final e = p_1 ~/ order;
+    var h = BigInt.two;
+    while (true) {
+      generator = h.modPow(e, prime);
+      if (generator.compareTo(BigInt.one) != 0) {
+        break;
       }
-      if (certainty > 2 && !order.isProbablePrime(certainty - 2)) {
-        continue;
-      }
-      if (prime.nafWeight < minWeight) {
-        continue;
-      }
-      break;
+      h += BigInt.one;
     }
+
     return {
       'prime': prime,
       'order': order,
-      'generator': _selectGenerator(prime, order, random),
+      'generator': generator,
     };
-  }
-
-  BigInt _selectGenerator(final BigInt prime, final BigInt order, SecureRandom random) {
-    BigInt generator;
-    final primeMinusTwo = prime - BigInt.two;
-    do {
-      final h = Helper.randomBigIntInRange(BigInt.two, primeMinusTwo, random: random);
-      generator = h.modPow(BigInt.two, order);
-    } while (generator.compareTo(BigInt.one) == 0);
-    return generator;
   }
 }
 

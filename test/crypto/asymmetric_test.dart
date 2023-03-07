@@ -41,7 +41,7 @@ void main() {
       final keyGen = ElGamalKeyGenerator()
         ..init(
           ParametersWithRandom(
-            ElGamalKeyGeneratorParameters(2048, 64),
+            ElGamalKeyGeneratorParameters(2048, 2),
             Helper.secureRandom(),
           ),
         );
@@ -96,6 +96,23 @@ void main() {
       signer.init(false, PublicKeyParameter<DSAPublicKey>(publicKey));
       expect(signer.verifySignature(message, signature), true);
     }));
+
+    test('key generator test', () {
+      final signer = DSASigner(Digest('SHA-256'));
+      final keyGen = DSAKeyGenerator()
+        ..init(
+          ParametersWithRandom(
+            DSAKeyGeneratorParameters(2048, 256, 2),
+            Helper.secureRandom(),
+          ),
+        );
+      final keyPair = keyGen.generateKeyPair();
+
+      signer.init(true, PrivateKeyParameter<DSAPrivateKey>(keyPair.privateKey));
+      final signature = signer.generateSignature(message);
+      signer.init(false, PublicKeyParameter<DSAPublicKey>(keyPair.publicKey));
+      expect(signer.verifySignature(message, signature), true);
+    });
   }));
 
   test('Diffie Hellman key agreement test', (() {
