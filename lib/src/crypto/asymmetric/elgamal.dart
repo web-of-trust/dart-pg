@@ -168,7 +168,7 @@ class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
     for (;;) {
       order = generateProbablePrime(orderLength, certainty, random);
       prime = (order << 1) + BigInt.one;
-      if (prime.isProbablePrime(certainty)) {
+      if (!prime.isProbablePrime(certainty)) {
         continue;
       }
       if (certainty > 2 && !order.isProbablePrime(certainty - 2)) {
