@@ -84,11 +84,11 @@ class PrivateKey extends Key {
         keyAlgorithm = KeyAlgorithm.rsaEncryptSign;
         subkeyAlgorithm = KeyAlgorithm.rsaEncryptSign;
         break;
-      case KeyType.dsa:
+      case KeyType.dsaElGamal:
         keyAlgorithm = KeyAlgorithm.dsa;
         subkeyAlgorithm = KeyAlgorithm.elgamal;
         break;
-      case KeyType.ecc:
+      case KeyType.ellipticCurve:
         keyAlgorithm = KeyAlgorithm.ecdsa;
         subkeyAlgorithm = KeyAlgorithm.ecdh;
         break;

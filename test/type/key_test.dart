@@ -160,11 +160,46 @@ void main() {
       );
     });
 
+    test('dsa elGamal', () {
+      final privateKey = PrivateKey.generate(
+        [userID],
+        passphrase,
+        type: KeyType.dsaElGamal,
+      );
+      expect(privateKey.algorithm, KeyAlgorithm.dsa);
+      expect(privateKey.isPrivate, true);
+      expect(privateKey.keyStrength, 4096);
+
+      final user = privateKey.users[0];
+      expect(user.userID!.name, name);
+      expect(user.userID!.email, email);
+      expect(user.userID!.comment, comment);
+      expect(user.verify(), isTrue);
+
+      final subkey = privateKey.subkeys[0];
+      expect(subkey.algorithm, KeyAlgorithm.elgamal);
+      expect(subkey.verify(), isTrue);
+
+      final bindingSignature = subkey.bindingSignatures[0];
+      expect(bindingSignature.keyFlags!.isEncryptCommunication, isTrue);
+      expect(bindingSignature.keyFlags!.isEncryptStorage, isTrue);
+
+      expect(
+        () => PrivateKey.generate(
+          [userID],
+          passphrase,
+          type: KeyType.dsaElGamal,
+          bitStrength: 1024,
+        ),
+        throwsArgumentError,
+      );
+    });
+
     test('prime256v1 curve', () {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ecc,
+        type: KeyType.ellipticCurve,
         curve: CurveInfo.prime256v1,
       );
 
@@ -198,7 +233,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ecc,
+        type: KeyType.ellipticCurve,
         curve: CurveInfo.secp256k1,
       );
 
@@ -232,7 +267,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ecc,
+        type: KeyType.ellipticCurve,
         curve: CurveInfo.secp384r1,
       );
 
@@ -264,7 +299,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ecc,
+        type: KeyType.ellipticCurve,
         curve: CurveInfo.secp521r1,
       );
 
@@ -296,7 +331,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ecc,
+        type: KeyType.ellipticCurve,
         curve: CurveInfo.brainpoolp256r1,
       );
 
@@ -328,7 +363,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ecc,
+        type: KeyType.ellipticCurve,
         curve: CurveInfo.brainpoolp384r1,
       );
 
@@ -360,7 +395,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ecc,
+        type: KeyType.ellipticCurve,
         curve: CurveInfo.brainpoolp512r1,
       );
 
@@ -393,7 +428,7 @@ void main() {
         () => PrivateKey.generate(
           [userID],
           passphrase,
-          type: KeyType.ecc,
+          type: KeyType.ellipticCurve,
           curve: CurveInfo.curve25519,
         ),
         throwsUnsupportedError,
@@ -402,7 +437,7 @@ void main() {
         () => PrivateKey.generate(
           [userID],
           passphrase,
-          type: KeyType.ecc,
+          type: KeyType.ellipticCurve,
           curve: CurveInfo.ed25519,
         ),
         throwsUnsupportedError,

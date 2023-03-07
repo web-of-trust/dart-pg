@@ -175,7 +175,7 @@ class ElGamalKeyGenerator implements KeyGenerator {
     final prime = safePrimes['prime']!;
     final order = safePrimes['order']!;
     final generator = Helper.selectGenerator(prime, order, random: _random);
-    final privateKey = ElGamalPrivateKey(Helper.calculateDHPrivate(0, prime), prime, generator);
+    final privateKey = ElGamalPrivateKey(_generatePrivateKey(0, prime), prime, generator);
 
     return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
   }
@@ -188,6 +188,26 @@ class ElGamalKeyGenerator implements KeyGenerator {
     } else {
       _random = Helper.secureRandom();
       _params = params as ElGamalKeyGeneratorParameters;
+    }
+  }
+
+  BigInt _generatePrivateKey(final int limit, final BigInt prime) {
+    if (limit != 0) {
+      int minWeight = limit >> 2;
+      for (;;) {
+        BigInt x = _random.nextBigInteger(limit);
+        if (x.nafWeight > minWeight) {
+          return x;
+        }
+      }
+    }
+    BigInt max = prime - BigInt.two;
+    int minWeight = max.bitLength >> 2;
+    for (;;) {
+      BigInt x = Helper.randomBigIntInRange(BigInt.two, max, random: _random);
+      if (x.nafWeight > minWeight) {
+        return x;
+      }
     }
   }
 }

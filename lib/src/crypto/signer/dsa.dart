@@ -224,7 +224,7 @@ class DSAKeyGenerator implements KeyGenerator {
     final prime = safePrimes['prime']!;
     final order = safePrimes['order']!;
     final generator = Helper.selectGenerator(prime, order, random: _random);
-    final privateKey = DSAPrivateKey(Helper.calculateDHPrivate(0, prime), prime, order, generator);
+    final privateKey = DSAPrivateKey(_generatePrivateKey(order), prime, order, generator);
 
     return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
   }
@@ -237,6 +237,16 @@ class DSAKeyGenerator implements KeyGenerator {
     } else {
       _random = Helper.secureRandom();
       _params = params as DSAKeyGeneratorParameters;
+    }
+  }
+
+  BigInt _generatePrivateKey(final BigInt order) {
+    int minWeight = order.bitLength >> 2;
+    for (;;) {
+      BigInt x = Helper.randomBigIntInRange(BigInt.one, order - BigInt.one, random: _random);
+      if (x.nafWeight > minWeight) {
+        return x;
+      }
     }
   }
 }

@@ -550,31 +550,6 @@ class Helper {
     return generator;
   }
 
-  static BigInt calculateDHPrivate(
-    final int limit,
-    final BigInt prime, {
-    pc.SecureRandom? random,
-  }) {
-    random = random ?? secureRandom();
-    if (limit != 0) {
-      int minWeight = limit >> 2;
-      for (;;) {
-        BigInt x = random.nextBigInteger(limit);
-        if (x.nafWeight > minWeight) {
-          return x;
-        }
-      }
-    }
-    BigInt max = prime - BigInt.two;
-    int minWeight = max.bitLength >> 2;
-    for (;;) {
-      BigInt x = randomBigIntInRange(BigInt.two, max, random: random);
-      if (x.nafWeight > minWeight) {
-        return x;
-      }
-    }
-  }
-
   static Uint8List _getPKCS1Padding(final int length) {
     final result = Uint8List(length);
     var count = 0;
