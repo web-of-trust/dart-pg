@@ -204,3 +204,39 @@ class DSAPrivateKey extends DSAAsymmetricKey implements PrivateKey {
 
   BigInt get y => publicKey.y;
 }
+
+class DSAKeyGeneratorParameters extends KeyGeneratorParameters {
+  final int certainty;
+  DSAKeyGeneratorParameters(super.bitStrength, this.certainty);
+}
+
+class DSAKeyGenerator implements KeyGenerator {
+  late SecureRandom _random;
+
+  late DSAKeyGeneratorParameters _params;
+
+  @override
+  String get algorithmName => 'DSA';
+
+  @override
+  AsymmetricKeyPair<PublicKey, PrivateKey> generateKeyPair() {
+    final safePrimes = Helper.generateSafePrimes(_params.bitStrength, _params.certainty, random: _random);
+    final prime = safePrimes['prime']!;
+    final order = safePrimes['order']!;
+    final generator = Helper.selectGenerator(prime, order, random: _random);
+    final privateKey = DSAPrivateKey(Helper.calculateDHPrivate(0, prime), prime, order, generator);
+
+    return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
+  }
+
+  @override
+  void init(CipherParameters params) {
+    if (params is ParametersWithRandom) {
+      _random = params.random;
+      _params = params.parameters as DSAKeyGeneratorParameters;
+    } else {
+      _random = Helper.secureRandom();
+      _params = params as DSAKeyGeneratorParameters;
+    }
+  }
+}

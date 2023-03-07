@@ -99,7 +99,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
         throw ArgumentError('input too large for $algorithmName cipher.');
       }
 
-      final k = _generateK(prime);
+      final k = _calculateK(prime);
 
       final pub = _key as ElGamalPublicKey;
       final gamma = pub.generator.modPow(k, prime);
@@ -117,7 +117,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
   @override
   void reset() {}
 
-  BigInt _generateK(final BigInt n) {
+  BigInt _calculateK(final BigInt n) {
     BigInt k;
     do {
       k = _random.nextBigInteger(n.bitLength);
@@ -154,4 +154,40 @@ class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
       : publicKey = ElGamalPublicKey(generator.modPow(x, prime), prime, generator);
 
   BigInt get y => publicKey.y;
+}
+
+class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
+  final int certainty;
+  ElGamalKeyGeneratorParameters(super.bitStrength, this.certainty);
+}
+
+class ElGamalKeyGenerator implements KeyGenerator {
+  late SecureRandom _random;
+
+  late ElGamalKeyGeneratorParameters _params;
+
+  @override
+  String get algorithmName => 'ElGamal';
+
+  @override
+  AsymmetricKeyPair<PublicKey, PrivateKey> generateKeyPair() {
+    final safePrimes = Helper.generateSafePrimes(_params.bitStrength, _params.certainty, random: _random);
+    final prime = safePrimes['prime']!;
+    final order = safePrimes['order']!;
+    final generator = Helper.selectGenerator(prime, order, random: _random);
+    final privateKey = ElGamalPrivateKey(Helper.calculateDHPrivate(0, prime), prime, generator);
+
+    return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
+  }
+
+  @override
+  void init(CipherParameters params) {
+    if (params is ParametersWithRandom) {
+      _random = params.random;
+      _params = params.parameters as ElGamalKeyGeneratorParameters;
+    } else {
+      _random = Helper.secureRandom();
+      _params = params as ElGamalKeyGeneratorParameters;
+    }
+  }
 }

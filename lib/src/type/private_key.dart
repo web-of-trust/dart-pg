@@ -66,7 +66,7 @@ class PrivateKey extends Key {
     final List<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
-    final int rsaBits = OpenPGP.preferredRSABits,
+    final int rsaBits = OpenPGP.preferredBitStrength,
     final CurveInfo curve = OpenPGP.preferredCurve,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,

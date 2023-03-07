@@ -1,4 +1,4 @@
-The Dart Privacy Guard (Dart PG) is an implementation of the OpenPGP protocol in Dart language. It implements [RFC4880](https://www.rfc-editor.org/rfc/rfc4880), [RFC6637](https://www.rfc-editor.org/rfc/rfc6637) and [RFC3156](https://www.rfc-editor.org/rfc/rfc3156)
+The Dart Privacy Guard (Dart PG) is an implementation of the OpenPGP protocol in Dart language. It implements [RFC4880](https://www.rfc-editor.org/rfc/rfc4880), [RFC6637](https://www.rfc-editor.org/rfc/rfc6637), parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis) and [RFC3156](https://www.rfc-editor.org/rfc/rfc3156).
 
 ## Features
 

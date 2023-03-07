@@ -37,7 +37,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   }
   factory SecretSubkeyPacket.generate(
     final KeyAlgorithm algorithm, {
-    final int rsaBits = OpenPGP.preferredRSABits,
+    final int rsaBits = OpenPGP.preferredBitStrength,
     final CurveInfo curve = OpenPGP.preferredCurve,
     final DateTime? date,
   }) {

@@ -55,11 +55,11 @@ class OpenPGP {
   /// Default curve
   static const preferredCurve = CurveInfo.secp521r1;
 
-  /// Default RSA bits length
-  static const preferredRSABits = 4096;
+  /// Default big int bit strength
+  static const preferredBitStrength = 4096;
 
-  /// Min RSA bits length
-  static const minRSABits = 2048;
+  /// Min big int bit strength
+  static const minBitStrength = 2048;
 
   /// RSA public exponent
   static const rsaPublicExponent = 65537;
@@ -72,7 +72,7 @@ class OpenPGP {
     final List<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
-    final int rsaBits = OpenPGP.preferredRSABits,
+    final int rsaBits = OpenPGP.preferredBitStrength,
     final CurveInfo curve = OpenPGP.preferredCurve,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,

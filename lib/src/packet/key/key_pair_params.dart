@@ -4,6 +4,8 @@
 
 import 'package:pointycastle/pointycastle.dart';
 
+import '../../crypto/asymmetric/elgamal.dart';
+import '../../crypto/signer/dsa.dart';
 import '../../enum/curve_info.dart';
 import '../../enum/key_algorithm.dart';
 import '../../helpers.dart';
@@ -18,7 +20,7 @@ class KeyPairParams {
 
   factory KeyPairParams.generate(
     final KeyAlgorithm algorithm, {
-    final int rsaBits = OpenPGP.preferredRSABits,
+    final int rsaBits = OpenPGP.preferredBitStrength,
     final CurveInfo curve = OpenPGP.preferredCurve,
   }) {
     switch (algorithm) {
@@ -57,8 +59,36 @@ class KeyPairParams {
           ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.dsa:
+        final keyPair = _generateDSAKeyPair(rsaBits);
+        final publicKey = keyPair.publicKey;
+        final privateKey = keyPair.privateKey;
+
+        return KeyPairParams(
+          DSAPublicParams(
+            publicKey.prime,
+            publicKey.order,
+            publicKey.generator,
+            publicKey.y,
+          ),
+          DSASecretParams(
+            privateKey.x,
+          ),
+        );
       case KeyAlgorithm.elgamal:
-        throw UnsupportedError('Public key algorithm ${algorithm.name} is unsupported for key generation.');
+        final keyPair = _generateElGamalKeyPair(rsaBits);
+        final publicKey = keyPair.publicKey;
+        final privateKey = keyPair.privateKey;
+
+        return KeyPairParams(
+          ElGamalPublicParams(
+            publicKey.prime,
+            publicKey.generator,
+            publicKey.y,
+          ),
+          ElGamalSecretParams(
+            privateKey.x,
+          ),
+        );
       default:
         throw UnimplementedError('Unknown public key algorithm for key generation.');
     }
@@ -76,23 +106,63 @@ class KeyPairParams {
   int get hashCode => publicParams.hashCode ^ secretParams.hashCode;
 
   static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([
-    final int bits = OpenPGP.preferredRSABits,
+    final int bits = OpenPGP.preferredBitStrength,
   ]) {
-    if (bits < OpenPGP.minRSABits) {
-      throw ArgumentError('RSA bits should be at least ${OpenPGP.minRSABits}, got: $bits');
+    if (bits < OpenPGP.minBitStrength) {
+      throw ArgumentError('RSA bit streng should be at least ${OpenPGP.minBitStrength}, got: $bits');
     }
 
-    final keyGen = KeyGenerator('RSA');
-    keyGen.init(
-      ParametersWithRandom(
-        RSAKeyGeneratorParameters(BigInt.from(OpenPGP.rsaPublicExponent), bits, 64),
-        Helper.secureRandom(),
-      ),
-    );
+    final keyGen = KeyGenerator('RSA')
+      ..init(
+        ParametersWithRandom(
+          RSAKeyGeneratorParameters(BigInt.from(OpenPGP.rsaPublicExponent), bits, 64),
+          Helper.secureRandom(),
+        ),
+      );
     final keyPair = keyGen.generateKeyPair();
     return AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>(
       keyPair.publicKey as RSAPublicKey,
       keyPair.privateKey as RSAPrivateKey,
+    );
+  }
+
+  static AsymmetricKeyPair<DSAPublicKey, DSAPrivateKey> _generateDSAKeyPair([
+    final int bits = OpenPGP.preferredBitStrength,
+  ]) {
+    if (bits < OpenPGP.minBitStrength) {
+      throw ArgumentError('DSA bit streng should be at least ${OpenPGP.minBitStrength}, got: $bits');
+    }
+    final keyGen = DSAKeyGenerator()
+      ..init(
+        ParametersWithRandom(
+          DSAKeyGeneratorParameters(bits, 64),
+          Helper.secureRandom(),
+        ),
+      );
+    final keyPair = keyGen.generateKeyPair();
+    return AsymmetricKeyPair<DSAPublicKey, DSAPrivateKey>(
+      keyPair.publicKey as DSAPublicKey,
+      keyPair.privateKey as DSAPrivateKey,
+    );
+  }
+
+  static AsymmetricKeyPair<ElGamalPublicKey, ElGamalPrivateKey> _generateElGamalKeyPair([
+    final int bits = OpenPGP.preferredBitStrength,
+  ]) {
+    if (bits < OpenPGP.minBitStrength) {
+      throw ArgumentError('ElGamal bit streng should be at least ${OpenPGP.minBitStrength}, got: $bits');
+    }
+    final keyGen = ElGamalKeyGenerator()
+      ..init(
+        ParametersWithRandom(
+          ElGamalKeyGeneratorParameters(bits, 64),
+          Helper.secureRandom(),
+        ),
+      );
+    final keyPair = keyGen.generateKeyPair();
+    return AsymmetricKeyPair<ElGamalPublicKey, ElGamalPrivateKey>(
+      keyPair.publicKey as ElGamalPublicKey,
+      keyPair.privateKey as ElGamalPrivateKey,
     );
   }
 
