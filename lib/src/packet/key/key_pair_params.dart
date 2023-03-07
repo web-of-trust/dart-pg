@@ -28,15 +28,12 @@ class KeyPairParams {
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
         final keyPair = _generateRSAKeyPair(bitStrength);
-        final publicKey = keyPair.publicKey;
-        final privateKey = keyPair.privateKey;
-
         return KeyPairParams(
-          RSAPublicParams(publicKey.modulus!, publicKey.publicExponent!),
+          RSAPublicParams(keyPair.publicKey.modulus!, keyPair.publicKey.publicExponent!),
           RSASecretParams(
-            privateKey.privateExponent!,
-            privateKey.p!,
-            privateKey.q!,
+            keyPair.privateKey.privateExponent!,
+            keyPair.privateKey.p!,
+            keyPair.privateKey.q!,
           ),
         );
       case KeyAlgorithm.ecdsa:
@@ -60,33 +57,27 @@ class KeyPairParams {
         );
       case KeyAlgorithm.dsa:
         final keyPair = _generateDSAKeyPair(bitStrength);
-        final publicKey = keyPair.publicKey;
-        final privateKey = keyPair.privateKey;
-
         return KeyPairParams(
           DSAPublicParams(
-            publicKey.prime,
-            publicKey.order,
-            publicKey.generator,
-            publicKey.y,
+            keyPair.publicKey.prime,
+            keyPair.publicKey.order,
+            keyPair.publicKey.generator,
+            keyPair.publicKey.y,
           ),
           DSASecretParams(
-            privateKey.x,
+            keyPair.privateKey.x,
           ),
         );
       case KeyAlgorithm.elgamal:
         final keyPair = _generateElGamalKeyPair(bitStrength);
-        final publicKey = keyPair.publicKey;
-        final privateKey = keyPair.privateKey;
-
         return KeyPairParams(
           ElGamalPublicParams(
-            publicKey.prime,
-            publicKey.generator,
-            publicKey.y,
+            keyPair.publicKey.prime,
+            keyPair.publicKey.generator,
+            keyPair.publicKey.y,
           ),
           ElGamalSecretParams(
-            privateKey.x,
+            keyPair.privateKey.x,
           ),
         );
       default:
@@ -106,16 +97,16 @@ class KeyPairParams {
   int get hashCode => publicParams.hashCode ^ secretParams.hashCode;
 
   static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([
-    final int bits = OpenPGP.preferredBitStrength,
+    final int bitStrength = OpenPGP.preferredBitStrength,
   ]) {
-    if (bits < OpenPGP.minBitStrength) {
-      throw ArgumentError('RSA bit streng should be at least ${OpenPGP.minBitStrength}, got: $bits');
+    if (bitStrength < OpenPGP.minBitStrength) {
+      throw ArgumentError('RSA bit streng should be at least ${OpenPGP.minBitStrength}, got: $bitStrength');
     }
 
     final keyGen = KeyGenerator('RSA')
       ..init(
         ParametersWithRandom(
-          RSAKeyGeneratorParameters(BigInt.from(OpenPGP.rsaPublicExponent), bits, 64),
+          RSAKeyGeneratorParameters(BigInt.from(OpenPGP.rsaPublicExponent), bitStrength, 64),
           Helper.secureRandom(),
         ),
       );

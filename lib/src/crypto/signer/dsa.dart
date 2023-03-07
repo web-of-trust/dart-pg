@@ -213,7 +213,7 @@ class DSAKeyGeneratorParameters extends KeyGeneratorParameters {
 
   DSAKeyGeneratorParameters(super.bitStrength, this.size, this.certainty);
 
-  Map<String, BigInt> generateParameters(SecureRandom random) {
+  Map<String, BigInt> generateParameters(final SecureRandom random) {
     final order = generateProbablePrime(size, certainty, random);
     final divisor = order * BigInt.two;
     BigInt prime, generator;

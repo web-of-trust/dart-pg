@@ -162,7 +162,7 @@ class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
 
   ElGamalKeyGeneratorParameters(super.bitStrength, this.certainty);
 
-  BigInt generatePrime(SecureRandom random) {
+  BigInt generatePrime(final SecureRandom random) {
     final orderLength = bitStrength - 1;
     final minWeight = bitStrength >> 2;
     BigInt prime, order;
