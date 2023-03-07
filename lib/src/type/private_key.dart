@@ -66,7 +66,7 @@ class PrivateKey extends Key {
     final List<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
-    final int rsaBits = OpenPGP.preferredBitStrength,
+    final int bitStrength = OpenPGP.preferredBitStrength,
     final CurveInfo curve = OpenPGP.preferredCurve,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,
@@ -77,18 +77,32 @@ class PrivateKey extends Key {
       throw ArgumentError('UserIDs and passphrase are required for key generation');
     }
 
-    final keyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdsa;
-    final subkeyAlgorithm = (type == KeyType.rsa) ? KeyAlgorithm.rsaEncryptSign : KeyAlgorithm.ecdh;
+    final KeyAlgorithm keyAlgorithm;
+    final KeyAlgorithm subkeyAlgorithm;
+    switch (type) {
+      case KeyType.rsa:
+        keyAlgorithm = KeyAlgorithm.rsaEncryptSign;
+        subkeyAlgorithm = KeyAlgorithm.rsaEncryptSign;
+        break;
+      case KeyType.dsa:
+        keyAlgorithm = KeyAlgorithm.dsa;
+        subkeyAlgorithm = KeyAlgorithm.elgamal;
+        break;
+      case KeyType.ecc:
+        keyAlgorithm = KeyAlgorithm.ecdsa;
+        subkeyAlgorithm = KeyAlgorithm.ecdh;
+        break;
+    }
 
     final secretKey = SecretKeyPacket.generate(
       keyAlgorithm,
-      rsaBits: rsaBits,
+      bitStrength: bitStrength,
       curve: curve,
       date: date,
     ).encrypt(passphrase);
     final secretSubkey = SecretSubkeyPacket.generate(
       subkeyAlgorithm,
-      rsaBits: rsaBits,
+      rsaBits: bitStrength,
       curve: curve,
       date: date,
     ).encrypt(subkeyPassphrase ?? passphrase);

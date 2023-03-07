@@ -98,11 +98,11 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
   factory SecretKeyPacket.generate(
     final KeyAlgorithm algorithm, {
-    final int rsaBits = OpenPGP.preferredBitStrength,
+    final int bitStrength = OpenPGP.preferredBitStrength,
     final CurveInfo curve = OpenPGP.preferredCurve,
     final DateTime? date,
   }) {
-    final keyPair = KeyPairParams.generate(algorithm, rsaBits: rsaBits, curve: curve);
+    final keyPair = KeyPairParams.generate(algorithm, bitStrength: bitStrength, curve: curve);
 
     return SecretKeyPacket(
       PublicKeyPacket(

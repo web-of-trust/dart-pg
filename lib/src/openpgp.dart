@@ -72,7 +72,7 @@ class OpenPGP {
     final List<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
-    final int rsaBits = OpenPGP.preferredBitStrength,
+    final int bitStrength = OpenPGP.preferredBitStrength,
     final CurveInfo curve = OpenPGP.preferredCurve,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,
@@ -83,7 +83,7 @@ class OpenPGP {
         userIDs,
         passphrase,
         type: type,
-        rsaBits: rsaBits,
+        bitStrength: bitStrength,
         curve: curve,
         keyExpirationTime: keyExpirationTime,
         subkeySign: subkeySign,

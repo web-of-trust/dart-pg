@@ -154,7 +154,7 @@ void main() {
           [userID],
           passphrase,
           type: KeyType.rsa,
-          rsaBits: 1024,
+          bitStrength: 1024,
         ),
         throwsArgumentError,
       );

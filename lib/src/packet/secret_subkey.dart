@@ -41,7 +41,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     final CurveInfo curve = OpenPGP.preferredCurve,
     final DateTime? date,
   }) {
-    final keyPair = KeyPairParams.generate(algorithm, rsaBits: rsaBits, curve: curve);
+    final keyPair = KeyPairParams.generate(algorithm, bitStrength: rsaBits, curve: curve);
 
     return SecretSubkeyPacket(
       PublicSubkeyPacket(

@@ -20,14 +20,14 @@ class KeyPairParams {
 
   factory KeyPairParams.generate(
     final KeyAlgorithm algorithm, {
-    final int rsaBits = OpenPGP.preferredBitStrength,
+    final int bitStrength = OpenPGP.preferredBitStrength,
     final CurveInfo curve = OpenPGP.preferredCurve,
   }) {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final keyPair = _generateRSAKeyPair(rsaBits);
+        final keyPair = _generateRSAKeyPair(bitStrength);
         final publicKey = keyPair.publicKey;
         final privateKey = keyPair.privateKey;
 
@@ -59,7 +59,7 @@ class KeyPairParams {
           ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.dsa:
-        final keyPair = _generateDSAKeyPair(rsaBits);
+        final keyPair = _generateDSAKeyPair(bitStrength);
         final publicKey = keyPair.publicKey;
         final privateKey = keyPair.privateKey;
 
@@ -75,7 +75,7 @@ class KeyPairParams {
           ),
         );
       case KeyAlgorithm.elgamal:
-        final keyPair = _generateElGamalKeyPair(rsaBits);
+        final keyPair = _generateElGamalKeyPair(bitStrength);
         final publicKey = keyPair.publicKey;
         final privateKey = keyPair.privateKey;
 
@@ -127,15 +127,15 @@ class KeyPairParams {
   }
 
   static AsymmetricKeyPair<DSAPublicKey, DSAPrivateKey> _generateDSAKeyPair([
-    final int bits = OpenPGP.preferredBitStrength,
+    final int bitStrength = OpenPGP.preferredBitStrength,
   ]) {
-    if (bits < OpenPGP.minBitStrength) {
-      throw ArgumentError('DSA bit streng should be at least ${OpenPGP.minBitStrength}, got: $bits');
+    if (bitStrength < OpenPGP.minBitStrength) {
+      throw ArgumentError('DSA bit streng should be at least ${OpenPGP.minBitStrength}, got: $bitStrength');
     }
     final keyGen = DSAKeyGenerator()
       ..init(
         ParametersWithRandom(
-          DSAKeyGeneratorParameters(bits, 64),
+          DSAKeyGeneratorParameters(bitStrength, 64),
           Helper.secureRandom(),
         ),
       );
@@ -147,15 +147,15 @@ class KeyPairParams {
   }
 
   static AsymmetricKeyPair<ElGamalPublicKey, ElGamalPrivateKey> _generateElGamalKeyPair([
-    final int bits = OpenPGP.preferredBitStrength,
+    final int bitStrength = OpenPGP.preferredBitStrength,
   ]) {
-    if (bits < OpenPGP.minBitStrength) {
-      throw ArgumentError('ElGamal bit streng should be at least ${OpenPGP.minBitStrength}, got: $bits');
+    if (bitStrength < OpenPGP.minBitStrength) {
+      throw ArgumentError('ElGamal bit streng should be at least ${OpenPGP.minBitStrength}, got: $bitStrength');
     }
     final keyGen = ElGamalKeyGenerator()
       ..init(
         ParametersWithRandom(
-          ElGamalKeyGeneratorParameters(bits, 64),
+          ElGamalKeyGeneratorParameters(bitStrength, 64),
           Helper.secureRandom(),
         ),
       );
