@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
+import 'package:pointycastle/key_generators/rsa_key_generator.dart';
 
 import '../../helpers.dart';
 
@@ -158,7 +159,32 @@ class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
 
 class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
   final int certainty;
+
   ElGamalKeyGeneratorParameters(super.bitStrength, this.certainty);
+
+  Map<String, BigInt> generateParameters(SecureRandom random) {
+    final orderLength = bitStrength - 1;
+    final minWeight = bitStrength >> 2;
+    BigInt prime, order;
+    for (;;) {
+      order = generateProbablePrime(orderLength, certainty, random);
+      prime = (order << 1) + BigInt.one;
+      if (prime.isProbablePrime(certainty)) {
+        continue;
+      }
+      if (certainty > 2 && !order.isProbablePrime(certainty - 2)) {
+        continue;
+      }
+      if (prime.nafWeight < minWeight) {
+        continue;
+      }
+      break;
+    }
+    return {
+      'prime': prime,
+      'order': order,
+    };
+  }
 }
 
 class ElGamalKeyGenerator implements KeyGenerator {
@@ -171,10 +197,10 @@ class ElGamalKeyGenerator implements KeyGenerator {
 
   @override
   AsymmetricKeyPair<PublicKey, PrivateKey> generateKeyPair() {
-    final safePrimes = Helper.generateSafePrimes(_params.bitStrength, _params.certainty, random: _random);
-    final prime = safePrimes['prime']!;
-    final order = safePrimes['order']!;
-    final generator = Helper.selectGenerator(prime, order, random: _random);
+    final params = _params.generateParameters(_random);
+    final prime = params['prime']!;
+    final order = params['order']!;
+    final generator = _selectGenerator(prime, order);
     final privateKey = ElGamalPrivateKey(_generatePrivateKey(0, prime), prime, generator);
 
     return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
@@ -189,6 +215,16 @@ class ElGamalKeyGenerator implements KeyGenerator {
       _random = Helper.secureRandom();
       _params = params as ElGamalKeyGeneratorParameters;
     }
+  }
+
+  BigInt _selectGenerator(final BigInt prime, final BigInt order) {
+    BigInt generator;
+    final primeMinusTwo = prime - BigInt.two;
+    do {
+      final h = Helper.randomBigIntInRange(BigInt.two, primeMinusTwo, random: _random);
+      generator = h.modPow(BigInt.two, order);
+    } while (generator.compareTo(BigInt.one) == 0);
+    return generator;
   }
 
   BigInt _generatePrivateKey(final int limit, final BigInt prime) {

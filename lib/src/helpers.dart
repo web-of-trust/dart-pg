@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:pointycastle/api.dart' as pc;
-import 'package:pointycastle/key_generators/rsa_key_generator.dart';
 
 import 'enum/hash_algorithm.dart';
 import 'enum/symmetric_algorithm.dart';
@@ -512,42 +511,6 @@ class Helper {
       k = random.nextBigInteger(max.bitLength);
     } while (k.compareTo(min) <= 0 || k.compareTo(max) >= 0);
     return k;
-  }
-
-  static Map<String, BigInt> generateSafePrimes(final int size, final int certainty, {pc.SecureRandom? random}) {
-    random = random ?? secureRandom();
-    final orderLength = size - 1;
-    final minWeight = size >> 2;
-    BigInt prime, order;
-    for (;;) {
-      order = generateProbablePrime(orderLength, 2, random);
-      prime = (order << 1) + BigInt.one;
-      if (prime.isProbablePrime(certainty)) {
-        continue;
-      }
-      if (certainty > 2 && !order.isProbablePrime(certainty - 2)) {
-        continue;
-      }
-      if (prime.nafWeight < minWeight) {
-        continue;
-      }
-      break;
-    }
-    return {
-      'prime': prime,
-      'order': order,
-    };
-  }
-
-  static BigInt selectGenerator(final BigInt prime, final BigInt order, {pc.SecureRandom? random}) {
-    random = random ?? secureRandom();
-    BigInt generator;
-    final primeMinusTwo = prime - BigInt.two;
-    do {
-      final h = Helper.randomBigIntInRange(BigInt.two, primeMinusTwo, random: random);
-      generator = h.modPow(BigInt.two, order);
-    } while (generator.compareTo(BigInt.one) == 0);
-    return generator;
   }
 
   static Uint8List _getPKCS1Padding(final int length) {
