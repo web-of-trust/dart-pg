@@ -25,9 +25,6 @@ import '../packet/signature_packet.dart';
 import '../packet/sym_encrypted_data.dart';
 import '../packet/sym_encrypted_integrity_protected_data.dart';
 import '../packet/sym_encrypted_session_key.dart';
-import 'key.dart';
-import 'signature.dart';
-import 'signed_message.dart';
 import 'verification.dart';
 
 /// Class that represents an OpenPGP message.
