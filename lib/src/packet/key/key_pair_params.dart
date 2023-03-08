@@ -146,7 +146,7 @@ class KeyPairParams {
     final keyGen = ElGamalKeyGenerator()
       ..init(
         ParametersWithRandom(
-          ElGamalKeyGeneratorParameters(bitStrength, 64),
+          ElGamalKeyGeneratorParameters(bitStrength, 256, 64),
           Helper.secureRandom(),
         ),
       );

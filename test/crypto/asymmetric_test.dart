@@ -41,7 +41,7 @@ void main() {
       final keyGen = ElGamalKeyGenerator()
         ..init(
           ParametersWithRandom(
-            ElGamalKeyGeneratorParameters(2048, 64),
+            ElGamalKeyGeneratorParameters(2048, 256, 64),
             Helper.secureRandom(),
           ),
         );

@@ -157,25 +157,21 @@ class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
 }
 
 class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
+  final int size;
+
   final int certainty;
 
-  ElGamalKeyGeneratorParameters(super.bitStrength, this.certainty);
+  ElGamalKeyGeneratorParameters(super.bitStrength, this.size, this.certainty);
 
   BigInt generatePrime(final SecureRandom random) {
-    final pLength = bitStrength - 1;
-    final minWeight = bitStrength >> 2;
+    final order = generateProbablePrime(size, 1, random);
+    final divisor = order * BigInt.two;
     BigInt prime;
-    while (true) {
-      prime = generateProbablePrime(pLength, 1, random);
-
-      if (!prime.isProbablePrime(certainty)) {
-        continue;
-      }
-      if (prime.nafWeight < minWeight) {
-        continue;
-      }
-      break;
-    }
+    do {
+      final x = random.nextBigInteger(bitStrength);
+      final c = x % divisor;
+      prime = x - (c - BigInt.one);
+    } while (!prime.isProbablePrime(certainty) || prime.bitLength != bitStrength);
     return prime;
   }
 }
@@ -192,7 +188,7 @@ class ElGamalKeyGenerator implements KeyGenerator {
   AsymmetricKeyPair<PublicKey, PrivateKey> generateKeyPair() {
     final prime = _params.generatePrime(_random);
     final generator = _selectGenerator(prime);
-    final privateKey = ElGamalPrivateKey(_generateSecretExponent(0, prime), prime, generator);
+    final privateKey = ElGamalPrivateKey(_generateSecretExponent(_params.size, prime), prime, generator);
 
     return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
   }
@@ -218,11 +214,11 @@ class ElGamalKeyGenerator implements KeyGenerator {
     return generator;
   }
 
-  BigInt _generateSecretExponent(final int limit, final BigInt prime) {
-    if (limit != 0) {
-      final minWeight = limit >> 2;
+  BigInt _generateSecretExponent(final int size, final BigInt prime) {
+    if (size != 0) {
+      final minWeight = size >> 2;
       for (;;) {
-        BigInt x = _random.nextBigInteger(limit - 1);
+        BigInt x = _random.nextBigInteger(size - 1);
         if (x.nafWeight > minWeight) {
           return x;
         }
