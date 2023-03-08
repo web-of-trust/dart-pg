@@ -1,16 +1,24 @@
 The Dart Privacy Guard (Dart PG) - The OpenPGP library in Dart language
 =======================================================================
-Dart PG is an implementation of the OpenPGP standard in Dart language. It implements [RFC4880](https://www.rfc-editor.org/rfc/rfc4880), [RFC6637](https://www.rfc-editor.org/rfc/rfc6637), parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis) and [RFC3156](https://www.rfc-editor.org/rfc/rfc3156).
+Dart PG is an implementation of the OpenPGP standard in Dart language.
+It implements [RFC4880](https://www.rfc-editor.org/rfc/rfc4880), [RFC6637](https://www.rfc-editor.org/rfc/rfc6637),
+parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis)
+and [RFC3156](https://www.rfc-editor.org/rfc/rfc3156).
 
 ## Features
 * Dart PG allows to encrypt and sign data.
 * Support key management: key generation, key reading, key decryption.
-* Support public-key algorithms: RSA, DSA, ElGamal, ECDSA, ECDH.
+* Support public-key algorithms: [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)),
+  [DSA](https://en.wikipedia.org/wiki/Digital_Signature_Algorithm),
+  [ElGamal](https://en.wikipedia.org/wiki/ElGamal_encryption),
+  [ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm)
+  and [ECDH](https://en.wikipedia.org/wiki/Elliptic-curve_Diffie%E2%80%93Hellman).
 * Support symmetric ciphers: 3DES, IDEA (for backward compatibility), CAST5, Blowfish, Twofish,
   AES-128, AES-192, AES-256, Camellia-128, Camellia-192 and Camellia-256.
 * Support hash algorithms: MD5, SHA-1, RIPEMD-160, SHA-256, SHA-384, SHA-512, SHA-224.
 * Support compression algorithms: Uncompressed, ZIP, ZLIB.
-* Support [ECC](https://wiki.gnupg.org/ECC) algorithms: secp256k1, secp384r1, secp521r1, brainpoolp256r1, brainpoolp384r1, brainpoolp512r1, prime256v1.
+* Support [ECC](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) algorithms:
+  secp256k1, secp384r1, secp521r1, brainpoolp256r1, brainpoolp384r1, brainpoolp512r1, prime256v1.
 
 ## Getting started
 In `Dart` or `flutter` project add the dependency:
@@ -34,7 +42,8 @@ final decrypted = decryptedMessage.armor();
 ```
 
 ### Encrypt and decrypt data with PGP keys
-Encryption will use the algorithm preferred by the public (encryption) key (defaults to aes256 for keys generated), and decryption will use the algorithm used for encryption.
+Encryption will use the algorithm preferred by the public (encryption) key (defaults to aes256 for keys generated),
+and decryption will use the algorithm used for encryption.
 ```dart
 const text = 'Hello Dart PG!';
 const passphrase = 'secret stuff';
@@ -61,7 +70,11 @@ const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 final publicKeys = armoredPublicKeys.map((armored) => OpenPGP.readPublicKey(armored));
 final privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
-final encryptedMessage = OpenPGP.encrypt(OpenPGP.createTextMessage(text), encryptionKeys: publicKeys, signingKeys: [privateKey]);
+final encryptedMessage = OpenPGP.encrypt(
+    OpenPGP.createTextMessage(text),
+    encryptionKeys: publicKeys,
+    signingKeys: [privateKey],
+);
 final encrypted = encryptedMessage.armor();
 ```
 
@@ -126,7 +139,8 @@ final privateKey = OpenPGP.generateKey(
 final publicKey = privateKey.toPublic;
 ```
 
-ellipticCurve keys (smaller and faster to generate): Possible values for curve are:, secp256k1, secp384r1, secp521r1, brainpoolp256r1, brainpoolp384r1, brainpoolp512r1 and prime256v1
+ellipticCurve keys (smaller and faster to generate): Possible values for curve are
+secp256k1, secp384r1, secp521r1, brainpoolp256r1, brainpoolp384r1, brainpoolp512r1 and prime256v1
 ```dart
 const passphrase = 'secret stuff';
 final userID = [name, '($comment)', '<$email>'].join(' ');
