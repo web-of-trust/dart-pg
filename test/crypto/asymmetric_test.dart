@@ -41,7 +41,7 @@ void main() {
       final keyGen = ElGamalKeyGenerator()
         ..init(
           ParametersWithRandom(
-            ElGamalKeyGeneratorParameters(2048, 2),
+            ElGamalKeyGeneratorParameters(2048, 64),
             Helper.secureRandom(),
           ),
         );
@@ -102,7 +102,7 @@ void main() {
       final keyGen = DSAKeyGenerator()
         ..init(
           ParametersWithRandom(
-            DSAKeyGeneratorParameters(2048, 256, 2),
+            DSAKeyGeneratorParameters(2048, 256, 64),
             Helper.secureRandom(),
           ),
         );

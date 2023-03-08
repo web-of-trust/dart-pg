@@ -162,16 +162,13 @@ class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
   ElGamalKeyGeneratorParameters(super.bitStrength, this.certainty);
 
   BigInt generatePrime(final SecureRandom random) {
-    final orderLength = bitStrength - 1;
+    final pLength = bitStrength - 1;
     final minWeight = bitStrength >> 2;
-    BigInt prime, order;
-    for (;;) {
-      order = generateProbablePrime(orderLength, certainty, random);
-      prime = (order << 1) + BigInt.one;
+    BigInt prime;
+    while (true) {
+      prime = generateProbablePrime(pLength, 1, random);
+
       if (!prime.isProbablePrime(certainty)) {
-        continue;
-      }
-      if (certainty > 2 && !order.isProbablePrime(certainty - 2)) {
         continue;
       }
       if (prime.nafWeight < minWeight) {
@@ -195,7 +192,7 @@ class ElGamalKeyGenerator implements KeyGenerator {
   AsymmetricKeyPair<PublicKey, PrivateKey> generateKeyPair() {
     final prime = _params.generatePrime(_random);
     final generator = _selectGenerator(prime);
-    final privateKey = ElGamalPrivateKey(_generatePrivateKey(0, prime), prime, generator);
+    final privateKey = ElGamalPrivateKey(_generateSecretExponent(0, prime), prime, generator);
 
     return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
   }
@@ -221,9 +218,9 @@ class ElGamalKeyGenerator implements KeyGenerator {
     return generator;
   }
 
-  BigInt _generatePrivateKey(final int limit, final BigInt prime) {
+  BigInt _generateSecretExponent(final int limit, final BigInt prime) {
     if (limit != 0) {
-      int minWeight = limit >> 2;
+      final minWeight = limit >> 2;
       for (;;) {
         BigInt x = _random.nextBigInteger(limit - 1);
         if (x.nafWeight > minWeight) {
@@ -231,8 +228,8 @@ class ElGamalKeyGenerator implements KeyGenerator {
         }
       }
     }
-    BigInt max = prime - BigInt.two;
-    int minWeight = max.bitLength >> 2;
+    final max = prime - BigInt.two;
+    final minWeight = max.bitLength >> 2;
     for (;;) {
       BigInt x = Helper.randomBigIntInRange(BigInt.two, max, random: _random);
       if (x.nafWeight > minWeight) {
