@@ -7,6 +7,7 @@ import 'package:pointycastle/api.dart';
 import 'dart:typed_data';
 
 import '../../helpers.dart';
+import '../math/int_ext.dart';
 import 'base_cipher.dart';
 
 /// A class that provides Twofish encryption operations.

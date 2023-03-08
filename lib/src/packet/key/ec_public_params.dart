@@ -7,8 +7,8 @@ import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
 import '../../crypto/math/big_int.dart';
+import '../../crypto/math/int_ext.dart';
 import '../../enum/curve_info.dart';
-import '../../helpers.dart';
 import 'key_params.dart';
 
 abstract class ECPublicParams extends KeyParams {

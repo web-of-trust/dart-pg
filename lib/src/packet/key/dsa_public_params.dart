@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:pointycastle/api.dart';
 
 import '../../crypto/math/big_int.dart';
+import '../../crypto/math/int_ext.dart';
 import '../../crypto/signer/dsa.dart';
 import '../../enum/hash_algorithm.dart';
 import '../../helpers.dart';

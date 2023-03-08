@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 
 import '../../crypto/math/big_int.dart';
+import '../../crypto/math/int_ext.dart';
 import '../../crypto/asymmetric/elgamal.dart';
 import '../../helpers.dart';
 import 'key_params.dart';

@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../helpers.dart';
+import '../crypto/math/int_ext.dart';
 
 class UserAttributeSubpacket {
   final int type;

@@ -4,6 +4,7 @@
 
 import 'dart:typed_data';
 
+import '../crypto/math/int_ext.dart';
 import '../enum/compression_algorithm.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';

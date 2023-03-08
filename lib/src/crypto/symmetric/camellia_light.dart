@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:pointycastle/api.dart';
 
 import '../../helpers.dart';
+import '../math/int_ext.dart';
 import 'base_cipher.dart';
 
 /// Camellia - based on RFC 3713

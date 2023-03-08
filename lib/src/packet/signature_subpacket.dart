@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
+import '../crypto/math/int_ext.dart';
 import '../enum/signature_subpacket_type.dart';
-import '../helpers.dart';
 export 'signature/embedded_signature.dart';
 export 'signature/exportable_certification.dart';
 export 'signature/features.dart';

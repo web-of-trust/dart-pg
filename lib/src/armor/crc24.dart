@@ -5,7 +5,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../helpers.dart';
+import '../crypto/math/int_ext.dart';
 
 class Crc24 {
   static const _crc24Init = 0xb704ce;

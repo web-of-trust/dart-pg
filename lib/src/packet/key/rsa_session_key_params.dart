@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 
 import '../../crypto/math/big_int.dart';
+import '../../crypto/math/int_ext.dart';
 import '../../helpers.dart';
 import 'session_key.dart';
 import 'session_key_params.dart';

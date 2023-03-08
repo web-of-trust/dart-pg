@@ -5,7 +5,7 @@
 import 'dart:typed_data';
 
 import '../enum/packet_tag.dart';
-import '../helpers.dart';
+import '../crypto/math/int_ext.dart';
 
 abstract class ContainedPacket {
   final PacketTag tag;

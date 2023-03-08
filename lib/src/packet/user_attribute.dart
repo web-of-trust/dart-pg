@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
+import '../crypto/math/int_ext.dart';
 import '../enum/packet_tag.dart';
-import '../helpers.dart';
 import 'contained_packet.dart';
 import 'image_attribute.dart';
 import 'subpacket_reader.dart';
