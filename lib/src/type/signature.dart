@@ -9,9 +9,9 @@ import '../packet/signature_packet.dart';
 
 /// Class that represents an OpenPGP signature.
 class Signature {
-  final Iterable<SignaturePacket> packets;
+  final List<SignaturePacket> packets;
 
-  Signature(PacketList packetList) : packets = packetList.whereType<SignaturePacket>();
+  Signature(PacketList packetList) : packets = packetList.whereType<SignaturePacket>().toList(growable: false);
 
   factory Signature.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
@@ -21,7 +21,7 @@ class Signature {
     return Signature(PacketList.packetDecode(armor.data));
   }
 
-  List<String> get signingKeyIDs => packets.map((packet) => packet.issuerKeyID.keyID).toList();
+  List<String> get signingKeyIDs => packets.map((packet) => packet.issuerKeyID.keyID).toList(growable: false);
 
   /// Returns ASCII armored text of signature
   String armor() => Armor.encode(ArmorType.signature, PacketList(packets).packetEncode());

@@ -25,9 +25,9 @@ export 'private_key.dart';
 abstract class Key {
   final KeyPacket keyPacket;
 
-  final List<SignaturePacket> revocationSignatures;
+  final Iterable<SignaturePacket> revocationSignatures;
 
-  final List<SignaturePacket> directSignatures;
+  final Iterable<SignaturePacket> directSignatures;
 
   late final List<User> users;
 
@@ -37,8 +37,8 @@ abstract class Key {
     this.keyPacket, {
     this.revocationSignatures = const [],
     this.directSignatures = const [],
-    final List<User> users = const [],
-    final List<Subkey> subkeys = const [],
+    final Iterable<User> users = const [],
+    final Iterable<Subkey> subkeys = const [],
   }) {
     this.users = users
         .map((user) => User(

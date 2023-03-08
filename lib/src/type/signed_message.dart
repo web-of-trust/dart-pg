@@ -33,7 +33,7 @@ class SignedMessage extends CleartextMessage {
   /// Sign a cleartext.
   factory SignedMessage.signCleartext(
     final String text,
-    final List<PrivateKey> signingKeys, {
+    final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
   }) {
     if (signingKeys.isEmpty) {
@@ -72,7 +72,7 @@ class SignedMessage extends CleartextMessage {
   /// Verify signatures of cleartext signed message
   /// Return signed message with verifications
   SignedMessage verify(
-    final List<PublicKey> verificationKeys, {
+    final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
     return SignedMessage(

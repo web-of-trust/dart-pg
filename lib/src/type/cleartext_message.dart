@@ -14,8 +14,9 @@ class CleartextMessage {
 
   final List<Verification> verifications;
 
-  CleartextMessage(final String text, [this.verifications = const []])
-      : _text = text.trimRight().replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n');
+  CleartextMessage(final String text, [final Iterable<Verification> verifications = const []])
+      : _text = text.trimRight().replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n'),
+        verifications = verifications.toList(growable: false);
 
   String get text => _text;
 
@@ -25,7 +26,7 @@ class CleartextMessage {
   /// Return cleartext message with verifications
   CleartextMessage verifySignature(
     final Signature signature,
-    final List<PublicKey> verificationKeys, {
+    final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) =>
       CleartextMessage(

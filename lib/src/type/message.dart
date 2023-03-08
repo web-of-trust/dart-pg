@@ -39,7 +39,8 @@ class Message {
 
   final List<Verification> verifications;
 
-  Message(this.packetList, [this.verifications = const []]);
+  Message(this.packetList, [final Iterable<Verification> verifications = const []])
+      : verifications = verifications.toList(growable: false);
 
   factory Message.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
@@ -118,7 +119,7 @@ class Message {
 
   /// Sign the message (the literal data packet of the message)
   Message sign(
-    final List<PrivateKey> signingKeys, {
+    final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
   }) {
     if (signingKeys.isEmpty) {
@@ -140,20 +141,21 @@ class Message {
         signatureType = SignatureType.binary;
     }
 
+    final keyList = signingKeys.toList(growable: false);
     return Message(PacketList([
-      ...signingKeys.map((key) {
-        final index = signingKeys.indexOf(key);
+      ...keyList.map((key) {
+        final index = keyList.indexOf(key);
         final keyPacket = key.getSigningKeyPacket(date: date);
         return OnePassSignaturePacket(
           signatureType,
           keyPacket.preferredHash,
           keyPacket.algorithm,
           keyPacket.keyID,
-          (index == signingKeys.length - 1) ? 1 : 0,
+          (index == keyList.length - 1) ? 1 : 0,
         );
       }),
       literalData,
-      ...signingKeys.map(
+      ...keyList.map(
         (key) => SignaturePacket.createLiteralData(
           key.getSigningKeyPacket(),
           literalData,
@@ -191,7 +193,7 @@ class Message {
   /// Verify message signatures
   /// Return new message with verifications
   Message verify(
-    final List<PublicKey> verificationKeys, {
+    final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) {
     final packets = unwrapCompressed().packetList;
@@ -236,8 +238,8 @@ class Message {
   /// Encrypt the message either with public keys, passwords, or both at once.
   /// Return new message with encrypted content.
   Message encrypt({
-    final List<PublicKey> encryptionKeys = const [],
-    final List<String> passwords = const [],
+    final Iterable<PublicKey> encryptionKeys = const [],
+    final Iterable<String> passwords = const [],
     final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
     final SymmetricAlgorithm encryptionKeySymmetric = OpenPGP.preferredSymmetric,
   }) {
@@ -273,8 +275,8 @@ class Message {
   /// Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
   /// Return new message with decrypted content.
   Message decrypt({
-    final List<PrivateKey> decryptionKeys = const [],
-    final List<String> passwords = const [],
+    final Iterable<PrivateKey> decryptionKeys = const [],
+    final Iterable<String> passwords = const [],
   }) {
     if (decryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No decryption keys or passwords provided');
@@ -340,8 +342,8 @@ class Message {
   }
 
   List<SessionKey> _decryptSessionKeys({
-    final List<PrivateKey> decryptionKeys = const [],
-    final List<String> passwords = const [],
+    final Iterable<PrivateKey> decryptionKeys = const [],
+    final Iterable<String> passwords = const [],
   }) {
     final sessionKeys = <SessionKey>[];
     if (decryptionKeys.isNotEmpty) {

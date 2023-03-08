@@ -63,7 +63,7 @@ class PrivateKey extends Key {
   /// The generated primary key will have signing capabilities.
   /// By default, one subkey with encryption capabilities is also generated.
   factory PrivateKey.generate(
-    final List<String> userIDs,
+    final Iterable<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
     final int bitStrength = OpenPGP.preferredBitStrength,
@@ -257,7 +257,7 @@ class PrivateKey extends Key {
   /// This method does not change the original key.
   PrivateKey encrypt(
     final String passphrase, {
-    final List<String> subkeyPassphrases = const [],
+    final Iterable<String> subkeyPassphrases = const [],
     final S2kUsage s2kUsage = S2kUsage.sha1,
     final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
     final HashAlgorithm hash = OpenPGP.preferredHash,
@@ -279,7 +279,7 @@ class PrivateKey extends Key {
       users: users,
       subkeys: subkeys.map((subkey) {
         final index = subkeys.indexOf(subkey);
-        final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases[index] : passphrase;
+        final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
         if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
           return Subkey(
             (subkey.keyPacket as SecretSubkeyPacket).encrypt(
@@ -301,7 +301,7 @@ class PrivateKey extends Key {
 
   /// Unlock a private key with the given passphrase.
   /// This method does not change the original key.
-  PrivateKey decrypt(final String passphrase, [final List<String> subkeyPassphrases = const []]) {
+  PrivateKey decrypt(final String passphrase, [final Iterable<String> subkeyPassphrases = const []]) {
     if (passphrase.isEmpty) {
       throw ArgumentError('passphrase are required for key decryption');
     }
@@ -312,7 +312,7 @@ class PrivateKey extends Key {
       users: users,
       subkeys: subkeys.map((subkey) {
         final index = subkeys.indexOf(subkey);
-        final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases[index] : passphrase;
+        final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
         if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
           return Subkey(
             (subkey.keyPacket as SecretSubkeyPacket).decrypt(subkeyPassphrase),
