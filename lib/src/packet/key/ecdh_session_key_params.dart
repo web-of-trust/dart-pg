@@ -86,7 +86,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       _kdf(publicParams.kdfHash, sharedKey, keySize, param),
       _pkcs5Encode(Uint8List.fromList([
         ...sessionKey.encode(),
-        ...sessionKey.checksum(),
+        ...sessionKey.computeChecksum(),
       ])),
     );
 

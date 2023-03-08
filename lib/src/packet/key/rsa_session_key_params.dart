@@ -29,7 +29,7 @@ class RSASessionKeyParams extends SessionKeyParams {
         Helper.emeEncode(
           Uint8List.fromList([
             ...sessionKey.encode(),
-            ...sessionKey.checksum(),
+            ...sessionKey.computeChecksum(),
           ]),
           key.modulus!.byteLength,
         ),

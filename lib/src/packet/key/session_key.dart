@@ -4,6 +4,8 @@
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/crypto/math/int_ext.dart';
+
 import '../../crypto/math/byte_ext.dart';
 import '../../enum/symmetric_algorithm.dart';
 import '../../helpers.dart';
@@ -20,7 +22,13 @@ class SessionKey {
 
   Uint8List encode() => Uint8List.fromList([symmetric.value, ...key]);
 
-  Uint8List checksum() => Helper.calculateChecksum(key);
+  Uint8List computeChecksum() {
+    var s = 0;
+    for (var i = 0; i < key.lengthInBytes; i++) {
+      s = (s + key[i]) & 0xffff;
+    }
+    return s.pack16();
+  }
 
   @override
   bool operator ==(other) {

@@ -19,7 +19,7 @@ abstract class SessionKeyParams {
     final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == data[0]);
     final sessionKey = SessionKey(data.sublist(1, data.length - 2), sessionKeySymmetric);
     final checksum = data.sublist(data.length - 2);
-    final computedChecksum = sessionKey.checksum();
+    final computedChecksum = sessionKey.computeChecksum();
     final isValidChecksum = (computedChecksum[0] == checksum[0]) && (computedChecksum[1] == checksum[1]);
     if (!isValidChecksum) {
       throw StateError('Session key decryption error');

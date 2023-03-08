@@ -37,7 +37,7 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
     final plainData = Helper.emeEncode(
       Uint8List.fromList([
       ...sessionKey.encode(),
-      ...sessionKey.checksum(),
+        ...sessionKey.computeChecksum(),
       ]),
       key.prime.byteLength,
     );

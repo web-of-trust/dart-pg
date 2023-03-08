@@ -47,107 +47,6 @@ extension StringHelper on String {
   bool hasMatch(final String text) => RegExp(this).hasMatch(text);
 }
 
-// extension Uint8ListHelper on Uint8List {
-//   int toIn16([Endian endian = Endian.big]) => buffer.asByteData().getInt16(0, endian);
-
-//   int toUint16([Endian endian = Endian.big]) => buffer.asByteData().getUint16(0, endian);
-
-//   int toLeIn16() => toIn16(Endian.little);
-
-//   int toLeUint16() => toUint16(Endian.little);
-
-//   int toInt32([Endian endian = Endian.big]) => buffer.asByteData().getInt32(0, endian);
-
-//   int toUint32([Endian endian = Endian.big]) => buffer.asByteData().getUint32(0, endian);
-
-//   int toLeInt32() => toInt32(Endian.little);
-
-//   int toLeUint32() => toUint32(Endian.little);
-
-//   int toInt64([Endian endian = Endian.big]) => buffer.asByteData().getInt64(0, endian);
-
-//   int toUint64([Endian endian = Endian.big]) => buffer.asByteData().getUint64(0, endian);
-
-//   int toLeInt64() => toInt64(Endian.little);
-
-//   int toLeUint64() => toUint64(Endian.little);
-
-//   BigInt toBigInt() {
-//     final negative = isNotEmpty && this[0] & 0x80 == 0x80;
-//     BigInt result;
-//     if (length == 1) {
-//       result = BigInt.from(this[0]);
-//     } else {
-//       result = BigInt.zero;
-//       for (var i = 0; i < length; i++) {
-//         final item = this[length - i - 1];
-//         result |= (BigInt.from(item) << (8 * i));
-//       }
-//     }
-//     return result != BigInt.zero
-//         ? negative
-//             ? result.toSigned(result.bitLength)
-//             : result
-//         : BigInt.zero;
-//   }
-
-//   BigInt toBigIntWithSign(final int sign) {
-//     if (sign == 0) {
-//       return BigInt.zero;
-//     }
-
-//     BigInt result;
-
-//     if (length == 1) {
-//       result = BigInt.from(this[0]);
-//     } else {
-//       result = BigInt.from(0);
-//       for (var i = 0; i < length; i++) {
-//         var item = this[length - i - 1];
-//         result |= (BigInt.from(item) << (8 * i));
-//       }
-//     }
-
-//     if (result != BigInt.zero) {
-//       if (sign < 0) {
-//         result = result.toSigned(result.bitLength);
-//       } else {
-//         result = result.toUnsigned(result.bitLength);
-//       }
-//     }
-//     return result;
-//   }
-
-//   DateTime toDateTime() => DateTime.fromMillisecondsSinceEpoch(toInt32() * 1000);
-
-//   String toHexadecimal() {
-//     final result = StringBuffer();
-//     for (var i = 0; i < lengthInBytes; i++) {
-//       final part = this[i];
-//       result.write('${part < 16 ? '0' : ''}${part.toRadixString(16)}');
-//     }
-//     return result.toString();
-//   }
-
-//   bool equals(final Uint8List expected) {
-//     if (expected == this) {
-//       return true;
-//     }
-
-//     final len = (expected.length < length) ? expected.length : length;
-//     var nonEqual = expected.length ^ length;
-
-//     for (var i = 0; i != len; i++) {
-//       nonEqual |= (expected[i] ^ this[i]);
-//     }
-//     for (var i = len; i < length; i++) {
-//       nonEqual |= (this[i] ^ ~this[i]);
-//     }
-
-//     return nonEqual == 0;
-//   }
-// }
-
 extension DateTimeHelper on DateTime {
   Uint8List toBytes() => (millisecondsSinceEpoch ~/ 1000).pack32();
 }
@@ -192,15 +91,6 @@ class Helper {
       default:
         throw UnsupportedError('Digest type not supported.');
     }
-  }
-
-  /// Calculates a 16bit sum of a Uint8List by adding each character codes modulus 65535
-  static Uint8List calculateChecksum(final Uint8List data) {
-    var s = 0;
-    for (var i = 0; i < data.lengthInBytes; i++) {
-      s = (s + data[i]) & 0xffff;
-    }
-    return s.pack16();
   }
 
   /// Create a EME-PKCS1-v1_5 padded message
