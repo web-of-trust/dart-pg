@@ -163,16 +163,27 @@ class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
 
   ElGamalKeyGeneratorParameters(super.bitStrength, this.size, this.certainty);
 
-  BigInt generatePrime(final SecureRandom random) {
+  Map<String, BigInt> generateParameters(final SecureRandom random) {
+    BigInt prime, generator;
+
     final order = generateProbablePrime(size, 1, random);
     final divisor = order * BigInt.two;
-    BigInt prime;
     do {
       final x = random.nextBigInteger(bitStrength);
       final c = x % divisor;
       prime = x - (c - BigInt.one);
     } while (!prime.isProbablePrime(certainty) || prime.bitLength != bitStrength);
-    return prime;
+
+    final primeMinusTwo = prime - BigInt.two;
+    do {
+      final h = Helper.randomBigIntInRange(BigInt.two, primeMinusTwo, random: random);
+      generator = h.modPow(BigInt.two, prime);
+    } while (generator.compareTo(BigInt.one) == 0);
+
+    return {
+      'prime': prime,
+      'generator': generator,
+    };
   }
 }
 
@@ -186,8 +197,9 @@ class ElGamalKeyGenerator implements KeyGenerator {
 
   @override
   AsymmetricKeyPair<PublicKey, PrivateKey> generateKeyPair() {
-    final prime = _params.generatePrime(_random);
-    final generator = _selectGenerator(prime);
+    final params = _params.generateParameters(_random);
+    final prime = params['prime']!;
+    final generator = params['generator']!;
     final privateKey = ElGamalPrivateKey(_generateSecretExponent(_params.size, prime), prime, generator);
 
     return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
@@ -202,16 +214,6 @@ class ElGamalKeyGenerator implements KeyGenerator {
       _random = Helper.secureRandom();
       _params = params as ElGamalKeyGeneratorParameters;
     }
-  }
-
-  BigInt _selectGenerator(final BigInt prime) {
-    BigInt generator;
-    final primeMinusTwo = prime - BigInt.two;
-    do {
-      final h = Helper.randomBigIntInRange(BigInt.two, primeMinusTwo, random: _random);
-      generator = h.modPow(BigInt.two, prime);
-    } while (generator.compareTo(BigInt.one) == 0);
-    return generator;
   }
 
   BigInt _generateSecretExponent(final int size, final BigInt prime) {

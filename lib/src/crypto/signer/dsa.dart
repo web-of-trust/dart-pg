@@ -225,13 +225,10 @@ class DSAKeyGeneratorParameters extends KeyGeneratorParameters {
     final p_1 = prime - BigInt.one;
     final e = p_1 ~/ order;
     var h = BigInt.two;
-    while (true) {
+    do {
       generator = h.modPow(e, prime);
-      if (generator.compareTo(BigInt.one) != 0) {
-        break;
-      }
       h += BigInt.one;
-    }
+    } while (generator.compareTo(BigInt.one) == 0);
 
     return {
       'prime': prime,
