@@ -139,12 +139,12 @@ final privateKey = PrivateKey.generate(
 final publicKey = privateKey.toPublic;
 ```
 
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+## Development
+To create your own build of the library, just run the following command after cloning the git repo.
+This will download all dependencies, run the tests
+```bash
+dart pub get && dart test
+```
 
 ## Licensing
 [BSD 3-Clause](LICENSE)
