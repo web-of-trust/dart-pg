@@ -8,7 +8,6 @@ import 'package:dart_pg/src/crypto/math/int_ext.dart';
 
 import '../../crypto/math/byte_ext.dart';
 import '../../enum/symmetric_algorithm.dart';
-import '../../helpers.dart';
 import '../../openpgp.dart';
 
 class SessionKey {
