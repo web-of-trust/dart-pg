@@ -4,8 +4,8 @@
 
 import 'dart:typed_data';
 
+import '../crypto/math/byte_ext.dart';
 import '../enum/packet_tag.dart';
-import '../helpers.dart';
 
 /// Generic Packet Data Reader function
 class PacketReader {

@@ -5,6 +5,7 @@
 import 'package:pointycastle/pointycastle.dart';
 
 import '../../crypto/asymmetric/elgamal.dart';
+import '../../crypto/math/byte_ext.dart';
 import '../../crypto/signer/dsa.dart';
 import '../../enum/curve_info.dart';
 import '../../enum/key_algorithm.dart';

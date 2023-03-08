@@ -4,9 +4,9 @@
 
 import 'dart:typed_data';
 
+import '../../crypto/math/byte_ext.dart';
 import '../../crypto/math/int_ext.dart';
 import '../../enum/signature_subpacket_type.dart';
-import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
 /// packet giving time after creation at which the key expires.

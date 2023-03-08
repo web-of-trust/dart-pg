@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/crypto/math/byte_ext.dart';
 import 'package:dart_pg/src/crypto/symmetric/blowfish.dart';
 import 'package:dart_pg/src/crypto/symmetric/buffered_cipher.dart';
 import 'package:dart_pg/src/crypto/symmetric/camellia.dart';

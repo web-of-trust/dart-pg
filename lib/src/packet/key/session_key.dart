@@ -4,6 +4,7 @@
 
 import 'dart:typed_data';
 
+import '../../crypto/math/byte_ext.dart';
 import '../../enum/symmetric_algorithm.dart';
 import '../../helpers.dart';
 import '../../openpgp.dart';

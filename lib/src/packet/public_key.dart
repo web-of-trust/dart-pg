@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 
+import '../crypto/math/byte_ext.dart';
 import '../crypto/math/int_ext.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/packet_tag.dart';

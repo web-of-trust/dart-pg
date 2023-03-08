@@ -9,6 +9,7 @@ import 'package:pointycastle/export.dart';
 
 import '../../helpers.dart';
 import '../math/big_int.dart';
+import '../math/byte_ext.dart';
 import '../math/int_ext.dart';
 
 class DSASigner implements Signer {

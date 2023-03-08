@@ -4,6 +4,7 @@
 
 import 'dart:typed_data';
 
+import '../../crypto/math/byte_ext.dart';
 import '../../helpers.dart';
 
 class KeyID {

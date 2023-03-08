@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
 
+import '../crypto/math/byte_ext.dart';
 import '../crypto/symmetric/base_cipher.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/packet_tag.dart';

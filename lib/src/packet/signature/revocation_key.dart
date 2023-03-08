@@ -4,8 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/helpers.dart';
-
+import '../../crypto/math/byte_ext.dart';
 import '../../enum/key_algorithm.dart';
 import '../../enum/revocation_key_tag.dart';
 import '../../enum/signature_subpacket_type.dart';

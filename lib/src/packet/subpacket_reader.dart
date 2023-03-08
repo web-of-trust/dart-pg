@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import '../helpers.dart';
+import '../crypto/math/byte_ext.dart';
 
 /// Generic Sub Packet Data Reader function
 class SubpacketReader {

@@ -6,7 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
 
-import '../../helpers.dart';
+import '../../crypto/math/byte_ext.dart';
 
 /// Implementation of RFC 3394 AES Key Wrap & Key Unwrap funcions
 class AesKeyWrapper {

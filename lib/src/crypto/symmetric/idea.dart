@@ -6,7 +6,7 @@ import 'package:pointycastle/api.dart';
 
 import 'dart:typed_data';
 
-import '../../helpers.dart';
+import '../math/byte_ext.dart';
 import '../math/int_ext.dart';
 import 'base_cipher.dart';
 
