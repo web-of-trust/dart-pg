@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/pointycastle.dart';
 
+import '../../crypto/math/big_int.dart';
 import '../../enum/curve_info.dart';
 import '../../helpers.dart';
 import 'key_params.dart';

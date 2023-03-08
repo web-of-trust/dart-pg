@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 
 import '../../helpers.dart';
+import '../math/big_int.dart';
 
 /// Asymmetric block cipher using basic ElGamal algorithm.
 class ElGamalEngine implements AsymmetricBlockCipher {

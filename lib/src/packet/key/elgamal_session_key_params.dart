@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
 
+import '../../crypto/math/big_int.dart';
 import '../../crypto/asymmetric/elgamal.dart';
 import '../../helpers.dart';
 import 'session_key.dart';

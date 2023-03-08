@@ -4,6 +4,7 @@
 
 import 'dart:typed_data';
 
+import '../../crypto/math/big_int.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 

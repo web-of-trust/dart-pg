@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 
 import '../../helpers.dart';
+import '../math/big_int.dart';
 
 class DSASigner implements Signer {
   final Digest? _digest;
