@@ -9,12 +9,20 @@ import 'enum/curve_info.dart';
 import 'enum/hash_algorithm.dart';
 import 'enum/key_type.dart';
 import 'enum/symmetric_algorithm.dart';
+
 import 'type/cleartext_message.dart';
 import 'type/message.dart';
 import 'type/private_key.dart';
 import 'type/public_key.dart';
 import 'type/signature.dart';
 import 'type/signed_message.dart';
+
+export 'type/cleartext_message.dart';
+export 'type/message.dart';
+export 'type/private_key.dart';
+export 'type/public_key.dart';
+export 'type/signature.dart';
+export 'type/signed_message.dart';
 
 /// Export high level API for Dart developers.
 class OpenPGP {

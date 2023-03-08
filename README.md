@@ -24,8 +24,8 @@ dependencies:
 
 ### Encrypt and decrypt data with a password
 ```dart
-final text = 'Hello Dart PG!';
-final password = 'secret stuff';
+const text = 'Hello Dart PG!';
+const password = 'secret stuff';
 
 final encryptedMessage = await OpenPGP.encrypt(Message.createTextMessage(text), passwords: [password]);
 final encrypted = encryptedMessage.armor();
@@ -36,13 +36,13 @@ final decrypted = decryptedMessage.armor();
 ### Encrypt and decrypt data with PGP keys
 Encryption will use the algorithm preferred by the public (encryption) key (defaults to aes256 for keys generated), and decryption will use the algorithm used for encryption.
 ```dart
-final text = 'Hello Dart PG!';
+const text = 'Hello Dart PG!';
 const passphrase = 'secret stuff';
 const armoredPublicKey = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
 const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
 final publicKey = OpenPGP.readPublicKey(armoredPublicKey);
-const privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
+final privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
 final encryptedMessage = OpenPGP.encrypt(Message.createTextMessage(text), encryptionKeys: [publicKey]);
 final encrypted = encryptedMessage.armor();
@@ -59,7 +59,7 @@ const armoredPublicKeys = ['-----BEGIN PGP PUBLIC KEY BLOCK-----'];
 const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
 final publicKeys = armoredPublicKeys.map((armored) => OpenPGP.readPublicKey(armored));
-const privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
+final privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
 final encryptedMessage = OpenPGP.encrypt(Message.createTextMessage(text), encryptionKeys: publicKeys, signingKeys: [privateKey]);
 final encrypted = encryptedMessage.armor();
@@ -67,13 +67,13 @@ final encrypted = encryptedMessage.armor();
 
 ### Sign and verify cleartext
 ```dart
-final text = 'Hello Dart PG!';
+const text = 'Hello Dart PG!';
 const passphrase = 'secret stuff';
 const armoredPublicKey = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
 const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
 final publicKey = OpenPGP.readPublicKey(armoredPublicKey);
-const privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
+final privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
 final signedMessage = OpenPGP.sign(text, signingKeys: [privateKey]);
 final signed = signedMessage.armor();
@@ -84,13 +84,13 @@ final verifications = verifiedMessage.verifications;
 
 ### Detached sign and verify cleartext
 ```dart
-final text = 'Hello Dart PG!';
+const text = 'Hello Dart PG!';
 const passphrase = 'secret stuff';
 const armoredPublicKey = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
 const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
 final publicKey = OpenPGP.readPublicKey(armoredPublicKey);
-const privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
+final privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
 final signature = OpenPGP.signDetached(text, signingKeys: [privateKey]);
 final armored = signature.armor();
