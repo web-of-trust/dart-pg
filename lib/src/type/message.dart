@@ -274,6 +274,7 @@ class Message {
   Message decrypt({
     final Iterable<PrivateKey> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
+    final bool allowUnauthenticatedMessages = OpenPGP.allowUnauthenticatedMessages,
   }) {
     if (decryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No decryption keys or passwords provided');
@@ -303,7 +304,13 @@ class Message {
     } else if (encryptedPacket is SymEncryptedDataPacket) {
       for (var sessionKey in sessionKeys) {
         try {
-          final packets = encryptedPacket.decrypt(sessionKey.key, symmetric: sessionKey.symmetric).packets;
+          final packets = encryptedPacket
+              .decrypt(
+                sessionKey.key,
+                symmetric: sessionKey.symmetric,
+                allowUnauthenticatedMessages: allowUnauthenticatedMessages,
+              )
+              .packets;
           if (packets != null) {
             return Message(packets);
           }

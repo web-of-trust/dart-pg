@@ -209,9 +209,20 @@ class OpenPGP {
     final Iterable<PrivateKey> decryptionKeys = const [],
     final Iterable<PublicKey> verificationKeys = const [],
     final Iterable<String> passwords = const [],
+    final bool allowUnauthenticatedMessages = OpenPGP.allowUnauthenticatedMessages,
     final DateTime? date,
   }) =>
       (verificationKeys.isNotEmpty)
-          ? message.decrypt(decryptionKeys: decryptionKeys, passwords: passwords).verify(verificationKeys, date: date)
-          : message.decrypt(decryptionKeys: decryptionKeys, passwords: passwords);
+          ? message
+              .decrypt(
+                decryptionKeys: decryptionKeys,
+                passwords: passwords,
+                allowUnauthenticatedMessages: allowUnauthenticatedMessages,
+              )
+              .verify(verificationKeys, date: date)
+          : message.decrypt(
+              decryptionKeys: decryptionKeys,
+              passwords: passwords,
+              allowUnauthenticatedMessages: allowUnauthenticatedMessages,
+            );
 }
