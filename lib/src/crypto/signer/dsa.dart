@@ -12,6 +12,7 @@ import '../math/big_int.dart';
 import '../math/byte_ext.dart';
 import '../math/int_ext.dart';
 
+/// Implementation of DSA (digital signature algorithm)
 class DSASigner implements Signer {
   final Digest? _digest;
 
