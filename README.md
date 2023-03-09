@@ -2,8 +2,7 @@ Dart PG (Dart Privacy Guard) - The OpenPGP library in Dart language
 ===================================================================
 Dart PG is an implementation of the OpenPGP standard in Dart language.
 It implements [RFC4880](https://www.rfc-editor.org/rfc/rfc4880), [RFC6637](https://www.rfc-editor.org/rfc/rfc6637),
-parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis)
-and [RFC3156](https://www.rfc-editor.org/rfc/rfc3156).
+parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis).
 
 ## Features
 * Dart PG allows to encrypt and sign data.
