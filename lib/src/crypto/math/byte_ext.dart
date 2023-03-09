@@ -41,7 +41,7 @@ extension Uint8ListExt on Uint8List {
         result |= (BigInt.from(item) << (8 * i));
       }
     }
-    return result != BigInt.zero
+    return result.sign != 0
         ? negative
             ? result.toSigned(result.bitLength)
             : result
@@ -65,7 +65,7 @@ extension Uint8ListExt on Uint8List {
       }
     }
 
-    if (result != BigInt.zero) {
+    if (result.sign != 0) {
       if (sign < 0) {
         result = result.toSigned(result.bitLength);
       } else {

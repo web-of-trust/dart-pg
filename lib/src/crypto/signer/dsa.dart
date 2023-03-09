@@ -134,7 +134,7 @@ class DSASigner implements Signer {
     BigInt k;
     do {
       k = _random.nextBigInteger(n.bitLength);
-    } while (k == BigInt.zero || k >= n);
+    } while (k.sign == 0 || k >= n);
     return k;
   }
 

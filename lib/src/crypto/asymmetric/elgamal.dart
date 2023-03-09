@@ -123,7 +123,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
     BigInt k;
     do {
       k = _random.nextBigInteger(n.bitLength);
-    } while ((k == BigInt.zero) || (k.compareTo(n - BigInt.two) > 0));
+    } while ((k.sign == 0) || (k.compareTo(n - BigInt.two) > 0));
     return k;
   }
 }

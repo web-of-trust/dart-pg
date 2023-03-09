@@ -8,7 +8,7 @@ extension BigIntExt on BigInt {
   int get byteLength => (bitLength + 7) >> 3;
 
   Uint8List toBytes() {
-    if (this == BigInt.zero) {
+    if (sign == 0) {
       return Uint8List.fromList([0]);
     }
 
@@ -18,7 +18,7 @@ extension BigIntExt on BigInt {
     final int needsPaddingByte;
     final int rawSize;
 
-    if (this > BigInt.zero) {
+    if (sign > 0) {
       rawSize = (bitLength + 7) >> 3;
       needsPaddingByte = ((this >> (rawSize - 1) * 8) & negativeFlag) == negativeFlag ? 1 : 0;
     } else {
@@ -37,7 +37,7 @@ extension BigIntExt on BigInt {
   }
 
   Uint8List toUnsignedBytes() {
-    if (this == BigInt.zero) {
+    if (sign == 0) {
       return Uint8List.fromList([0]);
     }
     final byteMask = BigInt.from(0xff);
@@ -69,7 +69,7 @@ extension BigIntExt on BigInt {
       }
       m = x % m;
       while (i < j) {
-        if (m % _lowprimes[i++] == BigInt.zero) {
+        if ((m % _lowprimes[i++]).sign == 0) {
           return false;
         }
       }
@@ -112,29 +112,29 @@ extension BigIntExt on BigInt {
   /// return index of lowest 1-bit in x, x < 2^31
   int _lbit() {
     var x = this;
-    if (x == BigInt.zero) return -1;
+    if (x.sign == 0) return -1;
     var r = 0;
-    while ((x & BigInt.from(0xffffffff)) == BigInt.zero) {
+    while ((x & BigInt.from(0xffffffff)).sign == 0) {
       x >>= 32;
       r += 32;
     }
-    if ((x & BigInt.from(0xffff)) == BigInt.zero) {
+    if ((x & BigInt.from(0xffff)).sign == 0) {
       x >>= 16;
       r += 16;
     }
-    if ((x & BigInt.from(0xff)) == BigInt.zero) {
+    if ((x & BigInt.from(0xff)).sign == 0) {
       x >>= 8;
       r += 8;
     }
-    if ((x & BigInt.from(0xf)) == BigInt.zero) {
+    if ((x & BigInt.from(0xf)).sign == 0) {
       x >>= 4;
       r += 4;
     }
-    if ((x & BigInt.from(3)) == BigInt.zero) {
+    if ((x & BigInt.from(3)).sign == 0) {
       x >>= 2;
       r += 2;
     }
-    if ((x & BigInt.one) == BigInt.zero) ++r;
+    if ((x & BigInt.one).sign == 0) ++r;
     return r;
   }
 
