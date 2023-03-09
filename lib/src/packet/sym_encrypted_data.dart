@@ -77,7 +77,11 @@ class SymEncryptedDataPacket extends ContainedPacket {
   SymEncryptedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+    final bool allowUnauthenticatedMessages = OpenPGP.allowUnauthenticatedMessages,
   }) {
+    if (!allowUnauthenticatedMessages) {
+      throw StateError('Message is not authenticated.');
+    }
     final blockSize = symmetric.blockSize;
     final cipher = BufferedCipher(symmetric.cipherEngine)
       ..init(false, ParametersWithIV(KeyParameter(key), encrypted.sublist(2, blockSize + 2)));

@@ -36,6 +36,8 @@ class OpenPGP {
 
   static const checksumRequired = true;
 
+  static const allowUnauthenticatedMessages = false;
+
   /// Public key packet version
   static const keyVersion = 4;
 

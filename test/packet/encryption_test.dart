@@ -23,9 +23,14 @@ void main() {
     test('encrypted data test', () {
       final encrypted = SymEncryptedDataPacket.encryptPackets(key, packets);
       final encrypt = SymEncryptedDataPacket.fromPacketData(encrypted.toPacketData());
-      final decrypted = encrypt.decrypt(key);
+      final decrypted = encrypt.decrypt(key, allowUnauthenticatedMessages: true);
       final ldPacket = decrypted.packets![0];
       expect(ldPacket.toPacketData(), equals(literalData.toPacketData()));
+
+      expect(
+        () => encrypt.decrypt(key),
+        throwsStateError,
+      );
     });
 
     test('encrypted integrity protected test', () {
