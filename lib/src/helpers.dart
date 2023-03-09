@@ -75,10 +75,12 @@ class Helper {
 
   static Uint8List hashDigest(final Uint8List input, [HashAlgorithm hash = HashAlgorithm.sha256]) {
     switch (hash) {
+      case HashAlgorithm.md5:
+        return Uint8List.fromList(md5.convert(input).bytes);
       case HashAlgorithm.sha1:
         return Uint8List.fromList(sha1.convert(input).bytes);
       case HashAlgorithm.ripemd160:
-        final digest = pc.Digest('RIPEMD-160');
+        final digest = pc.Digest(hash.digestName);
         return digest.process(input);
       case HashAlgorithm.sha256:
         return Uint8List.fromList(sha256.convert(input).bytes);
@@ -88,8 +90,6 @@ class Helper {
         return Uint8List.fromList(sha512.convert(input).bytes);
       case HashAlgorithm.sha224:
         return Uint8List.fromList(sha224.convert(input).bytes);
-      default:
-        throw UnsupportedError('Digest type not supported.');
     }
   }
 
