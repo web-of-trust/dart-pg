@@ -11,7 +11,6 @@ import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/key_type.dart';
 import '../enum/packet_tag.dart';
-import '../enum/revocation_reason_tag.dart';
 import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
@@ -237,20 +236,6 @@ class PrivateKey extends Key {
         }
         return OpenPGP.preferredHash;
     }
-  }
-
-  /// Creats a revocation certificate.
-  SignaturePacket createRevocationSignature({
-    final RevocationReasonTag reason = RevocationReasonTag.noReason,
-    final String description = '',
-    final DateTime? date,
-  }) {
-    return SignaturePacket.createKeyRevocation(
-      keyPacket,
-      reason: reason,
-      description: description,
-      date: date,
-    );
   }
 
   /// Lock a private key with the given passphrase.

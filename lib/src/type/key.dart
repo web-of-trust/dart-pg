@@ -140,9 +140,6 @@ abstract class Key {
       if (user.userID == null) {
         continue;
       }
-      if (userID.isNotEmpty && user.userID!.userID != userID) {
-        throw StateError('Could not find user that matches that user ID');
-      }
       final selfCertifications = user.selfCertifications
         ..sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
       if (user.isRevoked(
@@ -152,10 +149,14 @@ abstract class Key {
         continue;
       }
       validUsers.add(user);
-      return user;
     }
     if (validUsers.isEmpty) {
       throw StateError('Could not find primary user');
+    }
+    for (final user in validUsers) {
+      if (userID.isNotEmpty && user.userID!.userID != userID) {
+        throw StateError('Could not find user that matches that user ID');
+      }
     }
     return validUsers[0];
   }
