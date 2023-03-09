@@ -7,5 +7,6 @@ enum RevocationKeyTag {
   classSensitive(64);
 
   final int value;
+
   const RevocationKeyTag(this.value);
 }

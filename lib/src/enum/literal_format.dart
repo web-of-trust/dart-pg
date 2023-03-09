@@ -13,5 +13,6 @@ enum LiteralFormat {
   mime(109);
 
   final int value;
+
   const LiteralFormat(this.value);
 }

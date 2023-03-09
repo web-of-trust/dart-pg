@@ -28,12 +28,12 @@ enum CurveInfo {
     switch (this) {
       case prime256v1:
         return 'Prime 256 v1';
+      case secp256k1:
+        return 'Sec P256 k1';
       case secp384r1:
         return 'Sec P384 r1';
       case secp521r1:
         return 'Sec P521 r1';
-      case secp256k1:
-        return 'Sec P256 k1';
       case brainpoolp256r1:
         return 'Brainpool P256 r1';
       case brainpoolp384r1:
@@ -51,12 +51,12 @@ enum CurveInfo {
     switch (this) {
       case prime256v1:
         return [1, 2, 840, 10045, 3, 1, 7];
+      case secp256k1:
+        return [1, 3, 132, 0, 10];
       case secp384r1:
         return [1, 3, 132, 0, 34];
       case secp521r1:
         return [1, 3, 132, 0, 35];
-      case secp256k1:
-        return [1, 3, 132, 0, 10];
       case brainpoolp256r1:
         return [1, 3, 36, 3, 3, 2, 8, 1, 1, 7];
       case brainpoolp384r1:
