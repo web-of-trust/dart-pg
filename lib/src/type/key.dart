@@ -182,6 +182,33 @@ abstract class Key {
     return false;
   }
 
+  DateTime? getExpirationTime() {
+    DateTime? expirationTime;
+    final signatures = directSignatures.toList(growable: false)
+      ..sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
+    for (final signature in signatures) {
+      if (signature.keyExpirationTime != null) {
+        final keyExpirationTime = signature.keyExpirationTime!.time;
+        final creationTime = signature.creationTime.creationTime;
+        expirationTime = creationTime.add(Duration(seconds: keyExpirationTime));
+        break;
+      }
+    }
+    if (expirationTime == null) {
+      final user = getPrimaryUser();
+      user.selfCertifications.sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
+      for (final signature in user.selfCertifications) {
+        if (signature.keyExpirationTime != null) {
+          final keyExpirationTime = signature.keyExpirationTime!.time;
+          final creationTime = signature.creationTime.creationTime;
+          expirationTime = creationTime.add(Duration(seconds: keyExpirationTime));
+          break;
+        }
+      }
+    }
+    return expirationTime;
+  }
+
   PacketList toPacketList() => PacketList([
         keyPacket,
         ...revocationSignatures,
