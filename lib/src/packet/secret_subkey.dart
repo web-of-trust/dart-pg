@@ -41,7 +41,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
-    final CurveInfo curve = OpenPGP.preferredCurve,
+    final CurveInfo curve = CurveInfo.secp521r1,
     final DateTime? date,
   }) {
     final keyPair = KeyPairParams.generate(
