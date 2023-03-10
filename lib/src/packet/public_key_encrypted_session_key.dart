@@ -146,7 +146,6 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
         throw StateError('PKESK decryption error');
       }
 
-      // final Uint8List decoded;
       final SessionKey? sessionKey;
       switch (key.algorithm) {
         case KeyAlgorithm.rsaEncryptSign:
