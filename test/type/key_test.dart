@@ -130,7 +130,7 @@ void main() {
         [userID],
         passphrase,
         type: KeyType.rsa,
-        bitStrength: 2048,
+        rsaBits: 2048,
       );
       expect(privateKey.algorithm, KeyAlgorithm.rsaEncryptSign);
       expect(privateKey.isPrivate, true);
@@ -155,7 +155,7 @@ void main() {
           [userID],
           passphrase,
           type: KeyType.rsa,
-          bitStrength: 1024,
+          rsaBits: 1024,
         ),
         throwsArgumentError,
       );
@@ -169,7 +169,7 @@ void main() {
       );
       expect(privateKey.algorithm, KeyAlgorithm.dsa);
       expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 4096);
+      expect(privateKey.keyStrength, 2048);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -184,16 +184,6 @@ void main() {
       final bindingSignature = subkey.bindingSignatures[0];
       expect(bindingSignature.keyFlags!.isEncryptCommunication, isTrue);
       expect(bindingSignature.keyFlags!.isEncryptStorage, isTrue);
-
-      expect(
-        () => PrivateKey.generate(
-          [userID],
-          passphrase,
-          type: KeyType.dsaElGamal,
-          bitStrength: 1024,
-        ),
-        throwsArgumentError,
-      );
     });
 
     test('prime256v1 curve', () {

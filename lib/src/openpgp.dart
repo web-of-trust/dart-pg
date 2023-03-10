@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'enum/compression_algorithm.dart';
 import 'enum/curve_info.dart';
+import 'enum/dsa_key_size.dart';
 import 'enum/hash_algorithm.dart';
 import 'enum/key_type.dart';
 import 'enum/symmetric_algorithm.dart';
@@ -65,11 +66,11 @@ class OpenPGP {
   /// Default curve
   static const preferredCurve = CurveInfo.secp521r1;
 
-  /// Default big int bit strength
-  static const preferredBitStrength = 4096;
+  /// Default RSA bit strength
+  static const preferredRSABits = 4096;
 
-  /// Min big int bit strength
-  static const minBitStrength = 2048;
+  /// Min RSA bit strength
+  static const minRSABits = 2048;
 
   /// RSA public exponent
   static const rsaPublicExponent = 65537;
@@ -82,8 +83,9 @@ class OpenPGP {
     final Iterable<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
-    final int bitStrength = OpenPGP.preferredBitStrength,
+    final int rsaBits = OpenPGP.preferredRSABits,
     final CurveInfo curve = OpenPGP.preferredCurve,
+    final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,
     final String? subkeyPassphrase,
@@ -93,8 +95,9 @@ class OpenPGP {
         userIDs,
         passphrase,
         type: type,
-        bitStrength: bitStrength,
+        rsaBits: rsaBits,
         curve: curve,
+        dsaKeySize: dsaKeySize,
         keyExpirationTime: keyExpirationTime,
         subkeySign: subkeySign,
         subkeyPassphrase: subkeyPassphrase,

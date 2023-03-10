@@ -7,6 +7,7 @@ import 'dart:developer';
 import '../armor/armor.dart';
 import '../enum/armor_type.dart';
 import '../enum/curve_info.dart';
+import '../enum/dsa_key_size.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/key_type.dart';
@@ -65,8 +66,9 @@ class PrivateKey extends Key {
     final Iterable<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
-    final int bitStrength = OpenPGP.preferredBitStrength,
+    final int rsaBits = OpenPGP.preferredRSABits,
     final CurveInfo curve = OpenPGP.preferredCurve,
+    final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,
     final String? subkeyPassphrase,
@@ -95,14 +97,16 @@ class PrivateKey extends Key {
 
     final secretKey = SecretKeyPacket.generate(
       keyAlgorithm,
-      bitStrength: bitStrength,
+      rsaBits: rsaBits,
       curve: curve,
+      dsaKeySize: dsaKeySize,
       date: date,
     ).encrypt(passphrase);
     final secretSubkey = SecretSubkeyPacket.generate(
       subkeyAlgorithm,
-      rsaBits: bitStrength,
+      rsaBits: rsaBits,
       curve: curve,
+      dsaKeySize: dsaKeySize,
       date: date,
     ).encrypt(subkeyPassphrase ?? passphrase);
 

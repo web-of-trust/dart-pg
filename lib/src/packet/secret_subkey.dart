@@ -5,6 +5,7 @@
 import 'dart:typed_data';
 
 import '../enum/curve_info.dart';
+import '../enum/dsa_key_size.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/packet_tag.dart';
@@ -37,11 +38,17 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   }
   factory SecretSubkeyPacket.generate(
     final KeyAlgorithm algorithm, {
-    final int rsaBits = OpenPGP.preferredBitStrength,
+    final int rsaBits = OpenPGP.preferredRSABits,
     final CurveInfo curve = OpenPGP.preferredCurve,
+    final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
     final DateTime? date,
   }) {
-    final keyPair = KeyPairParams.generate(algorithm, bitStrength: rsaBits, curve: curve);
+    final keyPair = KeyPairParams.generate(
+      algorithm,
+      rsaBits: rsaBits,
+      curve: curve,
+      dsaKeySize: dsaKeySize,
+    );
 
     return SecretSubkeyPacket(
       PublicSubkeyPacket(

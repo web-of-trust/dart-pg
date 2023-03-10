@@ -8,6 +8,7 @@ import '../../crypto/asymmetric/elgamal.dart';
 import '../../crypto/math/byte_ext.dart';
 import '../../crypto/signer/dsa.dart';
 import '../../enum/curve_info.dart';
+import '../../enum/dsa_key_size.dart';
 import '../../enum/key_algorithm.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
@@ -21,14 +22,15 @@ class KeyPairParams {
 
   factory KeyPairParams.generate(
     final KeyAlgorithm algorithm, {
-    final int bitStrength = OpenPGP.preferredBitStrength,
+    final int rsaBits = OpenPGP.preferredRSABits,
     final CurveInfo curve = OpenPGP.preferredCurve,
+    final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
   }) {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final keyPair = _generateRSAKeyPair(bitStrength);
+        final keyPair = _generateRSAKeyPair(rsaBits);
         return KeyPairParams(
           RSAPublicParams(keyPair.publicKey.modulus!, keyPair.publicKey.publicExponent!),
           RSASecretParams(
@@ -57,7 +59,7 @@ class KeyPairParams {
           ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.dsa:
-        final keyPair = _generateDSAKeyPair(bitStrength);
+        final keyPair = _generateDSAKeyPair(dsaKeySize);
         return KeyPairParams(
           DSAPublicParams(
             keyPair.publicKey.prime,
@@ -70,7 +72,7 @@ class KeyPairParams {
           ),
         );
       case KeyAlgorithm.elgamal:
-        final keyPair = _generateElGamalKeyPair(bitStrength);
+        final keyPair = _generateElGamalKeyPair(dsaKeySize);
         return KeyPairParams(
           ElGamalPublicParams(
             keyPair.publicKey.prime,
@@ -98,10 +100,10 @@ class KeyPairParams {
   int get hashCode => publicParams.hashCode ^ secretParams.hashCode;
 
   static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([
-    final int bitStrength = OpenPGP.preferredBitStrength,
+    final int bitStrength = OpenPGP.preferredRSABits,
   ]) {
-    if (bitStrength < OpenPGP.minBitStrength) {
-      throw ArgumentError('RSA bit streng should be at least ${OpenPGP.minBitStrength}, got: $bitStrength');
+    if (bitStrength < OpenPGP.minRSABits) {
+      throw ArgumentError('RSA bit streng should be at least ${OpenPGP.minRSABits}, got: $bitStrength');
     }
 
     final keyGen = KeyGenerator('RSA')
@@ -119,15 +121,12 @@ class KeyPairParams {
   }
 
   static AsymmetricKeyPair<DSAPublicKey, DSAPrivateKey> _generateDSAKeyPair([
-    final int bitStrength = OpenPGP.preferredBitStrength,
+    final DSAKeySize keySize = DSAKeySize.l2048n224,
   ]) {
-    if (bitStrength < OpenPGP.minBitStrength) {
-      throw ArgumentError('DSA bit streng should be at least ${OpenPGP.minBitStrength}, got: $bitStrength');
-    }
     final keyGen = DSAKeyGenerator()
       ..init(
         ParametersWithRandom(
-          DSAKeyGeneratorParameters(bitStrength, 256, 64),
+          DSAKeyGeneratorParameters(keySize.lSize, keySize.nSize, 64),
           Helper.secureRandom(),
         ),
       );
@@ -139,15 +138,12 @@ class KeyPairParams {
   }
 
   static AsymmetricKeyPair<ElGamalPublicKey, ElGamalPrivateKey> _generateElGamalKeyPair([
-    final int bitStrength = OpenPGP.preferredBitStrength,
+    final DSAKeySize keySize = DSAKeySize.l2048n224,
   ]) {
-    if (bitStrength < OpenPGP.minBitStrength) {
-      throw ArgumentError('ElGamal bit streng should be at least ${OpenPGP.minBitStrength}, got: $bitStrength');
-    }
     final keyGen = ElGamalKeyGenerator()
       ..init(
         ParametersWithRandom(
-          ElGamalKeyGeneratorParameters(bitStrength, 256, 64),
+          ElGamalKeyGeneratorParameters(keySize.lSize, keySize.nSize, 64),
           Helper.secureRandom(),
         ),
       );
