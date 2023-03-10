@@ -12,6 +12,7 @@ import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/key_type.dart';
 import '../enum/packet_tag.dart';
+import '../enum/rsa_key_size.dart';
 import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
@@ -66,9 +67,9 @@ class PrivateKey extends Key {
     final Iterable<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
-    final int rsaBits = OpenPGP.preferredRSABits,
-    final CurveInfo curve = OpenPGP.preferredCurve,
+    final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
+    final CurveInfo curve = CurveInfo.secp521r1,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,
     final String? subkeyPassphrase,
@@ -97,16 +98,16 @@ class PrivateKey extends Key {
 
     final secretKey = SecretKeyPacket.generate(
       keyAlgorithm,
-      rsaBits: rsaBits,
-      curve: curve,
+      rsaKeySize: rsaKeySize,
       dsaKeySize: dsaKeySize,
+      curve: curve,
       date: date,
     ).encrypt(passphrase);
     final secretSubkey = SecretSubkeyPacket.generate(
       subkeyAlgorithm,
-      rsaBits: rsaBits,
-      curve: curve,
+      rsaKeySize: rsaKeySize,
       dsaKeySize: dsaKeySize,
+      curve: curve,
       date: date,
     ).encrypt(subkeyPassphrase ?? passphrase);
 
@@ -224,7 +225,7 @@ class PrivateKey extends Key {
         final oid = (keyPacket.publicParams as ECPublicParams).oid;
         final curve = CurveInfo.values.firstWhere(
           (info) => info.identifierString == oid.objectIdentifierAsString,
-          orElse: () => OpenPGP.preferredCurve,
+          orElse: () => CurveInfo.secp521r1,
         );
         return curve.hashAlgorithm;
       default:

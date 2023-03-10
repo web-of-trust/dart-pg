@@ -130,11 +130,10 @@ void main() {
         [userID],
         passphrase,
         type: KeyType.rsa,
-        rsaBits: 2048,
       );
       expect(privateKey.algorithm, KeyAlgorithm.rsaEncryptSign);
       expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 2048);
+      expect(privateKey.keyStrength, 4096);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -149,16 +148,6 @@ void main() {
       final bindingSignature = subkey.bindingSignatures[0];
       expect(bindingSignature.keyFlags!.isEncryptCommunication, isTrue);
       expect(bindingSignature.keyFlags!.isEncryptStorage, isTrue);
-
-      expect(
-        () => PrivateKey.generate(
-          [userID],
-          passphrase,
-          type: KeyType.rsa,
-          rsaBits: 1024,
-        ),
-        throwsArgumentError,
-      );
     });
 
     test('dsa elGamal', () {

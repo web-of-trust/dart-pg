@@ -10,6 +10,7 @@ import '../../crypto/signer/dsa.dart';
 import '../../enum/curve_info.dart';
 import '../../enum/dsa_key_size.dart';
 import '../../enum/key_algorithm.dart';
+import '../../enum/rsa_key_size.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 import '../../openpgp.dart';
@@ -22,15 +23,15 @@ class KeyPairParams {
 
   factory KeyPairParams.generate(
     final KeyAlgorithm algorithm, {
-    final int rsaBits = OpenPGP.preferredRSABits,
-    final CurveInfo curve = OpenPGP.preferredCurve,
+    final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
+    final CurveInfo curve = CurveInfo.secp521r1,
   }) {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final keyPair = _generateRSAKeyPair(rsaBits);
+        final keyPair = _generateRSAKeyPair(rsaKeySize);
         return KeyPairParams(
           RSAPublicParams(keyPair.publicKey.modulus!, keyPair.publicKey.publicExponent!),
           RSASecretParams(
@@ -100,16 +101,12 @@ class KeyPairParams {
   int get hashCode => publicParams.hashCode ^ secretParams.hashCode;
 
   static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([
-    final int bitStrength = OpenPGP.preferredRSABits,
+    final RSAKeySize rsaKeySize = RSAKeySize.s4096,
   ]) {
-    if (bitStrength < OpenPGP.minRSABits) {
-      throw ArgumentError('RSA bit streng should be at least ${OpenPGP.minRSABits}, got: $bitStrength');
-    }
-
     final keyGen = KeyGenerator('RSA')
       ..init(
         ParametersWithRandom(
-          RSAKeyGeneratorParameters(BigInt.from(OpenPGP.rsaPublicExponent), bitStrength, 64),
+          RSAKeyGeneratorParameters(BigInt.from(OpenPGP.rsaPublicExponent), rsaKeySize.bits, 64),
           Helper.secureRandom(),
         ),
       );
@@ -155,7 +152,7 @@ class KeyPairParams {
   }
 
   static AsymmetricKeyPair<ECPublicKey, ECPrivateKey> _generateECKeyPair([
-    final CurveInfo curve = OpenPGP.preferredCurve,
+    final CurveInfo curve = CurveInfo.secp521r1,
   ]) {
     switch (curve) {
       case CurveInfo.ed25519:

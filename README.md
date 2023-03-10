@@ -123,7 +123,7 @@ final privateKey = OpenPGP.generateKey(
     [userID],
     passphrase,
     type: KeyType.rsa,
-    rsaBits: 4096,
+    dsaKeySize: RSAKeySize.s4096,
 );
 final publicKey = privateKey.toPublic;
 ```
@@ -150,7 +150,7 @@ final privateKey = OpenPGP.generateKey(
     [userID],
     passphrase,
     type: KeyType.ellipticCurve,
-    curve: CurveInfo.prime256v1,
+    curve: CurveInfo.secp521r1,
 );
 final publicKey = privateKey.toPublic;
 ```

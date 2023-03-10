@@ -13,6 +13,7 @@ import '../enum/dsa_key_size.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/packet_tag.dart';
+import '../enum/rsa_key_size.dart';
 import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
@@ -100,16 +101,16 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
   factory SecretKeyPacket.generate(
     final KeyAlgorithm algorithm, {
-    final int rsaBits = OpenPGP.preferredRSABits,
-    final CurveInfo curve = OpenPGP.preferredCurve,
+    final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
+    final CurveInfo curve = CurveInfo.secp521r1,
     final DateTime? date,
   }) {
     final keyPair = KeyPairParams.generate(
       algorithm,
-      rsaBits: rsaBits,
-      curve: curve,
+      rsaKeySize: rsaKeySize,
       dsaKeySize: dsaKeySize,
+      curve: curve,
     );
 
     return SecretKeyPacket(
@@ -176,7 +177,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         final oid = (publicParams as ECPublicParams).oid;
         final curve = CurveInfo.values.firstWhere(
           (info) => info.identifierString == oid.objectIdentifierAsString,
-          orElse: () => OpenPGP.preferredCurve,
+          orElse: () => CurveInfo.secp521r1,
         );
         return curve.hashAlgorithm;
       default:
