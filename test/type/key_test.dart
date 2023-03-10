@@ -130,10 +130,11 @@ void main() {
         [userID],
         passphrase,
         type: KeyType.rsa,
+        bitStrength: 2048,
       );
       expect(privateKey.algorithm, KeyAlgorithm.rsaEncryptSign);
       expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 4096);
+      expect(privateKey.keyStrength, 2048);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);

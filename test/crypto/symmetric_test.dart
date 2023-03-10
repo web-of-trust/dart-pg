@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:dart_pg/src/crypto/math/byte_ext.dart';
 import 'package:dart_pg/src/crypto/symmetric/blowfish.dart';
@@ -435,16 +434,11 @@ ParametersWithIV<KeyParameter> _kpWithIV(String key, String iv) {
 void _blockCipherVectorTest(int id, BlockCipher engine, CipherParameters params, String input, String output) {
   final inBytes = input.hexToBytes();
   final outBytes = output.hexToBytes();
-  var out = Uint8List(inBytes.length);
 
   final cipher = BufferedCipher(engine);
   cipher.init(true, params);
-  final len1 = cipher.processBytes(inBytes, 0, inBytes.length, out, 0);
-  cipher.doFinal(out, len1);
-  expect(outBytes, equals(out), reason: '${cipher.algorithmName} test $id did not match output');
+  expect(outBytes, equals(cipher.process(inBytes)), reason: '${cipher.algorithmName} test $id did not match output');
 
   cipher.init(false, params);
-  final len2 = cipher.processBytes(outBytes, 0, out.length, out, 0);
-  cipher.doFinal(out, len2);
-  expect(inBytes, equals(out), reason: '${cipher.algorithmName} test $id did not match input');
+  expect(inBytes, equals(cipher.process(outBytes)), reason: '${cipher.algorithmName} test $id did not match input');
 }

@@ -41,8 +41,7 @@ class BufferedCipher {
 
   Uint8List process(Uint8List input) {
     final output = Uint8List(input.length);
-    final length = processBytes(input, 0, input.length, output, 0);
-    doFinal(output, length);
+    doFinal(output, processBytes(input, 0, input.length, output, 0));
     return output;
   }
 
