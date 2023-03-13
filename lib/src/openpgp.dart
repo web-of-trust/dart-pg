@@ -18,6 +18,13 @@ import 'type/public_key.dart';
 import 'type/signature.dart';
 import 'type/signed_message.dart';
 
+export 'enum/compression_algorithm.dart';
+export 'enum/curve_info.dart';
+export 'enum/dh_key_size.dart';
+export 'enum/key_type.dart';
+export 'enum/rsa_key_size.dart';
+export 'enum/symmetric_algorithm.dart';
+
 export 'type/cleartext_message.dart';
 export 'type/message.dart';
 export 'type/private_key.dart';
