@@ -8,21 +8,22 @@ import 'dart:typed_data';
 import '../crypto/math/int_ext.dart';
 
 class Crc24 {
-  static const _crc24Init = 0xb704ce;
-  static const _crc24Poly = 0x1864cfb;
-  static const _crc24Mask = 0xffffff;
+  static const _init = 0xb704ce;
+  static const _poly = 0x1864cfb;
+  static const _mask = 0xffffff;
 
-  static int calculate(final Uint8List bytes, [int crc = _crc24Init]) {
+  static int calculate(final Uint8List bytes) {
+    var crc = _init;
     for (final byte in bytes) {
       crc ^= byte << 16;
       for (var i = 0; i < 8; i++) {
         crc <<= 1;
         if ((crc & 0x1000000) != 0) {
-          crc ^= _crc24Poly;
+          crc ^= _poly;
         }
       }
     }
-    return crc & _crc24Mask;
+    return crc & _mask;
   }
 
   static String base64Calculate(final Uint8List data) {
