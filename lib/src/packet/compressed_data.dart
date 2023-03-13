@@ -72,11 +72,11 @@ class CompressedDataPacket extends ContainedPacket {
         return Uint8List.fromList(ZLibCodec(
           level: deflateLevel,
           raw: algorithm == CompressionAlgorithm.zip,
-        ).encode(packets.packetEncode()));
+        ).encode(packets.encode()));
       case CompressionAlgorithm.bzip2:
         throw UnsupportedError('Compression algorithm ${algorithm.name} is unsupported.');
       default:
-        return packets.packetEncode();
+        return packets.encode();
     }
   }
 

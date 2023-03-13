@@ -96,9 +96,8 @@ class PacketList extends ListBase<ContainedPacket> {
     return PacketList(packets);
   }
 
-  Uint8List packetEncode() =>
-      Uint8List.fromList(
-        packets.map((packet) => packet.packetEncode()).expand((byte) => byte).toList(growable: false),
+  Uint8List encode() => Uint8List.fromList(
+        packets.map((packet) => packet.encode()).expand((byte) => byte).toList(growable: false),
       );
 
   PacketList filterByTags([final List<PacketTag> tags = const []]) {

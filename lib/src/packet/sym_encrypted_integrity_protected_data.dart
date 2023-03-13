@@ -51,7 +51,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   }) {
     final toHash = Uint8List.fromList([
       ...Helper.generatePrefix(symmetric),
-      ...packets.packetEncode(),
+      ...packets.encode(),
       0xd3,
       0x14,
     ]);

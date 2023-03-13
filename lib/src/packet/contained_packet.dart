@@ -14,7 +14,7 @@ abstract class ContainedPacket {
 
   Uint8List toPacketData();
 
-  Uint8List packetEncode({final bool oldFormat = false, final bool partial = false}) {
+  Uint8List encode({final bool oldFormat = false, final bool partial = false}) {
     final packetBody = toPacketData();
     final bodyLen = packetBody.length;
 

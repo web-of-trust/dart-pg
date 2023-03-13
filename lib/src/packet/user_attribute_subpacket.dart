@@ -15,7 +15,7 @@ class UserAttributeSubpacket {
 
   UserAttributeSubpacket(this.type, this.data, {this.isLongLength = false});
 
-  Uint8List toSubpacket() {
+  Uint8List encode() {
     final List<int> header;
     final bodyLen = data.length + 1;
 

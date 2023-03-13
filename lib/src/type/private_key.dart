@@ -166,7 +166,7 @@ class PrivateKey extends Key {
   }
 
   @override
-  String armor() => Armor.encode(ArmorType.privateKey, toPacketList().packetEncode());
+  String armor() => Armor.encode(ArmorType.privateKey, toPacketList().encode());
 
   SecretKeyPacket getSigningKeyPacket({
     final String keyID = '',

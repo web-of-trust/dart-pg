@@ -47,7 +47,7 @@ class PublicKey extends Key {
   PublicKey get toPublic => this;
 
   @override
-  String armor() => Armor.encode(ArmorType.publicKey, toPacketList().packetEncode());
+  String armor() => Armor.encode(ArmorType.publicKey, toPacketList().encode());
 
   PublicKeyPacket getEncryptionKeyPacket({
     final String keyID = '',

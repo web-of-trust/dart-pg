@@ -109,7 +109,7 @@ class Message {
   Iterable<SignaturePacket> get signaturePackets => unwrapCompressed().packetList.whereType<SignaturePacket>();
 
   /// Returns ASCII armored text of message
-  String armor() => Armor.encode(ArmorType.message, packetList.packetEncode());
+  String armor() => Armor.encode(ArmorType.message, packetList.encode());
 
   /// Append signature to unencrypted message
   Message appendSignature(final SignaturePacket signature) {

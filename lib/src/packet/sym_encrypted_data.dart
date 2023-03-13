@@ -50,7 +50,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
     return SymEncryptedDataPacket(
       Uint8List.fromList([
         ...prefix,
-        ...cipher.process(packets.packetEncode()),
+        ...cipher.process(packets.encode()),
       ]),
       packets: packets,
     );

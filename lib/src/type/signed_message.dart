@@ -63,7 +63,7 @@ class SignedMessage extends CleartextMessage {
     final hashes = signature.packets.map((packet) => packet.hashAlgorithm.name.toUpperCase());
     return Armor.encode(
       ArmorType.signedMessage,
-      PacketList(signature.packets).packetEncode(),
+      PacketList(signature.packets).encode(),
       text: text,
       hashAlgo: hashes.join(', '),
     );

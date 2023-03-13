@@ -50,7 +50,7 @@ void main() {
       );
 
       final encryptedList = PacketList([skesk, seip]);
-      final packetList = PacketList.packetDecode(encryptedList.packetEncode());
+      final packetList = PacketList.packetDecode(encryptedList.encode());
 
       final decryptedSkesk = packetList.whereType<SymEncryptedSessionKeyPacket>().elementAt(0).decrypt(kek);
       expect(skesk.sessionKey!.symmetric, equals(decryptedSkesk.sessionKey!.symmetric));
@@ -82,7 +82,7 @@ void main() {
       );
 
       final encryptedList = PacketList([pkesk, seip]);
-      final packetList = PacketList.packetDecode(encryptedList.packetEncode());
+      final packetList = PacketList.packetDecode(encryptedList.encode());
 
       final decryptedPkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().elementAt(0).decrypt(secretKey);
       expect(pkesk.sessionKey!.symmetric, equals(decryptedPkesk.sessionKey!.symmetric));
@@ -109,7 +109,7 @@ void main() {
       );
 
       final encryptedList = PacketList([pkesk, seip]);
-      final packetList = PacketList.packetDecode(encryptedList.packetEncode());
+      final packetList = PacketList.packetDecode(encryptedList.encode());
 
       final decryptedPkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().elementAt(0).decrypt(secretKey);
       expect(pkesk.sessionKey!.symmetric, equals(decryptedPkesk.sessionKey!.symmetric));
@@ -136,7 +136,7 @@ void main() {
       );
 
       final encryptedList = PacketList([pkesk, seip]);
-      final packetList = PacketList.packetDecode(encryptedList.packetEncode());
+      final packetList = PacketList.packetDecode(encryptedList.encode());
 
       final decryptedPkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().elementAt(0).decrypt(secretKey);
       expect(pkesk.sessionKey!.symmetric, equals(decryptedPkesk.sessionKey!.symmetric));

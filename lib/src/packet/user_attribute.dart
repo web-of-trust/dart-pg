@@ -32,7 +32,7 @@ class UserAttributePacket extends ContainedPacket {
 
   @override
   Uint8List toPacketData() =>
-      Uint8List.fromList(attributes.map((attr) => attr.toSubpacket()).expand((byte) => byte).toList(growable: false));
+      Uint8List.fromList(attributes.map((attr) => attr.encode()).expand((byte) => byte).toList(growable: false));
 
   Uint8List writeForSign() {
     final bytes = toPacketData();
