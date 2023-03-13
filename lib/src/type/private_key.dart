@@ -235,8 +235,8 @@ class PrivateKey extends Key {
               return cert.preferredHashAlgorithms!.preferences[0];
             }
           }
-        } catch (e) {
-          log(e.toString());
+        } on Error catch (e) {
+          log(e.toString(), error: e, stackTrace: e.stackTrace);
         }
         return HashAlgorithm.sha256;
     }

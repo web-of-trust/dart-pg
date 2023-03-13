@@ -44,7 +44,7 @@ class Verification {
             ),
           ));
         } on Error catch (e) {
-          log(e.toString(), stackTrace: e.stackTrace);
+          log(e.toString(), error: e, stackTrace: e.stackTrace);
         }
       }
     }

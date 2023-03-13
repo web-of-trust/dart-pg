@@ -298,7 +298,7 @@ class Message {
             return Message(packets);
           }
         } on Error catch (e) {
-          log(e.toString(), stackTrace: e.stackTrace);
+          log(e.toString(), error: e, stackTrace: e.stackTrace);
         }
       }
     } else if (encryptedPacket is SymEncryptedDataPacket) {
@@ -315,7 +315,7 @@ class Message {
             return Message(packets);
           }
         } on Error catch (e) {
-          log(e.toString(), stackTrace: e.stackTrace);
+          log(e.toString(), error: e, stackTrace: e.stackTrace);
         }
       }
     }
@@ -362,7 +362,7 @@ class Message {
                 sessionKeys.add(sessionKey);
               }
             } on Error catch (e) {
-              log(e.toString(), stackTrace: e.stackTrace);
+              log(e.toString(), error: e, stackTrace: e.stackTrace);
             }
           }
         }
@@ -377,7 +377,7 @@ class Message {
               sessionKeys.add(sessionKey);
             }
           } on Error catch (e) {
-            log(e.toString(), stackTrace: e.stackTrace);
+            log(e.toString(), error: e, stackTrace: e.stackTrace);
           }
         }
       }
