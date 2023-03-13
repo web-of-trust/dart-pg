@@ -65,7 +65,7 @@ class SignedMessage extends CleartextMessage {
       ArmorType.signedMessage,
       PacketList(signature.packets).encode(),
       text: text,
-      hashAlgo: hashes.join(', '),
+      hashAlgo: hashes.isNotEmpty ? hashes.elementAt(0) : '',
     );
   }
 

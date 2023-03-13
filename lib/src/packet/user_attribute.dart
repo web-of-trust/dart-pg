@@ -47,7 +47,7 @@ class UserAttributePacket extends ContainedPacket {
     final attributes = <UserAttributeSubpacket>[];
     var offset = 0;
     while (offset < bytes.length) {
-      final reader = SubpacketReader.fromSubpacket(bytes, offset);
+      final reader = SubpacketReader.read(bytes, offset);
       offset = reader.end;
       if (reader.data.isNotEmpty) {
         switch (reader.type) {

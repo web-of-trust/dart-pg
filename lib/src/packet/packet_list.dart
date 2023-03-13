@@ -36,7 +36,7 @@ class PacketList extends ListBase<ContainedPacket> {
     final packets = <ContainedPacket>[];
     var offset = 0;
     while (offset < bytes.length) {
-      final reader = PacketReader.fromPacket(bytes, offset);
+      final reader = PacketReader.read(bytes, offset);
       offset = reader.end;
 
       switch (reader.tag) {
