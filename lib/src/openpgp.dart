@@ -110,8 +110,11 @@ class OpenPGP {
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async =>
-      CleartextMessage(cleartext)
-          .verifySignature(Signature.fromArmored(armoredSignature), verificationKeys, date: date);
+      CleartextMessage(cleartext).verifySignature(
+        Signature.fromArmored(armoredSignature),
+        verificationKeys,
+        date: date,
+      );
 
   /// Read an armored OpenPGP signature and returns a Signature object
   static Future<Signature> readSignature(final String armoredSignature) async =>
