@@ -226,8 +226,8 @@ class DSAKeyGeneratorParameters extends KeyGeneratorParameters {
       prime = x - (c - BigInt.one);
     } while (!prime.isProbablePrime(certainty) || prime.bitLength != bitStrength);
 
-    final p_1 = prime - BigInt.one;
-    final e = p_1 ~/ order;
+    final p1 = prime - BigInt.one;
+    final e = p1 ~/ order;
     var h = BigInt.two;
     do {
       generator = h.modPow(e, prime);

@@ -176,9 +176,9 @@ class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
       prime = x - (c - BigInt.one);
     } while (!prime.isProbablePrime(certainty) || prime.bitLength != bitStrength);
 
-    final primeMinusTwo = prime - BigInt.two;
+    final p2 = prime - BigInt.two;
     do {
-      final h = Helper.randomBigIntInRange(BigInt.two, primeMinusTwo, random: random);
+      final h = Helper.randomBigIntInRange(BigInt.two, p2, random: random);
       generator = h.modPow(BigInt.two, prime);
     } while (generator.compareTo(BigInt.one) == 0);
 
