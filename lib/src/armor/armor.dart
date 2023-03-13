@@ -7,10 +7,12 @@ import 'dart:typed_data';
 
 import '../enum/armor_type.dart';
 import '../helpers.dart';
-import '../openpgp.dart';
 import 'crc24.dart';
 
 class Armor {
+  static const version = 'Dart PG v1.0.0';
+  static const comment = 'Dart Privacy Guard';
+
   static const messageBegin = '-----BEGIN PGP MESSAGE';
   static const signedMessageBegin = '-----BEGIN PGP SIGNED MESSAGE';
   static const messageEnd = '-----END PGP MESSAGE';
@@ -51,7 +53,7 @@ class Armor {
   /// Verify the checksum and return the encoded bytes
   factory Armor.decode(
     final String armored, [
-    final bool checksumRequired = OpenPGP.checksumRequired,
+    final bool checksumRequired = true,
   ]) {
     var textDone = false;
     var checksum = '';
@@ -105,7 +107,7 @@ class Armor {
     final String hashAlgo = '',
     final int partIndex = 0,
     final int partTotal = 0,
-    final String customComment = OpenPGP.comment,
+    final String customComment = '',
   }) {
     final List<String> result;
     switch (type) {
@@ -207,13 +209,9 @@ class Armor {
 
   static String _addHeader([final String customComment = '']) {
     final headers = <String>[];
-    if (OpenPGP.showVersion) {
-      headers.add('Version: ${OpenPGP.version}\n');
-    }
-    if (OpenPGP.showComment) {
-      headers.add('Comment: ${OpenPGP.comment}\n');
-    }
-    if (customComment.trim().isNotEmpty && OpenPGP.showComment) {
+    headers.add('Version: $version\n');
+    headers.add('Comment: $comment\n');
+    if (customComment.trim().isNotEmpty) {
       headers.add('Comment: $customComment\n');
     }
     headers.add('\n');

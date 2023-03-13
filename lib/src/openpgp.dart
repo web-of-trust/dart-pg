@@ -27,21 +27,6 @@ export 'type/signed_message.dart';
 
 /// Export high level API for Dart developers.
 class OpenPGP {
-  static const version = 'Dart PG v1.0.0';
-
-  static const comment = 'Dart Privacy Guard';
-
-  static const showVersion = true;
-
-  static const showComment = false;
-
-  static const checksumRequired = true;
-
-  static const allowUnauthenticatedMessages = false;
-
-  /// Public key packet version
-  // static const keyVersion = 4;
-
   /// Generate a new OpenPGP key pair. Supports RSA and ECC keys.
   /// By default, primary and subkeys will be of same type.
   /// The generated primary key will have signing capabilities.
@@ -182,7 +167,7 @@ class OpenPGP {
     final Iterable<PrivateKey> decryptionKeys = const [],
     final Iterable<PublicKey> verificationKeys = const [],
     final Iterable<String> passwords = const [],
-    final bool allowUnauthenticatedMessages = OpenPGP.allowUnauthenticatedMessages,
+    final bool allowUnauthenticatedMessages = false,
     final DateTime? date,
   }) async =>
       (verificationKeys.isNotEmpty)

@@ -13,7 +13,6 @@ import '../enum/packet_tag.dart';
 import '../enum/signature_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
-import '../openpgp.dart';
 import '../packet/compressed_data.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/session_key.dart';
@@ -25,6 +24,9 @@ import '../packet/signature_packet.dart';
 import '../packet/sym_encrypted_data.dart';
 import '../packet/sym_encrypted_integrity_protected_data.dart';
 import '../packet/sym_encrypted_session_key.dart';
+import 'key.dart';
+import 'signature.dart';
+import 'signed_message.dart';
 import 'verification.dart';
 
 /// Class that represents an OpenPGP message.
@@ -274,7 +276,7 @@ class Message {
   Message decrypt({
     final Iterable<PrivateKey> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
-    final bool allowUnauthenticatedMessages = OpenPGP.allowUnauthenticatedMessages,
+    final bool allowUnauthenticatedMessages = false,
   }) {
     if (decryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No decryption keys or passwords provided');

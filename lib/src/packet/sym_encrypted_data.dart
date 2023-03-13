@@ -10,7 +10,6 @@ import '../crypto/symmetric/base_cipher.dart';
 import '../enum/packet_tag.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
-import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'packet_list.dart';
 
@@ -77,7 +76,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
   SymEncryptedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
-    final bool allowUnauthenticatedMessages = OpenPGP.allowUnauthenticatedMessages,
+    final bool allowUnauthenticatedMessages = false,
   }) {
     if (!allowUnauthenticatedMessages) {
       throw StateError('Message is not authenticated.');
