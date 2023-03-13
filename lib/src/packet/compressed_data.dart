@@ -7,7 +7,6 @@ import 'dart:typed_data';
 
 import '../enum/compression_algorithm.dart';
 import '../enum/packet_tag.dart';
-import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'packet_list.dart';
 
@@ -17,7 +16,8 @@ import 'packet_list.dart';
 /// Typically, this packet is found as the contents of an encrypted packet,
 /// or following a Signature or One-Pass Signature packet, and contains a literal data packet.
 class CompressedDataPacket extends ContainedPacket {
-  static const deflateLevel = OpenPGP.deflateLevel;
+  /// Default zip/zlib compression level, between 1 and 9
+  static const deflateLevel = 6;
 
   final CompressionAlgorithm algorithm;
 

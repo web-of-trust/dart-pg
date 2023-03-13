@@ -10,7 +10,6 @@ import '../crypto/math/int_ext.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/packet_tag.dart';
 import '../helpers.dart';
-import '../openpgp.dart';
 import 'key/key_id.dart';
 import 'key/key_params.dart';
 import 'contained_packet.dart';
@@ -19,8 +18,10 @@ import 'key_packet.dart';
 /// PublicKey represents an OpenPGP public key.
 /// See RFC 4880, section 5.5.2.
 class PublicKeyPacket extends ContainedPacket implements KeyPacket {
+  static const keyVersion = 4;
+
   @override
-  final int version = OpenPGP.keyVersion;
+  final int version = keyVersion;
 
   @override
   final DateTime creationTime;
@@ -52,7 +53,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
     /// A one-octet version number (3 or 4 or 5).
     final version = bytes[pos++];
-    if (version != 4) {
+    if (version != keyVersion) {
       throw UnsupportedError('Version $version of the key packet is unsupported.');
     }
 

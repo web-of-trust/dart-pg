@@ -40,22 +40,7 @@ class OpenPGP {
   static const allowUnauthenticatedMessages = false;
 
   /// Public key packet version
-  static const keyVersion = 4;
-
-  /// Public key encrypted session key packet version
-  static const pkeskVersion = 3;
-
-  /// Symmetrically encrypted session key packet version
-  static const skeskVersion = 4;
-
-  /// Encrypted integrity protected data packet version
-  static const seipVersion = 1;
-
-  /// Default zip/zlib compression level, between 1 and 9
-  static const deflateLevel = 6;
-
-  /// RSA public exponent
-  static const rsaPublicExponent = 65537;
+  // static const keyVersion = 4;
 
   /// Generate a new OpenPGP key pair. Supports RSA and ECC keys.
   /// By default, primary and subkeys will be of same type.

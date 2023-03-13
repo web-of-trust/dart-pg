@@ -12,7 +12,6 @@ import '../enum/hash_algorithm.dart';
 import '../enum/packet_tag.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
-import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'packet_list.dart';
 
@@ -23,7 +22,7 @@ import 'packet_list.dart';
 /// It is a new feature created for OpenPGP that addresses the problem of detecting a modification to encrypted data.
 /// It is used in combination with a Modification Detection Code packet.
 class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
-  static const version = OpenPGP.seipVersion;
+  static const version = 1;
 
   /// Encrypted data, the output of the selected symmetric-key cipher
   /// operating in Cipher Feedback mode with shift amount equal to the
@@ -38,9 +37,9 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
 
   factory SymEncryptedIntegrityProtectedDataPacket.fromPacketData(final Uint8List bytes) {
     /// A one-octet version number. The only currently defined version is 1.
-    final version = bytes[0];
-    if (version != OpenPGP.seipVersion) {
-      throw UnsupportedError('Version $version of the SEIP packet is unsupported.');
+    final seipVersion = bytes[0];
+    if (seipVersion != version) {
+      throw UnsupportedError('Version $seipVersion of the SEIP packet is unsupported.');
     }
     return SymEncryptedIntegrityProtectedDataPacket(bytes.sublist(1));
   }

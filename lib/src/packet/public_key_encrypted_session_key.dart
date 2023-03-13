@@ -11,7 +11,6 @@ import '../enum/key_algorithm.dart';
 import '../enum/packet_tag.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
-import '../openpgp.dart';
 import 'contained_packet.dart';
 import 'key/key_id.dart';
 import 'key/key_params.dart';
@@ -32,7 +31,7 @@ import 'key_packet.dart';
 /// The recipient of the message finds a session key that is encrypted to their public key,
 /// decrypts the session key, and then uses the session key to decrypt the message.
 class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
-  static const version = OpenPGP.pkeskVersion;
+  static const version = 3;
 
   final KeyID publicKeyID;
 
@@ -55,9 +54,9 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
 
   factory PublicKeyEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
     var pos = 0;
-    final version = bytes[pos++];
-    if (version != OpenPGP.pkeskVersion) {
-      throw UnsupportedError('Version $version of the PKESK packet is unsupported.');
+    final pkeskVersion = bytes[pos++];
+    if (pkeskVersion != version) {
+      throw UnsupportedError('Version $pkeskVersion of the PKESK packet is unsupported.');
     }
 
     final keyID = bytes.sublist(pos, pos + 8);

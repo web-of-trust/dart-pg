@@ -12,7 +12,6 @@ import '../enum/packet_tag.dart';
 import '../enum/s2k_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
-import '../openpgp.dart';
 import 'key/s2k.dart';
 import 'contained_packet.dart';
 import 'key/session_key.dart';
@@ -29,7 +28,7 @@ import 'key/session_key.dart';
 /// itself encrypted and stored in the Encrypted Session Key packet or
 /// the Symmetric-Key Encrypted Session Key packet.
 class SymEncryptedSessionKeyPacket extends ContainedPacket {
-  static const version = OpenPGP.skeskVersion;
+  static const version = 4;
 
   /// Algorithm to encrypt the session key with
   final SymmetricAlgorithm encryptionKeySymmetric;
@@ -54,9 +53,9 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     var pos = 0;
 
     /// A one-octet version number. The only currently defined version is 4.
-    final version = bytes[pos++];
-    if (version != OpenPGP.skeskVersion) {
-      throw UnsupportedError('Version $version of the SKESK packet is unsupported.');
+    final skeskVersion = bytes[pos++];
+    if (skeskVersion != version) {
+      throw UnsupportedError('Version $skeskVersion of the SKESK packet is unsupported.');
     }
 
     /// A one-octet number describing the symmetric algorithm used.

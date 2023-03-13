@@ -13,9 +13,10 @@ import '../../enum/key_algorithm.dart';
 import '../../enum/rsa_key_size.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
-import '../../openpgp.dart';
 
 class KeyPairParams {
+  static const rsaPublicExponent = 65537;
+
   final KeyParams publicParams;
   final KeyParams secretParams;
 
@@ -106,7 +107,7 @@ class KeyPairParams {
     final keyGen = KeyGenerator('RSA')
       ..init(
         ParametersWithRandom(
-          RSAKeyGeneratorParameters(BigInt.from(OpenPGP.rsaPublicExponent), rsaKeySize.bits, 64),
+          RSAKeyGeneratorParameters(BigInt.from(rsaPublicExponent), rsaKeySize.bits, 64),
           Helper.secureRandom(),
         ),
       );
