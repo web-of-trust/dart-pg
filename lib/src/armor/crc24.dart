@@ -15,7 +15,7 @@ class Crc24 {
   static int calculate(final Uint8List bytes, [int crc = _crc24Init]) {
     for (final byte in bytes) {
       crc ^= byte << 16;
-      for (int i = 0; i < 8; i++) {
+      for (var i = 0; i < 8; i++) {
         crc <<= 1;
         if ((crc & 0x1000000) != 0) {
           crc ^= _crc24Poly;

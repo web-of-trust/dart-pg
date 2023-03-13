@@ -57,9 +57,9 @@ class Armor {
     var checksum = '';
     ArmorType? type;
 
-    final List<String> headers = [];
-    final List<String> textLines = [];
-    final List<String> dataLines = [];
+    final headers = <String>[];
+    final textLines = <String>[];
+    final dataLines = <String>[];
 
     final lines = LineSplitter.split(armored);
     for (final line in lines) {
@@ -206,7 +206,7 @@ class Armor {
   }
 
   static String _addHeader([final String customComment = '']) {
-    final List<String> headers = [];
+    final headers = <String>[];
     if (OpenPGP.showVersion) {
       headers.add('Version: ${OpenPGP.version}\n');
     }
