@@ -361,7 +361,9 @@ class Message {
               if (sessionKey != null) {
                 sessionKeys.add(sessionKey);
               }
-            } catch (_) {}
+            } catch (e) {
+              log(e.toString());
+            }
           }
         }
       }
@@ -374,7 +376,9 @@ class Message {
             if (sessionKey != null) {
               sessionKeys.add(sessionKey);
             }
-          } catch (_) {}
+          } catch (e) {
+            log(e.toString());
+          }
         }
       }
     }

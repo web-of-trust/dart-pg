@@ -54,9 +54,6 @@ class OpenPGP {
   /// Default zip/zlib compression level, between 1 and 9
   static const deflateLevel = 6;
 
-  /// Default encryption cipher
-  // static const preferredSymmetric = SymmetricAlgorithm.aes256;
-
   /// RSA public exponent
   static const rsaPublicExponent = 65537;
 
