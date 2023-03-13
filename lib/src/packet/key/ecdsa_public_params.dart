@@ -37,7 +37,11 @@ class ECDSAPublicParams extends ECPublicParams {
     final HashAlgorithm hash,
     final Uint8List signature,
   ) {
-    final signer = Signer('${hash.digestName}/DET-ECDSA')..init(false, PublicKeyParameter<ECPublicKey>(publicKey));
+    final signer = Signer('${hash.digestName}/DET-ECDSA')
+      ..init(
+        false,
+        PublicKeyParameter<ECPublicKey>(publicKey),
+      );
 
     final r = Helper.readMPI(signature);
     final s = Helper.readMPI(signature.sublist(r.byteLength + 2));

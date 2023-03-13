@@ -64,7 +64,11 @@ class RSASecretParams extends KeyParams {
       ]);
 
   Uint8List sign(final Uint8List message, final HashAlgorithm hash) {
-    final signer = Signer('${hash.digestName}/RSA')..init(true, PrivateKeyParameter<RSAPrivateKey>(privateKey));
+    final signer = Signer('${hash.digestName}/RSA')
+      ..init(
+        true,
+        PrivateKeyParameter<RSAPrivateKey>(privateKey),
+      );
     final signature = signer.generateSignature(message) as RSASignature;
     return Uint8List.fromList([
       ...(signature.bytes.lengthInBytes * 8).pack16(),

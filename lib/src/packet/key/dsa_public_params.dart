@@ -63,7 +63,11 @@ class DSAPublicParams extends KeyParams {
     final HashAlgorithm hash,
     final Uint8List signature,
   ) {
-    final signer = DSASigner(Digest(hash.digestName))..init(false, PublicKeyParameter<DSAPublicKey>(publicKey));
+    final signer = DSASigner(Digest(hash.digestName))
+      ..init(
+        false,
+        PublicKeyParameter<DSAPublicKey>(publicKey),
+      );
 
     final r = Helper.readMPI(signature);
     final s = Helper.readMPI(signature.sublist(r.byteLength + 2));

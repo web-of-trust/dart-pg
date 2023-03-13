@@ -31,12 +31,19 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
     return ElGamalSessionKeyParams(gamma, phi);
   }
 
-  factory ElGamalSessionKeyParams.encryptSessionKey(final ElGamalPublicKey key, final SessionKey sessionKey) {
-    final engine = ElGamalEngine()..init(true, PublicKeyParameter<ElGamalPublicKey>(key));
+  factory ElGamalSessionKeyParams.encryptSessionKey(
+    final ElGamalPublicKey key,
+    final SessionKey sessionKey,
+  ) {
+    final engine = ElGamalEngine()
+      ..init(
+        true,
+        PublicKeyParameter<ElGamalPublicKey>(key),
+      );
     final cipherData = Uint8List(engine.outputBlockSize);
     final plainData = Helper.emeEncode(
       Uint8List.fromList([
-      ...sessionKey.encode(),
+        ...sessionKey.encode(),
         ...sessionKey.computeChecksum(),
       ]),
       key.prime.byteLength,
@@ -57,7 +64,11 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
       ]);
 
   SessionKey decrypt(final ElGamalPrivateKey key) {
-    final engine = ElGamalEngine()..init(false, PrivateKeyParameter<ElGamalPrivateKey>(key));
+    final engine = ElGamalEngine()
+      ..init(
+        false,
+        PrivateKeyParameter<ElGamalPrivateKey>(key),
+      );
     final plainData = Uint8List(engine.outputBlockSize);
     final cipherData = Uint8List.fromList([
       ...gamma.toUnsignedBytes(),

@@ -42,7 +42,11 @@ class RSAPublicParams extends KeyParams {
     final HashAlgorithm hash,
     final Uint8List signature,
   ) {
-    final signer = Signer('${hash.digestName}/RSA')..init(false, PublicKeyParameter<RSAPublicKey>(publicKey));
+    final signer = Signer('${hash.digestName}/RSA')
+      ..init(
+        false,
+        PublicKeyParameter<RSAPublicKey>(publicKey),
+      );
     return signer.verifySignature(message, RSASignature(Helper.readMPI(signature).toUnsignedBytes()));
   }
 }

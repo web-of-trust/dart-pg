@@ -19,7 +19,13 @@ class ECDHPublicParams extends ECPublicParams {
 
   final SymmetricAlgorithm kdfSymmetric;
 
-  ECDHPublicParams(super.oid, super.q, this.kdfHash, this.kdfSymmetric, [this.reserved = 0x1]);
+  ECDHPublicParams(
+    super.oid,
+    super.q,
+    this.kdfHash,
+    this.kdfSymmetric, [
+    this.reserved = 0x1,
+  ]);
 
   factory ECDHPublicParams.fromPacketData(final Uint8List bytes) {
     var pos = 0;
@@ -31,8 +37,11 @@ class ECDHPublicParams extends ECPublicParams {
       throw UnsupportedError('Unsupported OID');
     }
 
-    final derBytes = [0x06, length, ...bytes.sublist(pos, pos + length)];
-    final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList(derBytes));
+    final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList([
+      0x06,
+      length,
+      ...bytes.sublist(pos, pos + length),
+    ]));
 
     pos += length;
     final q = Helper.readMPI(bytes.sublist(pos));

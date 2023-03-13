@@ -29,7 +29,10 @@ class ECSecretParams extends KeyParams {
     final HashAlgorithm hash,
   ) {
     final signer = Signer('${hash.digestName}/DET-ECDSA')
-      ..init(true, PrivateKeyParameter<ECPrivateKey>(ECPrivateKey(d, publicParams.publicKey.parameters)));
+      ..init(
+        true,
+        PrivateKeyParameter<ECPrivateKey>(ECPrivateKey(d, publicParams.publicKey.parameters)),
+      );
     final signature = signer.generateSignature(message) as ECSignature;
     return Uint8List.fromList([
       ...signature.r.bitLength.pack16(),

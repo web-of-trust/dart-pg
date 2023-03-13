@@ -15,6 +15,10 @@ import '../../helpers.dart';
 import 'key_params.dart';
 
 class KeyPairParams {
+  /// The number of Miller-Rabin primality tests
+  static const mrTests = 64;
+
+  /// RSA public exponent
   static const rsaPublicExponent = 65537;
 
   final KeyParams publicParams;
@@ -34,7 +38,10 @@ class KeyPairParams {
       case KeyAlgorithm.rsaSign:
         final keyPair = _generateRSAKeyPair(rsaKeySize);
         return KeyPairParams(
-          RSAPublicParams(keyPair.publicKey.modulus!, keyPair.publicKey.publicExponent!),
+          RSAPublicParams(
+            keyPair.publicKey.modulus!,
+            keyPair.publicKey.publicExponent!,
+          ),
           RSASecretParams(
             keyPair.privateKey.privateExponent!,
             keyPair.privateKey.p!,
@@ -45,7 +52,10 @@ class KeyPairParams {
         final keyPair = _generateECKeyPair(curve);
         final q = keyPair.publicKey.Q!;
         return KeyPairParams(
-          ECDSAPublicParams(curve.asn1Oid, q.getEncoded(q.isCompressed).toBigIntWithSign(1)),
+          ECDSAPublicParams(
+            curve.asn1Oid,
+            q.getEncoded(q.isCompressed).toBigIntWithSign(1),
+          ),
           ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.ecdh:
@@ -107,7 +117,11 @@ class KeyPairParams {
     final keyGen = KeyGenerator('RSA')
       ..init(
         ParametersWithRandom(
-          RSAKeyGeneratorParameters(BigInt.from(rsaPublicExponent), rsaKeySize.bits, 64),
+          RSAKeyGeneratorParameters(
+            BigInt.from(rsaPublicExponent),
+            rsaKeySize.bits,
+            mrTests,
+          ),
           Helper.secureRandom(),
         ),
       );
@@ -124,7 +138,11 @@ class KeyPairParams {
     final keyGen = DSAKeyGenerator()
       ..init(
         ParametersWithRandom(
-          DSAKeyGeneratorParameters(keySize.lSize, keySize.nSize, 64),
+          DSAKeyGeneratorParameters(
+            keySize.lSize,
+            keySize.nSize,
+            mrTests,
+          ),
           Helper.secureRandom(),
         ),
       );
@@ -141,7 +159,11 @@ class KeyPairParams {
     final keyGen = ElGamalKeyGenerator()
       ..init(
         ParametersWithRandom(
-          ElGamalKeyGeneratorParameters(keySize.lSize, keySize.nSize, 64),
+          ElGamalKeyGeneratorParameters(
+            keySize.lSize,
+            keySize.nSize,
+            mrTests,
+          ),
           Helper.secureRandom(),
         ),
       );

@@ -144,7 +144,10 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       ).sublist(0, keySize);
 
   /// Build Param for ECDH algorithm (RFC 6637)
-  static Uint8List _buildEcdhParam(final ECDHPublicParams publicParams, final Uint8List fingerprint) =>
+  static Uint8List _buildEcdhParam(
+    final ECDHPublicParams publicParams,
+    final Uint8List fingerprint,
+  ) =>
       Uint8List.fromList([
         ...publicParams.oid.encode().sublist(1),
         KeyAlgorithm.ecdh.value,

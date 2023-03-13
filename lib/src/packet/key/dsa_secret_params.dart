@@ -22,7 +22,10 @@ class DSASecretParams extends KeyParams {
   factory DSASecretParams.fromPacketData(final Uint8List bytes) => DSASecretParams(Helper.readMPI(bytes));
 
   @override
-  Uint8List encode() => Uint8List.fromList([...secretExponent.bitLength.pack16(), ...secretExponent.toUnsignedBytes()]);
+  Uint8List encode() => Uint8List.fromList([
+        ...secretExponent.bitLength.pack16(),
+        ...secretExponent.toUnsignedBytes(),
+      ]);
 
   Uint8List sign(
     final DSAPublicParams publicParams,

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dart_pg/src/crypto/asymmetric/elgamal.dart';
 import 'package:dart_pg/src/crypto/signer/dsa.dart';
 import 'package:dart_pg/src/helpers.dart';
+import 'package:dart_pg/src/openpgp.dart';
 import 'package:pointycastle/api.dart';
 import 'package:faker/faker.dart';
 import 'package:test/test.dart';
@@ -41,7 +42,11 @@ void main() {
       final keyGen = ElGamalKeyGenerator()
         ..init(
           ParametersWithRandom(
-            ElGamalKeyGeneratorParameters(2048, 256, 64),
+            ElGamalKeyGeneratorParameters(
+              DHKeySize.l2048n224.lSize,
+              DHKeySize.l2048n224.nSize,
+              64,
+            ),
             Helper.secureRandom(),
           ),
         );
@@ -102,7 +107,11 @@ void main() {
       final keyGen = DSAKeyGenerator()
         ..init(
           ParametersWithRandom(
-            DSAKeyGeneratorParameters(2048, 256, 64),
+            DSAKeyGeneratorParameters(
+              DHKeySize.l2048n224.lSize,
+              DHKeySize.l2048n224.nSize,
+              64,
+            ),
             Helper.secureRandom(),
           ),
         );
