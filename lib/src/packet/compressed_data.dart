@@ -30,7 +30,7 @@ class CompressedDataPacket extends ContainedPacket {
   CompressedDataPacket(
     this.compressed,
     this.packets, {
-    this.algorithm = OpenPGP.preferredCompression,
+    this.algorithm = CompressionAlgorithm.uncompressed,
   }) : super(PacketTag.compressedData);
 
   factory CompressedDataPacket.fromPacketData(final Uint8List bytes) {
@@ -48,7 +48,7 @@ class CompressedDataPacket extends ContainedPacket {
 
   factory CompressedDataPacket.fromPacketList(
     final PacketList packets, {
-    final CompressionAlgorithm algorithm = OpenPGP.preferredCompression,
+    final CompressionAlgorithm algorithm = CompressionAlgorithm.uncompressed,
   }) {
     return CompressedDataPacket(_compress(packets, algorithm), packets, algorithm: algorithm);
   }

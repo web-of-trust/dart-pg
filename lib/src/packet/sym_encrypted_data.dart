@@ -35,7 +35,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
   factory SymEncryptedDataPacket.encryptPackets(
     final Uint8List key,
     final PacketList packets, {
-    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
   }) {
     final cipher = BufferedCipher(symmetric.cipherEngine)
       ..init(
@@ -65,7 +65,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
   /// Encrypt the symmetrically-encrypted packet data
   SymEncryptedDataPacket encrypt(
     final Uint8List key, {
-    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
   }) {
     if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedDataPacket.encryptPackets(key, packets!, symmetric: symmetric);
@@ -76,7 +76,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
   /// Decrypt the symmetrically-encrypted packet data
   SymEncryptedDataPacket decrypt(
     final Uint8List key, {
-    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final bool allowUnauthenticatedMessages = OpenPGP.allowUnauthenticatedMessages,
   }) {
     if (!allowUnauthenticatedMessages) {

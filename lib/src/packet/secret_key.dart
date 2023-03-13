@@ -18,7 +18,6 @@ import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
-import '../openpgp.dart';
 import 'key/key_id.dart';
 import 'key/key_pair_params.dart';
 import 'key/key_params.dart';
@@ -47,7 +46,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     this._publicKey,
     this.keyData, {
     this.s2kUsage = S2kUsage.sha1,
-    this.symmetric = OpenPGP.preferredSymmetric,
+    this.symmetric = SymmetricAlgorithm.aes256,
     this.s2k,
     this.iv,
     this.secretParams,
@@ -181,15 +180,15 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         );
         return curve.hashAlgorithm;
       default:
-        return OpenPGP.preferredHash;
+        return HashAlgorithm.sha256;
     }
   }
 
   SecretKeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
-    final HashAlgorithm hash = OpenPGP.preferredHash,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final HashAlgorithm hash = HashAlgorithm.sha256,
     final S2kType type = S2kType.iterated,
   }) {
     if (secretParams != null) {

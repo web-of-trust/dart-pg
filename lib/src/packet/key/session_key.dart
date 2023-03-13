@@ -8,7 +8,6 @@ import 'package:dart_pg/src/crypto/math/int_ext.dart';
 
 import '../../crypto/math/byte_ext.dart';
 import '../../enum/symmetric_algorithm.dart';
-import '../../openpgp.dart';
 
 class SessionKey {
   /// Algorithm to encrypt the message with
@@ -17,7 +16,7 @@ class SessionKey {
   /// Encryption key
   final Uint8List key;
 
-  SessionKey(this.key, [this.symmetric = OpenPGP.preferredSymmetric]);
+  SessionKey(this.key, [this.symmetric = SymmetricAlgorithm.aes256]);
 
   Uint8List encode() => Uint8List.fromList([symmetric.value, ...key]);
 

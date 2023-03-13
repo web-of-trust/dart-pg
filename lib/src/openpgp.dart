@@ -7,7 +7,6 @@ import 'dart:typed_data';
 import 'enum/compression_algorithm.dart';
 import 'enum/curve_info.dart';
 import 'enum/dh_key_size.dart';
-import 'enum/hash_algorithm.dart';
 import 'enum/key_type.dart';
 import 'enum/rsa_key_size.dart';
 import 'enum/symmetric_algorithm.dart';
@@ -55,14 +54,8 @@ class OpenPGP {
   /// Default zip/zlib compression level, between 1 and 9
   static const deflateLevel = 6;
 
-  /// Default hash algorithm
-  static const preferredHash = HashAlgorithm.sha256;
-
   /// Default encryption cipher
-  static const preferredSymmetric = SymmetricAlgorithm.aes256;
-
-  /// Default compression algorithm
-  static const preferredCompression = CompressionAlgorithm.uncompressed;
+  // static const preferredSymmetric = SymmetricAlgorithm.aes256;
 
   /// RSA public exponent
   static const rsaPublicExponent = 65537;
@@ -177,9 +170,9 @@ class OpenPGP {
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<PrivateKey> signingKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
-    final SymmetricAlgorithm encryptionKeySymmetric = OpenPGP.preferredSymmetric,
-    final CompressionAlgorithm compression = OpenPGP.preferredCompression,
+    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
+    final CompressionAlgorithm compression = CompressionAlgorithm.uncompressed,
     final DateTime? date,
   }) async =>
       (signingKeys.isNotEmpty)

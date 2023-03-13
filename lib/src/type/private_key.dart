@@ -16,7 +16,6 @@ import '../enum/rsa_key_size.dart';
 import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
-import '../openpgp.dart';
 import '../packet/contained_packet.dart';
 import '../packet/key/key_params.dart';
 import '../packet/packet_list.dart';
@@ -239,7 +238,7 @@ class PrivateKey extends Key {
         } catch (e) {
           log(e.toString());
         }
-        return OpenPGP.preferredHash;
+        return HashAlgorithm.sha256;
     }
   }
 
@@ -249,8 +248,8 @@ class PrivateKey extends Key {
     final String passphrase, {
     final Iterable<String> subkeyPassphrases = const [],
     final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
-    final HashAlgorithm hash = OpenPGP.preferredHash,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final HashAlgorithm hash = HashAlgorithm.sha256,
     final S2kType type = S2kType.iterated,
   }) {
     if (passphrase.isEmpty) {

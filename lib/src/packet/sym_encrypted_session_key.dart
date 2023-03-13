@@ -46,7 +46,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   SymEncryptedSessionKeyPacket(
     this.s2k,
     this.encrypted, {
-    this.encryptionKeySymmetric = OpenPGP.preferredSymmetric,
+    this.encryptionKeySymmetric = SymmetricAlgorithm.aes256,
     this.sessionKey,
   }) : super(PacketTag.symEncryptedSessionKey);
 
@@ -76,9 +76,9 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   factory SymEncryptedSessionKeyPacket.encryptSessionKey(
     final String password, {
     final Uint8List? sessionKeyData,
-    final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
-    final SymmetricAlgorithm encryptionKeySymmetric = OpenPGP.preferredSymmetric,
-    final HashAlgorithm hash = OpenPGP.preferredHash,
+    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
+    final HashAlgorithm hash = HashAlgorithm.sha256,
     final S2kType type = S2kType.iterated,
   }) {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);

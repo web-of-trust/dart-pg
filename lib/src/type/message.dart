@@ -237,8 +237,8 @@ class Message {
   Message encrypt({
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm sessionKeySymmetric = OpenPGP.preferredSymmetric,
-    final SymmetricAlgorithm encryptionKeySymmetric = OpenPGP.preferredSymmetric,
+    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
   }) {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No encryption keys or passwords provided');
@@ -324,7 +324,7 @@ class Message {
 
   /// Compress the message (the literal and -if signed- signature data packets of the message)
   /// Return new message with compressed content.
-  Message compress([final CompressionAlgorithm algorithm = OpenPGP.preferredCompression]) {
+  Message compress([final CompressionAlgorithm algorithm = CompressionAlgorithm.uncompressed]) {
     if (algorithm != CompressionAlgorithm.uncompressed) {
       return Message(PacketList([
         CompressedDataPacket.fromPacketList(

@@ -13,7 +13,6 @@ import '../enum/rsa_key_size.dart';
 import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
-import '../openpgp.dart';
 import 'key/key_pair_params.dart';
 import 'public_subkey.dart';
 import 'secret_key.dart';
@@ -69,7 +68,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   SecretSubkeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
   }) {

@@ -13,7 +13,6 @@ import 'crypto/math/byte_ext.dart';
 import 'crypto/math/int_ext.dart';
 import 'enum/hash_algorithm.dart';
 import 'enum/symmetric_algorithm.dart';
-import 'openpgp.dart';
 
 extension StringHelper on String {
   List<String> chunk(final int chunkSize) {
@@ -64,13 +63,13 @@ class Helper {
 
   static pc.SecureRandom secureRandom() => _secureRandom;
 
-  static Uint8List generatePrefix([final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric]) {
+  static Uint8List generatePrefix([final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256]) {
     final prefix = _secureRandom.nextBytes(symmetric.blockSize);
     final repeat = [prefix[prefix.length - 2], prefix[prefix.length - 1]];
     return Uint8List.fromList([...prefix, ...repeat]);
   }
 
-  static Uint8List generateEncryptionKey([final SymmetricAlgorithm symmetric = OpenPGP.preferredSymmetric]) =>
+  static Uint8List generateEncryptionKey([final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256]) =>
       _secureRandom.nextBytes((symmetric.keySize + 7) >> 3);
 
   static Uint8List hashDigest(final Uint8List input, [HashAlgorithm hash = HashAlgorithm.sha256]) {

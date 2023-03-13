@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:dart_pg/dart_pg.dart';
 import 'package:dart_pg/src/armor/armor.dart';
 import 'package:dart_pg/src/armor/crc24.dart';
 import 'package:dart_pg/src/enum/armor_type.dart';
+import 'package:dart_pg/src/enum/hash_algorithm.dart';
 import 'package:faker/faker.dart';
 import 'package:test/test.dart';
 
@@ -71,7 +71,7 @@ void main() {
         ArmorType.signedMessage,
         bytes,
         text: text,
-        hashAlgo: OpenPGP.preferredHash.digestName,
+        hashAlgo: HashAlgorithm.sha256.digestName,
       );
 
       final beginReg = RegExp(r'BEGIN PGP SIGNED MESSAGE-');
