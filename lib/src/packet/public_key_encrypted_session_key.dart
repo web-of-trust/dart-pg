@@ -156,7 +156,11 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
           final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
           final secretExponent = (key.secretParams as ElGamalSecretParams).secretExponent;
           sessionKey = (sessionKeyParams as ElGamalSessionKeyParams).decrypt(
-            ElGamalPrivateKey(secretExponent, publicKey.prime, publicKey.generator),
+            ElGamalPrivateKey(
+              secretExponent,
+              publicKey.prime,
+              publicKey.generator,
+            ),
           );
           break;
         case KeyAlgorithm.ecdh:

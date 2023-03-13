@@ -95,6 +95,11 @@ class PacketReader {
       realRacketLength = packetLength;
     }
 
-    return PacketReader(tag, bytes.sublist(pos, pos + realRacketLength), start, pos + realRacketLength);
+    return PacketReader(
+      tag,
+      bytes.sublist(pos, pos + realRacketLength),
+      start,
+      pos + realRacketLength,
+    );
   }
 }

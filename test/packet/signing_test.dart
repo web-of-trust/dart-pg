@@ -49,7 +49,7 @@ void main() {
           SignatureSubpacketType.values.map((type) => SignatureSubpacket(type, random.nextBytes(10))).toList();
 
       final bytes = Uint8List.fromList(
-        initSubpackets.map((subpacket) => subpacket.toSubpacket()).expand((byte) => byte).toList(),
+        initSubpackets.map((subpacket) => subpacket.encode()).expand((byte) => byte).toList(),
       );
       final subpackets = <SignatureSubpacket>[];
       var offset = 0;

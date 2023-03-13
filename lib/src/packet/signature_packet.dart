@@ -556,7 +556,7 @@ class SignaturePacket extends ContainedPacket {
 
   /// Creates list of bytes with subpacket data
   static Uint8List _writeSubpackets(final Iterable<SignatureSubpacket> subpackets) {
-    final bytes = subpackets.map((subpacket) => subpacket.toSubpacket()).expand((byte) => byte);
+    final bytes = subpackets.map((subpacket) => subpacket.encode()).expand((byte) => byte);
     return Uint8List.fromList([...bytes.length.pack16(), ...bytes]);
   }
 

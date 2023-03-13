@@ -13,7 +13,10 @@ class ImageAttributeSubpacket extends UserAttributeSubpacket {
 
   ImageAttributeSubpacket(final Uint8List data, {super.isLongLength}) : super(1, data);
 
-  factory ImageAttributeSubpacket.fromImageData(final Uint8List imageData, {final int imageType = jpeg}) {
+  factory ImageAttributeSubpacket.fromImageData(
+    final Uint8List imageData, {
+    final int imageType = jpeg,
+  }) {
     return ImageAttributeSubpacket(Uint8List.fromList([
       0x10,
       0x00,
