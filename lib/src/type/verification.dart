@@ -43,8 +43,8 @@ class Verification {
               date: date,
             ),
           ));
-        } catch (e) {
-          log(e.toString());
+        } on Error catch (e) {
+          log(e.toString(), stackTrace: e.stackTrace);
         }
       }
     }
