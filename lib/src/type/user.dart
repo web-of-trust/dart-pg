@@ -38,7 +38,7 @@ class User {
   }) {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null || revocation.issuerKeyID.keyID == signature.issuerKeyID.keyID) {
+        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (revocation.verifyUserCertification(
             mainKey!.keyPacket,
             userID: userID,

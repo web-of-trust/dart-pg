@@ -130,7 +130,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   Uint8List toPacketData() {
     return Uint8List.fromList([
       version,
-      ...publicKeyID.id,
+      ...publicKeyID.bytes,
       publicKeyAlgorithm.value,
       ...sessionKeyParams.encode(),
     ]);

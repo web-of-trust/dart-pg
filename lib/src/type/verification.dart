@@ -33,9 +33,9 @@ class Verification {
     for (var signaturePacket in signaturePackets) {
       for (final key in verificationKeys) {
         try {
-          final keyPacket = key.getVerificationKeyPacket(keyID: signaturePacket.issuerKeyID.keyID);
+          final keyPacket = key.getVerificationKeyPacket(keyID: signaturePacket.issuerKeyID.id);
           verifications.add(Verification(
-            keyPacket.keyID.keyID,
+            keyPacket.keyID.id,
             Signature(PacketList([signaturePacket])),
             signaturePacket.verifyLiteralData(
               keyPacket,

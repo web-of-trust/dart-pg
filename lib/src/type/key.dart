@@ -168,7 +168,7 @@ abstract class Key {
   }) {
     if (revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null || revocation.issuerKeyID.keyID == signature.issuerKeyID.keyID) {
+        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (revocation.verify(
             keyPacket,
             keyPacket.writeForSign(),
@@ -281,7 +281,7 @@ abstract class Key {
               case SignatureType.certCasual:
               case SignatureType.certPositive:
                 if (user != null) {
-                  if (packet.issuerKeyID.keyID == primaryKeyID) {
+                  if (packet.issuerKeyID.id == primaryKeyID) {
                     user.selfCertifications.add(packet);
                   } else {
                     user.otherCertifications.add(packet);

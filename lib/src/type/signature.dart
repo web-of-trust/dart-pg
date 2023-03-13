@@ -21,7 +21,7 @@ class Signature {
     return Signature(PacketList.packetDecode(armor.data));
   }
 
-  List<String> get signingKeyIDs => packets.map((packet) => packet.issuerKeyID.keyID).toList(growable: false);
+  List<String> get signingKeyIDs => packets.map((packet) => packet.issuerKeyID.id).toList(growable: false);
 
   /// Returns ASCII armored text of signature
   String armor() => Armor.encode(ArmorType.signature, PacketList(packets).packetEncode());

@@ -8,27 +8,27 @@ import '../../crypto/math/byte_ext.dart';
 import '../../helpers.dart';
 
 class KeyID {
-  final Uint8List id;
+  final Uint8List bytes;
 
-  KeyID(this.id);
+  KeyID(this.bytes);
 
-  factory KeyID.fromString(final String hex) => KeyID(hex.hexToBytes());
+  factory KeyID.fromString(final String id) => KeyID(id.hexToBytes());
 
   factory KeyID.wildcard() => KeyID(Uint8List.fromList(List.filled(8, 0, growable: false)));
 
-  String get keyID => id.toHexadecimal();
+  String get id => bytes.toHexadecimal();
 
   @override
-  String toString() => keyID;
+  String toString() => id;
 
   @override
   bool operator ==(other) {
     if (other is! KeyID) return false;
-    return (other.id.equals(id));
+    return (other.bytes.equals(bytes));
   }
 
   @override
   int get hashCode {
-    return id.hashCode;
+    return bytes.hashCode;
   }
 }

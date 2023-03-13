@@ -27,7 +27,7 @@ void main() {
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
 
       for (final verification in verifiedMessage.verifications) {
-        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.keyID, verificationKey.keyID.id);
         expect(verification.verified, isTrue);
 
         expect(
@@ -44,7 +44,7 @@ void main() {
 
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
-        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.keyID, verificationKey.keyID.id);
         expect(verification.verified, isTrue);
 
         expect(
@@ -62,14 +62,14 @@ void main() {
 
     test('atached test', () {
       final signedMessage = Message.createTextMessage(text).sign([signingKey]);
-      expect(signedMessage.signingKeyIDs.elementAt(0).keyID, signingKey.keyID.keyID);
+      expect(signedMessage.signingKeyIDs.elementAt(0).id, signingKey.keyID.id);
       expect(signedMessage.verifications.isEmpty, isTrue);
 
       final verifiedMessage = signedMessage.verify([verificationKey]);
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
-        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.keyID, verificationKey.keyID.id);
         expect(verification.verified, isTrue);
 
         expect(
@@ -86,7 +86,7 @@ void main() {
 
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
-        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.keyID, verificationKey.keyID.id);
         expect(verification.verified, isTrue);
 
         expect(
@@ -174,7 +174,7 @@ void main() {
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
-        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.keyID, verificationKey.keyID.id);
         expect(verification.verified, isTrue);
 
         expect(
@@ -194,7 +194,7 @@ void main() {
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
-        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.keyID, verificationKey.keyID.id);
         expect(verification.verified, isTrue);
 
         expect(
@@ -214,7 +214,7 @@ void main() {
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
-        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.keyID, verificationKey.keyID.id);
         expect(verification.verified, isTrue);
 
         expect(
@@ -234,7 +234,7 @@ void main() {
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
-        expect(verification.keyID, verificationKey.keyID.keyID);
+        expect(verification.keyID, verificationKey.keyID.id);
         expect(verification.verified, isTrue);
 
         expect(

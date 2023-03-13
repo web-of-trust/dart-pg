@@ -198,7 +198,7 @@ class SignaturePacket extends ContainedPacket {
     final hashedSubpackets = [
       SignatureCreationTime.fromTime(date ?? DateTime.now()),
       IssuerFingerprint.fromKey(signKey),
-      IssuerKeyID(signKey.keyID.id),
+      IssuerKeyID(signKey.keyID.bytes),
       ...subpackets,
     ];
     if (keyExpirationTime > 0) {
@@ -441,7 +441,7 @@ class SignaturePacket extends ContainedPacket {
     final Uint8List dataToVerify, {
     final DateTime? date,
   }) {
-    if (issuerKeyID.keyID != verifyKey.keyID.toString()) {
+    if (issuerKeyID.id != verifyKey.keyID.toString()) {
       throw ArgumentError('Signature was not issued by the given public key.');
     }
     if (keyAlgorithm != verifyKey.algorithm) {

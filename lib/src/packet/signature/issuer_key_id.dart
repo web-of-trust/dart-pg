@@ -14,10 +14,10 @@ class IssuerKeyID extends SignatureSubpacket {
   IssuerKeyID(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.issuerKeyID, data);
 
-  factory IssuerKeyID.fromKeyID(final String keyID, {final bool critical = false}) =>
-      IssuerKeyID(keyID.hexToBytes(), critical: critical);
+  factory IssuerKeyID.fromString(final String id, {final bool critical = false}) =>
+      IssuerKeyID(id.hexToBytes(), critical: critical);
 
   factory IssuerKeyID.wildcard() => IssuerKeyID(Uint8List.fromList(List.filled(8, 0, growable: false)));
 
-  String get keyID => data.toHexadecimal();
+  String get id => data.toHexadecimal();
 }
