@@ -86,68 +86,73 @@ class OpenPGP {
 
   /// Read an armored & unlock OpenPGP private key with the given passphrase.
   static Future<PrivateKey> decryptPrivateKey(
-    final String armored,
+    final String armoredPrivateKey,
     final String passphrase, [
     final Iterable<String> subkeyPassphrases = const [],
   ]) async =>
-      PrivateKey.fromArmored(armored).decrypt(passphrase, subkeyPassphrases);
+      PrivateKey.fromArmored(armoredPrivateKey).decrypt(passphrase, subkeyPassphrases);
 
   /// Read an armored OpenPGP private key and returns a PrivateKey object
-  static Future<PrivateKey> readPrivateKey(final String armored) async => PrivateKey.fromArmored(armored);
+  static Future<PrivateKey> readPrivateKey(final String armoredPrivateKey) async =>
+      PrivateKey.fromArmored(armoredPrivateKey);
 
   /// Read an armored OpenPGP public key and returns a PublicKey object
-  static Future<PublicKey> readPublicKey(final String armored) async => PublicKey.fromArmored(armored);
+  static Future<PublicKey> readPublicKey(final String armoredPublicKey) async =>
+      PublicKey.fromArmored(armoredPublicKey);
 
   /// Sign a cleartext message.
   static Future<SignedMessage> sign(
-    final String text,
+    final String cleartext,
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
   }) async =>
-      SignedMessage.signCleartext(text, signingKeys, date: date);
+      SignedMessage.signCleartext(cleartext, signingKeys, date: date);
 
   /// Sign a cleartext message & return detached signature
   static Future<Signature> signDetached(
-    final String text,
+    final String cleartext,
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
   }) async =>
-      SignedMessage.signCleartext(text, signingKeys, date: date).signature;
+      SignedMessage.signCleartext(cleartext, signingKeys, date: date).signature;
 
   /// Verify signatures of cleartext signed message
   /// Return signed message with verifications
   static Future<SignedMessage> verify(
-    final String armored,
+    final String armoredSignedMessage,
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async =>
-      SignedMessage.fromArmored(armored).verify(verificationKeys, date: date);
+      SignedMessage.fromArmored(armoredSignedMessage).verify(verificationKeys, date: date);
 
   /// Verify detached signatures of cleartext message
   /// Returns cleartext message with verifications
   static Future<CleartextMessage> verifyDetached(
-    final String text,
-    final String armored,
+    final String cleartext,
+    final String armoredSignature,
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async =>
-      CleartextMessage(text).verifySignature(Signature.fromArmored(armored), verificationKeys, date: date);
+      CleartextMessage(cleartext)
+          .verifySignature(Signature.fromArmored(armoredSignature), verificationKeys, date: date);
 
   /// Read an armored OpenPGP signature and returns a Signature object
-  static Future<Signature> readSignature(final String armored) async => Signature.fromArmored(armored);
+  static Future<Signature> readSignature(final String armoredSignature) async =>
+      Signature.fromArmored(armoredSignature);
 
   /// Read an armored OpenPGP signed message and returns a SignedMessage object
-  static Future<SignedMessage> readSignedMessage(final String armored) async => SignedMessage.fromArmored(armored);
+  static Future<SignedMessage> readSignedMessage(final String armoredSignedMessage) async =>
+      SignedMessage.fromArmored(armoredSignedMessage);
 
   /// Read an armored OpenPGP message and returns a Message object
-  static Future<Message> readMessage(final String armored) async => Message.fromArmored(armored);
+  static Future<Message> readMessage(final String armoredMessage) async => Message.fromArmored(armoredMessage);
 
-  /// Create new message object from text
+  /// Create new message object from cleartext
   static Future<Message> createTextMessage(
-    final String text, {
+    final String cleartext, {
     final DateTime? time,
   }) async =>
-      Message.createTextMessage(text, time: time);
+      Message.createTextMessage(cleartext, time: time);
 
   /// Create new message object from binary data.
   static Future<Message> createBinaryMessage(
