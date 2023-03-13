@@ -9,7 +9,7 @@ import 'package:pointycastle/export.dart';
 import '../crypto/math/byte_ext.dart';
 import '../crypto/symmetric/base_cipher.dart';
 import '../enum/curve_info.dart';
-import '../enum/dsa_key_size.dart';
+import '../enum/dh_key_size.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/packet_tag.dart';
@@ -102,14 +102,14 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   factory SecretKeyPacket.generate(
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
-    final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
+    final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
     final DateTime? date,
   }) {
     final keyPair = KeyPairParams.generate(
       algorithm,
       rsaKeySize: rsaKeySize,
-      dsaKeySize: dsaKeySize,
+      dhKeySize: dhKeySize,
       curve: curve,
     );
 

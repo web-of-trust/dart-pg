@@ -8,7 +8,7 @@ import '../../crypto/asymmetric/elgamal.dart';
 import '../../crypto/math/byte_ext.dart';
 import '../../crypto/signer/dsa.dart';
 import '../../enum/curve_info.dart';
-import '../../enum/dsa_key_size.dart';
+import '../../enum/dh_key_size.dart';
 import '../../enum/key_algorithm.dart';
 import '../../enum/rsa_key_size.dart';
 import '../../helpers.dart';
@@ -24,7 +24,7 @@ class KeyPairParams {
   factory KeyPairParams.generate(
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
-    final DSAKeySize dsaKeySize = DSAKeySize.l2048n224,
+    final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
   }) {
     switch (algorithm) {
@@ -60,7 +60,7 @@ class KeyPairParams {
           ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.dsa:
-        final keyPair = _generateDSAKeyPair(dsaKeySize);
+        final keyPair = _generateDSAKeyPair(dhKeySize);
         return KeyPairParams(
           DSAPublicParams(
             keyPair.publicKey.prime,
@@ -73,7 +73,7 @@ class KeyPairParams {
           ),
         );
       case KeyAlgorithm.elgamal:
-        final keyPair = _generateElGamalKeyPair(dsaKeySize);
+        final keyPair = _generateElGamalKeyPair(dhKeySize);
         return KeyPairParams(
           ElGamalPublicParams(
             keyPair.publicKey.prime,
@@ -118,7 +118,7 @@ class KeyPairParams {
   }
 
   static AsymmetricKeyPair<DSAPublicKey, DSAPrivateKey> _generateDSAKeyPair([
-    final DSAKeySize keySize = DSAKeySize.l2048n224,
+    final DHKeySize keySize = DHKeySize.l2048n224,
   ]) {
     final keyGen = DSAKeyGenerator()
       ..init(
@@ -135,7 +135,7 @@ class KeyPairParams {
   }
 
   static AsymmetricKeyPair<ElGamalPublicKey, ElGamalPrivateKey> _generateElGamalKeyPair([
-    final DSAKeySize keySize = DSAKeySize.l2048n224,
+    final DHKeySize keySize = DHKeySize.l2048n224,
   ]) {
     final keyGen = ElGamalKeyGenerator()
       ..init(

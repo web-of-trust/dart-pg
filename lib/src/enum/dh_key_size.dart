@@ -2,7 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-enum DSAKeySize {
+enum DHKeySize {
   l1024n160,
   l2048n224,
   l2048n256,
