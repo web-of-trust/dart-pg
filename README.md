@@ -148,7 +148,7 @@ final privateKey = await OpenPGP.generateKey(
     [userID],
     passphrase,
     type: KeyType.dsaElGamal,
-    dhKeySize: DSAKeySize.l2048n224,
+    dhKeySize: DHKeySize.l2048n224,
 );
 final publicKey = privateKey.toPublic;
 ```
