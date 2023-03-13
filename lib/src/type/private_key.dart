@@ -70,7 +70,6 @@ class PrivateKey extends Key {
     final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
     final int keyExpirationTime = 0,
-    final bool subkeySign = false,
     final String? subkeyPassphrase,
     final DateTime? date,
   }) {
@@ -133,7 +132,6 @@ class PrivateKey extends Key {
         secretKey,
         secretSubkey,
         keyExpirationTime: keyExpirationTime,
-        subkeySign: subkeySign,
         date: date,
       ),
     ]);

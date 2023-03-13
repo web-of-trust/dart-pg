@@ -69,7 +69,6 @@ class OpenPGP {
     final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
     final int keyExpirationTime = 0,
-    final bool subkeySign = false,
     final String? subkeyPassphrase,
     final DateTime? date,
   }) async =>
@@ -81,7 +80,6 @@ class OpenPGP {
         dhKeySize: dhKeySize,
         curve: curve,
         keyExpirationTime: keyExpirationTime,
-        subkeySign: subkeySign,
         subkeyPassphrase: subkeyPassphrase,
         date: date,
       );
@@ -105,8 +103,8 @@ class OpenPGP {
     final String text,
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
-  }) =>
-      Future.value(SignedMessage.signCleartext(text, signingKeys, date: date));
+  }) async =>
+      SignedMessage.signCleartext(text, signingKeys, date: date);
 
   /// Sign a cleartext message & return detached signature
   static Future<Signature> signDetached(
@@ -136,7 +134,7 @@ class OpenPGP {
       CleartextMessage(text).verifySignature(Signature.fromArmored(armored), verificationKeys, date: date);
 
   /// Read an armored OpenPGP signature and returns a Signature object
-  static Future<Signature> readSignature(final String armored) => Future.value(Signature.fromArmored(armored));
+  static Future<Signature> readSignature(final String armored) async => Signature.fromArmored(armored);
 
   /// Read an armored OpenPGP signed message and returns a SignedMessage object
   static Future<SignedMessage> readSignedMessage(final String armored) async => SignedMessage.fromArmored(armored);
