@@ -51,7 +51,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
 
   ECDHSessionKeyParams(this.ephemeralKey, this.wrappedKey);
 
-  factory ECDHSessionKeyParams.fromPacketData(Uint8List bytes) {
+  factory ECDHSessionKeyParams.fromByteData(Uint8List bytes) {
     final ephemeralKey = Helper.readMPI(bytes);
 
     var pos = ephemeralKey.byteLength + 2;

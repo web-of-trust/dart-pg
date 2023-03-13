@@ -85,7 +85,7 @@ void main() {
     final dataToSign = Helper.secureRandom().nextBytes(1000);
 
     test('rsa test', () {
-      final secretKey = SecretKeyPacket.fromPacketData(
+      final secretKey = SecretKeyPacket.fromByteData(
           base64.decode(secretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final signature = SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
       expect(signature.verify(secretKey.publicKey, dataToSign), isTrue);
@@ -98,7 +98,7 @@ void main() {
     });
 
     test('dsa test', () {
-      final secretKey = SecretKeyPacket.fromPacketData(
+      final secretKey = SecretKeyPacket.fromByteData(
         base64.decode(dsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
       final signature = SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
@@ -112,7 +112,7 @@ void main() {
     });
 
     test('ecdsa test', () {
-      final secretKey = SecretKeyPacket.fromPacketData(
+      final secretKey = SecretKeyPacket.fromByteData(
         base64.decode(ecdsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
       final signature = SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);

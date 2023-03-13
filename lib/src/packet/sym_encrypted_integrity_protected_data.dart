@@ -35,7 +35,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   SymEncryptedIntegrityProtectedDataPacket(this.encrypted, {this.packets})
       : super(PacketTag.symEncryptedIntegrityProtectedData);
 
-  factory SymEncryptedIntegrityProtectedDataPacket.fromPacketData(final Uint8List bytes) {
+  factory SymEncryptedIntegrityProtectedDataPacket.fromByteData(final Uint8List bytes) {
     /// A one-octet version number. The only currently defined version is 1.
     final seipVersion = bytes[0];
     if (seipVersion != version) {
@@ -66,7 +66,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   }
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return Uint8List.fromList([version, ...encrypted]);
   }
 

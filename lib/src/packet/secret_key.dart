@@ -52,9 +52,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     this.secretParams,
   }) : super(PacketTag.secretKey);
 
-  factory SecretKeyPacket.fromPacketData(final Uint8List bytes) {
-    final publicKey = PublicKeyPacket.fromPacketData(bytes);
-    final length = publicKey.toPacketData().length;
+  factory SecretKeyPacket.fromByteData(final Uint8List bytes) {
+    final publicKey = PublicKeyPacket.fromByteData(bytes);
+    final length = publicKey.toByteData().length;
 
     var pos = length;
     final s2kUsage = S2kUsage.values.firstWhere((usage) => usage.value == bytes[pos]);
@@ -67,7 +67,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       case S2kUsage.sha1:
         symmetric = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == bytes[pos]);
         pos++;
-        s2k = S2K.fromPacketData(bytes.sublist(pos));
+        s2k = S2K.fromByteData(bytes.sublist(pos));
         pos += s2k.length;
         break;
       default:
@@ -268,11 +268,11 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   }
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     final List<int> bytes;
     if (s2kUsage != S2kUsage.none && s2k != null) {
       bytes = [
-        ...publicKey.toPacketData(),
+        ...publicKey.toByteData(),
         s2kUsage.value,
         symmetric.value,
         ...s2k!.encode(),
@@ -280,7 +280,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         ...keyData,
       ];
     } else {
-      bytes = [...publicKey.toPacketData(), s2kUsage.value, ...keyData];
+      bytes = [...publicKey.toByteData(), s2kUsage.value, ...keyData];
     }
 
     return Uint8List.fromList(bytes);
@@ -292,17 +292,17 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        keyParams = RSASecretParams.fromPacketData(packetData);
+        keyParams = RSASecretParams.fromByteData(packetData);
         break;
       case KeyAlgorithm.elgamal:
-        keyParams = ElGamalSecretParams.fromPacketData(packetData);
+        keyParams = ElGamalSecretParams.fromByteData(packetData);
         break;
       case KeyAlgorithm.dsa:
-        keyParams = DSASecretParams.fromPacketData(packetData);
+        keyParams = DSASecretParams.fromByteData(packetData);
         break;
       case KeyAlgorithm.ecdh:
       case KeyAlgorithm.ecdsa:
-        keyParams = ECSecretParams.fromPacketData(packetData);
+        keyParams = ECSecretParams.fromByteData(packetData);
         break;
       default:
         throw UnsupportedError('Unsupported public key algorithm encountered');

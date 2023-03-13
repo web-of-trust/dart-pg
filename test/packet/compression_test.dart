@@ -15,12 +15,12 @@ void main() {
         algorithm: CompressionAlgorithm.zip,
       );
 
-      final compressedData = compressedPacket.toPacketData();
-      final decompressedPacket = CompressedDataPacket.fromPacketData(compressedData);
+      final compressedData = compressedPacket.toByteData();
+      final decompressedPacket = CompressedDataPacket.fromByteData(compressedData);
 
       expect(compressedPacket.algorithm, equals(decompressedPacket.algorithm));
       expect(compressedPacket.compressed, equals(decompressedPacket.compressed));
-      expect(compressedPacket.packets[0].toPacketData(), equals(literalData.toPacketData()));
+      expect(compressedPacket.packets[0].toByteData(), equals(literalData.toByteData()));
     });
 
     test('zlib test', () {
@@ -29,12 +29,12 @@ void main() {
         algorithm: CompressionAlgorithm.zlib,
       );
 
-      final compressedData = compressedPacket.toPacketData();
-      final decompressedPacket = CompressedDataPacket.fromPacketData(compressedData);
+      final compressedData = compressedPacket.toByteData();
+      final decompressedPacket = CompressedDataPacket.fromByteData(compressedData);
 
       expect(compressedPacket.algorithm, equals(decompressedPacket.algorithm));
       expect(compressedPacket.compressed, equals(decompressedPacket.compressed));
-      expect(compressedPacket.packets[0].toPacketData(), equals(literalData.toPacketData()));
+      expect(compressedPacket.packets[0].toByteData(), equals(literalData.toByteData()));
     });
 
     test('bzip2 test', () {

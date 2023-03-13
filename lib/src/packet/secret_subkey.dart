@@ -32,8 +32,8 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     super.secretParams,
   }) : super(publicKey, keyData);
 
-  factory SecretSubkeyPacket.fromPacketData(final Uint8List bytes) {
-    final secretKey = SecretKeyPacket.fromPacketData(bytes);
+  factory SecretSubkeyPacket.fromByteData(final Uint8List bytes) {
+    final secretKey = SecretKeyPacket.fromByteData(bytes);
     return _fromSecretKey(secretKey);
   }
   factory SecretSubkeyPacket.generate(

@@ -22,7 +22,7 @@ class RSAPublicParams extends KeyParams {
 
   RSAPublicParams(this.modulus, this.publicExponent) : publicKey = RSAPublicKey(modulus, publicExponent);
 
-  factory RSAPublicParams.fromPacketData(final Uint8List bytes) {
+  factory RSAPublicParams.fromByteData(final Uint8List bytes) {
     final modulus = Helper.readMPI(bytes);
     final publicExponent = Helper.readMPI(bytes.sublist(modulus.byteLength + 2));
 

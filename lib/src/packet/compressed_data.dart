@@ -33,7 +33,7 @@ class CompressedDataPacket extends ContainedPacket {
     this.algorithm = CompressionAlgorithm.uncompressed,
   }) : super(PacketTag.compressedData);
 
-  factory CompressedDataPacket.fromPacketData(final Uint8List bytes) {
+  factory CompressedDataPacket.fromByteData(final Uint8List bytes) {
     final algorithm = CompressionAlgorithm.values.firstWhere(
       (algo) => algo.value == bytes[0],
       orElse: () => CompressionAlgorithm.uncompressed,
@@ -58,7 +58,7 @@ class CompressedDataPacket extends ContainedPacket {
   }
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return Uint8List.fromList([algorithm.value, ...compressed]);
   }
 

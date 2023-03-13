@@ -39,7 +39,7 @@ class OnePassSignaturePacket extends ContainedPacket {
     this.nested,
   ) : super(PacketTag.onePassSignature);
 
-  factory OnePassSignaturePacket.fromPacketData(final Uint8List bytes) {
+  factory OnePassSignaturePacket.fromByteData(final Uint8List bytes) {
     var pos = 0;
     final version = bytes[pos++];
     if (version != 3) {
@@ -63,7 +63,7 @@ class OnePassSignaturePacket extends ContainedPacket {
   }
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return Uint8List.fromList([
       version,
       signatureType.value,

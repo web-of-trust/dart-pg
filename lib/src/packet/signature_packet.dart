@@ -132,7 +132,7 @@ class SignaturePacket extends ContainedPacket {
 
   bool get keyNeverExpires => keyExpirationTime == null;
 
-  factory SignaturePacket.fromPacketData(final Uint8List bytes) {
+  factory SignaturePacket.fromByteData(final Uint8List bytes) {
     var pos = 0;
 
     /// A one-octet version number (3 or 4 or 5).
@@ -428,7 +428,7 @@ class SignaturePacket extends ContainedPacket {
   }
 
   @override
-  Uint8List toPacketData() => Uint8List.fromList([
+  Uint8List toByteData() => Uint8List.fromList([
         ...signatureData,
         ..._writeSubpackets(unhashedSubpackets),
         ...signedHashValue,

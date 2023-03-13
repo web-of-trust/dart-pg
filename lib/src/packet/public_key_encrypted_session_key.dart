@@ -52,7 +52,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     this.sessionKey,
   }) : super(PacketTag.publicKeyEncryptedSessionKey);
 
-  factory PublicKeyEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
+  factory PublicKeyEncryptedSessionKeyPacket.fromByteData(final Uint8List bytes) {
     var pos = 0;
     final pkeskVersion = bytes[pos++];
     if (pkeskVersion != version) {
@@ -69,13 +69,13 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     switch (keyAlgorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
-        params = RSASessionKeyParams.fromPacketData(bytes.sublist(pos));
+        params = RSASessionKeyParams.fromByteData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.elgamal:
-        params = ElGamalSessionKeyParams.fromPacketData(bytes.sublist(pos));
+        params = ElGamalSessionKeyParams.fromByteData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdh:
-        params = ECDHSessionKeyParams.fromPacketData(bytes.sublist(pos));
+        params = ECDHSessionKeyParams.fromByteData(bytes.sublist(pos));
         break;
       default:
         throw UnsupportedError('Unsupported PGP public key algorithm encountered');
@@ -127,7 +127,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return Uint8List.fromList([
       version,
       ...publicKeyID.bytes,

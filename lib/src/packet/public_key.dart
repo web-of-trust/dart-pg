@@ -48,7 +48,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     _calculateFingerprintAndKeyID();
   }
 
-  factory PublicKeyPacket.fromPacketData(final Uint8List bytes) {
+  factory PublicKeyPacket.fromByteData(final Uint8List bytes) {
     var pos = 0;
 
     /// A one-octet version number (3 or 4 or 5).
@@ -72,19 +72,19 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        publicParams = RSAPublicParams.fromPacketData(bytes.sublist(pos));
+        publicParams = RSAPublicParams.fromByteData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.elgamal:
-        publicParams = ElGamalPublicParams.fromPacketData(bytes.sublist(pos));
+        publicParams = ElGamalPublicParams.fromByteData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.dsa:
-        publicParams = DSAPublicParams.fromPacketData(bytes.sublist(pos));
+        publicParams = DSAPublicParams.fromByteData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdh:
-        publicParams = ECDHPublicParams.fromPacketData(bytes.sublist(pos));
+        publicParams = ECDHPublicParams.fromByteData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdsa:
-        publicParams = ECDSAPublicParams.fromPacketData(bytes.sublist(pos));
+        publicParams = ECDSAPublicParams.fromByteData(bytes.sublist(pos));
         break;
       default:
         throw UnsupportedError('Unsupported PGP public key algorithm encountered');
@@ -148,7 +148,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   @override
   Uint8List writeForSign() {
-    final packetData = toPacketData();
+    final packetData = toByteData();
     return Uint8List.fromList([
       0x99,
       ...packetData.lengthInBytes.pack16(),
@@ -157,7 +157,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   }
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     final keyData = publicParams.encode();
     return Uint8List.fromList([
       version,

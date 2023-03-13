@@ -49,7 +49,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     this.sessionKey,
   }) : super(PacketTag.symEncryptedSessionKey);
 
-  factory SymEncryptedSessionKeyPacket.fromPacketData(final Uint8List bytes) {
+  factory SymEncryptedSessionKeyPacket.fromByteData(final Uint8List bytes) {
     var pos = 0;
 
     /// A one-octet version number. The only currently defined version is 4.
@@ -63,7 +63,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     pos++;
 
     /// A string-to-key (S2K) specifier, length as defined above.
-    final s2k = S2K.fromPacketData(bytes.sublist(pos));
+    final s2k = S2K.fromByteData(bytes.sublist(pos));
 
     return SymEncryptedSessionKeyPacket(
       s2k,
@@ -114,7 +114,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return Uint8List.fromList([
       version,
       encryptionKeySymmetric.value,

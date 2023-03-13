@@ -20,7 +20,7 @@ void main() {
       expect(userID.email, email);
       expect(userID.comment, comment);
 
-      final cloneUserId = UserIDPacket.fromPacketData(userID.toPacketData());
+      final cloneUserId = UserIDPacket.fromByteData(userID.toByteData());
       expect(userID.name, cloneUserId.name);
       expect(userID.email, cloneUserId.email);
       expect(userID.comment, cloneUserId.comment);
@@ -31,10 +31,10 @@ void main() {
       final subpacketType = faker.randomGenerator.integer(100);
       final subpacketData = utf8.encoder.convert(faker.lorem.words(100).join(' '));
 
-      final userAttr = UserAttributePacket.fromPacketData(UserAttributePacket([
+      final userAttr = UserAttributePacket.fromByteData(UserAttributePacket([
         ImageAttributeSubpacket.fromImageData(imageData),
         UserAttributeSubpacket(subpacketType, subpacketData),
-      ]).toPacketData());
+      ]).toByteData());
       final imageAttr = userAttr.attributes[0] as ImageAttributeSubpacket;
       final subpacket = userAttr.attributes[1];
 

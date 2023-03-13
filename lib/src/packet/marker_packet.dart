@@ -15,7 +15,7 @@ class MarkerPacket extends ContainedPacket {
   MarkerPacket() : super(PacketTag.marker);
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return utf8.encoder.convert(marker);
   }
 }

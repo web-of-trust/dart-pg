@@ -27,7 +27,7 @@ class ECDHPublicParams extends ECPublicParams {
     this.reserved = 0x1,
   ]);
 
-  factory ECDHPublicParams.fromPacketData(final Uint8List bytes) {
+  factory ECDHPublicParams.fromByteData(final Uint8List bytes) {
     var pos = 0;
     final length = bytes[pos++];
     if (length == 0 || length == 0xFF) {

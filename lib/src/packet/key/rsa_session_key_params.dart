@@ -20,7 +20,7 @@ class RSASessionKeyParams extends SessionKeyParams {
 
   RSASessionKeyParams(this.encrypted);
 
-  factory RSASessionKeyParams.fromPacketData(final Uint8List bytes) => RSASessionKeyParams(Helper.readMPI(bytes));
+  factory RSASessionKeyParams.fromByteData(final Uint8List bytes) => RSASessionKeyParams(Helper.readMPI(bytes));
 
   factory RSASessionKeyParams.encryptSessionKey(final RSAPublicKey key, final SessionKey sessionKey) {
     return RSASessionKeyParams(

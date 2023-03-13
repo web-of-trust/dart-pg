@@ -19,11 +19,11 @@ class ModificationDetectionCodePacket extends ContainedPacket {
 
   ModificationDetectionCodePacket(this.digest) : super(PacketTag.modificationDetectionCode);
 
-  factory ModificationDetectionCodePacket.fromPacketData(final Uint8List bytes) =>
+  factory ModificationDetectionCodePacket.fromByteData(final Uint8List bytes) =>
       ModificationDetectionCodePacket(bytes);
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return digest;
   }
 }

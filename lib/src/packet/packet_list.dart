@@ -41,55 +41,55 @@ class PacketList extends ListBase<ContainedPacket> {
 
       switch (reader.tag) {
         case PacketTag.publicKeyEncryptedSessionKey:
-          packets.add(PublicKeyEncryptedSessionKeyPacket.fromPacketData(reader.data));
+          packets.add(PublicKeyEncryptedSessionKeyPacket.fromByteData(reader.data));
           break;
         case PacketTag.signature:
-          packets.add(SignaturePacket.fromPacketData(reader.data));
+          packets.add(SignaturePacket.fromByteData(reader.data));
           break;
         case PacketTag.symEncryptedSessionKey:
-          packets.add(SymEncryptedSessionKeyPacket.fromPacketData(reader.data));
+          packets.add(SymEncryptedSessionKeyPacket.fromByteData(reader.data));
           break;
         case PacketTag.onePassSignature:
-          packets.add(OnePassSignaturePacket.fromPacketData(reader.data));
+          packets.add(OnePassSignaturePacket.fromByteData(reader.data));
           break;
         case PacketTag.secretKey:
-          packets.add(SecretKeyPacket.fromPacketData(reader.data));
+          packets.add(SecretKeyPacket.fromByteData(reader.data));
           break;
         case PacketTag.publicKey:
-          packets.add(PublicKeyPacket.fromPacketData(reader.data));
+          packets.add(PublicKeyPacket.fromByteData(reader.data));
           break;
         case PacketTag.secretSubkey:
-          packets.add(SecretSubkeyPacket.fromPacketData(reader.data));
+          packets.add(SecretSubkeyPacket.fromByteData(reader.data));
           break;
         case PacketTag.compressedData:
-          packets.add(CompressedDataPacket.fromPacketData(reader.data));
+          packets.add(CompressedDataPacket.fromByteData(reader.data));
           break;
         case PacketTag.symEncryptedData:
-          packets.add(SymEncryptedDataPacket.fromPacketData(reader.data));
+          packets.add(SymEncryptedDataPacket.fromByteData(reader.data));
           break;
         case PacketTag.marker:
           packets.add(MarkerPacket());
           break;
         case PacketTag.literalData:
-          packets.add(LiteralDataPacket.fromPacketData(reader.data));
+          packets.add(LiteralDataPacket.fromByteData(reader.data));
           break;
         case PacketTag.trust:
-          packets.add(TrustPacket.fromPacketData(reader.data));
+          packets.add(TrustPacket.fromByteData(reader.data));
           break;
         case PacketTag.userID:
-          packets.add(UserIDPacket.fromPacketData(reader.data));
+          packets.add(UserIDPacket.fromByteData(reader.data));
           break;
         case PacketTag.publicSubkey:
-          packets.add(PublicSubkeyPacket.fromPacketData(reader.data));
+          packets.add(PublicSubkeyPacket.fromByteData(reader.data));
           break;
         case PacketTag.userAttribute:
-          packets.add(UserAttributePacket.fromPacketData(reader.data));
+          packets.add(UserAttributePacket.fromByteData(reader.data));
           break;
         case PacketTag.symEncryptedIntegrityProtectedData:
-          packets.add(SymEncryptedIntegrityProtectedDataPacket.fromPacketData(reader.data));
+          packets.add(SymEncryptedIntegrityProtectedDataPacket.fromByteData(reader.data));
           break;
         case PacketTag.modificationDetectionCode:
-          packets.add(ModificationDetectionCodePacket.fromPacketData(reader.data));
+          packets.add(ModificationDetectionCodePacket.fromByteData(reader.data));
           break;
       }
     }

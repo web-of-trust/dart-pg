@@ -14,7 +14,7 @@ import 'ec_public_params.dart';
 class ECDSAPublicParams extends ECPublicParams {
   ECDSAPublicParams(super.oid, super.q);
 
-  factory ECDSAPublicParams.fromPacketData(final Uint8List bytes) {
+  factory ECDSAPublicParams.fromByteData(final Uint8List bytes) {
     var pos = 0;
     final length = bytes[pos++];
     if (length == 0 || length == 0xFF) {

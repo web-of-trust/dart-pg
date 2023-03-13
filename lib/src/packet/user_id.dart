@@ -30,17 +30,17 @@ class UserIDPacket extends ContainedPacket {
         comment = _extractComment(userID),
         super(PacketTag.userID);
 
-  factory UserIDPacket.fromPacketData(final Uint8List bytes) {
+  factory UserIDPacket.fromByteData(final Uint8List bytes) {
     return UserIDPacket(utf8.decode(bytes));
   }
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return userID.stringToBytes();
   }
 
   Uint8List writeForSign() {
-    final bytes = toPacketData();
+    final bytes = toByteData();
     return Uint8List.fromList([
       0xb4,
       ...bytes.lengthInBytes.pack32(),

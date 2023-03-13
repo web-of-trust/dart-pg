@@ -29,7 +29,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
 
   SymEncryptedDataPacket(this.encrypted, {this.packets}) : super(PacketTag.symEncryptedData);
 
-  factory SymEncryptedDataPacket.fromPacketData(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
+  factory SymEncryptedDataPacket.fromByteData(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
 
   factory SymEncryptedDataPacket.encryptPackets(
     final Uint8List key,
@@ -57,7 +57,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
   }
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return encrypted;
   }
 

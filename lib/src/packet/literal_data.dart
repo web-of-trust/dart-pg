@@ -35,7 +35,7 @@ class LiteralDataPacket extends ContainedPacket {
   })  : time = time ?? DateTime.now(),
         super(PacketTag.literalData);
 
-  factory LiteralDataPacket.fromPacketData(final Uint8List bytes) {
+  factory LiteralDataPacket.fromByteData(final Uint8List bytes) {
     var pos = 0;
     final format = LiteralFormat.values.firstWhere((format) => format.value == bytes[pos]);
     pos++;
@@ -70,7 +70,7 @@ class LiteralDataPacket extends ContainedPacket {
       );
 
   @override
-  Uint8List toPacketData() {
+  Uint8List toByteData() {
     return Uint8List.fromList([
       ...writeHeader(),
       ...writeForSign(),

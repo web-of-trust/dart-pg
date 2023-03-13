@@ -24,7 +24,7 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
 
   ElGamalSessionKeyParams(this.gamma, this.phi);
 
-  factory ElGamalSessionKeyParams.fromPacketData(final Uint8List bytes) {
+  factory ElGamalSessionKeyParams.fromByteData(final Uint8List bytes) {
     final gamma = Helper.readMPI(bytes);
     final phi = Helper.readMPI(bytes.sublist(gamma.byteLength + 2));
 

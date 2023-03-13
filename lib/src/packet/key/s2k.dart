@@ -41,7 +41,7 @@ class S2K {
     this.itCount = _defaultItCount,
   });
 
-  factory S2K.fromPacketData(final Uint8List bytes) {
+  factory S2K.fromByteData(final Uint8List bytes) {
     var pos = 0;
     var itCount = _defaultItCount;
     final type = S2kType.values.firstWhere((type) => type.value == bytes[pos]);

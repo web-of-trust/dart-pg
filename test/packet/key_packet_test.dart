@@ -24,36 +24,36 @@ import '../test_data.dart';
 void main() {
   group('public key packet', () {
     test('rsa test', () {
-      final publicKey = PublicKeyPacket.fromPacketData(
+      final publicKey = PublicKeyPacket.fromByteData(
           base64.decode(rsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       expect(publicKey.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
       expect(publicKey.algorithm, KeyAlgorithm.rsaEncryptSign);
 
-      final publicSubkey = PublicSubkeyPacket.fromPacketData(
+      final publicSubkey = PublicSubkeyPacket.fromByteData(
           base64.decode(rsaPublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       expect(publicSubkey.fingerprint, '8da510f6630e613b4e4b627a1500062542172d9c');
       expect(publicSubkey.algorithm, KeyAlgorithm.rsaEncryptSign);
     });
 
     test('dsa elgamal test', () {
-      final publicKey = PublicKeyPacket.fromPacketData(
+      final publicKey = PublicKeyPacket.fromByteData(
           base64.decode(dsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       expect(publicKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
       expect(publicKey.algorithm, KeyAlgorithm.dsa);
 
-      final publicSubkey = PublicSubkeyPacket.fromPacketData(
+      final publicSubkey = PublicSubkeyPacket.fromByteData(
           base64.decode(elgamalPublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       expect(publicSubkey.fingerprint, 'cabe81ea1ab72a92e1c0c65c16e7d1ac9c6620c8');
       expect(publicSubkey.algorithm, KeyAlgorithm.elgamal);
     });
 
     test('ecc test', () {
-      final publicKey = PublicKeyPacket.fromPacketData(
+      final publicKey = PublicKeyPacket.fromByteData(
           base64.decode(ecdsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       expect(publicKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
       expect(publicKey.algorithm, KeyAlgorithm.ecdsa);
 
-      final publicSubkey = PublicSubkeyPacket.fromPacketData(
+      final publicSubkey = PublicSubkeyPacket.fromByteData(
           base64.decode(ecdhPublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       expect(publicSubkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
       expect(publicSubkey.algorithm, KeyAlgorithm.ecdh);
@@ -62,7 +62,7 @@ void main() {
 
   group('secret key packet', () {
     test('rsa test', (() {
-      final secretKey = SecretKeyPacket.fromPacketData(
+      final secretKey = SecretKeyPacket.fromByteData(
           base64.decode(rsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final publicParams = secretKey.publicKey.publicParams as RSAPublicParams;
       final secretParams = secretKey.decrypt(passphrase).secretParams as RSASecretParams;
@@ -72,7 +72,7 @@ void main() {
       expect(secretParams.pInv, secretParams.primeP.modInverse(secretParams.primeQ));
       expect(publicParams.modulus, secretParams.modulus);
 
-      final secretSubkey = SecretSubkeyPacket.fromPacketData(
+      final secretSubkey = SecretSubkeyPacket.fromByteData(
           base64.decode(rsaSecretSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final subkeyPublicParams = secretSubkey.publicKey.publicParams as RSAPublicParams;
       final subkeySecretParams = secretSubkey.decrypt(passphrase).secretParams as RSASecretParams;
@@ -84,7 +84,7 @@ void main() {
     }));
 
     test('dsa elgamal test', () {
-      final secretKey = SecretKeyPacket.fromPacketData(
+      final secretKey = SecretKeyPacket.fromByteData(
           base64.decode(dsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final publicParams = secretKey.publicKey.publicParams as DSAPublicParams;
       final secretParams = secretKey.decrypt(passphrase).secretParams as DSASecretParams;
@@ -94,7 +94,7 @@ void main() {
       expect(publicParams.publicExponent,
           publicParams.generator.modPow(secretParams.secretExponent, publicParams.prime));
 
-      final secretSubkey = SecretSubkeyPacket.fromPacketData(
+      final secretSubkey = SecretSubkeyPacket.fromByteData(
           base64.decode(elgamalSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final subkeyPublicParams = secretSubkey.publicKey.publicParams as ElGamalPublicParams;
       final subkeySecretParams = secretSubkey.decrypt(passphrase).secretParams as ElGamalSecretParams;
@@ -106,7 +106,7 @@ void main() {
     });
 
     test('ecc test', () {
-      final secretKey = SecretKeyPacket.fromPacketData(
+      final secretKey = SecretKeyPacket.fromByteData(
           base64.decode(ecdsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final publicParams = secretKey.publicKey.publicParams as ECDSAPublicParams;
       final secretParams = secretKey.decrypt(passphrase).secretParams as ECSecretParams;
@@ -115,7 +115,7 @@ void main() {
       expect(secretKey.algorithm, KeyAlgorithm.ecdsa);
       expect(publicParams.publicKey.Q, publicParams.publicKey.parameters!.G * secretParams.d);
 
-      final secretSubkey = SecretSubkeyPacket.fromPacketData(
+      final secretSubkey = SecretSubkeyPacket.fromByteData(
           base64.decode(ecdhSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final subkeyPublicParams = secretSubkey.publicKey.publicParams as ECDHPublicParams;
       final subkeySecretParams = secretSubkey.decrypt(passphrase).secretParams as ECSecretParams;
@@ -126,7 +126,7 @@ void main() {
     });
 
     test('encrypt test', (() {
-      final secretKey = SecretKeyPacket.fromPacketData(
+      final secretKey = SecretKeyPacket.fromByteData(
           base64.decode(secretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final publicParams = secretKey.publicKey.publicParams as RSAPublicParams;
       final secretParams = secretKey.secretParams as RSASecretParams;
@@ -151,7 +151,7 @@ void main() {
       expect(encryptedKey.iv, isNotNull);
       expect(encryptedKey.s2k, isNotNull);
 
-      final decryptedKey = SecretKeyPacket.fromPacketData(encryptedKey.toPacketData()).decrypt(passphrase);
+      final decryptedKey = SecretKeyPacket.fromByteData(encryptedKey.toByteData()).decrypt(passphrase);
       final decryptedParams = decryptedKey.secretParams as RSASecretParams;
 
       expect(decryptedKey.fingerprint, secretKey.fingerprint);
@@ -160,7 +160,7 @@ void main() {
       expect(decryptedParams.primeQ, secretParams.primeQ);
       expect(decryptedParams.pInv, secretParams.pInv);
 
-      final secretSubkey = SecretSubkeyPacket.fromPacketData(
+      final secretSubkey = SecretSubkeyPacket.fromByteData(
           base64.decode(secretSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       final subkeyPublicParams = secretSubkey.publicKey.publicParams as RSAPublicParams;
       final subkeySecretParams = secretSubkey.secretParams as RSASecretParams;
@@ -185,7 +185,7 @@ void main() {
       expect(subkeyEncryptedKey.iv, isNotNull);
       expect(subkeyEncryptedKey.s2k, isNotNull);
 
-      final subkeyDecryptedKey = SecretKeyPacket.fromPacketData(subkeyEncryptedKey.toPacketData()).decrypt(passphrase);
+      final subkeyDecryptedKey = SecretKeyPacket.fromByteData(subkeyEncryptedKey.toByteData()).decrypt(passphrase);
       final subkeyDecryptedParams = subkeyDecryptedKey.secretParams as RSASecretParams;
 
       expect(subkeyDecryptedKey.fingerprint, secretSubkey.fingerprint);

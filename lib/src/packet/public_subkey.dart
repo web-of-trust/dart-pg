@@ -19,8 +19,8 @@ class PublicSubkeyPacket extends PublicKeyPacket implements SubkeyPacket {
     super.algorithm,
   });
 
-  factory PublicSubkeyPacket.fromPacketData(final Uint8List bytes) {
-    final publicKey = PublicKeyPacket.fromPacketData(bytes);
+  factory PublicSubkeyPacket.fromByteData(final Uint8List bytes) {
+    final publicKey = PublicKeyPacket.fromByteData(bytes);
     return PublicSubkeyPacket(
       publicKey.creationTime,
       publicKey.publicParams,

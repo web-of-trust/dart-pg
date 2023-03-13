@@ -22,10 +22,10 @@ void main() {
 
     test('encrypted data test', () {
       final encrypted = SymEncryptedDataPacket.encryptPackets(key, packets);
-      final encrypt = SymEncryptedDataPacket.fromPacketData(encrypted.toPacketData());
+      final encrypt = SymEncryptedDataPacket.fromByteData(encrypted.toByteData());
       final decrypted = encrypt.decrypt(key, allowUnauthenticatedMessages: true);
       final ldPacket = decrypted.packets![0];
-      expect(ldPacket.toPacketData(), equals(literalData.toPacketData()));
+      expect(ldPacket.toByteData(), equals(literalData.toByteData()));
 
       expect(
         () => encrypt.decrypt(key),
@@ -35,10 +35,10 @@ void main() {
 
     test('encrypted integrity protected test', () {
       final encrypted = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(key, packets);
-      final encrypt = SymEncryptedIntegrityProtectedDataPacket.fromPacketData(encrypted.toPacketData());
+      final encrypt = SymEncryptedIntegrityProtectedDataPacket.fromByteData(encrypted.toByteData());
       final decrypted = encrypt.decrypt(key);
       final ldPacket = decrypted.packets![0];
-      expect(ldPacket.toPacketData(), equals(literalData.toPacketData()));
+      expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
 
     test('password protected session key test', () {
@@ -61,7 +61,7 @@ void main() {
             symmetric: decryptedSkesk.sessionKey!.symmetric,
           );
       final ldPacket = decryptedSeip.packets![0];
-      expect(ldPacket.toPacketData(), equals(literalData.toPacketData()));
+      expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
   });
 
@@ -70,7 +70,7 @@ void main() {
     final packets = PacketList([literalData]);
 
     test('rsa test', () {
-      final secretKey = SecretSubkeyPacket.fromPacketData(
+      final secretKey = SecretSubkeyPacket.fromByteData(
         base64.decode(rsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
 
@@ -93,11 +93,11 @@ void main() {
             symmetric: decryptedPkesk.sessionKey!.symmetric,
           );
       final ldPacket = decryptedSeip.packets![0];
-      expect(ldPacket.toPacketData(), equals(literalData.toPacketData()));
+      expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
 
     test('elgamal test', () {
-      final secretKey = SecretSubkeyPacket.fromPacketData(
+      final secretKey = SecretSubkeyPacket.fromByteData(
         base64.decode(elgamalSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
 
@@ -120,11 +120,11 @@ void main() {
             symmetric: decryptedPkesk.sessionKey!.symmetric,
           );
       final ldPacket = decryptedSeip.packets![0];
-      expect(ldPacket.toPacketData(), equals(literalData.toPacketData()));
+      expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
 
     test('ecdh test', () {
-      final secretKey = SecretSubkeyPacket.fromPacketData(
+      final secretKey = SecretSubkeyPacket.fromByteData(
         base64.decode(ecdhSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
 
@@ -147,7 +147,7 @@ void main() {
             symmetric: decryptedPkesk.sessionKey!.symmetric,
           );
       final ldPacket = decryptedSeip.packets![0];
-      expect(ldPacket.toPacketData(), equals(literalData.toPacketData()));
+      expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
   });
 }

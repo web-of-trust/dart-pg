@@ -14,5 +14,5 @@ class EmbeddedSignature extends SignatureSubpacket {
       : super(SignatureSubpacketType.embeddedSignature, data);
 
   factory EmbeddedSignature.fromSignature(final SignaturePacket signature) =>
-      EmbeddedSignature(signature.toPacketData());
+      EmbeddedSignature(signature.toByteData());
 }
