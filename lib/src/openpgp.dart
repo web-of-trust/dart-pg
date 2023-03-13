@@ -71,7 +71,7 @@ class OpenPGP {
   /// By default, primary and subkeys will be of same type.
   /// The generated primary key will have signing capabilities.
   /// By default, one subkey with encryption capabilities is also generated.
-  static PrivateKey generateKey(
+  static Future<PrivateKey> generateKey(
     final Iterable<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
@@ -83,7 +83,7 @@ class OpenPGP {
     final String? subkeyPassphrase,
     final DateTime? date,
   }) =>
-      PrivateKey.generate(
+      Future.value(PrivateKey.generate(
         userIDs,
         passphrase,
         type: type,
@@ -94,65 +94,67 @@ class OpenPGP {
         subkeySign: subkeySign,
         subkeyPassphrase: subkeyPassphrase,
         date: date,
-      );
+      ));
 
   /// Read an armored & unlock OpenPGP private key with the given passphrase.
-  static PrivateKey decryptPrivateKey(
+  static Future<PrivateKey> decryptPrivateKey(
     final String armored,
     final String passphrase, [
     final Iterable<String> subkeyPassphrases = const [],
   ]) =>
-      PrivateKey.fromArmored(armored).decrypt(passphrase, subkeyPassphrases);
+      Future.value(PrivateKey.fromArmored(armored).decrypt(passphrase, subkeyPassphrases));
 
   /// Read an armored OpenPGP private key and returns a PrivateKey object
-  static PrivateKey readPrivateKey(final String armored) => PrivateKey.fromArmored(armored);
+  static Future<PrivateKey> readPrivateKey(final String armored) => Future.value(PrivateKey.fromArmored(armored));
 
   /// Read an armored OpenPGP public key and returns a PublicKey object
-  static PublicKey readPublicKey(final String armored) => PublicKey.fromArmored(armored);
+  static Future<PublicKey> readPublicKey(final String armored) => Future.value(PublicKey.fromArmored(armored));
 
   /// Sign a cleartext message.
-  static SignedMessage sign(
+  static Future<SignedMessage> sign(
     final String text,
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
   }) =>
-      SignedMessage.signCleartext(text, signingKeys, date: date);
+      Future.value(SignedMessage.signCleartext(text, signingKeys, date: date));
 
   /// Sign a cleartext message & return detached signature
-  static Signature signDetached(
+  static Future<Signature> signDetached(
     final String text,
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
   }) =>
-      SignedMessage.signCleartext(text, signingKeys, date: date).signature;
+      Future.value(SignedMessage.signCleartext(text, signingKeys, date: date).signature);
 
   /// Verify signatures of cleartext signed message
   /// Return signed message with verifications
-  static SignedMessage verify(
+  static Future<SignedMessage> verify(
     final String armored,
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) =>
-      SignedMessage.fromArmored(armored).verify(verificationKeys, date: date);
+      Future.value(SignedMessage.fromArmored(armored).verify(verificationKeys, date: date));
 
   /// Verify detached signatures of cleartext message
   /// Returns cleartext message with verifications
-  static CleartextMessage verifyDetached(
+  static Future<CleartextMessage> verifyDetached(
     final String text,
     final String armored,
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) =>
-      CleartextMessage(text).verifySignature(Signature.fromArmored(armored), verificationKeys, date: date);
+      Future.value(
+          CleartextMessage(text).verifySignature(Signature.fromArmored(armored), verificationKeys, date: date));
 
   /// Read an armored OpenPGP signature and returns a Signature object
-  static Signature readSignature(final String armored) => Signature.fromArmored(armored);
+  static Future<Signature> readSignature(final String armored) => Future.value(Signature.fromArmored(armored));
 
   /// Read an armored OpenPGP signed message and returns a SignedMessage object
-  static SignedMessage readSignedMessage(final String armored) => SignedMessage.fromArmored(armored);
+  static Future<SignedMessage> readSignedMessage(final String armored) =>
+      Future.value(SignedMessage.fromArmored(armored));
 
   /// Read an armored OpenPGP message and returns a Message object
-  static Message readMessage(final String armored) => Message.fromArmored(armored);
+  static Future<Message> readMessage(final String armored) => Future.value(Message.fromArmored(armored));
 
   /// Create new message object from text
   static Message createTextMessage(
@@ -162,17 +164,17 @@ class OpenPGP {
       Message.createTextMessage(text, time: time);
 
   /// Create new message object from binary data.
-  static Message createBinaryMessage(
+  static Future<Message> createBinaryMessage(
     final Uint8List data, {
     final String filename = '',
     final DateTime? time,
   }) =>
-      Message.createBinaryMessage(data, filename: filename, time: time);
+      Future.value(Message.createBinaryMessage(data, filename: filename, time: time));
 
   /// Encrypt a message using public keys, passwords or both at once.
   /// At least one of `encryptionKeys`, `passwords`must be specified.
   /// If signing keys are specified, those will be used to sign the message.
-  static Message encrypt(
+  static Future<Message> encrypt(
     final Message message, {
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<PrivateKey> signingKeys = const [],
@@ -183,23 +185,23 @@ class OpenPGP {
     final DateTime? date,
   }) =>
       (signingKeys.isNotEmpty)
-          ? message.sign(signingKeys, date: date).compress(compression).encrypt(
+          ? Future.value(message.sign(signingKeys, date: date).compress(compression).encrypt(
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
                 encryptionKeySymmetric: encryptionKeySymmetric,
-              )
-          : message.compress(compression).encrypt(
+              ))
+          : Future.value(message.compress(compression).encrypt(
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
                 encryptionKeySymmetric: encryptionKeySymmetric,
-              );
+              ));
 
   /// Decrypt a message with the user's private key, or a password.
   /// One of `decryptionKeys` or `passwords` must be specified
   /// return object containing decrypted message with verifications
-  static Message decrypt(
+  static Future<Message> decrypt(
     final Message message, {
     final Iterable<PrivateKey> decryptionKeys = const [],
     final Iterable<PublicKey> verificationKeys = const [],
@@ -208,16 +210,16 @@ class OpenPGP {
     final DateTime? date,
   }) =>
       (verificationKeys.isNotEmpty)
-          ? message
+          ? Future.value(message
               .decrypt(
                 decryptionKeys: decryptionKeys,
                 passwords: passwords,
                 allowUnauthenticatedMessages: allowUnauthenticatedMessages,
               )
-              .verify(verificationKeys, date: date)
-          : message.decrypt(
+              .verify(verificationKeys, date: date))
+          : Future.value(message.decrypt(
               decryptionKeys: decryptionKeys,
               passwords: passwords,
               allowUnauthenticatedMessages: allowUnauthenticatedMessages,
-            );
+            ));
 }
