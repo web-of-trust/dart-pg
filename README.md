@@ -37,9 +37,9 @@ dependencies:
 const text = 'Hello Dart PG!';
 const password = 'secret stuff';
 
-final encryptedMessage = OpenPGP.encrypt(OpenPGP.createTextMessage(text), passwords: [password]);
+final encryptedMessage = await OpenPGP.encrypt(OpenPGP.createTextMessage(text), passwords: [password]);
 final encrypted = encryptedMessage.armor();
-final decryptedMessage = OpenPGP.decrypt(OpenPGP.readMessage(encrypted), passwords: [password]);
+final decryptedMessage = await OpenPGP.decrypt(OpenPGP.readMessage(encrypted), passwords: [password]);
 final decrypted = decryptedMessage.armor();
 ```
 
