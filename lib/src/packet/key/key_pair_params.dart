@@ -44,7 +44,7 @@ class KeyPairParams {
         final keyPair = _generateECKeyPair(curve);
         final q = keyPair.publicKey.Q!;
         return KeyPairParams(
-          ECDSAPublicParams(curve.oid, q.getEncoded(q.isCompressed).toBigIntWithSign(1)),
+          ECDSAPublicParams(curve.asn1Oid, q.getEncoded(q.isCompressed).toBigIntWithSign(1)),
           ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.ecdh:
@@ -52,7 +52,7 @@ class KeyPairParams {
         final q = keyPair.publicKey.Q!;
         return KeyPairParams(
           ECDHPublicParams(
-            curve.oid,
+            curve.asn1Oid,
             q.getEncoded(q.isCompressed).toBigIntWithSign(1),
             curve.hashAlgorithm,
             curve.symmetricAlgorithm,

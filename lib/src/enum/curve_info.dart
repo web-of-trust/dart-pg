@@ -24,7 +24,7 @@ enum CurveInfo {
 
   const CurveInfo(this.identifier, this.identifierString);
 
-  ASN1ObjectIdentifier get oid => ASN1ObjectIdentifier(identifier);
+  ASN1ObjectIdentifier get asn1Oid => ASN1ObjectIdentifier(identifier);
 
   String get curveName {
     switch (this) {
