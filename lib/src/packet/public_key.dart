@@ -148,11 +148,11 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   @override
   Uint8List writeForSign() {
-    final packetData = toByteData();
+    final bytes = toByteData();
     return Uint8List.fromList([
       0x99,
-      ...packetData.lengthInBytes.pack16(),
-      ...packetData,
+      ...bytes.lengthInBytes.pack16(),
+      ...bytes,
     ]);
   }
 
