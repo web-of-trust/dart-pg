@@ -82,8 +82,8 @@ class OpenPGP {
     final bool subkeySign = false,
     final String? subkeyPassphrase,
     final DateTime? date,
-  }) =>
-      Future.value(PrivateKey.generate(
+  }) async =>
+      PrivateKey.generate(
         userIDs,
         passphrase,
         type: type,
@@ -94,21 +94,21 @@ class OpenPGP {
         subkeySign: subkeySign,
         subkeyPassphrase: subkeyPassphrase,
         date: date,
-      ));
+      );
 
   /// Read an armored & unlock OpenPGP private key with the given passphrase.
   static Future<PrivateKey> decryptPrivateKey(
     final String armored,
     final String passphrase, [
     final Iterable<String> subkeyPassphrases = const [],
-  ]) =>
-      Future.value(PrivateKey.fromArmored(armored).decrypt(passphrase, subkeyPassphrases));
+  ]) async =>
+      PrivateKey.fromArmored(armored).decrypt(passphrase, subkeyPassphrases);
 
   /// Read an armored OpenPGP private key and returns a PrivateKey object
-  static Future<PrivateKey> readPrivateKey(final String armored) => Future.value(PrivateKey.fromArmored(armored));
+  static Future<PrivateKey> readPrivateKey(final String armored) async => PrivateKey.fromArmored(armored);
 
   /// Read an armored OpenPGP public key and returns a PublicKey object
-  static Future<PublicKey> readPublicKey(final String armored) => Future.value(PublicKey.fromArmored(armored));
+  static Future<PublicKey> readPublicKey(final String armored) async => PublicKey.fromArmored(armored);
 
   /// Sign a cleartext message.
   static Future<SignedMessage> sign(
@@ -123,8 +123,8 @@ class OpenPGP {
     final String text,
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
-  }) =>
-      Future.value(SignedMessage.signCleartext(text, signingKeys, date: date).signature);
+  }) async =>
+      SignedMessage.signCleartext(text, signingKeys, date: date).signature;
 
   /// Verify signatures of cleartext signed message
   /// Return signed message with verifications
@@ -132,8 +132,8 @@ class OpenPGP {
     final String armored,
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) =>
-      Future.value(SignedMessage.fromArmored(armored).verify(verificationKeys, date: date));
+  }) async =>
+      SignedMessage.fromArmored(armored).verify(verificationKeys, date: date);
 
   /// Verify detached signatures of cleartext message
   /// Returns cleartext message with verifications
@@ -142,25 +142,23 @@ class OpenPGP {
     final String armored,
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) =>
-      Future.value(
-          CleartextMessage(text).verifySignature(Signature.fromArmored(armored), verificationKeys, date: date));
+  }) async =>
+      CleartextMessage(text).verifySignature(Signature.fromArmored(armored), verificationKeys, date: date);
 
   /// Read an armored OpenPGP signature and returns a Signature object
   static Future<Signature> readSignature(final String armored) => Future.value(Signature.fromArmored(armored));
 
   /// Read an armored OpenPGP signed message and returns a SignedMessage object
-  static Future<SignedMessage> readSignedMessage(final String armored) =>
-      Future.value(SignedMessage.fromArmored(armored));
+  static Future<SignedMessage> readSignedMessage(final String armored) async => SignedMessage.fromArmored(armored);
 
   /// Read an armored OpenPGP message and returns a Message object
-  static Future<Message> readMessage(final String armored) => Future.value(Message.fromArmored(armored));
+  static Future<Message> readMessage(final String armored) async => Message.fromArmored(armored);
 
   /// Create new message object from text
-  static Message createTextMessage(
+  static Future<Message> createTextMessage(
     final String text, {
     final DateTime? time,
-  }) =>
+  }) async =>
       Message.createTextMessage(text, time: time);
 
   /// Create new message object from binary data.
@@ -168,8 +166,8 @@ class OpenPGP {
     final Uint8List data, {
     final String filename = '',
     final DateTime? time,
-  }) =>
-      Future.value(Message.createBinaryMessage(data, filename: filename, time: time));
+  }) async =>
+      Message.createBinaryMessage(data, filename: filename, time: time);
 
   /// Encrypt a message using public keys, passwords or both at once.
   /// At least one of `encryptionKeys`, `passwords`must be specified.
@@ -183,20 +181,20 @@ class OpenPGP {
     final SymmetricAlgorithm encryptionKeySymmetric = OpenPGP.preferredSymmetric,
     final CompressionAlgorithm compression = OpenPGP.preferredCompression,
     final DateTime? date,
-  }) =>
+  }) async =>
       (signingKeys.isNotEmpty)
-          ? Future.value(message.sign(signingKeys, date: date).compress(compression).encrypt(
+          ? message.sign(signingKeys, date: date).compress(compression).encrypt(
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
                 encryptionKeySymmetric: encryptionKeySymmetric,
-              ))
-          : Future.value(message.compress(compression).encrypt(
+              )
+          : message.compress(compression).encrypt(
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
                 encryptionKeySymmetric: encryptionKeySymmetric,
-              ));
+              );
 
   /// Decrypt a message with the user's private key, or a password.
   /// One of `decryptionKeys` or `passwords` must be specified
@@ -208,18 +206,18 @@ class OpenPGP {
     final Iterable<String> passwords = const [],
     final bool allowUnauthenticatedMessages = OpenPGP.allowUnauthenticatedMessages,
     final DateTime? date,
-  }) =>
+  }) async =>
       (verificationKeys.isNotEmpty)
-          ? Future.value(message
+          ? message
               .decrypt(
                 decryptionKeys: decryptionKeys,
                 passwords: passwords,
                 allowUnauthenticatedMessages: allowUnauthenticatedMessages,
               )
-              .verify(verificationKeys, date: date))
-          : Future.value(message.decrypt(
+              .verify(verificationKeys, date: date)
+          : message.decrypt(
               decryptionKeys: decryptionKeys,
               passwords: passwords,
               allowUnauthenticatedMessages: allowUnauthenticatedMessages,
-            ));
+            );
 }
