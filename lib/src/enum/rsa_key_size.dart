@@ -3,24 +3,13 @@
 // file that was distributed with this source code.
 
 enum RSAKeySize {
-  s2048,
-  s2560,
-  s3072,
-  s3584,
-  s4096;
+  s2048(2048),
+  s2560(2560),
+  s3072(3072),
+  s3584(3584),
+  s4096(4096);
 
-  int get bits {
-    switch (this) {
-      case s2048:
-        return 2048;
-      case s2560:
-        return 2560;
-      case s3072:
-        return 3072;
-      case s3584:
-        return 3584;
-      case s4096:
-        return 4096;
-    }
-  }
+  final int bits;
+
+  const RSAKeySize(this.bits);
 }

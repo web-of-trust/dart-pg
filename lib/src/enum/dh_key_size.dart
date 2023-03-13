@@ -3,34 +3,14 @@
 // file that was distributed with this source code.
 
 enum DHKeySize {
-  l1024n160,
-  l2048n224,
-  l2048n256,
-  l3072n256;
+  l1024n160(1024, 160),
+  l2048n224(2048, 224),
+  l2048n256(2048, 256),
+  l3072n256(3072, 256);
 
-  int get lSize {
-    switch (this) {
-      case l1024n160:
-        return 1024;
-      case l2048n224:
-        return 2048;
-      case l2048n256:
-        return 2048;
-      case l3072n256:
-        return 3072;
-    }
-  }
+  final int lSize;
 
-  int get nSize {
-    switch (this) {
-      case l1024n160:
-        return 160;
-      case l2048n224:
-        return 224;
-      case l2048n256:
-        return 256;
-      case l3072n256:
-        return 256;
-    }
-  }
+  final int nSize;
+
+  const DHKeySize(this.lSize, this.nSize);
 }
