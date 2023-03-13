@@ -6,7 +6,9 @@ Future<void> main() async {
   const armoredPublicKeys = ['-----BEGIN PGP PUBLIC KEY BLOCK-----'];
   const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
-  final publicKeys = await Future.wait(armoredPublicKeys.map((armored) => OpenPGP.readPublicKey(armored)));
+  final publicKeys = await Future.wait(
+    armoredPublicKeys.map((armored) => OpenPGP.readPublicKey(armored)),
+  );
   final privateKey = await OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
   final encryptedMessage =

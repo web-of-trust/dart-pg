@@ -37,9 +37,13 @@ dependencies:
 const text = 'Hello Dart PG!';
 const password = 'secret stuff';
 
-final encryptedMessage = await OpenPGP.encrypt(OpenPGP.createTextMessage(text), passwords: [password]);
+final encryptedMessage = await OpenPGP.encrypt(
+    OpenPGP.createTextMessage(text), passwords: [password]
+);
 final encrypted = encryptedMessage.armor();
-final decryptedMessage = await OpenPGP.decrypt(OpenPGP.readMessage(encrypted), passwords: [password]);
+final decryptedMessage = await OpenPGP.decrypt(
+    OpenPGP.readMessage(encrypted), passwords: [password]
+);
 final decrypted = decryptedMessage.armor();
 ```
 
@@ -55,10 +59,14 @@ const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 final publicKey = await OpenPGP.readPublicKey(armoredPublicKey);
 final privateKey = await OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
-final encryptedMessage = await OpenPGP.encrypt(OpenPGP.createTextMessage(text), encryptionKeys: [publicKey]);
+final encryptedMessage = await OpenPGP.encrypt(
+    OpenPGP.createTextMessage(text), encryptionKeys: [publicKey]
+);
 final encrypted = encryptedMessage.armor();
 
-final decryptedMessage = await OpenPGP.decrypt(OpenPGP.readMessage(encrypted), decryptionKeys: [privateKey]);
+final decryptedMessage = await OpenPGP.decrypt(
+    OpenPGP.readMessage(encrypted), decryptionKeys: [privateKey]
+);
 final decrypted = decryptedMessage.armor();
 ```
 
@@ -69,7 +77,9 @@ const passphrase = 'secret stuff';
 const armoredPublicKeys = ['-----BEGIN PGP PUBLIC KEY BLOCK-----'];
 const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
-final publicKeys = await Future.wait(armoredPublicKeys.map((armored) => OpenPGP.readPublicKey(armored)));
+final publicKeys = await Future.wait(
+    armoredPublicKeys.map((armored) => OpenPGP.readPublicKey(armored))
+);
 final privateKey = await OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
 final encryptedMessage = await OpenPGP.encrypt(
@@ -110,7 +120,9 @@ final privateKey = await OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase
 final signature = await OpenPGP.signDetached(text, signingKeys: [privateKey]);
 final armored = signature.armor();
 
-final cleartextMessage = await OpenPGP.verifyDetached(text, armored, verificationKeys: [publicKey]);
+final cleartextMessage = await OpenPGP.verifyDetached(
+    text, armored, verificationKeys: [publicKey]
+);
 final verifications = cleartextMessage.verifications;
 ```
 
