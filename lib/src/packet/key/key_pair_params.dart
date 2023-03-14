@@ -22,6 +22,7 @@ class KeyPairParams {
   static const rsaPublicExponent = 65537;
 
   final KeyParams publicParams;
+
   final KeyParams secretParams;
 
   KeyPairParams(this.publicParams, this.secretParams);

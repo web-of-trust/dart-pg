@@ -1610,12 +1610,19 @@ class TwofishEngine extends BaseCipher {
       }
       _setupKey(_workingKey);
     } else {
-      throw ArgumentError('Invalid parameter passed to algorithmName init - ${params.runtimeType}');
+      throw ArgumentError(
+        'Invalid parameter passed to algorithmName init - ${params.runtimeType}',
+      );
     }
   }
 
   @override
-  int processBlock(Uint8List input, int inOff, Uint8List output, int outOff) {
+  int processBlock(
+    Uint8List input,
+    int inOff,
+    Uint8List output,
+    int outOff,
+  ) {
     if (_workingKey.isEmpty) {
       throw StateError('algorithmName not initialised');
     }
@@ -1736,7 +1743,12 @@ class TwofishEngine extends BaseCipher {
   /// Encrypt the given input starting at the given offset and place
   /// the result in the provided buffer starting at the given offset.
   /// The input will be an exact multiple of our blocksize.
-  void _encryptBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
+  void _encryptBlock(
+    final Uint8List input,
+    final int inOff,
+    final Uint8List output,
+    final int outOff,
+  ) {
     var r0 = input.sublist(inOff).toLeInt32() ^ _subKey[0];
     var r1 = input.sublist(inOff + 4).toLeInt32() ^ _subKey[1];
     var r2 = input.sublist(inOff + 8).toLeInt32() ^ _subKey[2];
@@ -1770,7 +1782,12 @@ class TwofishEngine extends BaseCipher {
   /// Decrypt the given input starting at the given offset and place
   /// the result in the provided buffer starting at the given offset.
   /// The input will be an exact multiple of our blocksize.
-  void _decryptBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
+  void _decryptBlock(
+    final Uint8List input,
+    final int inOff,
+    final Uint8List output,
+    final int outOff,
+  ) {
     var r0 = _subKey[4] ^ input.sublist(inOff).toLeInt32();
     var r1 = _subKey[5] ^ input.sublist(inOff + 4).toLeInt32();
     var r2 = _subKey[6] ^ input.sublist(inOff + 8).toLeInt32();

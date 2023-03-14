@@ -24,8 +24,11 @@ class ECDSAPublicParams extends ECPublicParams {
       throw UnsupportedError('Unsupported OID');
     }
 
-    final derBytes = [0x06, length, ...bytes.sublist(pos, pos + length)];
-    final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList(derBytes));
+    final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList([
+      0x06,
+      length,
+      ...bytes.sublist(pos, pos + length),
+    ]));
 
     pos += length;
     final q = Helper.readMPI(bytes.sublist(pos));

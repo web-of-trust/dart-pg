@@ -323,7 +323,12 @@ class CamelliaLightEngine extends BaseCipher {
   }
 
   @override
-  int processBlock(Uint8List input, int inOff, Uint8List output, int outOff) {
+  int processBlock(
+    Uint8List input,
+    int inOff,
+    Uint8List output,
+    int outOff,
+  ) {
     if (!_initialised) {
       throw Exception('Camellia is not initialized');
     }
@@ -344,7 +349,13 @@ class CamelliaLightEngine extends BaseCipher {
   @override
   void reset() {}
 
-  static void _roldq(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+  static void _roldq(
+    int rot,
+    List<int> ki,
+    int inOff,
+    List<int> ko,
+    int outOff,
+  ) {
     ko[outOff] = ki[inOff].shiftLeft32(rot) | ki[1 + inOff].shiftRight32(32 - rot);
     ko[1 + outOff] = ki[1 + inOff].shiftLeft32(rot) | ki[2 + inOff].shiftRight32(32 - rot);
     ko[2 + outOff] = ki[2 + inOff].shiftLeft32(rot) | ki[3 + inOff].shiftRight32(32 - rot);
@@ -355,7 +366,13 @@ class CamelliaLightEngine extends BaseCipher {
     ki[3 + inOff] = ko[3 + outOff];
   }
 
-  static void _decroldq(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+  static void _decroldq(
+    int rot,
+    List<int> ki,
+    int inOff,
+    List<int> ko,
+    int outOff,
+  ) {
     ko[2 + outOff] = ki[inOff].shiftLeft32(rot) | ki[1 + inOff].shiftRight32(32 - rot);
     ko[3 + outOff] = ki[1 + inOff].shiftLeft32(rot) | ki[2 + inOff].shiftRight32(32 - rot);
     ko[outOff] = ki[2 + inOff].shiftLeft32(rot) | ki[3 + inOff].shiftRight32(32 - rot);
@@ -366,7 +383,13 @@ class CamelliaLightEngine extends BaseCipher {
     ki[3 + inOff] = ko[1 + outOff];
   }
 
-  static void _roldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+  static void _roldqo32(
+    int rot,
+    List<int> ki,
+    int inOff,
+    List<int> ko,
+    int outOff,
+  ) {
     ko[outOff] = ki[1 + inOff].shiftLeft32(rot - 32) | ki[2 + inOff].shiftRight32(64 - rot);
     ko[1 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) | ki[3 + inOff].shiftRight32(64 - rot);
     ko[2 + outOff] = ki[3 + inOff].shiftLeft32(rot - 32) | ki[inOff].shiftRight32(64 - rot);
@@ -377,7 +400,13 @@ class CamelliaLightEngine extends BaseCipher {
     ki[3 + inOff] = ko[3 + outOff];
   }
 
-  static void _decroldqo32(int rot, List<int> ki, int inOff, List<int> ko, int outOff) {
+  static void _decroldqo32(
+    int rot,
+    List<int> ki,
+    int inOff,
+    List<int> ko,
+    int outOff,
+  ) {
     ko[2 + outOff] = ki[1 + inOff].shiftLeft32(rot - 32) | ki[2 + inOff].shiftRight32(64 - rot);
     ko[3 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) | ki[3 + inOff].shiftRight32(64 - rot);
     ko[outOff] = ki[3 + inOff].shiftLeft32(rot - 32) | ki[inOff].shiftRight32(64 - rot);
@@ -642,7 +671,12 @@ class CamelliaLightEngine extends BaseCipher {
     }
   }
 
-  int _processBlock128(Uint8List input, int inOff, Uint8List output, int outOff) {
+  int _processBlock128(
+    Uint8List input,
+    int inOff,
+    Uint8List output,
+    int outOff,
+  ) {
     for (var i = 0; i < 4; i++) {
       _state[i] = _bytes2uint(input, inOff + (i * 4));
       _state[i] ^= _kw[i];
@@ -673,7 +707,12 @@ class CamelliaLightEngine extends BaseCipher {
     return _blockSize;
   }
 
-  int _processBlock256(Uint8List input, int inOff, Uint8List output, int outOff) {
+  int _processBlock256(
+    Uint8List input,
+    int inOff,
+    Uint8List output,
+    int outOff,
+  ) {
     for (var i = 0; i < 4; i++) {
       _state[i] = _bytes2uint(input, inOff + (i * 4));
       _state[i] ^= _kw[i];

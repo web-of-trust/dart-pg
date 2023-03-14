@@ -30,12 +30,19 @@ class IDEAEngine extends BaseCipher {
     if (params is KeyParameter) {
       _workingKey = _generateWorkingKey(forEncryption, params.key);
     } else {
-      throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
+      throw ArgumentError(
+        'Invalid parameter passed to $algorithmName init - ${params.runtimeType}',
+      );
     }
   }
 
   @override
-  int processBlock(Uint8List input, int inOff, Uint8List output, int outOff) {
+  int processBlock(
+    Uint8List input,
+    int inOff,
+    Uint8List output,
+    int outOff,
+  ) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
@@ -134,7 +141,13 @@ class IDEAEngine extends BaseCipher {
     return key;
   }
 
-  void _ideaFunc(List<int> workingKey, Uint8List input, int inOff, Uint8List output, int outOff) {
+  void _ideaFunc(
+    List<int> workingKey,
+    Uint8List input,
+    int inOff,
+    Uint8List output,
+    int outOff,
+  ) {
     var x0 = input.sublist(inOff).toUint16();
     var x1 = input.sublist(inOff + 2).toUint16();
     var x2 = input.sublist(inOff + 4).toUint16();

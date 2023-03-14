@@ -1103,12 +1103,19 @@ class BlowfishEngine extends BaseCipher {
       _workingKey = params.key;
       _setKey(_workingKey);
     } else {
-      throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
+      throw ArgumentError(
+        'Invalid parameter passed to $algorithmName init - ${params.runtimeType}',
+      );
     }
   }
 
   @override
-  int processBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
+  int processBlock(
+    final Uint8List input,
+    final int inOff,
+    final Uint8List output,
+    final int outOff,
+  ) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
@@ -1129,7 +1136,7 @@ class BlowfishEngine extends BaseCipher {
   }
 
   int _f(final int x) {
-    return (((_s0[(x >> 24) & 0xff] + _s1[(x >> 16) & 0xff]) ^ _s2[(x >> 8) & 0xff]) + _s3[x & 0xff]);
+    return ((_s0[(x >> 24) & 0xff] + _s1[(x >> 16) & 0xff]) ^ _s2[(x >> 8) & 0xff]) + _s3[x & 0xff];
   }
 
   /// apply the encryption cycle to each value pair in the table.
@@ -1183,7 +1190,12 @@ class BlowfishEngine extends BaseCipher {
     _processTable(_s2[_sBoxSK - 2], _s2[_sBoxSK - 1], _s3);
   }
 
-  void _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
+  void _encryptBlock(
+    final Uint8List src,
+    final int srcIndex,
+    final Uint8List dst,
+    final int dstIndex,
+  ) {
     var xl = src.sublist(srcIndex).toInt32();
     var xr = src.sublist(srcIndex + 4).toInt32();
 
@@ -1199,7 +1211,12 @@ class BlowfishEngine extends BaseCipher {
     dst.setAll(dstIndex + 4, xl.pack32());
   }
 
-  void _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
+  void _decryptBlock(
+    final Uint8List src,
+    final int srcIndex,
+    final Uint8List dst,
+    final int dstIndex,
+  ) {
     var xl = src.sublist(srcIndex).toInt32();
     var xr = src.sublist(srcIndex + 4).toInt32();
 

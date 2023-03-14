@@ -94,7 +94,10 @@ class DSASigner implements Signer {
   }
 
   @override
-  bool verifySignature(final Uint8List message, covariant final DSASignature signature) {
+  bool verifySignature(
+    final Uint8List message,
+    covariant final DSASignature signature,
+  ) {
     final pub = _key as DSAPublicKey;
     final q = pub.order;
 
@@ -204,7 +207,12 @@ class DSAPrivateKey extends DSAAsymmetricKey implements PrivateKey {
   final DSAPublicKey publicKey;
 
   DSAPrivateKey(this.x, super.prime, super.order, super.generator)
-      : publicKey = DSAPublicKey(generator.modPow(x, prime), prime, order, generator);
+      : publicKey = DSAPublicKey(
+          generator.modPow(x, prime),
+          prime,
+          order,
+          generator,
+        );
 
   BigInt get y => publicKey.y;
 }
@@ -256,9 +264,17 @@ class DSAKeyGenerator implements KeyGenerator {
     final prime = params['prime']!;
     final order = params['order']!;
     final generator = params['generator']!;
-    final privateKey = DSAPrivateKey(_generateSecretExponent(order), prime, order, generator);
+    final privateKey = DSAPrivateKey(
+      _generateSecretExponent(order),
+      prime,
+      order,
+      generator,
+    );
 
-    return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
+    return AsymmetricKeyPair<PublicKey, PrivateKey>(
+      privateKey.publicKey,
+      privateKey,
+    );
   }
 
   @override
@@ -275,7 +291,11 @@ class DSAKeyGenerator implements KeyGenerator {
   BigInt _generateSecretExponent(final BigInt order) {
     int minWeight = order.bitLength >> 2;
     for (;;) {
-      BigInt x = Helper.randomBigIntInRange(BigInt.one, order - BigInt.one, random: _random);
+      BigInt x = Helper.randomBigIntInRange(
+        BigInt.one,
+        order - BigInt.one,
+        random: _random,
+      );
       if (x.nafWeight > minWeight) {
         return x;
       }

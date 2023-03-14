@@ -714,7 +714,12 @@ class DESEngine extends BaseCipher {
   }
 
   @override
-  int processBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
+  int processBlock(
+    final Uint8List input,
+    final int inOff,
+    final Uint8List output,
+    final int outOff,
+  ) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName engine not initialised');
     }
@@ -733,7 +738,10 @@ class DESEngine extends BaseCipher {
   @override
   void reset() {}
 
-  List<int> generateWorkingKey(final bool forEncryption, final Uint8List key) {
+  List<int> generateWorkingKey(
+    final bool forEncryption,
+    final Uint8List key,
+  ) {
     final newKey = List<int>.generate(32, (_) => 0, growable: false);
     final pc1m = List<bool>.generate(56, (_) => false, growable: false);
     final pcr = List<bool>.generate(56, (_) => false, growable: false);

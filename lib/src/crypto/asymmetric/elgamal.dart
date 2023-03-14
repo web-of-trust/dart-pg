@@ -153,7 +153,11 @@ class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
   final ElGamalPublicKey publicKey;
 
   ElGamalPrivateKey(this.x, super.prime, super.generator)
-      : publicKey = ElGamalPublicKey(generator.modPow(x, prime), prime, generator);
+      : publicKey = ElGamalPublicKey(
+          generator.modPow(x, prime),
+          prime,
+          generator,
+        );
 
   BigInt get y => publicKey.y;
 }
@@ -202,9 +206,16 @@ class ElGamalKeyGenerator implements KeyGenerator {
     final params = _params.generateParameters(_random);
     final prime = params['prime']!;
     final generator = params['generator']!;
-    final privateKey = ElGamalPrivateKey(_generateSecretExponent(_params.size, prime), prime, generator);
+    final privateKey = ElGamalPrivateKey(
+      _generateSecretExponent(_params.size, prime),
+      prime,
+      generator,
+    );
 
-    return AsymmetricKeyPair<PublicKey, PrivateKey>(privateKey.publicKey, privateKey);
+    return AsymmetricKeyPair<PublicKey, PrivateKey>(
+      privateKey.publicKey,
+      privateKey,
+    );
   }
 
   @override

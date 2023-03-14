@@ -7,15 +7,30 @@ import 'dart:typed_data';
 import 'package:fixnum/fixnum.dart';
 
 extension IntExt on int {
-  Uint8List pack16([Endian endian = Endian.big]) => Uint8List(2)..buffer.asByteData().setInt16(0, this, endian);
+  Uint8List pack16([Endian endian = Endian.big]) => Uint8List(2)
+    ..buffer.asByteData().setInt16(
+          0,
+          this,
+          endian,
+        );
 
   Uint8List pack16Le() => pack16(Endian.little);
 
-  Uint8List pack32([Endian endian = Endian.big]) => Uint8List(4)..buffer.asByteData().setInt32(0, this, endian);
+  Uint8List pack32([Endian endian = Endian.big]) => Uint8List(4)
+    ..buffer.asByteData().setInt32(
+          0,
+          this,
+          endian,
+        );
 
   Uint8List pack32Le() => pack32(Endian.little);
 
-  Uint8List pack64([Endian endian = Endian.big]) => Uint8List(8)..buffer.asByteData().setInt64(0, this, endian);
+  Uint8List pack64([Endian endian = Endian.big]) => Uint8List(8)
+    ..buffer.asByteData().setInt64(
+          0,
+          this,
+          endian,
+        );
 
   Uint8List pack64Le() => pack64(Endian.little);
 

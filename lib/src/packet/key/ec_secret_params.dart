@@ -21,7 +21,10 @@ class ECSecretParams extends KeyParams {
   factory ECSecretParams.fromByteData(final Uint8List bytes) => ECSecretParams(Helper.readMPI(bytes));
 
   @override
-  Uint8List encode() => Uint8List.fromList([...d.bitLength.pack16(), ...d.toUnsignedBytes()]);
+  Uint8List encode() => Uint8List.fromList([
+        ...d.bitLength.pack16(),
+        ...d.toUnsignedBytes(),
+      ]);
 
   Uint8List sign(
     final ECPublicParams publicParams,

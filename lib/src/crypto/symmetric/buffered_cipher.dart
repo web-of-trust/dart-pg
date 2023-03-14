@@ -46,7 +46,13 @@ class BufferedCipher {
   }
 
   /// process an array of bytes, producing output if necessary.
-  int processBytes(Uint8List input, int inOff, int length, Uint8List output, int outOff) {
+  int processBytes(
+    Uint8List input,
+    int inOff,
+    int length,
+    Uint8List output,
+    int outOff,
+  ) {
     if (length < 1) {
       if (length < 0) {
         throw ArgumentError("Can't have a negative input length!");
@@ -63,26 +69,49 @@ class BufferedCipher {
     var resultLen = 0;
     final gapLen = _buffer.length - _bufOff;
     if (length > gapLen) {
-      _buffer.setRange(_bufOff, _bufOff + gapLen, input.sublist(inOff, inOff + gapLen));
-      resultLen += _underlyingCipher.processBlock(_buffer, 0, output, outOff);
+      _buffer.setRange(
+        _bufOff,
+        _bufOff + gapLen,
+        input.sublist(inOff, inOff + gapLen),
+      );
+      resultLen += _underlyingCipher.processBlock(
+        _buffer,
+        0,
+        output,
+        outOff,
+      );
 
       _bufOff = 0;
       length -= gapLen;
       inOff += gapLen;
 
       while (length > _buffer.length) {
-        resultLen += _underlyingCipher.processBlock(input, inOff, output, outOff + resultLen);
+        resultLen += _underlyingCipher.processBlock(
+          input,
+          inOff,
+          output,
+          outOff + resultLen,
+        );
 
         length -= blockSize;
         inOff += blockSize;
       }
     }
 
-    _buffer.setRange(_bufOff, _bufOff + length, input.sublist(inOff, inOff + length));
+    _buffer.setRange(
+      _bufOff,
+      _bufOff + length,
+      input.sublist(inOff, inOff + length),
+    );
     _bufOff += length;
 
     if (_bufOff == _buffer.length) {
-      resultLen += _underlyingCipher.processBlock(_buffer, 0, output, outOff + resultLen);
+      resultLen += _underlyingCipher.processBlock(
+        _buffer,
+        0,
+        output,
+        outOff + resultLen,
+      );
       _bufOff = 0;
     }
 
@@ -100,7 +129,11 @@ class BufferedCipher {
       _underlyingCipher.processBlock(_buffer, 0, _buffer, 0);
       resultLen = _bufOff;
       _bufOff = 0;
-      output.setRange(outOff, outOff + resultLen, _buffer.sublist(0, resultLen));
+      output.setRange(
+        outOff,
+        outOff + resultLen,
+        _buffer.sublist(0, resultLen),
+      );
     }
 
     reset();

@@ -2124,7 +2124,12 @@ class CAST5Engine extends BaseCipher {
   }
 
   @override
-  int processBlock(final Uint8List input, final int inOff, final Uint8List output, final int outOff) {
+  int processBlock(
+    final Uint8List input,
+    final int inOff,
+    final Uint8List output,
+    final int outOff,
+  ) {
     if (_workingKey.isEmpty) {
       throw StateError('$algorithmName not initialised');
     }
@@ -2290,7 +2295,12 @@ class CAST5Engine extends BaseCipher {
     _rotating[16] = (_sBox5[x[0xe]] ^ _sBox6[x[0xf]] ^ _sBox7[x[0x1]] ^ _sBox8[x[0x0]] ^ _sBox8[x[0xd]]) & 0x1f;
   }
 
-  int _encryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
+  int _encryptBlock(
+    final Uint8List src,
+    final int srcIndex,
+    final Uint8List dst,
+    final int dstIndex,
+  ) {
     final result = List.filled(2, 0);
 
     final l0 = _bytesTo32bits(src, srcIndex);
@@ -2307,7 +2317,12 @@ class CAST5Engine extends BaseCipher {
     return _blockSize;
   }
 
-  int _decryptBlock(final Uint8List src, final int srcIndex, final Uint8List dst, final int dstIndex) {
+  int _decryptBlock(
+    final Uint8List src,
+    final int srcIndex,
+    final Uint8List dst,
+    final int dstIndex,
+  ) {
     final result = List.filled(2, 0);
 
     final l16 = _bytesTo32bits(src, srcIndex);

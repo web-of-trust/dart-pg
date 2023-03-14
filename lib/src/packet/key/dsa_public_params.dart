@@ -28,8 +28,17 @@ class DSAPublicParams extends KeyParams {
 
   final DSAPublicKey publicKey;
 
-  DSAPublicParams(this.prime, this.order, this.generator, this.publicExponent)
-      : publicKey = DSAPublicKey(publicExponent, prime, order, generator);
+  DSAPublicParams(
+    this.prime,
+    this.order,
+    this.generator,
+    this.publicExponent,
+  ) : publicKey = DSAPublicKey(
+          publicExponent,
+          prime,
+          order,
+          generator,
+        );
 
   factory DSAPublicParams.fromByteData(final Uint8List bytes) {
     final primeP = Helper.readMPI(bytes);
@@ -43,7 +52,12 @@ class DSAPublicParams extends KeyParams {
     pos += groupGenerator.byteLength + 2;
     final publicExponent = Helper.readMPI(bytes.sublist(pos));
 
-    return DSAPublicParams(primeP, groupOrder, groupGenerator, publicExponent);
+    return DSAPublicParams(
+      primeP,
+      groupOrder,
+      groupGenerator,
+      publicExponent,
+    );
   }
 
   @override
