@@ -6,7 +6,6 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/pointycastle.dart';
 
-import '../../crypto/ecc/curve25519.dart';
 import '../../crypto/math/big_int.dart';
 import '../../crypto/math/int_ext.dart';
 import '../../enum/curve_info.dart';
@@ -33,12 +32,11 @@ abstract class ECPublicParams extends KeyParams {
   static ECPublicKey _publicKeyFromOid(final ASN1ObjectIdentifier oid, final BigInt q) {
     final curve = CurveInfo.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
     switch (curve) {
+      case CurveInfo.curve25519:
       case CurveInfo.ed25519:
         throw UnsupportedError('Curve ${curve.name} is unsupported.');
       default:
-        final parameters = (curve == CurveInfo.curve25519)
-            ? Curve25519DomainParameters()
-            : ECDomainParameters(curve.name.toLowerCase());
+        final parameters = ECDomainParameters(curve.name.toLowerCase());
         return ECPublicKey(parameters.curve.decodePoint(q.toUnsignedBytes()), parameters);
     }
   }
