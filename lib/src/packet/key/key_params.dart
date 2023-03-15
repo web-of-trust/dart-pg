@@ -10,6 +10,8 @@ export 'ec_public_params.dart';
 export 'ec_secret_params.dart';
 export 'ecdh_public_params.dart';
 export 'ecdsa_public_params.dart';
+export 'ed_secret_params.dart';
+export 'eddsa_public_params.dart';
 export 'elgamal_public_params.dart';
 export 'elgamal_secret_params.dart';
 export 'rsa_public_params.dart';

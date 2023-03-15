@@ -305,6 +305,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       case KeyAlgorithm.ecdsa:
         keyParams = ECSecretParams.fromByteData(packetData);
         break;
+      case KeyAlgorithm.eddsa:
+        keyParams = EdSecretParams.fromByteData(packetData);
+        break;
       default:
         throw UnsupportedError('Unsupported public key algorithm encountered');
     }
