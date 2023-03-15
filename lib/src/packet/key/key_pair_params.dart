@@ -5,7 +5,6 @@
 import 'package:pointycastle/pointycastle.dart';
 
 import '../../crypto/asymmetric/elgamal.dart';
-import '../../crypto/ecc/curve25519.dart';
 import '../../crypto/math/byte_ext.dart';
 import '../../crypto/signer/dsa.dart';
 import '../../enum/curve_info.dart';
@@ -180,16 +179,14 @@ class KeyPairParams {
     final CurveInfo curve = CurveInfo.secp521r1,
   ]) {
     switch (curve) {
+      case CurveInfo.curve25519:
       case CurveInfo.ed25519:
         throw UnsupportedError('Curve ${curve.name} is unsupported for key generation.');
       default:
-        final parameters = (curve == CurveInfo.curve25519)
-            ? Curve25519DomainParameters()
-            : ECDomainParameters(curve.name.toLowerCase());
         final keyGen = KeyGenerator('EC')
           ..init(
             ParametersWithRandom(
-              ECKeyGeneratorParameters(parameters),
+              ECKeyGeneratorParameters(ECDomainParameters(curve.name.toLowerCase())),
               Helper.secureRandom(),
             ),
           );

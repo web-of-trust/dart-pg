@@ -11,14 +11,8 @@ import '../../crypto/math/byte_ext.dart';
 /// Implementation of RFC 3394 AES Key Wrap & Key Unwrap funcions
 class AesKeyWrapper {
   static final _iv = Uint8List.fromList([
-    0xa6,
-    0xa6,
-    0xa6,
-    0xa6,
-    0xa6,
-    0xa6,
-    0xa6,
-    0xa6,
+    0xa6, 0xa6, 0xa6, 0xa6, // 0 - 3
+    0xa6, 0xa6, 0xa6, 0xa6
   ]);
 
   static final _aes = BlockCipher('AES/ECB');
