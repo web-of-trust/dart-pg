@@ -13,15 +13,15 @@ void main() {
             Helper.secureRandom(),
           ),
         );
-      final kp1 = keyGen.generateKeyPair();
-      final kp2 = keyGen.generateKeyPair();
+      final bobKP = keyGen.generateKeyPair();
+      final aliceKP = keyGen.generateKeyPair();
 
-      final e1 = ECDHBasicAgreement()..init(kp1.privateKey as ECPrivateKey);
-      final e2 = ECDHBasicAgreement()..init(kp2.privateKey as ECPrivateKey);
+      final bobKA = ECDHBasicAgreement()..init(bobKP.privateKey as ECPrivateKey);
+      final aliceKA = ECDHBasicAgreement()..init(aliceKP.privateKey as ECPrivateKey);
 
-      final sk1 = e1.calculateAgreement(kp2.publicKey as ECPublicKey);
-      final sk2 = e2.calculateAgreement(kp1.publicKey as ECPublicKey);
-      expect(sk1.compareTo(sk2), 0, reason: 'calculated agreement test failed');
+      final aliceShared = bobKA.calculateAgreement(aliceKP.publicKey as ECPublicKey);
+      final bobShared = aliceKA.calculateAgreement(bobKP.publicKey as ECPublicKey);
+      expect(aliceShared, bobShared, reason: 'Failed asserting that Alice and Bob share the same BigInteger.');
     });
   });
 }

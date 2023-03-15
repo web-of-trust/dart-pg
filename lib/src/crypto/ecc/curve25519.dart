@@ -14,6 +14,7 @@ class Curve25519DomainParameters extends ECDomainParametersImpl {
       BigInt.parse('2aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa984914a144', radix: 16),
       BigInt.parse('7b425ed097b425ed097b425ed097b425ed097b425ed097b4260b5e9c7710c864', radix: 16),
     );
+
     final g = curve.decodePoint(
       '042aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaad245a20ae19a1b8a086b4e01edd2c7748d14c923d4d7e6d7c61b229e9c5a27eced3d9'
           .hexToBytes(),
