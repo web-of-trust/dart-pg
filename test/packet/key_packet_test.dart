@@ -10,6 +10,8 @@ import 'package:dart_pg/src/packet/key/dsa_secret_params.dart';
 import 'package:dart_pg/src/packet/key/ec_secret_params.dart';
 import 'package:dart_pg/src/packet/key/ecdh_public_params.dart';
 import 'package:dart_pg/src/packet/key/ecdsa_public_params.dart';
+import 'package:dart_pg/src/packet/key/ed_secret_params.dart';
+import 'package:dart_pg/src/packet/key/eddsa_public_params.dart';
 import 'package:dart_pg/src/packet/key/elgamal_public_params.dart';
 import 'package:dart_pg/src/packet/key/elgamal_secret_params.dart';
 import 'package:dart_pg/src/packet/key/rsa_public_params.dart';
@@ -57,6 +59,18 @@ void main() {
       final publicSubkey = PublicSubkeyPacket.fromByteData(
           base64.decode(ecdhPublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
       expect(publicSubkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
+      expect(publicSubkey.algorithm, KeyAlgorithm.ecdh);
+    });
+
+    test('curve25519 test', () {
+      final publicKey = PublicKeyPacket.fromByteData(
+          base64.decode(curve25519PublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      expect(publicKey.fingerprint, '67287cc6376746e683fd24675654e554d72fcf47');
+      expect(publicKey.algorithm, KeyAlgorithm.eddsa);
+
+      final publicSubkey = PublicSubkeyPacket.fromByteData(
+          base64.decode(curve25519PublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      expect(publicSubkey.fingerprint, '38460d0ea0f3da56ccf63e9d0a4e826effaf48a4');
       expect(publicSubkey.algorithm, KeyAlgorithm.ecdh);
     });
   });
@@ -128,6 +142,26 @@ void main() {
 
       final subkeyQPoint = publicParams.parameters.curve.decodePoint(subkeyPublicParams.q.toUnsignedBytes());
       expect(subkeyQPoint, subkeyPublicParams.parameters.G * subkeySecretParams.d);
+    });
+
+    test('curve25519 test', () {
+      final secretKey = SecretKeyPacket.fromByteData(
+          base64.decode(curve25519SecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      final secretParams = secretKey.decrypt(passphrase).secretParams;
+
+      expect(secretKey.fingerprint, '67287cc6376746e683fd24675654e554d72fcf47');
+      expect(secretKey.algorithm, KeyAlgorithm.eddsa);
+      expect(secretKey.publicKey.publicParams, isA<EdDSAPublicParams>());
+      expect(secretParams, isA<EdSecretParams>());
+
+      final secretSubkey = SecretSubkeyPacket.fromByteData(
+          base64.decode(curve25519SecretSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
+      final subkeySecretParams = secretSubkey.decrypt(passphrase).secretParams;
+
+      expect(secretSubkey.fingerprint, '38460d0ea0f3da56ccf63e9d0a4e826effaf48a4');
+      expect(secretSubkey.algorithm, KeyAlgorithm.ecdh);
+      expect(secretSubkey.publicKey.publicParams, isA<ECDHPublicParams>());
+      expect(subkeySecretParams, isA<ECSecretParams>());
     });
 
     test('encrypt test', (() {

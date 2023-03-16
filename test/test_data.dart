@@ -421,6 +421,14 @@ E+o2uUnj+GqFelOcwUZ7fja3Y2dsl1wBfiV99aDsKdzfjaTCAOzEjKftKlasiHmG
 -----END PGP PRIVATE KEY BLOCK-----
 ''';
 
+const curve25519PublicKeyPacket = '''
+BGPaCaoWCSsGAQQB2kcPAQEHQHKwCPnd4DNSVMyyreIK8mdXeYSL4ftctnT8HqyLvJUd
+''';
+
+const curve25519PublicSubkeyPacket = '''
+BGPaCaoSCisGAQQBl1UBBQEBB0C75cltt8fQBQ29kOTo1j/4NELxvDyiftR8uAWgsY8ycgMBCAc=
+''';
+
 const curve25519PublicKey = '''
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
@@ -435,6 +443,18 @@ GwwACgkQVlTlVNcvz0dKFwD/XoNSHoehWu373DzAiGodPtFgCnh1Zu+daJOS/CUo
 fjwA/R6+n8bBdnWpWW5eTpuJv8/VP5avUVf5dj0llCyLzWoL
 =ApRX
 -----END PGP PUBLIC KEY BLOCK-----
+''';
+
+const curve25519SecretKeyPacket = '''
+BGPaCaoWCSsGAQQB2kcPAQEHQHKwCPnd4DNSVMyyreIK8mdXeYSL4ftctnT8HqyLvJUd/gcDAhky
+iNQzaq4l/8e4wZnyha5lUs804vMECQ0WLakYmDx/KJ2No/H/PXHZBNwhA9yoOpFHvzojgj5vob/K
+T4aLEoXiFr4h5ElYRvoB322qoiU=
+''';
+
+const curve25519SecretSubkeyPacket = '''
+BGPaCaoSCisGAQQBl1UBBQEBB0C75cltt8fQBQ29kOTo1j/4NELxvDyiftR8uAWgsY8ycgMBCAf+
+BwMC9SNt+Vthssv/5XaZE5a6HaeTC9nYCrJEAtQTJdqwe9dKkb69D+OM641M2vduimckQBCWZKoq
+2dvc11YWlXwkvwMZGsdiHtZV9UL01t5GVA==
 ''';
 
 const curve25519PrivateKey = '''
