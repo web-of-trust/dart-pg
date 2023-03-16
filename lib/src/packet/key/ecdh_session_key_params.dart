@@ -60,7 +60,6 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     /// Generate the ephemeral key
     switch (publicParams.curve) {
       case CurveInfo.curve25519:
-      case CurveInfo.ed25519:
         final privateKey = nacl.PrivateKey.fromSeed(
           Helper.secureRandom().nextBytes(TweetNaCl.seedSize),
         );
@@ -71,6 +70,8 @@ class ECDHSessionKeyParams extends SessionKeyParams {
           publicParams.q.toUnsignedBytes().sublist(1),
         );
         break;
+      case CurveInfo.ed25519:
+        throw UnsupportedError('Curve ${publicParams.curve.name} is unsupported for ephemeral key generation.');
       default:
         final parameters = publicParams.parameters;
         final keyGen = KeyGenerator('EC')
@@ -125,18 +126,25 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     final Uint8List sharedKey;
     switch (publicParams.curve) {
       case CurveInfo.curve25519:
-      case CurveInfo.ed25519:
         sharedKey = TweetNaCl.crypto_scalarmult(
           Uint8List(TweetNaCl.sharedKeyLength),
           privateKey.d!.toUnsignedBytes(),
           publicParams.q.toUnsignedBytes().sublist(1),
         );
         break;
+      case CurveInfo.ed25519:
+        throw UnsupportedError('Curve ${publicParams.curve.name} is unsupported for key agreement calculation.');
       default:
-        final point = privateKey.parameters!.curve.decodePoint(ephemeralKey.toUnsignedBytes());
-        final publicKey = ECPublicKey(point, privateKey.parameters);
+        final parameters = publicParams.parameters;
         final agreement = ECDHBasicAgreement()..init(privateKey);
-        sharedKey = agreement.calculateAgreement(publicKey).toUnsignedBytes();
+        sharedKey = agreement
+            .calculateAgreement(
+              ECPublicKey(
+                parameters.curve.decodePoint(ephemeralKey.toUnsignedBytes()),
+                parameters,
+              ),
+            )
+            .toUnsignedBytes();
     }
 
     final param = _buildEcdhParam(publicParams, fingerprint);
