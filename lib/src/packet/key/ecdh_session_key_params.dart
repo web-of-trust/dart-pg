@@ -4,7 +4,10 @@
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/enum/curve_info.dart';
+import 'package:pinenacl/tweetnacl.dart';
 import 'package:pointycastle/export.dart';
+import 'package:pinenacl/api.dart' as nacl;
 
 import '../../crypto/math/big_int.dart';
 import '../../crypto/math/byte_ext.dart';
@@ -51,22 +54,43 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     final SessionKey sessionKey,
     final Uint8List fingerprint,
   ) {
-    /// Generate the ephemeral key pair
-    final parameters = publicParams.parameters;
-    final keyGen = KeyGenerator('EC')
-      ..init(
-        ParametersWithRandom(
-          ECKeyGeneratorParameters(parameters),
-          Helper.secureRandom(),
-        ),
-      );
-    final keyPair = keyGen.generateKeyPair();
-    final agreement = ECDHBasicAgreement()..init(keyPair.privateKey as ECPrivateKey);
-    final sharedKey = agreement.calculateAgreement(ECPublicKey(
-      parameters.curve.decodePoint(publicParams.q.toUnsignedBytes()),
-      parameters,
-    ));
-    final publicKey = keyPair.publicKey as ECPublicKey;
+    final BigInt ephemeralKey;
+    final Uint8List sharedKey;
+
+    /// Generate the ephemeral key
+    switch (publicParams.curve) {
+      case CurveInfo.curve25519:
+      case CurveInfo.ed25519:
+        final privateKey = nacl.PrivateKey.fromSeed(
+          Helper.secureRandom().nextBytes(TweetNaCl.seedSize),
+        );
+        ephemeralKey = privateKey.publicKey.asTypedList.toBigIntWithSign(1);
+        sharedKey = TweetNaCl.crypto_scalarmult(
+          Uint8List(TweetNaCl.sharedKeyLength),
+          privateKey.asTypedList,
+          publicParams.q.toUnsignedBytes().sublist(1),
+        );
+        break;
+      default:
+        final parameters = publicParams.parameters;
+        final keyGen = KeyGenerator('EC')
+          ..init(
+            ParametersWithRandom(
+              ECKeyGeneratorParameters(parameters),
+              Helper.secureRandom(),
+            ),
+          );
+        final keyPair = keyGen.generateKeyPair();
+        final agreement = ECDHBasicAgreement()..init(keyPair.privateKey as ECPrivateKey);
+        sharedKey = agreement
+            .calculateAgreement(ECPublicKey(
+              parameters.curve.decodePoint(publicParams.q.toUnsignedBytes()),
+              parameters,
+            ))
+            .toUnsignedBytes();
+        final publicKey = keyPair.publicKey as ECPublicKey;
+        ephemeralKey = publicKey.Q!.getEncoded(false).toBigIntWithSign(1);
+    }
 
     final param = _buildEcdhParam(publicParams, fingerprint);
     final keySize = (publicParams.kdfSymmetric.keySize + 7) >> 3;
@@ -80,7 +104,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     );
 
     return ECDHSessionKeyParams(
-      publicKey.Q!.getEncoded(false).toBigIntWithSign(1),
+      ephemeralKey,
       wrappedKey,
     );
   }
@@ -98,10 +122,22 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     final ECDHPublicParams publicParams,
     final Uint8List fingerprint,
   ) {
-    final point = privateKey.parameters!.curve.decodePoint(ephemeralKey.toUnsignedBytes());
-    final publicKey = ECPublicKey(point, privateKey.parameters);
-    final agreement = ECDHBasicAgreement()..init(privateKey);
-    final sharedKey = agreement.calculateAgreement(publicKey);
+    final Uint8List sharedKey;
+    switch (publicParams.curve) {
+      case CurveInfo.curve25519:
+      case CurveInfo.ed25519:
+        sharedKey = TweetNaCl.crypto_scalarmult(
+          Uint8List(TweetNaCl.sharedKeyLength),
+          privateKey.d!.toUnsignedBytes(),
+          publicParams.q.toUnsignedBytes().sublist(1),
+        );
+        break;
+      default:
+        final point = privateKey.parameters!.curve.decodePoint(ephemeralKey.toUnsignedBytes());
+        final publicKey = ECPublicKey(point, privateKey.parameters);
+        final agreement = ECDHBasicAgreement()..init(privateKey);
+        sharedKey = agreement.calculateAgreement(publicKey).toUnsignedBytes();
+    }
 
     final param = _buildEcdhParam(publicParams, fingerprint);
     final keySize = (publicParams.kdfSymmetric.keySize + 7) >> 3;
@@ -116,7 +152,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
   /// Key Derivation Function (RFC 6637)
   static Uint8List _kdf(
     final HashAlgorithm hash,
-    final BigInt sharedKey,
+    final Uint8List sharedKey,
     final int keySize,
     final Uint8List param,
   ) =>
@@ -126,7 +162,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
           0,
           0,
           1,
-          ...sharedKey.toUnsignedBytes(),
+          ...sharedKey,
           ...param,
         ]),
         hash,
