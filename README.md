@@ -10,7 +10,7 @@ parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-r
 * Support public-key algorithms: [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)),
   [DSA](https://en.wikipedia.org/wiki/Digital_Signature_Algorithm),
   [ElGamal](https://en.wikipedia.org/wiki/ElGamal_encryption),
-  [ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm)
+  [ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm),
   [EdDSA](https://en.wikipedia.org/wiki/EdDSA)
   and [ECDH](https://en.wikipedia.org/wiki/Elliptic-curve_Diffie%E2%80%93Hellman).
 * Support symmetric ciphers: 3DES, IDEA (for backward compatibility), CAST5, Blowfish, Twofish,
