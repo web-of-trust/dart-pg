@@ -10,7 +10,7 @@ import '../enum/curve_info.dart';
 import '../enum/dh_key_size.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
-import '../enum/key_type.dart';
+import '../enum/key_generation_type.dart';
 import '../enum/packet_tag.dart';
 import '../enum/rsa_key_size.dart';
 import '../enum/s2k_type.dart';
@@ -65,7 +65,7 @@ class PrivateKey extends Key {
   factory PrivateKey.generate(
     final Iterable<String> userIDs,
     final String passphrase, {
-    final KeyType type = KeyType.rsa,
+    final KeyGenerationType type = KeyGenerationType.rsa,
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
@@ -80,23 +80,20 @@ class PrivateKey extends Key {
     final KeyAlgorithm keyAlgorithm;
     final KeyAlgorithm subkeyAlgorithm;
     switch (type) {
-      case KeyType.rsa:
+      case KeyGenerationType.rsa:
         keyAlgorithm = KeyAlgorithm.rsaEncryptSign;
         subkeyAlgorithm = KeyAlgorithm.rsaEncryptSign;
         break;
-      case KeyType.dsaElGamal:
+      case KeyGenerationType.dsa:
         keyAlgorithm = KeyAlgorithm.dsa;
         subkeyAlgorithm = KeyAlgorithm.elgamal;
         break;
-      case KeyType.ellipticCurve:
-        switch (curve) {
-          case CurveInfo.curve25519:
-          case CurveInfo.ed25519:
-            keyAlgorithm = KeyAlgorithm.eddsa;
-            break;
-          default:
-            keyAlgorithm = KeyAlgorithm.ecdsa;
-        }
+      case KeyGenerationType.ecdsa:
+        keyAlgorithm = KeyAlgorithm.ecdsa;
+        subkeyAlgorithm = KeyAlgorithm.ecdh;
+        break;
+      case KeyGenerationType.eddsa:
+        keyAlgorithm = KeyAlgorithm.eddsa;
         subkeyAlgorithm = KeyAlgorithm.ecdh;
         break;
     }
@@ -105,14 +102,14 @@ class PrivateKey extends Key {
       keyAlgorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
-      curve: (curve == CurveInfo.curve25519 || curve == CurveInfo.ed25519) ? CurveInfo.ed25519 : curve,
+      curve: (keyAlgorithm == KeyAlgorithm.eddsa) ? CurveInfo.ed25519 : curve,
       date: date,
     ).encrypt(passphrase);
     final secretSubkey = SecretSubkeyPacket.generate(
       subkeyAlgorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
-      curve: (curve == CurveInfo.curve25519 || curve == CurveInfo.ed25519) ? CurveInfo.curve25519 : curve,
+      curve: (keyAlgorithm == KeyAlgorithm.eddsa) ? CurveInfo.curve25519 : curve,
       date: date,
     ).encrypt(subkeyPassphrase ?? passphrase);
 

@@ -1,7 +1,7 @@
 import 'package:dart_pg/src/crypto/math/big_int.dart';
 import 'package:dart_pg/src/enum/curve_info.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
-import 'package:dart_pg/src/enum/key_type.dart';
+import 'package:dart_pg/src/enum/key_generation_type.dart';
 import 'package:dart_pg/src/packet/key/key_params.dart';
 import 'package:dart_pg/src/type/key.dart';
 import 'package:faker/faker.dart';
@@ -165,7 +165,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.rsa,
+        type: KeyGenerationType.rsa,
       );
       expect(privateKey.algorithm, KeyAlgorithm.rsaEncryptSign);
       expect(privateKey.isPrivate, true);
@@ -190,7 +190,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.dsaElGamal,
+        type: KeyGenerationType.dsa,
       );
       expect(privateKey.algorithm, KeyAlgorithm.dsa);
       expect(privateKey.isPrivate, true);
@@ -215,7 +215,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ellipticCurve,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.prime256v1,
       );
 
@@ -251,7 +251,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ellipticCurve,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.secp256k1,
       );
 
@@ -287,7 +287,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ellipticCurve,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.secp384r1,
       );
 
@@ -319,7 +319,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ellipticCurve,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.secp521r1,
       );
 
@@ -351,7 +351,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ellipticCurve,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.brainpoolp256r1,
       );
 
@@ -383,7 +383,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ellipticCurve,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.brainpoolp384r1,
       );
 
@@ -415,7 +415,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ellipticCurve,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.brainpoolp512r1,
       );
 
@@ -447,40 +447,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyType.ellipticCurve,
-        curve: CurveInfo.curve25519,
-      );
-
-      expect(privateKey.algorithm, KeyAlgorithm.eddsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 255);
-
-      final publicParams = privateKey.keyPacket.publicParams as EdDSAPublicParams;
-      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.ed25519.identifierString);
-
-      final user = privateKey.users[0];
-      expect(user.userID!.name, name);
-      expect(user.userID!.email, email);
-      expect(user.userID!.comment, comment);
-      expect(user.verify(), isTrue);
-
-      final subkey = privateKey.subkeys[0];
-      expect(subkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkey.verify(), isTrue);
-      expect(subkey.keyStrength, 255);
-
-      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.curve25519.identifierString);
-      expect(subkeyPublicParams.kdfHash, CurveInfo.curve25519.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.curve25519.symmetricAlgorithm);
-    });
-
-    test('ed25519', () {
-      final privateKey = PrivateKey.generate(
-        [userID],
-        passphrase,
-        type: KeyType.ellipticCurve,
-        curve: CurveInfo.ed25519,
+        type: KeyGenerationType.eddsa,
       );
 
       expect(privateKey.algorithm, KeyAlgorithm.eddsa);
