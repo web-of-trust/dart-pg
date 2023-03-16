@@ -444,24 +444,67 @@ void main() {
     });
 
     test('curve25519', () {
-      // expect(
-      //   () => PrivateKey.generate(
-      //     [userID],
-      //     passphrase,
-      //     type: KeyType.ellipticCurve,
-      //     curve: CurveInfo.curve25519,
-      //   ),
-      //   throwsUnsupportedError,
-      // );
-      // expect(
-      //   () => PrivateKey.generate(
-      //     [userID],
-      //     passphrase,
-      //     type: KeyType.ellipticCurve,
-      //     curve: CurveInfo.ed25519,
-      //   ),
-      //   throwsUnsupportedError,
-      // );
+      final privateKey = PrivateKey.generate(
+        [userID],
+        passphrase,
+        type: KeyType.ellipticCurve,
+        curve: CurveInfo.curve25519,
+      );
+
+      expect(privateKey.algorithm, KeyAlgorithm.eddsa);
+      expect(privateKey.isPrivate, true);
+      expect(privateKey.keyStrength, 255);
+
+      final publicParams = privateKey.keyPacket.publicParams as EdDSAPublicParams;
+      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.ed25519.identifierString);
+
+      final user = privateKey.users[0];
+      expect(user.userID!.name, name);
+      expect(user.userID!.email, email);
+      expect(user.userID!.comment, comment);
+      expect(user.verify(), isTrue);
+
+      final subkey = privateKey.subkeys[0];
+      expect(subkey.algorithm, KeyAlgorithm.ecdh);
+      expect(subkey.verify(), isTrue);
+      expect(subkey.keyStrength, 255);
+
+      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.curve25519.identifierString);
+      expect(subkeyPublicParams.kdfHash, CurveInfo.curve25519.hashAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.curve25519.symmetricAlgorithm);
+    });
+
+    test('ed25519', () {
+      final privateKey = PrivateKey.generate(
+        [userID],
+        passphrase,
+        type: KeyType.ellipticCurve,
+        curve: CurveInfo.ed25519,
+      );
+
+      expect(privateKey.algorithm, KeyAlgorithm.eddsa);
+      expect(privateKey.isPrivate, true);
+      expect(privateKey.keyStrength, 255);
+
+      final publicParams = privateKey.keyPacket.publicParams as EdDSAPublicParams;
+      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.ed25519.identifierString);
+
+      final user = privateKey.users[0];
+      expect(user.userID!.name, name);
+      expect(user.userID!.email, email);
+      expect(user.userID!.comment, comment);
+      expect(user.verify(), isTrue);
+
+      final subkey = privateKey.subkeys[0];
+      expect(subkey.algorithm, KeyAlgorithm.ecdh);
+      expect(subkey.verify(), isTrue);
+      expect(subkey.keyStrength, 255);
+
+      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.curve25519.identifierString);
+      expect(subkeyPublicParams.kdfHash, CurveInfo.curve25519.hashAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.curve25519.symmetricAlgorithm);
     });
   });
 }

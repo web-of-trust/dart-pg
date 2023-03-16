@@ -139,6 +139,7 @@ void main() {
       PublicKey.fromArmored(rsaPublicKey),
       PublicKey.fromArmored(dsaPublicKey),
       PublicKey.fromArmored(eccPublicKey),
+      PublicKey.fromArmored(curve25519PublicKey),
     ];
     final password = faker.randomGenerator.string(100);
 
@@ -226,6 +227,26 @@ void main() {
 
     test('ecc decrypt test', () {
       final decryptionKey = PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
+      final decryptedMessage = encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      expect(decryptedMessage.literalData, isNotNull);
+      expect(decryptedMessage.literalData!.text, text);
+
+      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final signaturePackets = signedMessage.signaturePackets;
+      expect(verifiedMessage.verifications.isNotEmpty, isTrue);
+      for (final verification in verifiedMessage.verifications) {
+        expect(verification.keyID, verificationKey.keyID.id);
+        expect(verification.verified, isTrue);
+
+        expect(
+          signaturePackets.elementAt(0).signatureData,
+          equals(verification.signature.packets.elementAt(0).signatureData),
+        );
+      }
+    });
+
+    test('curve25519 decrypt test', () {
+      final decryptionKey = PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
       final decryptedMessage = encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
