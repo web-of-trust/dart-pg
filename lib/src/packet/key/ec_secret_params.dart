@@ -27,7 +27,7 @@ class ECSecretParams extends KeyParams {
       ]);
 
   Uint8List sign(
-    final ECPublicParams publicParams,
+    final ECDomainParameters parameters,
     final Uint8List message,
     final HashAlgorithm hash,
   ) {
@@ -37,7 +37,7 @@ class ECSecretParams extends KeyParams {
         PrivateKeyParameter<ECPrivateKey>(
           ECPrivateKey(
             d,
-            publicParams.parameters,
+            parameters,
           ),
         ),
       );

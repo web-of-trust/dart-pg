@@ -469,7 +469,6 @@ class SignaturePacket extends ContainedPacket {
 
     switch (keyAlgorithm) {
       case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
         return (verifyKey.publicParams as RSAPublicParams).verify(message, hashAlgorithm, signature);
       case KeyAlgorithm.dsa:
@@ -477,9 +476,9 @@ class SignaturePacket extends ContainedPacket {
       case KeyAlgorithm.ecdsa:
         return (verifyKey.publicParams as ECDSAPublicParams).verify(message, hashAlgorithm, signature);
       case KeyAlgorithm.eddsa:
-        throw UnsupportedError('Unsupported public key algorithm for verification.');
+        return (verifyKey.publicParams as EdDSAPublicParams).verify(message, hashAlgorithm, signature);
       default:
-        throw StateError('Unknown public key algorithm for verification.');
+        throw UnsupportedError('Unsupported public key algorithm for verification.');
     }
   }
 
@@ -536,7 +535,6 @@ class SignaturePacket extends ContainedPacket {
     final Uint8List signature;
     switch (key.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
         signature = (key.secretParams as RSASecretParams).sign(message, hash);
         break;
@@ -544,12 +542,17 @@ class SignaturePacket extends ContainedPacket {
         signature = (key.secretParams as DSASecretParams).sign(key.publicParams as DSAPublicParams, message, hash);
         break;
       case KeyAlgorithm.ecdsa:
-        signature = (key.secretParams as ECSecretParams).sign(key.publicParams as ECPublicParams, message, hash);
+        signature = (key.secretParams as ECSecretParams).sign(
+          (key.publicParams as ECPublicParams).parameters,
+          message,
+          hash,
+        );
         break;
       case KeyAlgorithm.eddsa:
-        throw UnsupportedError('Unsupported public key algorithm for signing.');
+        signature = (key.secretParams as EdSecretParams).sign(message, hash);
+        break;
       default:
-        throw StateError('Unknown public key algorithm for signing.');
+        throw UnsupportedError('Unsupported public key algorithm for signing.');
     }
     return signature;
   }

@@ -61,6 +61,23 @@ void main() {
       expect(subkey.algorithm, KeyAlgorithm.ecdh);
       expect(subkey.verify(), isTrue);
     });
+
+    test('curve25519 test', () {
+      final publicKey = PublicKey.fromArmored(curve25519PublicKey);
+      expect(publicKey.fingerprint, '67287cc6376746e683fd24675654e554d72fcf47');
+      expect(publicKey.algorithm, KeyAlgorithm.eddsa);
+      expect(publicKey.isPrivate, false);
+
+      final user = publicKey.users[0];
+      expect(user.userID!.name, 'curve 25519 pgp key');
+      expect(user.userID!.email, 'test@dummy.com');
+      expect(user.verify(), isTrue);
+
+      final subkey = publicKey.subkeys[0];
+      expect(subkey.fingerprint, '38460d0ea0f3da56ccf63e9d0a4e826effaf48a4');
+      expect(subkey.algorithm, KeyAlgorithm.ecdh);
+      expect(subkey.verify(), isTrue);
+    });
   });
 
   group('Read private key', () {

@@ -9,6 +9,7 @@ environment:
 dependencies:
   crypto: ^3.0.2
   fixnum: ^1.1.0
+  pinenacl: ^0.5.1
   pointycastle: ^3.6.2
 
 dev_dependencies:
