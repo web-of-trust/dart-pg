@@ -128,12 +128,14 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       case CurveInfo.curve25519:
         sharedKey = TweetNaCl.crypto_scalarmult(
           Uint8List(TweetNaCl.sharedKeyLength),
-          privateKey.d!.toUnsignedBytes(),
+          Uint8List.fromList(privateKey.d!.toUnsignedBytes().reversed.toList()),
           ephemeralKey.toUnsignedBytes(),
         );
         break;
       case CurveInfo.ed25519:
-        throw UnsupportedError('Curve ${publicParams.curve.name} is unsupported for key agreement calculation.');
+        throw UnsupportedError(
+          'Curve ${publicParams.curve.name} is unsupported for key agreement calculation.',
+        );
       default:
         final parameters = publicParams.parameters;
         final agreement = ECDHBasicAgreement()..init(privateKey);

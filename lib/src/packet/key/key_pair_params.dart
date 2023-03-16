@@ -227,12 +227,14 @@ class KeyPairParams {
         CurveInfo.curve25519.asn1Oid,
         Uint8List.fromList([
           0x40,
-          ...privateKey.asTypedList,
+          ...privateKey.publicKey.asTypedList,
         ]).toBigIntWithSign(1),
         CurveInfo.curve25519.hashAlgorithm,
         CurveInfo.curve25519.symmetricAlgorithm,
       ),
-      ECSecretParams(privateKey.asTypedList.toBigIntWithSign(1)),
+      ECSecretParams(
+        Uint8List.fromList(privateKey.asTypedList.reversed.toList()).toBigIntWithSign(1),
+      ),
     );
   }
 }
