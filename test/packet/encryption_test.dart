@@ -127,8 +127,41 @@ void main() {
       final secretKey = SecretSubkeyPacket.fromByteData(
         base64.decode(ecdhSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
+      final publicKey = PublicSubkeyPacket.fromByteData(
+        base64.decode(ecdhPublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
+      );
 
-      final pkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(secretKey.publicKey);
+      final pkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(publicKey);
+      final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+        pkesk.sessionKey!.key,
+        packets,
+        symmetric: pkesk.sessionKey!.symmetric,
+      );
+
+      final encryptedList = PacketList([pkesk, seip]);
+      final packetList = PacketList.packetDecode(encryptedList.encode());
+
+      final decryptedPkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().elementAt(0).decrypt(secretKey);
+      expect(pkesk.sessionKey!.symmetric, equals(decryptedPkesk.sessionKey!.symmetric));
+      expect(pkesk.sessionKey!.key, equals(decryptedPkesk.sessionKey!.key));
+
+      final decryptedSeip = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().elementAt(0).decrypt(
+            decryptedPkesk.sessionKey!.key,
+            symmetric: decryptedPkesk.sessionKey!.symmetric,
+          );
+      final ldPacket = decryptedSeip.packets![0];
+      expect(ldPacket.toByteData(), equals(literalData.toByteData()));
+    });
+
+    test('curve25519 test', () {
+      final secretKey = SecretSubkeyPacket.fromByteData(
+        base64.decode(curve25519SecretSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
+      ).decrypt(passphrase);
+      final publicKey = PublicSubkeyPacket.fromByteData(
+        base64.decode(curve25519PublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
+      );
+
+      final pkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(publicKey);
       final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         pkesk.sessionKey!.key,
         packets,

@@ -129,7 +129,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
         sharedKey = TweetNaCl.crypto_scalarmult(
           Uint8List(TweetNaCl.sharedKeyLength),
           privateKey.d!.toUnsignedBytes(),
-          publicParams.q.toUnsignedBytes().sublist(1),
+          ephemeralKey.toUnsignedBytes(),
         );
         break;
       case CurveInfo.ed25519:
