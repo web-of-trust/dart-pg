@@ -2,6 +2,10 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:typed_data';
+
+import 'package:pinenacl/ed25519.dart' as nacl;
+import 'package:pinenacl/tweetnacl.dart';
 import 'package:pointycastle/pointycastle.dart';
 
 import '../../crypto/asymmetric/elgamal.dart';
@@ -37,18 +41,7 @@ class KeyPairParams {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        final keyPair = _generateRSAKeyPair(rsaKeySize);
-        return KeyPairParams(
-          RSAPublicParams(
-            keyPair.publicKey.modulus!,
-            keyPair.publicKey.publicExponent!,
-          ),
-          RSASecretParams(
-            keyPair.privateKey.privateExponent!,
-            keyPair.privateKey.p!,
-            keyPair.privateKey.q!,
-          ),
-        );
+        return _generateRSAKeyPair(rsaKeySize);
       case KeyAlgorithm.ecdsa:
         final keyPair = _generateECKeyPair(curve);
         final q = keyPair.publicKey.Q!;
@@ -60,42 +53,27 @@ class KeyPairParams {
           ECSecretParams(keyPair.privateKey.d!),
         );
       case KeyAlgorithm.ecdh:
-        final keyPair = _generateECKeyPair(curve);
-        final q = keyPair.publicKey.Q!;
-        return KeyPairParams(
-          ECDHPublicParams(
-            curve.asn1Oid,
-            q.getEncoded(q.isCompressed).toBigIntWithSign(1),
-            curve.hashAlgorithm,
-            curve.symmetricAlgorithm,
-          ),
-          ECSecretParams(keyPair.privateKey.d!),
-        );
+        if (curve == CurveInfo.curve25519) {
+          return _generateCurve25519KeyPair();
+        } else {
+          final keyPair = _generateECKeyPair(curve);
+          final q = keyPair.publicKey.Q!;
+          return KeyPairParams(
+            ECDHPublicParams(
+              curve.asn1Oid,
+              q.getEncoded(q.isCompressed).toBigIntWithSign(1),
+              curve.hashAlgorithm,
+              curve.symmetricAlgorithm,
+            ),
+            ECSecretParams(keyPair.privateKey.d!),
+          );
+        }
+      case KeyAlgorithm.eddsa:
+        return _generateEd25519KeyPair();
       case KeyAlgorithm.dsa:
-        final keyPair = _generateDSAKeyPair(dhKeySize);
-        return KeyPairParams(
-          DSAPublicParams(
-            keyPair.publicKey.prime,
-            keyPair.publicKey.order,
-            keyPair.publicKey.generator,
-            keyPair.publicKey.y,
-          ),
-          DSASecretParams(
-            keyPair.privateKey.x,
-          ),
-        );
+        return _generateDSAKeyPair(dhKeySize);
       case KeyAlgorithm.elgamal:
-        final keyPair = _generateElGamalKeyPair(dhKeySize);
-        return KeyPairParams(
-          ElGamalPublicParams(
-            keyPair.publicKey.prime,
-            keyPair.publicKey.generator,
-            keyPair.publicKey.y,
-          ),
-          ElGamalSecretParams(
-            keyPair.privateKey.x,
-          ),
-        );
+        return _generateElGamalKeyPair(dhKeySize);
       default:
         throw UnimplementedError('Unknown public key algorithm for key generation.');
     }
@@ -112,7 +90,7 @@ class KeyPairParams {
   @override
   int get hashCode => publicParams.hashCode ^ secretParams.hashCode;
 
-  static AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> _generateRSAKeyPair([
+  static KeyPairParams _generateRSAKeyPair([
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
   ]) {
     final keyGen = KeyGenerator('RSA')
@@ -127,13 +105,23 @@ class KeyPairParams {
         ),
       );
     final keyPair = keyGen.generateKeyPair();
-    return AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>(
-      keyPair.publicKey as RSAPublicKey,
-      keyPair.privateKey as RSAPrivateKey,
+    final publicKey = keyPair.publicKey as RSAPublicKey;
+    final privateKey = keyPair.privateKey as RSAPrivateKey;
+
+    return KeyPairParams(
+      RSAPublicParams(
+        publicKey.modulus!,
+        publicKey.publicExponent!,
+      ),
+      RSASecretParams(
+        privateKey.privateExponent!,
+        privateKey.p!,
+        privateKey.q!,
+      ),
     );
   }
 
-  static AsymmetricKeyPair<DSAPublicKey, DSAPrivateKey> _generateDSAKeyPair([
+  static KeyPairParams _generateDSAKeyPair([
     final DHKeySize keySize = DHKeySize.l2048n224,
   ]) {
     final keyGen = DSAKeyGenerator()
@@ -148,13 +136,22 @@ class KeyPairParams {
         ),
       );
     final keyPair = keyGen.generateKeyPair();
-    return AsymmetricKeyPair<DSAPublicKey, DSAPrivateKey>(
-      keyPair.publicKey as DSAPublicKey,
-      keyPair.privateKey as DSAPrivateKey,
+    final publicKey = keyPair.publicKey as DSAPublicKey;
+    final privateKey = keyPair.privateKey as DSAPrivateKey;
+    return KeyPairParams(
+      DSAPublicParams(
+        publicKey.prime,
+        publicKey.order,
+        publicKey.generator,
+        publicKey.y,
+      ),
+      DSASecretParams(
+        privateKey.x,
+      ),
     );
   }
 
-  static AsymmetricKeyPair<ElGamalPublicKey, ElGamalPrivateKey> _generateElGamalKeyPair([
+  static KeyPairParams _generateElGamalKeyPair([
     final DHKeySize keySize = DHKeySize.l2048n224,
   ]) {
     final keyGen = ElGamalKeyGenerator()
@@ -169,9 +166,18 @@ class KeyPairParams {
         ),
       );
     final keyPair = keyGen.generateKeyPair();
-    return AsymmetricKeyPair<ElGamalPublicKey, ElGamalPrivateKey>(
-      keyPair.publicKey as ElGamalPublicKey,
-      keyPair.privateKey as ElGamalPrivateKey,
+    final publicKey = keyPair.publicKey as ElGamalPublicKey;
+    final privateKey = keyPair.privateKey as ElGamalPrivateKey;
+
+    return KeyPairParams(
+      ElGamalPublicParams(
+        publicKey.prime,
+        publicKey.generator,
+        publicKey.y,
+      ),
+      ElGamalSecretParams(
+        privateKey.x,
+      ),
     );
   }
 
@@ -196,5 +202,37 @@ class KeyPairParams {
           keyPair.privateKey as ECPrivateKey,
         );
     }
+  }
+
+  static KeyPairParams _generateEd25519KeyPair() {
+    final seed = Helper.secureRandom().nextBytes(TweetNaCl.seedSize);
+    return KeyPairParams(
+      EdDSAPublicParams(
+        CurveInfo.ed25519.asn1Oid,
+        Uint8List.fromList([
+          0x40,
+          ...nacl.SigningKey.fromSeed(seed).verifyKey.asTypedList,
+        ]).toBigIntWithSign(1),
+      ),
+      EdSecretParams(seed.toBigIntWithSign(1)),
+    );
+  }
+
+  static KeyPairParams _generateCurve25519KeyPair() {
+    final privateKey = nacl.PrivateKey.fromSeed(
+      Helper.secureRandom().nextBytes(TweetNaCl.seedSize),
+    );
+    return KeyPairParams(
+      ECDHPublicParams(
+        CurveInfo.curve25519.asn1Oid,
+        Uint8List.fromList([
+          0x40,
+          ...privateKey.asTypedList,
+        ]).toBigIntWithSign(1),
+        CurveInfo.curve25519.hashAlgorithm,
+        CurveInfo.curve25519.symmetricAlgorithm,
+      ),
+      ECSecretParams(privateKey.asTypedList.toBigIntWithSign(1)),
+    );
   }
 }

@@ -4,14 +4,14 @@
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/enum/curve_info.dart';
+import 'package:pinenacl/api.dart' as nacl;
 import 'package:pinenacl/tweetnacl.dart';
 import 'package:pointycastle/export.dart';
-import 'package:pinenacl/api.dart' as nacl;
 
 import '../../crypto/math/big_int.dart';
 import '../../crypto/math/byte_ext.dart';
 import '../../crypto/math/int_ext.dart';
+import '../../enum/curve_info.dart';
 import '../../enum/hash_algorithm.dart';
 import '../../enum/key_algorithm.dart';
 import '../../helpers.dart';

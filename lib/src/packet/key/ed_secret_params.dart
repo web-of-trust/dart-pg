@@ -30,13 +30,12 @@ class EdSecretParams extends KeyParams {
   ) {
     final signingKey = SigningKey.fromSeed(seed.toUnsignedBytes());
     final signed = signingKey.sign(Helper.hashDigest(message, hash));
-    final r = signed.signature.asTypedList.sublist(0, 32);
-    final s = signed.signature.asTypedList.sublist(32);
+    final bitLength = 256.pack16();
     return Uint8List.fromList([
-      ...(r.lengthInBytes * 8).pack16(),
-      ...r,
-      ...(r.lengthInBytes * 8).pack16(),
-      ...s,
+      ...bitLength, // r bit length
+      ...signed.signature.sublist(0, 32), // r
+      ...bitLength, // s bit length
+      ...signed.signature.sublist(32), // s
     ]);
   }
 }
