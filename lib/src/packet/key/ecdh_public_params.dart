@@ -30,12 +30,7 @@ class ECDHPublicParams extends ECPublicParams {
   factory ECDHPublicParams.fromByteData(final Uint8List bytes) {
     var pos = 0;
     final length = bytes[pos++];
-    if (length == 0 || length == 0xFF) {
-      throw Exception('Future extensions not yet implemented');
-    }
-    if (length > 127) {
-      throw UnsupportedError('Unsupported OID');
-    }
+    ECPublicParams.validateOidLength(length);
 
     final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList([
       0x06,

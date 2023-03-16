@@ -17,22 +17,15 @@ class ECDSAPublicParams extends ECPublicParams {
   factory ECDSAPublicParams.fromByteData(final Uint8List bytes) {
     var pos = 0;
     final length = bytes[pos++];
-    if (length == 0 || length == 0xFF) {
-      throw UnimplementedError('Future extensions not yet implemented');
-    }
-    if (length > 127) {
-      throw UnsupportedError('Unsupported OID');
-    }
-
-    final oid = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList([
-      0x06,
-      length,
-      ...bytes.sublist(pos, pos + length),
-    ]));
-
-    pos += length;
-    final q = Helper.readMPI(bytes.sublist(pos));
-    return ECDSAPublicParams(oid, q);
+    ECPublicParams.validateOidLength(length);
+    return ECDSAPublicParams(
+      ASN1ObjectIdentifier.fromBytes(Uint8List.fromList([
+        0x06,
+        length,
+        ...bytes.sublist(pos, pos + length),
+      ])),
+      Helper.readMPI(bytes.sublist(pos + length)),
+    );
   }
 
   bool verify(

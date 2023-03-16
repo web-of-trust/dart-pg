@@ -31,4 +31,13 @@ abstract class ECPublicParams extends KeyParams {
       ...q.toUnsignedBytes(),
     ]);
   }
+
+  static validateOidLength(int length) {
+    if (length == 0 || length == 0xff) {
+      throw Exception('Future extensions not yet implemented');
+    }
+    if (length > 127) {
+      throw UnsupportedError('Unsupported OID');
+    }
+  }
 }
