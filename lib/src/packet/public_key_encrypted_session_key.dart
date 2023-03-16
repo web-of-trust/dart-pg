@@ -167,7 +167,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
           final publicParams = key.publicParams as ECDHPublicParams;
           final privateKey = ECPrivateKey(
             (key.secretParams as ECSecretParams).d,
-            publicParams.publicKey.parameters,
+            publicParams.parameters,
           );
           sessionKey = (sessionKeyParams as ECDHSessionKeyParams).decrypt(
             privateKey,

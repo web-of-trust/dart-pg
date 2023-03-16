@@ -43,7 +43,12 @@ class ECDSAPublicParams extends ECPublicParams {
     final signer = Signer('${hash.digestName}/DET-ECDSA')
       ..init(
         false,
-        PublicKeyParameter<ECPublicKey>(publicKey),
+        PublicKeyParameter<ECPublicKey>(
+          ECPublicKey(
+            parameters.curve.decodePoint(q.toUnsignedBytes()),
+            parameters,
+          ),
+        ),
       );
 
     final r = Helper.readMPI(signature);

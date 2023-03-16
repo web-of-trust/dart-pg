@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dart_pg/src/crypto/math/big_int.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/enum/s2k_usage.dart';
 import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
@@ -91,8 +92,8 @@ void main() {
 
       expect(secretKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
       expect(secretKey.algorithm, KeyAlgorithm.dsa);
-      expect(publicParams.publicExponent,
-          publicParams.generator.modPow(secretParams.secretExponent, publicParams.prime));
+      expect(
+          publicParams.publicExponent, publicParams.generator.modPow(secretParams.secretExponent, publicParams.prime));
 
       final secretSubkey = SecretSubkeyPacket.fromByteData(
           base64.decode(elgamalSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
@@ -113,7 +114,9 @@ void main() {
 
       expect(secretKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
       expect(secretKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(publicParams.publicKey.Q, publicParams.publicKey.parameters!.G * secretParams.d);
+
+      final qPoint = publicParams.parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
+      expect(qPoint, publicParams.parameters.G * secretParams.d);
 
       final secretSubkey = SecretSubkeyPacket.fromByteData(
           base64.decode(ecdhSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
@@ -122,7 +125,9 @@ void main() {
 
       expect(secretSubkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
       expect(secretSubkey.algorithm, KeyAlgorithm.ecdh);
-      expect(subkeyPublicParams.publicKey.Q, subkeyPublicParams.publicKey.parameters!.G * subkeySecretParams.d);
+
+      final subkeyQPoint = publicParams.parameters.curve.decodePoint(subkeyPublicParams.q.toUnsignedBytes());
+      expect(subkeyQPoint, subkeyPublicParams.parameters.G * subkeySecretParams.d);
     });
 
     test('encrypt test', (() {

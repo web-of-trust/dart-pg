@@ -6,17 +6,11 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/asn1.dart';
 
-import '../../crypto/math/big_int.dart';
-import '../../crypto/math/int_ext.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
-class EdDSAPublicParams extends KeyParams {
-  final ASN1ObjectIdentifier oid;
-
-  final BigInt q;
-
-  EdDSAPublicParams(this.oid, this.q);
+class EdDSAPublicParams extends ECPublicParams {
+  EdDSAPublicParams(super.oid, super.q);
 
   factory EdDSAPublicParams.fromByteData(final Uint8List bytes) {
     var pos = 0;
@@ -37,14 +31,5 @@ class EdDSAPublicParams extends KeyParams {
     pos += length;
     final q = Helper.readMPI(bytes.sublist(pos));
     return EdDSAPublicParams(oid, q);
-  }
-
-  @override
-  Uint8List encode() {
-    return Uint8List.fromList([
-      ...oid.encode().sublist(1),
-      ...q.bitLength.pack16(),
-      ...q.toUnsignedBytes(),
-    ]);
   }
 }

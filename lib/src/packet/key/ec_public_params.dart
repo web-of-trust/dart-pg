@@ -16,9 +16,12 @@ abstract class ECPublicParams extends KeyParams {
 
   final BigInt q;
 
-  final ECPublicKey publicKey;
+  final CurveInfo curve;
 
-  ECPublicParams(this.oid, this.q) : publicKey = _publicKeyFromOid(oid, q);
+  ECPublicParams(this.oid, this.q)
+      : curve = CurveInfo.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
+
+  ECDomainParameters get parameters => ECDomainParameters(curve.name.toLowerCase());
 
   @override
   Uint8List encode() {
@@ -27,17 +30,5 @@ abstract class ECPublicParams extends KeyParams {
       ...q.bitLength.pack16(),
       ...q.toUnsignedBytes(),
     ]);
-  }
-
-  static ECPublicKey _publicKeyFromOid(final ASN1ObjectIdentifier oid, final BigInt q) {
-    final curve = CurveInfo.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
-    switch (curve) {
-      case CurveInfo.curve25519:
-      case CurveInfo.ed25519:
-        throw UnsupportedError('Curve ${curve.name} is unsupported.');
-      default:
-        final parameters = ECDomainParameters(curve.name.toLowerCase());
-        return ECPublicKey(parameters.curve.decodePoint(q.toUnsignedBytes()), parameters);
-    }
   }
 }

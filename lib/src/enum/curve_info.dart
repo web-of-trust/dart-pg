@@ -49,6 +49,25 @@ enum CurveInfo {
     }
   }
 
+  int get fieldSize {
+    switch (this) {
+      case prime256v1:
+      case secp256k1:
+      case brainpoolp256r1:
+        return 256;
+      case secp384r1:
+      case brainpoolp384r1:
+        return 384;
+      case secp521r1:
+        return 521;
+      case brainpoolp512r1:
+        return 512;
+      case ed25519:
+      case curve25519:
+        return 255;
+    }
+  }
+
   HashAlgorithm get hashAlgorithm {
     switch (this) {
       case brainpoolp256r1:

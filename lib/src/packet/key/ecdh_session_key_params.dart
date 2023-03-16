@@ -52,16 +52,20 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     final Uint8List fingerprint,
   ) {
     /// Generate the ephemeral key pair
+    final parameters = publicParams.parameters;
     final keyGen = KeyGenerator('EC')
       ..init(
         ParametersWithRandom(
-          ECKeyGeneratorParameters(publicParams.publicKey.parameters!),
+          ECKeyGeneratorParameters(parameters),
           Helper.secureRandom(),
         ),
       );
     final keyPair = keyGen.generateKeyPair();
     final agreement = ECDHBasicAgreement()..init(keyPair.privateKey as ECPrivateKey);
-    final sharedKey = agreement.calculateAgreement(publicParams.publicKey);
+    final sharedKey = agreement.calculateAgreement(ECPublicKey(
+      parameters.curve.decodePoint(publicParams.q.toUnsignedBytes()),
+      parameters,
+    ));
     final publicKey = keyPair.publicKey as ECPublicKey;
 
     final param = _buildEcdhParam(publicParams, fingerprint);

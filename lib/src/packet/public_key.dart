@@ -144,7 +144,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
       return keyParams.prime.bitLength;
     }
     if (keyParams is ECPublicParams) {
-      return keyParams.publicKey.parameters!.curve.fieldSize;
+      return keyParams.curve.fieldSize;
     }
     return -1;
   }

@@ -34,7 +34,12 @@ class ECSecretParams extends KeyParams {
     final signer = Signer('${hash.digestName}/DET-ECDSA')
       ..init(
         true,
-        PrivateKeyParameter<ECPrivateKey>(ECPrivateKey(d, publicParams.publicKey.parameters)),
+        PrivateKeyParameter<ECPrivateKey>(
+          ECPrivateKey(
+            d,
+            publicParams.parameters,
+          ),
+        ),
       );
     final signature = signer.generateSignature(message) as ECSignature;
     return Uint8List.fromList([

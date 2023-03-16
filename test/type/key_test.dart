@@ -1,3 +1,4 @@
+import 'package:dart_pg/src/crypto/math/big_int.dart';
 import 'package:dart_pg/src/enum/curve_info.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/enum/key_type.dart';
@@ -190,7 +191,9 @@ void main() {
       final publicParams = privateKey.keyPacket.publicParams as ECDSAPublicParams;
       final secretParams = privateKey.keyPacket.secretParams as ECSecretParams;
       expect(publicParams.oid.objectIdentifierAsString, CurveInfo.prime256v1.identifierString);
-      expect(publicParams.publicKey.Q, publicParams.publicKey.parameters!.G * secretParams.d);
+
+      final qPoint = publicParams.parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
+      expect(qPoint, publicParams.parameters.G * secretParams.d);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -224,7 +227,9 @@ void main() {
       final publicParams = privateKey.keyPacket.publicParams as ECDSAPublicParams;
       final secretParams = privateKey.keyPacket.secretParams as ECSecretParams;
       expect(publicParams.oid.objectIdentifierAsString, CurveInfo.secp256k1.identifierString);
-      expect(publicParams.publicKey.Q, publicParams.publicKey.parameters!.G * secretParams.d);
+
+      final qPoint = publicParams.parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
+      expect(qPoint, publicParams.parameters.G * secretParams.d);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
