@@ -136,35 +136,47 @@ final userID = [name, '($comment)', '<$email>'].join(' ');
 final privateKey = await OpenPGP.generateKey(
     [userID],
     passphrase,
-    type: KeyType.rsa,
+    type: KeyGenerationType.rsa,
     rsaKeySize: RSAKeySize.s4096,
 );
 final publicKey = privateKey.toPublic;
 ```
 
-dsaElGamal keys:
+dsa keys:
 ```dart
 const passphrase = 'secret stuff';
 final userID = [name, '($comment)', '<$email>'].join(' ');
 final privateKey = await OpenPGP.generateKey(
     [userID],
     passphrase,
-    type: KeyType.dsaElGamal,
+    type: KeyGenerationType.dsa,
     dhKeySize: DHKeySize.l2048n224,
 );
 final publicKey = privateKey.toPublic;
 ```
 
-ellipticCurve keys (smaller and faster to generate): Possible values for curve are
-secp256k1, secp384r1, secp521r1, brainpoolp256r1, brainpoolp384r1, brainpoolp512r1, curve25519, ed25519 and prime256v1
+ecc keys (smaller and faster to generate): Possible values for curve are
+secp256k1, secp384r1, secp521r1, brainpoolp256r1, brainpoolp384r1, brainpoolp512r1 and prime256v1
 ```dart
 const passphrase = 'secret stuff';
 final userID = [name, '($comment)', '<$email>'].join(' ');
 final privateKey = await OpenPGP.generateKey(
     [userID],
     passphrase,
-    type: KeyType.ellipticCurve,
+    type: KeyGenerationType.ecc,
     curve: CurveInfo.secp521r1,
+);
+final publicKey = privateKey.toPublic;
+```
+
+curve25519 keys
+```dart
+const passphrase = 'secret stuff';
+final userID = [name, '($comment)', '<$email>'].join(' ');
+final privateKey = await OpenPGP.generateKey(
+    [userID],
+    passphrase,
+    type: KeyGenerationType.curve25519,
 );
 final publicKey = privateKey.toPublic;
 ```

@@ -88,11 +88,11 @@ class PrivateKey extends Key {
         keyAlgorithm = KeyAlgorithm.dsa;
         subkeyAlgorithm = KeyAlgorithm.elgamal;
         break;
-      case KeyGenerationType.ecdsa:
+      case KeyGenerationType.ecc:
         keyAlgorithm = KeyAlgorithm.ecdsa;
         subkeyAlgorithm = KeyAlgorithm.ecdh;
         break;
-      case KeyGenerationType.eddsa:
+      case KeyGenerationType.curve25519:
         keyAlgorithm = KeyAlgorithm.eddsa;
         subkeyAlgorithm = KeyAlgorithm.ecdh;
         break;
@@ -102,14 +102,14 @@ class PrivateKey extends Key {
       keyAlgorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
-      curve: (keyAlgorithm == KeyAlgorithm.eddsa) ? CurveInfo.ed25519 : curve,
+      curve: (type == KeyGenerationType.curve25519) ? CurveInfo.ed25519 : curve,
       date: date,
     ).encrypt(passphrase);
     final secretSubkey = SecretSubkeyPacket.generate(
       subkeyAlgorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
-      curve: (keyAlgorithm == KeyAlgorithm.eddsa) ? CurveInfo.curve25519 : curve,
+      curve: (type == KeyGenerationType.curve25519) ? CurveInfo.curve25519 : curve,
       date: date,
     ).encrypt(subkeyPassphrase ?? passphrase);
 

@@ -215,7 +215,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecdsa,
+        type: KeyGenerationType.ecc,
         curve: CurveInfo.prime256v1,
       );
 
@@ -251,7 +251,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecdsa,
+        type: KeyGenerationType.ecc,
         curve: CurveInfo.secp256k1,
       );
 
@@ -287,7 +287,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecdsa,
+        type: KeyGenerationType.ecc,
         curve: CurveInfo.secp384r1,
       );
 
@@ -319,7 +319,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecdsa,
+        type: KeyGenerationType.ecc,
         curve: CurveInfo.secp521r1,
       );
 
@@ -351,7 +351,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecdsa,
+        type: KeyGenerationType.ecc,
         curve: CurveInfo.brainpoolp256r1,
       );
 
@@ -383,7 +383,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecdsa,
+        type: KeyGenerationType.ecc,
         curve: CurveInfo.brainpoolp384r1,
       );
 
@@ -415,7 +415,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecdsa,
+        type: KeyGenerationType.ecc,
         curve: CurveInfo.brainpoolp512r1,
       );
 
@@ -447,7 +447,7 @@ void main() {
       final privateKey = PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.eddsa,
+        type: KeyGenerationType.curve25519,
       );
 
       expect(privateKey.algorithm, KeyAlgorithm.eddsa);
