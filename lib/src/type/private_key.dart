@@ -250,8 +250,8 @@ class PrivateKey extends Key {
     final String passphrase, {
     final Iterable<String> subkeyPassphrases = const [],
     final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
-    final HashAlgorithm hash = HashAlgorithm.sha256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
   }) async {
     if (passphrase.isEmpty) {
