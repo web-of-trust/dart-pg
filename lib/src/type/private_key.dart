@@ -246,14 +246,14 @@ class PrivateKey extends Key {
 
   /// Lock a private key with the given passphrase.
   /// This method does not change the original key.
-  PrivateKey encrypt(
+  Future<PrivateKey> encrypt(
     final String passphrase, {
     final Iterable<String> subkeyPassphrases = const [],
     final S2kUsage s2kUsage = S2kUsage.sha1,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final HashAlgorithm hash = HashAlgorithm.sha256,
     final S2kType type = S2kType.iterated,
-  }) {
+  }) async {
     if (passphrase.isEmpty) {
       throw ArgumentError('passphrase are required for key encryption');
     }
@@ -292,7 +292,10 @@ class PrivateKey extends Key {
 
   /// Unlock a private key with the given passphrase.
   /// This method does not change the original key.
-  PrivateKey decrypt(final String passphrase, [final Iterable<String> subkeyPassphrases = const []]) {
+  Future<PrivateKey> decrypt(
+    final String passphrase, [
+    final Iterable<String> subkeyPassphrases = const [],
+  ]) async {
     if (passphrase.isEmpty) {
       throw ArgumentError('passphrase are required for key decryption');
     }

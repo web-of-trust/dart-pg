@@ -188,7 +188,7 @@ void main() {
     });
 
     test('rsa decrypt test', () async {
-      final decryptionKey = PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
+      final decryptionKey = await PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
       final decryptedMessage =
           await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
       expect(decryptedMessage.literalData, isNotNull);
@@ -209,7 +209,7 @@ void main() {
     });
 
     test('elgamal decrypt test', () async {
-      final decryptionKey = PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
+      final decryptionKey = await PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
       final decryptedMessage =
           await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
       expect(decryptedMessage.literalData, isNotNull);
@@ -230,7 +230,7 @@ void main() {
     });
 
     test('ecc decrypt test', () async {
-      final decryptionKey = PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
+      final decryptionKey = await PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
       final decryptedMessage =
           await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
       expect(decryptedMessage.literalData, isNotNull);
@@ -251,7 +251,7 @@ void main() {
     });
 
     test('curve25519 decrypt test', () async {
-      final decryptionKey = PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
+      final decryptionKey = await PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
       final decryptedMessage =
           await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
       expect(decryptedMessage.literalData, isNotNull);

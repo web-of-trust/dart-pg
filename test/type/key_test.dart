@@ -82,8 +82,8 @@ void main() {
   });
 
   group('Read private key', () {
-    test('rsa test', () {
-      final privateKey = PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
+    test('rsa test', () async {
+      final privateKey = await PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
       expect(privateKey.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
       expect(privateKey.algorithm, KeyAlgorithm.rsaEncryptSign);
       expect(privateKey.isPrivate, true);
@@ -100,8 +100,8 @@ void main() {
       expect(subkey.verify(), isTrue);
     });
 
-    test('dsa elgamal test', () {
-      final privateKey = PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
+    test('dsa elgamal test', () async {
+      final privateKey = await PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
       expect(privateKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
       expect(privateKey.algorithm, KeyAlgorithm.dsa);
       expect(privateKey.isPrivate, true);
@@ -118,8 +118,8 @@ void main() {
       expect(subkey.verify(), isTrue);
     });
 
-    test('ecc test', () {
-      final privateKey = PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
+    test('ecc test', () async {
+      final privateKey = await PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
       expect(privateKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, true);
@@ -136,8 +136,8 @@ void main() {
       expect(subkey.verify(), isTrue);
     });
 
-    test('curve25519 test', () {
-      final privateKey = PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
+    test('curve25519 test', () async {
+      final privateKey = await PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
       expect(privateKey.fingerprint, '67287cc6376746e683fd24675654e554d72fcf47');
       expect(privateKey.algorithm, KeyAlgorithm.eddsa);
       expect(privateKey.isPrivate, true);
