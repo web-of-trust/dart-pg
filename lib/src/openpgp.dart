@@ -187,7 +187,7 @@ class OpenPGP {
                 passwords: passwords,
                 allowUnauthenticatedMessages: allowUnauthenticatedMessages,
               )
-              .verify(verificationKeys, date: date)
+              .then((message) => message.verify(verificationKeys, date: date))
           : message.decrypt(
               decryptionKeys: decryptionKeys,
               passwords: passwords,

@@ -18,9 +18,9 @@ void main() {
     final verificationKey = PublicKey.fromArmored(publicKey);
     final text = faker.randomGenerator.string(1000);
 
-    test('atached test', () {
+    test('atached test', () async {
       final signedMessage = SignedMessage.signCleartext(text, [signingKey]);
-      final verifiedMessage = signedMessage.verify([verificationKey]);
+      final verifiedMessage = await signedMessage.verify([verificationKey]);
       final signature = signedMessage.signature;
 
       expect(signedMessage.verifications.isEmpty, isTrue);
@@ -37,10 +37,10 @@ void main() {
       }
     });
 
-    test('detached test', () {
+    test('detached test', () async {
       final signature = SignedMessage.signCleartext(text, [signingKey]).signature;
       final cleartextMessage = CleartextMessage(text);
-      final verifiedMessage = cleartextMessage.verifySignature(signature, [verificationKey]);
+      final verifiedMessage = await cleartextMessage.verifySignature(signature, [verificationKey]);
 
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -60,12 +60,12 @@ void main() {
     final verificationKey = PublicKey.fromArmored(publicKey);
     final text = faker.randomGenerator.string(1000);
 
-    test('atached test', () {
+    test('atached test', () async {
       final signedMessage = Message.createTextMessage(text).sign([signingKey]);
       expect(signedMessage.signingKeyIDs.elementAt(0).id, signingKey.keyID.id);
       expect(signedMessage.verifications.isEmpty, isTrue);
 
-      final verifiedMessage = signedMessage.verify([verificationKey]);
+      final verifiedMessage = await signedMessage.verify([verificationKey]);
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -79,10 +79,10 @@ void main() {
       }
     });
 
-    test('detached test', () {
+    test('detached test', () async {
       final message = Message.createTextMessage(text);
       final signature = message.signDetached([signingKey]);
-      final verifiedMessage = message.verifySignature(signature, [verificationKey]);
+      final verifiedMessage = await message.verifySignature(signature, [verificationKey]);
 
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -149,29 +149,31 @@ void main() {
     final encryptedMessage = signedMessage.encrypt(encryptionKeys: encryptionKeys, passwords: [password]);
 
     test('encrypted test', () {
-      expect(encryptedMessage.literalData, isNull);
-      expect(encryptedMessage.packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().length, encryptionKeys.length);
-      expect(encryptedMessage.packetList.whereType<SymEncryptedSessionKeyPacket>().length, 1);
-      expect(encryptedMessage.packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>(), isNotEmpty);
+      encryptedMessage.then((message) {
+        expect(message.literalData, isNull);
+        expect(message.packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().length, encryptionKeys.length);
+        expect(message.packetList.whereType<SymEncryptedSessionKeyPacket>().length, 1);
+        expect(message.packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>(), isNotEmpty);
+      });
     });
 
-    test('password only test', () {
-      final encryptedMessage = createTextMessage.encrypt(passwords: [password]);
+    test('password only test', () async {
+      final encryptedMessage = await createTextMessage.encrypt(passwords: [password]);
       expect(encryptedMessage.literalData, isNull);
       expect(encryptedMessage.packetList.whereType<SymEncryptedSessionKeyPacket>(), isNotEmpty);
       expect(encryptedMessage.packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>(), isNotEmpty);
 
-      final decryptedMessage = encryptedMessage.decrypt(passwords: [password]);
+      final decryptedMessage = await encryptedMessage.decrypt(passwords: [password]);
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
     });
 
-    test('password decrypt test', () {
-      final decryptedMessage = encryptedMessage.decrypt(passwords: [password]);
+    test('password decrypt test', () async {
+      final decryptedMessage = await encryptedMessage.then((message) => message.decrypt(passwords: [password]));
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -185,13 +187,14 @@ void main() {
       }
     });
 
-    test('rsa decrypt test', () {
+    test('rsa decrypt test', () async {
       final decryptionKey = PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
-      final decryptedMessage = encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      final decryptedMessage =
+          await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -205,13 +208,14 @@ void main() {
       }
     });
 
-    test('elgamal decrypt test', () {
+    test('elgamal decrypt test', () async {
       final decryptionKey = PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
-      final decryptedMessage = encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      final decryptedMessage =
+          await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -225,13 +229,14 @@ void main() {
       }
     });
 
-    test('ecc decrypt test', () {
+    test('ecc decrypt test', () async {
       final decryptionKey = PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
-      final decryptedMessage = encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      final decryptedMessage =
+          await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -245,13 +250,14 @@ void main() {
       }
     });
 
-    test('curve25519 decrypt test', () {
+    test('curve25519 decrypt test', () async {
       final decryptionKey = PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
-      final decryptedMessage = encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      final decryptedMessage =
+          await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {

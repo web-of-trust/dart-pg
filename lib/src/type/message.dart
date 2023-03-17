@@ -191,10 +191,10 @@ class Message {
 
   /// Verify message signatures
   /// Return new message with verifications
-  Message verify(
+  Future<Message> verify(
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) {
+  }) async {
     final packets = unwrapCompressed().packetList;
     final literalDataPackets = packets.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
@@ -214,11 +214,11 @@ class Message {
 
   /// Verify detached message signature
   /// Return new message with verifications
-  Message verifySignature(
+  Future<Message> verifySignature(
     final Signature signature,
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) {
+  }) async {
     final literalDataPackets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
@@ -236,12 +236,12 @@ class Message {
 
   /// Encrypt the message either with public keys, passwords, or both at once.
   /// Return new message with encrypted content.
-  Message encrypt({
+  Future<Message> encrypt({
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
     final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
     final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
-  }) {
+  }) async {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No encryption keys or passwords provided');
     }
@@ -273,11 +273,11 @@ class Message {
 
   /// Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
   /// Return new message with decrypted content.
-  Message decrypt({
+  Future<Message> decrypt({
     final Iterable<PrivateKey> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
     final bool allowUnauthenticatedMessages = false,
-  }) {
+  }) async {
     if (decryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No decryption keys or passwords provided');
     }

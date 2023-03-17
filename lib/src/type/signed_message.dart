@@ -71,10 +71,10 @@ class SignedMessage extends CleartextMessage {
 
   /// Verify signatures of cleartext signed message
   /// Return signed message with verifications
-  SignedMessage verify(
+  Future<SignedMessage> verify(
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) {
+  }) async {
     return SignedMessage(
       text,
       signature,
