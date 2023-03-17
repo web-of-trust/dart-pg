@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dart_pg/src/crypto/asymmetric/elgamal.dart';
+import 'package:dart_pg/src/crypto/math/big_int.dart';
 import 'package:dart_pg/src/crypto/signer/dsa.dart';
 import 'package:dart_pg/src/helpers.dart';
 import 'package:dart_pg/src/openpgp.dart';
@@ -26,7 +27,7 @@ void main() {
       engine.init(true, PublicKeyParameter<ElGamalPublicKey>(publicKey));
       expect(engine.outputBlockSize, 2048 ~/ 4, reason: "2048 outputBlockSize on encryption failed.");
 
-      final message = faker.randomGenerator.string(100).stringToBytes();
+      final message = faker.randomGenerator.string(prime.byteLength).stringToBytes();
       final plainText = message;
       final cipherText = Uint8List(engine.outputBlockSize);
       engine.processBlock(plainText, 0, plainText.length, cipherText, 0);
@@ -56,7 +57,11 @@ void main() {
       engine.init(true, PublicKeyParameter<ElGamalPublicKey>(keyPair.publicKey));
       expect(engine.outputBlockSize, 2048 ~/ 4, reason: "2048 outputBlockSize on encryption failed.");
 
-      final message = faker.randomGenerator.string(100).stringToBytes();
+      final message = faker.randomGenerator
+          .string(
+            (keyPair.publicKey as ElGamalPublicKey).prime.byteLength,
+          )
+          .stringToBytes();
       final plainText = message;
       final cipherText = Uint8List(engine.outputBlockSize);
       engine.processBlock(plainText, 0, plainText.length, cipherText, 0);
@@ -82,7 +87,7 @@ void main() {
     final privateKey = DSAPrivateKey(secretExponent, prime, order, generator);
     final publicKey = DSAPublicKey(publicExponent, prime, order, generator);
 
-    final message = faker.randomGenerator.string(100).stringToBytes();
+    final message = faker.randomGenerator.string(prime.byteLength).stringToBytes();
 
     test('With sha1 test', (() {
       final signer = DSASigner(Digest('SHA-1'));
