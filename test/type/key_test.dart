@@ -218,7 +218,6 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.prime256v1,
       );
-
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, true);
       expect(privateKey.keyStrength, 256);
@@ -386,7 +385,6 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.brainpoolp384r1,
       );
-
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, true);
       expect(privateKey.keyStrength, 384);
@@ -418,7 +416,6 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.brainpoolp512r1,
       );
-
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, true);
       expect(privateKey.keyStrength, 512);
@@ -449,7 +446,6 @@ void main() {
         passphrase,
         type: KeyGenerationType.curve25519,
       );
-
       expect(privateKey.algorithm, KeyAlgorithm.eddsa);
       expect(privateKey.isPrivate, true);
       expect(privateKey.keyStrength, 255);

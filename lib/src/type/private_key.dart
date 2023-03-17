@@ -148,7 +148,7 @@ class PrivateKey extends Key {
 
   @override
   PublicKey get toPublic {
-    final packetList = PacketList([]);
+    final packetList = <ContainedPacket>[];
     final packets = toPacketList();
     for (final packet in packets) {
       switch (packet.tag) {
@@ -166,7 +166,7 @@ class PrivateKey extends Key {
           packetList.add(packet);
       }
     }
-    return PublicKey.fromPacketList((packetList));
+    return PublicKey.fromPacketList((PacketList(packetList)));
   }
 
   @override
