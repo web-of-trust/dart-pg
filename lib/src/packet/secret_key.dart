@@ -46,7 +46,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     this._publicKey,
     this.keyData, {
     this.s2kUsage = S2kUsage.sha1,
-    this.symmetric = SymmetricAlgorithm.aes256,
+    this.symmetric = SymmetricAlgorithm.aes128,
     this.s2k,
     this.iv,
     this.secretParams,
@@ -187,8 +187,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   SecretKeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
-    final HashAlgorithm hash = HashAlgorithm.sha256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
   }) {
     if (secretParams != null) {
@@ -203,11 +203,17 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final iv = random.nextBytes(symmetric.blockSize);
 
       final key = s2k.produceKey(passphrase, symmetric);
-      final cipher = BufferedCipher(symmetric.cipherEngine)..init(true, ParametersWithIV(KeyParameter(key), iv));
+      final cipher = BufferedCipher(symmetric.cipherEngine)
+        ..init(
+          true,
+          ParametersWithIV(KeyParameter(key), iv),
+        );
 
       final clearText = secretParams!.encode();
-      final clearTextWithHash = Uint8List.fromList([...clearText, ...Helper.hashDigest(clearText, HashAlgorithm.sha1)]);
-      final cipherText = cipher.process(clearTextWithHash);
+      final cipherText = cipher.process(Uint8List.fromList([
+        ...clearText,
+        ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
+      ]));
 
       return SecretKeyPacket(
         publicKey,
@@ -238,8 +244,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
           );
 
         final clearTextWithHash = cipher.process(keyData);
-        clearText = clearTextWithHash.sublist(0, clearTextWithHash.length - HashAlgorithm.sha1.digestSize);
-        final hashText = clearTextWithHash.sublist(clearTextWithHash.length - HashAlgorithm.sha1.digestSize);
+        clearText = clearTextWithHash.sublist(
+          0,
+          clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
+        );
+        final hashText = clearTextWithHash.sublist(
+          clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
+        );
         final hashed = Helper.hashDigest(clearText, HashAlgorithm.sha1);
         if (!hashed.equals(hashText)) {
           throw ArgumentError('Incorrect key passphrase');
@@ -287,7 +298,10 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
   }
 
-  static KeyParams _parseSecretParams(final Uint8List packetData, final KeyAlgorithm algorithm) {
+  static KeyParams _parseSecretParams(
+    final Uint8List packetData,
+    final KeyAlgorithm algorithm,
+  ) {
     final KeyParams keyParams;
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:

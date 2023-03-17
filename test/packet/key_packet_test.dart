@@ -186,7 +186,7 @@ void main() {
       expect(encryptedKey.secretParams, secretKey.secretParams);
 
       expect(encryptedKey.s2kUsage, S2kUsage.sha1);
-      expect(encryptedKey.symmetric, SymmetricAlgorithm.aes256);
+      expect(encryptedKey.symmetric, SymmetricAlgorithm.aes128);
       expect(encryptedKey.iv, isNotNull);
       expect(encryptedKey.s2k, isNotNull);
 
@@ -220,7 +220,7 @@ void main() {
       expect(subkeyEncryptedKey.secretParams, secretSubkey.secretParams);
 
       expect(subkeyEncryptedKey.s2kUsage, S2kUsage.sha1);
-      expect(subkeyEncryptedKey.symmetric, SymmetricAlgorithm.aes256);
+      expect(subkeyEncryptedKey.symmetric, SymmetricAlgorithm.aes128);
       expect(subkeyEncryptedKey.iv, isNotNull);
       expect(subkeyEncryptedKey.s2k, isNotNull);
 

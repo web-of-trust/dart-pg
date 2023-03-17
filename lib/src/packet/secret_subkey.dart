@@ -68,7 +68,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   SecretSubkeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
   }) {
