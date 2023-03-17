@@ -20,6 +20,7 @@ import 'package:dart_pg/src/packet/public_key.dart';
 import 'package:dart_pg/src/packet/public_subkey.dart';
 import 'package:dart_pg/src/packet/secret_key.dart';
 import 'package:dart_pg/src/packet/secret_subkey.dart';
+import 'package:pointycastle/ecc/api.dart';
 import 'package:test/test.dart';
 
 import '../test_data.dart';
@@ -129,8 +130,9 @@ void main() {
       expect(secretKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
       expect(secretKey.algorithm, KeyAlgorithm.ecdsa);
 
-      final qPoint = publicParams.parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
-      expect(qPoint, publicParams.parameters.G * secretParams.d);
+      final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
+      final qPoint = parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
+      expect(qPoint, parameters.G * secretParams.d);
 
       final secretSubkey = SecretSubkeyPacket.fromByteData(
           base64.decode(ecdhSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
@@ -140,8 +142,9 @@ void main() {
       expect(secretSubkey.fingerprint, '7a2da9aa8c176411d6ed1d2f24373aaf7d84b6be');
       expect(secretSubkey.algorithm, KeyAlgorithm.ecdh);
 
-      final subkeyQPoint = publicParams.parameters.curve.decodePoint(subkeyPublicParams.q.toUnsignedBytes());
-      expect(subkeyQPoint, subkeyPublicParams.parameters.G * subkeySecretParams.d);
+      final subkeyParameters = ECDomainParameters(subkeyPublicParams.curve.name.toLowerCase());
+      final subkeyQPoint = subkeyParameters.curve.decodePoint(subkeyPublicParams.q.toUnsignedBytes());
+      expect(subkeyQPoint, subkeyParameters.G * subkeySecretParams.d);
     });
 
     test('curve25519 test', () {

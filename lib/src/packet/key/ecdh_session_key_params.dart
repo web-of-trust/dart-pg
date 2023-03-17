@@ -16,6 +16,7 @@ import '../../enum/hash_algorithm.dart';
 import '../../enum/key_algorithm.dart';
 import '../../helpers.dart';
 import 'aes_key_wrapper.dart';
+import 'ec_secret_params.dart';
 import 'ecdh_public_params.dart';
 import 'session_key.dart';
 import 'session_key_params.dart';
@@ -73,7 +74,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       case CurveInfo.ed25519:
         throw UnsupportedError('Curve ${publicParams.curve.name} is unsupported for ephemeral key generation.');
       default:
-        final parameters = publicParams.parameters;
+        final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
         final keyGen = KeyGenerator('EC')
           ..init(
             ParametersWithRandom(
@@ -119,7 +120,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       ]);
 
   SessionKey decrypt(
-    final ECPrivateKey privateKey,
+    final ECSecretParams secretParams,
     final ECDHPublicParams publicParams,
     final Uint8List fingerprint,
   ) {
@@ -128,7 +129,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       case CurveInfo.curve25519:
         sharedKey = TweetNaCl.crypto_scalarmult(
           Uint8List(TweetNaCl.sharedKeyLength),
-          Uint8List.fromList(privateKey.d!.toUnsignedBytes().reversed.toList()),
+          Uint8List.fromList(secretParams.d.toUnsignedBytes().reversed.toList()),
           ephemeralKey.toUnsignedBytes(),
         );
         break;
@@ -137,7 +138,8 @@ class ECDHSessionKeyParams extends SessionKeyParams {
           'Curve ${publicParams.curve.name} is unsupported for key agreement calculation.',
         );
       default:
-        final parameters = publicParams.parameters;
+        final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
+        final privateKey = ECPrivateKey(secretParams.d, parameters);
         final agreement = ECDHBasicAgreement()..init(privateKey);
         sharedKey = agreement
             .calculateAgreement(

@@ -33,6 +33,7 @@ class ECDSAPublicParams extends ECPublicParams {
     final HashAlgorithm hash,
     final Uint8List signature,
   ) {
+    final parameters = ECDomainParameters(curve.name.toLowerCase());
     final signer = Signer('${hash.digestName}/DET-ECDSA')
       ..init(
         false,

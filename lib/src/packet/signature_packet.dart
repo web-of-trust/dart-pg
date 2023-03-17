@@ -543,7 +543,7 @@ class SignaturePacket extends ContainedPacket {
         break;
       case KeyAlgorithm.ecdsa:
         signature = (key.secretParams as ECSecretParams).sign(
-          (key.publicParams as ECPublicParams).parameters,
+          key.publicParams as ECPublicParams,
           message,
           hash,
         );

@@ -21,8 +21,6 @@ abstract class ECPublicParams extends KeyParams {
   ECPublicParams(this.oid, this.q)
       : curve = CurveInfo.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
 
-  ECDomainParameters get parameters => ECDomainParameters(curve.name.toLowerCase());
-
   @override
   Uint8List encode() {
     return Uint8List.fromList([

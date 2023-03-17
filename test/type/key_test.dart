@@ -5,6 +5,7 @@ import 'package:dart_pg/src/enum/key_generation_type.dart';
 import 'package:dart_pg/src/packet/key/key_params.dart';
 import 'package:dart_pg/src/type/key.dart';
 import 'package:faker/faker.dart';
+import 'package:pointycastle/ecc/api.dart';
 import 'package:test/test.dart';
 
 import '../test_data.dart';
@@ -226,8 +227,9 @@ void main() {
       final secretParams = privateKey.keyPacket.secretParams as ECSecretParams;
       expect(publicParams.oid.objectIdentifierAsString, CurveInfo.prime256v1.identifierString);
 
-      final qPoint = publicParams.parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
-      expect(qPoint, publicParams.parameters.G * secretParams.d);
+      final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
+      final qPoint = parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
+      expect(qPoint, parameters.G * secretParams.d);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -262,8 +264,9 @@ void main() {
       final secretParams = privateKey.keyPacket.secretParams as ECSecretParams;
       expect(publicParams.oid.objectIdentifierAsString, CurveInfo.secp256k1.identifierString);
 
-      final qPoint = publicParams.parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
-      expect(qPoint, publicParams.parameters.G * secretParams.d);
+      final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
+      final qPoint = parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
+      expect(qPoint, parameters.G * secretParams.d);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);

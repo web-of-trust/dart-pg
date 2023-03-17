@@ -4,10 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/pointycastle.dart';
-
 import '../crypto/asymmetric/elgamal.dart';
-import '../enum/curve_info.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/packet_tag.dart';
 import '../enum/symmetric_algorithm.dart';
@@ -165,14 +162,9 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
           );
           break;
         case KeyAlgorithm.ecdh:
-          final publicParams = key.publicParams as ECDHPublicParams;
-          final privateKey = ECPrivateKey(
-            (key.secretParams as ECSecretParams).d,
-            publicParams.curve == CurveInfo.curve25519 ? null : publicParams.parameters,
-          );
           sessionKey = (sessionKeyParams as ECDHSessionKeyParams).decrypt(
-            privateKey,
-            publicParams,
+            key.secretParams as ECSecretParams,
+            key.publicParams as ECDHPublicParams,
             key.fingerprint.hexToBytes(),
           );
           break;
