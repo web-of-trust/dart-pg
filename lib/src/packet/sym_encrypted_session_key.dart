@@ -72,16 +72,16 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  factory SymEncryptedSessionKeyPacket.encryptSessionKey(
+  static Future<SymEncryptedSessionKeyPacket> encryptSessionKey(
     final String password, {
     final Uint8List? sessionKeyData,
     final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
     final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
     final HashAlgorithm hash = HashAlgorithm.sha256,
     final S2kType type = S2kType.iterated,
-  }) {
+  }) async {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
-    final key = s2k.produceKey(password, encryptionKeySymmetric);
+    final key = await s2k.produceKey(password, encryptionKeySymmetric);
     final cipher = BufferedCipher(encryptionKeySymmetric.cipherEngine)..init(true, KeyParameter(key));
     final sessionKey = SessionKey(
       sessionKeyData ?? Helper.generateEncryptionKey(sessionKeySymmetric),
@@ -96,11 +96,11 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  SymEncryptedSessionKeyPacket decrypt(final String password) {
+  Future<SymEncryptedSessionKeyPacket> decrypt(final String password) async {
     if (isDecrypted) {
       return this;
     } else {
-      final key = s2k.produceKey(password, encryptionKeySymmetric);
+      final key = await s2k.produceKey(password, encryptionKeySymmetric);
       final cipher = BufferedCipher(encryptionKeySymmetric.cipherEngine)..init(false, KeyParameter(key));
       final decrypted = cipher.process(encrypted);
       final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == decrypted[0]);

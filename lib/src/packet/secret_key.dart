@@ -98,14 +98,14 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     );
   }
 
-  factory SecretKeyPacket.generate(
+  static Future<SecretKeyPacket> generate(
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
     final DateTime? date,
-  }) {
-    final keyPair = KeyPairParams.generate(
+  }) async {
+    final keyPair = await KeyPairParams.generate(
       algorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
@@ -184,13 +184,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
   }
 
-  SecretKeyPacket encrypt(
+  Future<SecretKeyPacket> encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
-  }) {
+  }) async {
     if (secretParams != null) {
       if (passphrase.isEmpty) {
         throw ArgumentError('passphrase are required for key encryption');
@@ -202,7 +202,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final s2k = S2K(random.nextBytes(8), hash: hash, type: type);
       final iv = random.nextBytes(symmetric.blockSize);
 
-      final key = s2k.produceKey(passphrase, symmetric);
+      final key = await s2k.produceKey(passphrase, symmetric);
       final cipher = BufferedCipher(symmetric.cipherEngine)
         ..init(
           true,
@@ -233,7 +233,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key = s2k?.produceKey(passphrase, symmetric) ?? Uint8List((symmetric.keySize + 7) >> 3);
+        final key = await s2k?.produceKey(passphrase, symmetric) ?? Uint8List((symmetric.keySize + 7) >> 3);
         final cipher = BufferedCipher(symmetric.cipherEngine)
           ..init(
             false,

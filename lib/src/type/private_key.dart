@@ -62,7 +62,7 @@ class PrivateKey extends Key {
   /// By default, primary and subkeys will be of same type.
   /// The generated primary key will have signing capabilities.
   /// By default, one subkey with encryption capabilities is also generated.
-  factory PrivateKey.generate(
+  static Future<PrivateKey> generate(
     final Iterable<String> userIDs,
     final String passphrase, {
     final KeyGenerationType type = KeyGenerationType.rsa,
@@ -72,7 +72,7 @@ class PrivateKey extends Key {
     final int keyExpirationTime = 0,
     final String? subkeyPassphrase,
     final DateTime? date,
-  }) {
+  }) async {
     if (userIDs.isEmpty || passphrase.isEmpty) {
       throw ArgumentError('UserIDs and passphrase are required for key generation');
     }
@@ -98,20 +98,20 @@ class PrivateKey extends Key {
         break;
     }
 
-    final secretKey = SecretKeyPacket.generate(
+    final secretKey = await SecretKeyPacket.generate(
       keyAlgorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
       curve: (type == KeyGenerationType.curve25519) ? CurveInfo.ed25519 : curve,
       date: date,
-    ).encrypt(passphrase);
-    final secretSubkey = SecretSubkeyPacket.generate(
+    ).then((secretKey) => secretKey.encrypt(passphrase));
+    final secretSubkey = await SecretSubkeyPacket.generate(
       subkeyAlgorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
       curve: (type == KeyGenerationType.curve25519) ? CurveInfo.curve25519 : curve,
       date: date,
-    ).encrypt(subkeyPassphrase ?? passphrase);
+    ).then((secretSubkey) => secretSubkey.encrypt(subkeyPassphrase ?? passphrase));
 
     final packets = <ContainedPacket>[secretKey];
 
@@ -258,7 +258,7 @@ class PrivateKey extends Key {
       throw ArgumentError('passphrase are required for key encryption');
     }
     return PrivateKey(
-      keyPacket.encrypt(
+      await keyPacket.encrypt(
         passphrase,
         s2kUsage: s2kUsage,
         symmetric: symmetric,
@@ -273,7 +273,7 @@ class PrivateKey extends Key {
         final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
         if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
           return Subkey(
-            (subkey.keyPacket as SecretSubkeyPacket).encrypt(
+            await(subkey.keyPacket as SecretSubkeyPacket).encrypt(
               subkeyPassphrase,
               s2kUsage: s2kUsage,
               symmetric: symmetric,
@@ -309,7 +309,7 @@ class PrivateKey extends Key {
         final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
         if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
           return Subkey(
-            (await (subkey.keyPacket as SecretSubkeyPacket).decrypt(subkeyPassphrase)) as SubkeyPacket,
+            (await (subkey.keyPacket as SecretSubkeyPacket).decrypt(subkeyPassphrase)),
             revocationSignatures: subkey.revocationSignatures,
             bindingSignatures: subkey.bindingSignatures,
           );

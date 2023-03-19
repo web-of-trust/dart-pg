@@ -83,7 +83,7 @@ class S2K {
     }
   }
 
-  Uint8List produceKey(final String passphrase, final SymmetricAlgorithm algorithm) {
+  Future<Uint8List> produceKey(final String passphrase, final SymmetricAlgorithm algorithm) async {
     final pBytes = passphrase.stringToBytes();
     final keyLen = (algorithm.keySize + 7) >> 3;
     final keyBytes = Uint8List(keyLen);

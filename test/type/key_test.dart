@@ -162,8 +162,8 @@ void main() {
     final userID = [name, '($comment)', '<$email>'].join(' ');
     final passphrase = faker.internet.password();
 
-    test('rsa', () {
-      final privateKey = PrivateKey.generate(
+    test('rsa', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.rsa,
@@ -187,8 +187,8 @@ void main() {
       expect(bindingSignature.keyFlags!.isEncryptStorage, isTrue);
     });
 
-    test('dsa elGamal', () {
-      final privateKey = PrivateKey.generate(
+    test('dsa elGamal', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.dsa,
@@ -212,8 +212,8 @@ void main() {
       expect(bindingSignature.keyFlags!.isEncryptStorage, isTrue);
     });
 
-    test('prime256v1 curve', () {
-      final privateKey = PrivateKey.generate(
+    test('prime256v1 curve', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
@@ -248,8 +248,8 @@ void main() {
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.prime256v1.symmetricAlgorithm);
     });
 
-    test('secp256k1 curve', () {
-      final privateKey = PrivateKey.generate(
+    test('secp256k1 curve', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
@@ -285,8 +285,8 @@ void main() {
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.secp256k1.symmetricAlgorithm);
     });
 
-    test('secp384r1 curve', () {
-      final privateKey = PrivateKey.generate(
+    test('secp384r1 curve', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
@@ -317,8 +317,8 @@ void main() {
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.secp384r1.symmetricAlgorithm);
     });
 
-    test('secp521r1 curve', () {
-      final privateKey = PrivateKey.generate(
+    test('secp521r1 curve', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
@@ -349,8 +349,8 @@ void main() {
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.secp521r1.symmetricAlgorithm);
     });
 
-    test('brainpoolp256r1 curve', () {
-      final privateKey = PrivateKey.generate(
+    test('brainpoolp256r1 curve', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
@@ -381,8 +381,8 @@ void main() {
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp256r1.symmetricAlgorithm);
     });
 
-    test('brainpoolp384r1 curve', () {
-      final privateKey = PrivateKey.generate(
+    test('brainpoolp384r1 curve', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
@@ -412,8 +412,8 @@ void main() {
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp384r1.symmetricAlgorithm);
     });
 
-    test('brainpoolp512r1 curve', () {
-      final privateKey = PrivateKey.generate(
+    test('brainpoolp512r1 curve', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
@@ -443,8 +443,8 @@ void main() {
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp512r1.symmetricAlgorithm);
     });
 
-    test('curve25519', () {
-      final privateKey = PrivateKey.generate(
+    test('curve25519', () async {
+      final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
         type: KeyGenerationType.curve25519,

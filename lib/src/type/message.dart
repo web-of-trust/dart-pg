@@ -252,12 +252,12 @@ class Message {
           sessionKeyData: sessionKeyData,
           sessionKeySymmetric: sessionKeySymmetric,
         ));
-    final skeskPackets = passwords.map((password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
+    final skeskPackets = await Future.wait(passwords.map((password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
           password,
           sessionKeyData: sessionKeyData,
           sessionKeySymmetric: sessionKeySymmetric,
           encryptionKeySymmetric: encryptionKeySymmetric,
-        ));
+        )));
     final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
       sessionKeyData,
       packetList,
@@ -290,7 +290,7 @@ class Message {
       throw StateError('No encrypted data found');
     }
 
-    final sessionKeys = _decryptSessionKeys(decryptionKeys: decryptionKeys, passwords: passwords);
+    final sessionKeys = await _decryptSessionKeys(decryptionKeys: decryptionKeys, passwords: passwords);
     final encryptedPacket = encryptedPackets[0];
     if (encryptedPacket is SymEncryptedIntegrityProtectedDataPacket) {
       for (var sessionKey in sessionKeys) {
@@ -347,10 +347,10 @@ class Message {
     return this;
   }
 
-  List<SessionKey> _decryptSessionKeys({
+  Future<List<SessionKey>> _decryptSessionKeys({
     final Iterable<PrivateKey> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
-  }) {
+  }) async {
     final sessionKeys = <SessionKey>[];
     if (decryptionKeys.isNotEmpty) {
       final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
@@ -374,7 +374,7 @@ class Message {
       for (final skesk in skeskPackets) {
         for (final password in passwords) {
           try {
-            final sessionKey = skesk.decrypt(password).sessionKey;
+            final sessionKey = await skesk.decrypt(password).then((skesk) => skesk.sessionKey);
             if (sessionKey != null) {
               sessionKeys.add(sessionKey);
             }

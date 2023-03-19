@@ -41,8 +41,8 @@ void main() {
       expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
 
-    test('password protected session key test', () {
-      final skesk = SymEncryptedSessionKeyPacket.encryptSessionKey(kek);
+    test('password protected session key test', () async {
+      final skesk = await SymEncryptedSessionKeyPacket.encryptSessionKey(kek);
       final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         skesk.sessionKey!.key,
         packets,
@@ -52,7 +52,7 @@ void main() {
       final encryptedList = PacketList([skesk, seip]);
       final packetList = PacketList.packetDecode(encryptedList.encode());
 
-      final decryptedSkesk = packetList.whereType<SymEncryptedSessionKeyPacket>().elementAt(0).decrypt(kek);
+      final decryptedSkesk = await packetList.whereType<SymEncryptedSessionKeyPacket>().elementAt(0).decrypt(kek);
       expect(skesk.sessionKey!.symmetric, equals(decryptedSkesk.sessionKey!.symmetric));
       expect(skesk.sessionKey!.key, equals(decryptedSkesk.sessionKey!.key));
 

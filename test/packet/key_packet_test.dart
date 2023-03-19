@@ -192,7 +192,7 @@ void main() {
       expect(secretKey.iv, isNull);
       expect(secretKey.s2k, isNull);
 
-      final encryptedKey = secretKey.encrypt(passphrase);
+      final encryptedKey = await secretKey.encrypt(passphrase);
       expect(encryptedKey.fingerprint, secretKey.fingerprint);
       expect(encryptedKey.secretParams, secretKey.secretParams);
 
@@ -226,7 +226,7 @@ void main() {
       expect(secretSubkey.iv, isNull);
       expect(secretSubkey.s2k, isNull);
 
-      final subkeyEncryptedKey = secretSubkey.encrypt(passphrase);
+      final subkeyEncryptedKey = await secretSubkey.encrypt(passphrase);
       expect(subkeyEncryptedKey.fingerprint, secretSubkey.fingerprint);
       expect(subkeyEncryptedKey.secretParams, secretSubkey.secretParams);
 
