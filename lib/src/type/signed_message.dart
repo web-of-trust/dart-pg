@@ -31,11 +31,11 @@ class SignedMessage extends CleartextMessage {
   }
 
   /// Sign a cleartext.
-  factory SignedMessage.signCleartext(
+  static Future<SignedMessage> signCleartext(
     final String text,
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
-  }) {
+  }) async {
     if (signingKeys.isEmpty) {
       throw ArgumentError('No signing keys provided');
     }

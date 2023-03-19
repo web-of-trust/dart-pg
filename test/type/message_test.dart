@@ -19,7 +19,7 @@ void main() {
     final text = faker.randomGenerator.string(1000);
 
     test('atached test', () async {
-      final signedMessage = SignedMessage.signCleartext(text, [signingKey]);
+      final signedMessage = await SignedMessage.signCleartext(text, [signingKey]);
       final verifiedMessage = await signedMessage.verify([verificationKey]);
       final signature = signedMessage.signature;
 
@@ -38,7 +38,8 @@ void main() {
     });
 
     test('detached test', () async {
-      final signature = SignedMessage.signCleartext(text, [signingKey]).signature;
+      final signature =
+          await SignedMessage.signCleartext(text, [signingKey]).then((signedMessage) => signedMessage.signature);
       final cleartextMessage = CleartextMessage(text);
       final verifiedMessage = await cleartextMessage.verifySignature(signature, [verificationKey]);
 

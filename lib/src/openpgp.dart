@@ -91,7 +91,11 @@ class OpenPGP {
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
   }) async =>
-      SignedMessage.signCleartext(cleartext, signingKeys, date: date).signature;
+      SignedMessage.signCleartext(
+        cleartext,
+        signingKeys,
+        date: date,
+      ).then((signedMessage) => signedMessage.signature);
 
   /// Verify signatures of cleartext signed message
   /// Return signed message with verifications
@@ -100,7 +104,10 @@ class OpenPGP {
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async =>
-      SignedMessage.fromArmored(armoredSignedMessage).verify(verificationKeys, date: date);
+      SignedMessage.fromArmored(armoredSignedMessage).verify(
+        verificationKeys,
+        date: date,
+      );
 
   /// Verify detached signatures of cleartext message
   /// Returns cleartext message with verifications
@@ -125,7 +132,10 @@ class OpenPGP {
       SignedMessage.fromArmored(armoredSignedMessage);
 
   /// Read an armored OpenPGP message and returns a Message object
-  static Future<Message> readMessage(final String armoredMessage) async => Message.fromArmored(armoredMessage);
+  static Future<Message> readMessage(
+    final String armoredMessage,
+  ) async =>
+      Message.fromArmored(armoredMessage);
 
   /// Create new message object from cleartext
   static Future<Message> createTextMessage(
