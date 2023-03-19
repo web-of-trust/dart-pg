@@ -84,8 +84,8 @@ void main() {
     final comment = faker.lorem.words(3).join(' ');
     final dataToSign = Helper.secureRandom().nextBytes(1000);
 
-    test('rsa test', () {
-      final secretKey = SecretKeyPacket.fromByteData(
+    test('rsa test', () async {
+      final secretKey = await SecretKeyPacket.fromByteData(
               base64.decode(rsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')))
           .decrypt(passphrase);
       final publicKey = PublicKeyPacket.fromByteData(
@@ -101,8 +101,8 @@ void main() {
       expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
     });
 
-    test('dsa test', () {
-      final secretKey = SecretKeyPacket.fromByteData(
+    test('dsa test', () async {
+      final secretKey = await SecretKeyPacket.fromByteData(
         base64.decode(dsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
       final publicKey = PublicKeyPacket.fromByteData(
@@ -118,8 +118,8 @@ void main() {
       expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
     });
 
-    test('ecdsa test', () {
-      final secretKey = SecretKeyPacket.fromByteData(
+    test('ecdsa test', () async {
+      final secretKey = await SecretKeyPacket.fromByteData(
         base64.decode(ecdsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
       final publicKey = PublicKeyPacket.fromByteData(
@@ -135,8 +135,8 @@ void main() {
       expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
     });
 
-    test('curve25519 test', () {
-      final secretKey = SecretKeyPacket.fromByteData(
+    test('curve25519 test', () async {
+      final secretKey = await SecretKeyPacket.fromByteData(
         base64.decode(curve25519SecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
       final publicKey = PublicKeyPacket.fromByteData(

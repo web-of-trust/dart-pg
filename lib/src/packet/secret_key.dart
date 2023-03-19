@@ -229,7 +229,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
   }
 
-  SecretKeyPacket decrypt(final String passphrase) {
+  Future<SecretKeyPacket> decrypt(final String passphrase) async {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {

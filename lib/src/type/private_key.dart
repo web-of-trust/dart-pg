@@ -300,23 +300,25 @@ class PrivateKey extends Key {
       throw ArgumentError('passphrase are required for key decryption');
     }
     return PrivateKey(
-      keyPacket.decrypt(passphrase),
+      await keyPacket.decrypt(passphrase),
       revocationSignatures: revocationSignatures,
       directSignatures: directSignatures,
       users: users,
-      subkeys: subkeys.map((subkey) {
+      subkeys: await Future.wait(subkeys.map((subkey) async {
         final index = subkeys.indexOf(subkey);
         final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
         if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
           return Subkey(
-            (subkey.keyPacket as SecretSubkeyPacket).decrypt(subkeyPassphrase),
+            (await (subkey.keyPacket as SecretSubkeyPacket).decrypt(subkeyPassphrase)) as SubkeyPacket,
             revocationSignatures: subkey.revocationSignatures,
             bindingSignatures: subkey.bindingSignatures,
           );
         } else {
           return subkey;
         }
-      }).toList(growable: false),
+      })),
     );
   }
+
+  await(SecretSubkeyPacket keyPacket) {}
 }

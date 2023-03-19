@@ -86,9 +86,9 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   }
 
   @override
-  SecretSubkeyPacket decrypt(final String passphrase) {
+  Future<SecretKeyPacket> decrypt(final String passphrase) async {
     if (secretParams == null) {
-      return _fromSecretKey(super.decrypt(passphrase));
+      return _fromSecretKey(await super.decrypt(passphrase));
     } else {
       return this;
     }

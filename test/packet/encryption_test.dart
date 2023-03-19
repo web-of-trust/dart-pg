@@ -69,8 +69,8 @@ void main() {
     final literalData = LiteralDataPacket.fromText(faker.randomGenerator.string(100));
     final packets = PacketList([literalData]);
 
-    test('rsa test', () {
-      final secretKey = SecretSubkeyPacket.fromByteData(
+    test('rsa test', () async {
+      final secretKey = await SecretSubkeyPacket.fromByteData(
         base64.decode(rsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
 
@@ -96,8 +96,8 @@ void main() {
       expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
 
-    test('elgamal test', () {
-      final secretKey = SecretSubkeyPacket.fromByteData(
+    test('elgamal test', () async {
+      final secretKey = await SecretSubkeyPacket.fromByteData(
         base64.decode(elgamalSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
 
@@ -123,8 +123,8 @@ void main() {
       expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
 
-    test('ecdh test', () {
-      final secretKey = SecretSubkeyPacket.fromByteData(
+    test('ecdh test', () async {
+      final secretKey = await SecretSubkeyPacket.fromByteData(
         base64.decode(ecdhSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
       final publicKey = PublicSubkeyPacket.fromByteData(
@@ -153,8 +153,8 @@ void main() {
       expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
 
-    test('curve25519 test', () {
-      final secretKey = SecretSubkeyPacket.fromByteData(
+    test('curve25519 test', () async {
+      final secretKey = await SecretSubkeyPacket.fromByteData(
         base64.decode(curve25519SecretSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
       final publicKey = PublicSubkeyPacket.fromByteData(
