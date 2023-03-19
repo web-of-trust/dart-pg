@@ -117,10 +117,10 @@ class Message {
   }
 
   /// Sign the message (the literal data packet of the message)
-  Message sign(
+  Future<Message> sign(
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
-  }) {
+  }) async {
     if (signingKeys.isEmpty) {
       throw ArgumentError('No signing keys provided');
     }
@@ -165,10 +165,10 @@ class Message {
   }
 
   /// Create a detached signature for the message (the literal data packet of the message)
-  Signature signDetached(
+  Future<Signature> signDetached(
     final List<PrivateKey> signingKeys, {
     final DateTime? date,
-  }) {
+  }) async {
     if (signingKeys.isEmpty) {
       throw ArgumentError('No signing keys provided');
     }
@@ -326,7 +326,9 @@ class Message {
 
   /// Compress the message (the literal and -if signed- signature data packets of the message)
   /// Return new message with compressed content.
-  Message compress([final CompressionAlgorithm algorithm = CompressionAlgorithm.uncompressed]) {
+  Future<Message> compress([
+    final CompressionAlgorithm algorithm = CompressionAlgorithm.uncompressed,
+  ]) async {
     if (algorithm != CompressionAlgorithm.uncompressed) {
       return Message(PacketList([
         CompressedDataPacket.fromPacketList(

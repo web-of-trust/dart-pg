@@ -156,18 +156,20 @@ class OpenPGP {
     final DateTime? date,
   }) async =>
       (signingKeys.isNotEmpty)
-          ? message.sign(signingKeys, date: date).compress(compression).encrypt(
-                encryptionKeys: encryptionKeys,
-                passwords: passwords,
-                sessionKeySymmetric: sessionKeySymmetric,
-                encryptionKeySymmetric: encryptionKeySymmetric,
+          ? message.sign(signingKeys, date: date).then((message) => message.compress(compression)).then(
+                (message) => message.encrypt(
+                  encryptionKeys: encryptionKeys,
+                  passwords: passwords,
+                  sessionKeySymmetric: sessionKeySymmetric,
+                  encryptionKeySymmetric: encryptionKeySymmetric,
+                ),
               )
-          : message.compress(compression).encrypt(
+          : message.compress(compression).then((message) => message.encrypt(
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
                 encryptionKeySymmetric: encryptionKeySymmetric,
-              );
+              ));
 
   /// Decrypt a message with the user's private key, or a password.
   /// One of `decryptionKeys` or `passwords` must be specified

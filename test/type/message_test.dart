@@ -61,7 +61,7 @@ void main() {
     final text = faker.randomGenerator.string(1000);
 
     test('atached test', () async {
-      final signedMessage = Message.createTextMessage(text).sign([signingKey]);
+      final signedMessage = await Message.createTextMessage(text).sign([signingKey]);
       expect(signedMessage.signingKeyIDs.elementAt(0).id, signingKey.keyID.id);
       expect(signedMessage.verifications.isEmpty, isTrue);
 
@@ -81,7 +81,7 @@ void main() {
 
     test('detached test', () async {
       final message = Message.createTextMessage(text);
-      final signature = message.signDetached([signingKey]);
+      final signature = await message.signDetached([signingKey]);
       final verifiedMessage = await message.verifySignature(signature, [verificationKey]);
 
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
@@ -100,8 +100,8 @@ void main() {
   group('Message compression', () {
     final text = faker.randomGenerator.string(1000);
 
-    test('zip test', () {
-      final compressedMessage = Message.createTextMessage(text).compress(CompressionAlgorithm.zip);
+    test('zip test', () async {
+      final compressedMessage = await Message.createTextMessage(text).compress(CompressionAlgorithm.zip);
       expect(compressedMessage.packetList.length, 1);
       expect(compressedMessage.packetList.whereType<CompressedDataPacket>().elementAt(0).algorithm,
           CompressionAlgorithm.zip);
@@ -112,8 +112,8 @@ void main() {
       expect(message.literalData!.text, text);
     });
 
-    test('zlib test', () {
-      final compressedMessage = Message.createTextMessage(text).compress(CompressionAlgorithm.zlib);
+    test('zlib test', () async {
+      final compressedMessage = await Message.createTextMessage(text).compress(CompressionAlgorithm.zlib);
       expect(compressedMessage.packetList.length, 1);
       expect(compressedMessage.packetList.whereType<CompressedDataPacket>().elementAt(0).algorithm,
           CompressionAlgorithm.zlib);
@@ -146,7 +146,9 @@ void main() {
     final text = faker.randomGenerator.string(1000);
     final createTextMessage = Message.createTextMessage(text);
     final signedMessage = createTextMessage.sign([signingKey]);
-    final encryptedMessage = signedMessage.encrypt(encryptionKeys: encryptionKeys, passwords: [password]);
+    final encryptedMessage = signedMessage.then(
+      (signedMessage) => signedMessage.encrypt(encryptionKeys: encryptionKeys, passwords: [password]),
+    );
 
     test('encrypted test', () {
       encryptedMessage.then((message) {
@@ -174,7 +176,7 @@ void main() {
       expect(decryptedMessage.literalData!.text, text);
 
       final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = signedMessage.signaturePackets;
+      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);
@@ -195,7 +197,7 @@ void main() {
       expect(decryptedMessage.literalData!.text, text);
 
       final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = signedMessage.signaturePackets;
+      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);
@@ -216,7 +218,7 @@ void main() {
       expect(decryptedMessage.literalData!.text, text);
 
       final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = signedMessage.signaturePackets;
+      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);
@@ -237,7 +239,7 @@ void main() {
       expect(decryptedMessage.literalData!.text, text);
 
       final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = signedMessage.signaturePackets;
+      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);
@@ -258,7 +260,7 @@ void main() {
       expect(decryptedMessage.literalData!.text, text);
 
       final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = signedMessage.signaturePackets;
+      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);

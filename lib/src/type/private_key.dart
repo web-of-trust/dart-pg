@@ -268,12 +268,12 @@ class PrivateKey extends Key {
       revocationSignatures: revocationSignatures,
       directSignatures: directSignatures,
       users: users,
-      subkeys: subkeys.map((subkey) {
+      subkeys: await Future.wait(subkeys.map((subkey) async {
         final index = subkeys.indexOf(subkey);
         final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
         if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
           return Subkey(
-            await(subkey.keyPacket as SecretSubkeyPacket).encrypt(
+            await (subkey.keyPacket as SecretSubkeyPacket).encrypt(
               subkeyPassphrase,
               s2kUsage: s2kUsage,
               symmetric: symmetric,
@@ -286,7 +286,7 @@ class PrivateKey extends Key {
         } else {
           return subkey;
         }
-      }).toList(growable: false),
+      })),
     );
   }
 
@@ -309,7 +309,7 @@ class PrivateKey extends Key {
         final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
         if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
           return Subkey(
-            (await (subkey.keyPacket as SecretSubkeyPacket).decrypt(subkeyPassphrase)),
+            await (subkey.keyPacket as SecretSubkeyPacket).decrypt(subkeyPassphrase),
             revocationSignatures: subkey.revocationSignatures,
             bindingSignatures: subkey.bindingSignatures,
           );
@@ -319,6 +319,4 @@ class PrivateKey extends Key {
       })),
     );
   }
-
-  await(SecretSubkeyPacket keyPacket) {}
 }
