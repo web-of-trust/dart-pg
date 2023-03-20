@@ -121,17 +121,17 @@ class Subkey {
     return false;
   }
 
-  Subkey revoke({
+  Future<Subkey> revoke({
     RevocationReasonTag reason = RevocationReasonTag.noReason,
     String description = '',
     final DateTime? date,
-  }) {
+  }) async {
     if (mainKey != null && mainKey is PrivateKey) {
       return Subkey(
         keyPacket,
         mainKey: mainKey,
         revocationSignatures: [
-          SignaturePacket.createSubkeyRevocation(
+          await SignaturePacket.createSubkeyRevocation(
             (mainKey as PrivateKey).keyPacket,
             keyPacket,
             reason: reason,

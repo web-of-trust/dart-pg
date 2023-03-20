@@ -90,12 +90,12 @@ void main() {
           .decrypt(passphrase);
       final publicKey = PublicKeyPacket.fromByteData(
           base64.decode(rsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
-      final signature = SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
+      final signature = await SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
 
       expect(await signature.verify(publicKey, dataToSign), isTrue);
 
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
-      final selfCertificate = SignaturePacket.createSelfCertificate(secretKey, userID: userID);
+      final selfCertificate = await SignaturePacket.createSelfCertificate(secretKey, userID: userID);
       expect(await selfCertificate.verifyUserCertification(publicKey, userID: userID), isTrue);
       expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.certifyKeys.value);
       expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
@@ -107,12 +107,12 @@ void main() {
       ).decrypt(passphrase);
       final publicKey = PublicKeyPacket.fromByteData(
           base64.decode(dsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
-      final signature = SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
+      final signature = await SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
 
       expect(await signature.verify(publicKey, dataToSign), isTrue);
 
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
-      final selfCertificate = SignaturePacket.createSelfCertificate(secretKey, userID: userID);
+      final selfCertificate = await SignaturePacket.createSelfCertificate(secretKey, userID: userID);
       expect(await selfCertificate.verifyUserCertification(publicKey, userID: userID), isTrue);
       expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.certifyKeys.value);
       expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
@@ -124,12 +124,12 @@ void main() {
       ).decrypt(passphrase);
       final publicKey = PublicKeyPacket.fromByteData(
           base64.decode(ecdsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
-      final signature = SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
+      final signature = await SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
 
       expect(await signature.verify(publicKey, dataToSign), isTrue);
 
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
-      final selfCertificate = SignaturePacket.createSelfCertificate(secretKey, userID: userID);
+      final selfCertificate = await SignaturePacket.createSelfCertificate(secretKey, userID: userID);
       expect(await selfCertificate.verifyUserCertification(publicKey, userID: userID), isTrue);
       expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.certifyKeys.value);
       expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
@@ -141,12 +141,12 @@ void main() {
       ).decrypt(passphrase);
       final publicKey = PublicKeyPacket.fromByteData(
           base64.decode(curve25519PublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
-      final signature = SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
+      final signature = await SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
 
       expect(await signature.verify(publicKey, dataToSign), isTrue);
 
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
-      final selfCertificate = SignaturePacket.createSelfCertificate(secretKey, userID: userID);
+      final selfCertificate = await SignaturePacket.createSelfCertificate(secretKey, userID: userID);
 
       expect(await selfCertificate.verifyUserCertification(publicKey, userID: userID), isTrue);
       expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.certifyKeys.value);

@@ -63,7 +63,10 @@ class RSASecretParams extends KeyParams {
         ...pInv.toUnsignedBytes(),
       ]);
 
-  Uint8List sign(final Uint8List message, final HashAlgorithm hash) {
+  Future<Uint8List> sign(
+    final Uint8List message,
+    final HashAlgorithm hash,
+  ) async {
     final signer = Signer('${hash.digestName}/RSA')
       ..init(
         true,

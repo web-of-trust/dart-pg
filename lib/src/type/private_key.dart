@@ -120,7 +120,7 @@ class PrivateKey extends Key {
       final userIDPacket = UserIDPacket(userID);
       packets.addAll([
         userIDPacket,
-        SignaturePacket.createSelfCertificate(
+        await SignaturePacket.createSelfCertificate(
           secretKey,
           userID: userIDPacket,
           keyExpirationTime: keyExpirationTime,
@@ -132,7 +132,7 @@ class PrivateKey extends Key {
     /// Wrap secret subkey with binding signature
     packets.addAll([
       secretSubkey,
-      SignaturePacket.createSubkeyBinding(
+      await SignaturePacket.createSubkeyBinding(
         secretKey,
         secretSubkey,
         keyExpirationTime: keyExpirationTime,

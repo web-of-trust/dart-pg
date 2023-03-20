@@ -182,7 +182,7 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  factory SignaturePacket.createSignature(
+  static Future<SignaturePacket> createSignature(
     final SecretKeyPacket signKey,
     final SignatureType signatureType,
     final Uint8List dataToSign, {
@@ -190,7 +190,7 @@ class SignaturePacket extends ContainedPacket {
     final List<SignatureSubpacket> subpackets = const [],
     final int keyExpirationTime = 0,
     final DateTime? date,
-  }) {
+  }) async {
     final version = signKey.version;
     final keyAlgorithm = signKey.algorithm;
     final hashAlgorithm = preferredHash ?? signKey.preferredHash;
@@ -227,19 +227,19 @@ class SignaturePacket extends ContainedPacket {
       keyAlgorithm,
       hashAlgorithm,
       Helper.hashDigest(message, hashAlgorithm).sublist(0, 2),
-      _signMessage(signKey, hashAlgorithm, message),
+      await _signMessage(signKey, hashAlgorithm, message),
       hashedSubpackets: hashedSubpackets,
     );
   }
 
-  factory SignaturePacket.createSelfCertificate(
+  static Future<SignaturePacket> createSelfCertificate(
     final SecretKeyPacket signKey, {
     final HashAlgorithm? preferredHash,
     final UserIDPacket? userID,
     final UserAttributePacket? userAttribute,
     final int keyExpirationTime = 0,
     final DateTime? date,
-  }) {
+  }) async {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
       throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
@@ -277,14 +277,14 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  factory SignaturePacket.createCertifySignature(
+  static Future<SignaturePacket> createCertifySignature(
     final SecretKeyPacket signKey, {
     final HashAlgorithm? preferredHash,
     final UserIDPacket? userID,
     final UserAttributePacket? userAttribute,
     final int keyExpirationTime = 0,
     final DateTime? date,
-  }) {
+  }) async {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
       throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
@@ -305,13 +305,13 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  factory SignaturePacket.createKeyBinding(
+  static Future<SignaturePacket> createKeyBinding(
     final SecretKeyPacket signKey,
     final KeyPacket bindKey, {
     final HashAlgorithm? preferredHash,
     final int keyExpirationTime = 0,
     final DateTime? date,
-  }) {
+  }) async {
     return SignaturePacket.createSignature(
       signKey,
       SignatureType.keyBinding,
@@ -325,18 +325,18 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  factory SignaturePacket.createSubkeyBinding(
+  static Future<SignaturePacket> createSubkeyBinding(
     final SecretKeyPacket signKey,
     final SecretSubkeyPacket subkey, {
     final HashAlgorithm? preferredHash,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,
     final DateTime? date,
-  }) {
+  }) async {
     final subpackets = <SignatureSubpacket>[];
     if (subkeySign) {
       subpackets.add(KeyFlags.fromFlags(KeyFlag.signData.value));
-      subpackets.add(EmbeddedSignature.fromSignature(SignaturePacket.createSignature(
+      subpackets.add(EmbeddedSignature.fromSignature(await SignaturePacket.createSignature(
         subkey,
         SignatureType.keyBinding,
         Uint8List.fromList([
@@ -363,13 +363,13 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  factory SignaturePacket.createKeyRevocation(
+  static Future<SignaturePacket> createKeyRevocation(
     final SecretKeyPacket signKey, {
     final HashAlgorithm? preferredHash,
     final RevocationReasonTag reason = RevocationReasonTag.noReason,
     final String description = '',
     final DateTime? date,
-  }) {
+  }) async {
     return SignaturePacket.createSignature(
       signKey,
       SignatureType.keyRevocation,
@@ -382,14 +382,14 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  factory SignaturePacket.createSubkeyRevocation(
+  static Future<SignaturePacket> createSubkeyRevocation(
     final SecretKeyPacket signKey,
     final SubkeyPacket subKey, {
     final HashAlgorithm? preferredHash,
     final RevocationReasonTag reason = RevocationReasonTag.noReason,
     final String description = '',
     final DateTime? date,
-  }) {
+  }) async {
     return SignaturePacket.createSignature(
       signKey,
       SignatureType.subkeyRevocation,
@@ -403,12 +403,12 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  factory SignaturePacket.createLiteralData(
+  static Future<SignaturePacket> createLiteralData(
     final SecretKeyPacket signKey,
     final LiteralDataPacket literalData, {
     final HashAlgorithm? preferredHash,
     final DateTime? date,
-  }) {
+  }) async {
     final SignatureType signatureType;
     switch (literalData.format) {
       case LiteralFormat.text:
@@ -527,29 +527,33 @@ class SignaturePacket extends ContainedPacket {
   }
 
   /// Signs provided data. This needs to be done prior to serialization.
-  static Uint8List _signMessage(
+  static Future<Uint8List> _signMessage(
     final SecretKeyPacket key,
     final HashAlgorithm hash,
     final Uint8List message,
-  ) {
+  ) async {
     final Uint8List signature;
     switch (key.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaSign:
-        signature = (key.secretParams as RSASecretParams).sign(message, hash);
+        signature = await (key.secretParams as RSASecretParams).sign(message, hash);
         break;
       case KeyAlgorithm.dsa:
-        signature = (key.secretParams as DSASecretParams).sign(key.publicParams as DSAPublicParams, message, hash);
+        signature = await (key.secretParams as DSASecretParams).sign(
+          key.publicParams as DSAPublicParams,
+          message,
+          hash,
+        );
         break;
       case KeyAlgorithm.ecdsa:
-        signature = (key.secretParams as ECSecretParams).sign(
+        signature = await (key.secretParams as ECSecretParams).sign(
           key.publicParams as ECPublicParams,
           message,
           hash,
         );
         break;
       case KeyAlgorithm.eddsa:
-        signature = (key.secretParams as EdSecretParams).sign(message, hash);
+        signature = await (key.secretParams as EdSecretParams).sign(message, hash);
         break;
       default:
         throw UnsupportedError('Unsupported public key algorithm for signing.');
