@@ -55,14 +55,20 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
       0xd3,
       0x14,
     ]);
-    final plainText = Uint8List.fromList([...toHash, ...Helper.hashDigest(toHash, HashAlgorithm.sha1)]);
+    final plainText = Uint8List.fromList([
+      ...toHash,
+      ...Helper.hashDigest(toHash, HashAlgorithm.sha1),
+    ]);
 
     final cipher = BufferedCipher(symmetric.cipherEngine)
       ..init(
         true,
         ParametersWithIV(KeyParameter(key), Uint8List(symmetric.blockSize)),
       );
-    return SymEncryptedIntegrityProtectedDataPacket(cipher.process(plainText), packets: packets);
+    return SymEncryptedIntegrityProtectedDataPacket(
+      cipher.process(plainText),
+      packets: packets,
+    );
   }
 
   @override

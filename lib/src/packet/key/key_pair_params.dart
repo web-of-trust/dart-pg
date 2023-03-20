@@ -75,7 +75,9 @@ class KeyPairParams {
       case KeyAlgorithm.elgamal:
         return _generateElGamalKeyPair(dhKeySize);
       default:
-        throw UnimplementedError('Unknown public key algorithm for key generation.');
+        throw UnimplementedError(
+          'Unknown public key algorithm for key generation.',
+        );
     }
   }
 
@@ -187,7 +189,9 @@ class KeyPairParams {
     switch (curve) {
       case CurveInfo.curve25519:
       case CurveInfo.ed25519:
-        throw UnsupportedError('Curve ${curve.name} is unsupported for key generation.');
+        throw UnsupportedError(
+          'Curve ${curve.name} is unsupported for key generation.',
+        );
       default:
         final keyGen = KeyGenerator('EC')
           ..init(
@@ -233,7 +237,9 @@ class KeyPairParams {
         CurveInfo.curve25519.symmetricAlgorithm,
       ),
       ECSecretParams(
-        Uint8List.fromList(privateKey.asTypedList.reversed.toList()).toBigIntWithSign(1),
+        Uint8List.fromList(
+          privateKey.asTypedList.reversed.toList(),
+        ).toBigIntWithSign(1),
       ),
     );
   }

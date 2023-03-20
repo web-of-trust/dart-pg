@@ -43,7 +43,9 @@ class OnePassSignaturePacket extends ContainedPacket {
     var pos = 0;
     final version = bytes[pos++];
     if (version != 3) {
-      throw UnsupportedError('Version $version of the one-pass signature packet is unsupported.');
+      throw UnsupportedError(
+        'Version $version of the one-pass signature packet is unsupported.',
+      );
     }
 
     final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);

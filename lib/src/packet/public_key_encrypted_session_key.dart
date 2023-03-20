@@ -54,7 +54,9 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     var pos = 0;
     final pkeskVersion = bytes[pos++];
     if (pkeskVersion != version) {
-      throw UnsupportedError('Version $pkeskVersion of the PKESK packet is unsupported.');
+      throw UnsupportedError(
+        'Version $pkeskVersion of the PKESK packet is unsupported.',
+      );
     }
 
     final keyID = bytes.sublist(pos, pos + 8);
@@ -76,7 +78,9 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
         params = ECDHSessionKeyParams.fromByteData(bytes.sublist(pos));
         break;
       default:
-        throw UnsupportedError('Unsupported PGP public key algorithm encountered');
+        throw UnsupportedError(
+          'Unsupported PGP public key algorithm encountered',
+        );
     }
 
     return PublicKeyEncryptedSessionKeyPacket(

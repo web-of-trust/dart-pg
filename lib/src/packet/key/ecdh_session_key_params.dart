@@ -72,7 +72,9 @@ class ECDHSessionKeyParams extends SessionKeyParams {
         );
         break;
       case CurveInfo.ed25519:
-        throw UnsupportedError('Curve ${publicParams.curve.name} is unsupported for ephemeral key generation.');
+        throw UnsupportedError(
+          'Curve ${publicParams.curve.name} is unsupported for ephemeral key generation.',
+        );
       default:
         final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
         final keyGen = KeyGenerator('EC')

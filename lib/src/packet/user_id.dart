@@ -61,8 +61,10 @@ class UserIDPacket extends ContainedPacket {
   }
 
   static String _extractEmail(final String userID) {
-    final pattern = RegExp(r'\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b', caseSensitive: false);
-    final match = pattern.firstMatch(userID);
+    final match = RegExp(
+      r'\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b',
+      caseSensitive: false,
+    ).firstMatch(userID);
     return match?.group(0) ?? '';
   }
 

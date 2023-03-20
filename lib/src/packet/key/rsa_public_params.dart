@@ -47,6 +47,9 @@ class RSAPublicParams extends KeyParams {
         false,
         PublicKeyParameter<RSAPublicKey>(publicKey),
       );
-    return signer.verifySignature(message, RSASignature(Helper.readMPI(signature).toUnsignedBytes()));
+    return signer.verifySignature(
+      message,
+      RSASignature(Helper.readMPI(signature).toUnsignedBytes()),
+    );
   }
 }

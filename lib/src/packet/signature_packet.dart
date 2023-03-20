@@ -242,7 +242,9 @@ class SignaturePacket extends ContainedPacket {
   }) async {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
-      throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
+      throw ArgumentError(
+        'Either a userID or userAttribute packet needs to be supplied for certification.',
+      );
     }
     return SignaturePacket.createSignature(
       signKey,
@@ -287,7 +289,9 @@ class SignaturePacket extends ContainedPacket {
   }) async {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
-      throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
+      throw ArgumentError(
+        'Either a userID or userAttribute packet needs to be supplied for certification.',
+      );
     }
     return SignaturePacket.createSignature(
       signKey,
@@ -347,7 +351,9 @@ class SignaturePacket extends ContainedPacket {
         date: date,
       )));
     } else {
-      subpackets.add(KeyFlags.fromFlags(KeyFlag.encryptCommunication.value | KeyFlag.encryptStorage.value));
+      subpackets.add(
+        KeyFlags.fromFlags(KeyFlag.encryptCommunication.value | KeyFlag.encryptStorage.value),
+      );
     }
     return SignaturePacket.createSignature(
       signKey,
@@ -445,7 +451,9 @@ class SignaturePacket extends ContainedPacket {
       throw ArgumentError('Signature was not issued by the given public key.');
     }
     if (keyAlgorithm != verifyKey.algorithm) {
-      throw ArgumentError('Public key algorithm used to sign signature does not match issuer key algorithm.');
+      throw ArgumentError(
+        'Public key algorithm used to sign signature does not match issuer key algorithm.',
+      );
     }
     if (signatureExpirationTime != null &&
         signatureExpirationTime!.expirationTime.compareTo(date ?? DateTime.now()) < 0) {
@@ -490,7 +498,9 @@ class SignaturePacket extends ContainedPacket {
   }) async {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
-      throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
+      throw ArgumentError(
+        'Either a userID or userAttribute packet needs to be supplied for certification.',
+      );
     }
     return verify(
       verifyKey,
@@ -532,33 +542,27 @@ class SignaturePacket extends ContainedPacket {
     final HashAlgorithm hash,
     final Uint8List message,
   ) async {
-    final Uint8List signature;
     switch (key.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaSign:
-        signature = await (key.secretParams as RSASecretParams).sign(message, hash);
-        break;
+        return await (key.secretParams as RSASecretParams).sign(message, hash);
       case KeyAlgorithm.dsa:
-        signature = await (key.secretParams as DSASecretParams).sign(
+        return await (key.secretParams as DSASecretParams).sign(
           key.publicParams as DSAPublicParams,
           message,
           hash,
         );
-        break;
       case KeyAlgorithm.ecdsa:
-        signature = await (key.secretParams as ECSecretParams).sign(
+        return await (key.secretParams as ECSecretParams).sign(
           key.publicParams as ECPublicParams,
           message,
           hash,
         );
-        break;
       case KeyAlgorithm.eddsa:
-        signature = await (key.secretParams as EdSecretParams).sign(message, hash);
-        break;
+        return await (key.secretParams as EdSecretParams).sign(message, hash);
       default:
         throw UnsupportedError('Unsupported public key algorithm for signing.');
     }
-    return signature;
   }
 
   /// Creates list of bytes with subpacket data
@@ -756,7 +760,9 @@ class SignaturePacket extends ContainedPacket {
     return subpackets;
   }
 
-  static T? _getSubpacket<T extends SignatureSubpacket>(final List<SignatureSubpacket> subpackets) {
+  static T? _getSubpacket<T extends SignatureSubpacket>(
+    final List<SignatureSubpacket> subpackets,
+  ) {
     final typedSubpackets = subpackets.whereType<T>();
     return typedSubpackets.isNotEmpty ? typedSubpackets.first : null;
   }

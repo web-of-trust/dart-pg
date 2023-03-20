@@ -83,7 +83,10 @@ class SymEncryptedDataPacket extends ContainedPacket {
     }
     final blockSize = symmetric.blockSize;
     final cipher = BufferedCipher(symmetric.cipherEngine)
-      ..init(false, ParametersWithIV(KeyParameter(key), encrypted.sublist(2, blockSize + 2)));
+      ..init(
+        false,
+        ParametersWithIV(KeyParameter(key), encrypted.sublist(2, blockSize + 2)),
+      );
     return SymEncryptedDataPacket(
       encrypted,
       packets: PacketList.packetDecode(cipher.process(encrypted.sublist(blockSize + 2))),

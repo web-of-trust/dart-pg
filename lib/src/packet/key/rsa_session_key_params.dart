@@ -50,7 +50,11 @@ class RSASessionKeyParams extends SessionKeyParams {
     return decodeSessionKey(
       Helper.emeDecode(
         _processInBlocks(
-          AsymmetricBlockCipher('RSA')..init(false, PrivateKeyParameter<RSAPrivateKey>(key)),
+          AsymmetricBlockCipher('RSA')
+            ..init(
+              false,
+              PrivateKeyParameter<RSAPrivateKey>(key),
+            ),
           encrypted.toUnsignedBytes(),
         ),
       ),
