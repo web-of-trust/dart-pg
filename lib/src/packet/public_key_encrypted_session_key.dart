@@ -100,14 +100,14 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
         final rsaPublicKey = (publicKey.publicParams as RSAPublicParams).publicKey;
-        params = RSASessionKeyParams.encryptSessionKey(rsaPublicKey, sessionKey);
+        params = await RSASessionKeyParams.encryptSessionKey(rsaPublicKey, sessionKey);
         break;
       case KeyAlgorithm.elgamal:
         final elGamalPublicKey = (publicKey.publicParams as ElGamalPublicParams).publicKey;
-        params = ElGamalSessionKeyParams.encryptSessionKey(elGamalPublicKey, sessionKey);
+        params = await ElGamalSessionKeyParams.encryptSessionKey(elGamalPublicKey, sessionKey);
         break;
       case KeyAlgorithm.ecdh:
-        params = ECDHSessionKeyParams.encryptSessionKey(
+        params = await ECDHSessionKeyParams.encryptSessionKey(
           (publicKey.publicParams as ECDHPublicParams),
           sessionKey,
           publicKey.fingerprint.hexToBytes(),
@@ -148,12 +148,12 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
         case KeyAlgorithm.rsaEncryptSign:
         case KeyAlgorithm.rsaEncrypt:
           final privateKey = (key.secretParams as RSASecretParams).privateKey;
-          sessionKey = (sessionKeyParams as RSASessionKeyParams).decrypt(privateKey);
+          sessionKey = await (sessionKeyParams as RSASessionKeyParams).decrypt(privateKey);
           break;
         case KeyAlgorithm.elgamal:
           final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
           final secretExponent = (key.secretParams as ElGamalSecretParams).secretExponent;
-          sessionKey = (sessionKeyParams as ElGamalSessionKeyParams).decrypt(
+          sessionKey = await (sessionKeyParams as ElGamalSessionKeyParams).decrypt(
             ElGamalPrivateKey(
               secretExponent,
               publicKey.prime,
@@ -162,7 +162,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
           );
           break;
         case KeyAlgorithm.ecdh:
-          sessionKey = (sessionKeyParams as ECDHSessionKeyParams).decrypt(
+          sessionKey = await (sessionKeyParams as ECDHSessionKeyParams).decrypt(
             key.secretParams as ECSecretParams,
             key.publicParams as ECDHPublicParams,
             key.fingerprint.hexToBytes(),

@@ -31,10 +31,10 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
     return ElGamalSessionKeyParams(gamma, phi);
   }
 
-  factory ElGamalSessionKeyParams.encryptSessionKey(
+  static Future<ElGamalSessionKeyParams> encryptSessionKey(
     final ElGamalPublicKey key,
     final SessionKey sessionKey,
-  ) {
+  ) async {
     final engine = ElGamalEngine()
       ..init(
         true,
@@ -63,7 +63,7 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
         ...phi.toUnsignedBytes(),
       ]);
 
-  SessionKey decrypt(final ElGamalPrivateKey key) {
+  Future<SessionKey> decrypt(final ElGamalPrivateKey key) async {
     final engine = ElGamalEngine()
       ..init(
         false,

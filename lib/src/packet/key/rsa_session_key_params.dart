@@ -22,7 +22,10 @@ class RSASessionKeyParams extends SessionKeyParams {
 
   factory RSASessionKeyParams.fromByteData(final Uint8List bytes) => RSASessionKeyParams(Helper.readMPI(bytes));
 
-  factory RSASessionKeyParams.encryptSessionKey(final RSAPublicKey key, final SessionKey sessionKey) {
+  static Future<RSASessionKeyParams> encryptSessionKey(
+    final RSAPublicKey key,
+    final SessionKey sessionKey,
+  ) async {
     return RSASessionKeyParams(
       _processInBlocks(
         AsymmetricBlockCipher('RSA')..init(true, PublicKeyParameter<RSAPublicKey>(key)),
@@ -43,7 +46,7 @@ class RSASessionKeyParams extends SessionKeyParams {
         ...encrypted.toUnsignedBytes(),
       ]);
 
-  SessionKey decrypt(final RSAPrivateKey key) {
+  Future<SessionKey> decrypt(final RSAPrivateKey key) async {
     return decodeSessionKey(
       Helper.emeDecode(
         _processInBlocks(

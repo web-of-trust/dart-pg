@@ -17,7 +17,7 @@ class AesKeyWrapper {
 
   static final _aes = BlockCipher('AES/ECB');
 
-  static Uint8List wrap(final Uint8List key, final Uint8List data) {
+  static Future<Uint8List> wrap(final Uint8List key, final Uint8List data) async {
     if (data.lengthInBytes < 16) {
       throw StateError('Data to be wrapped should be at least 128 bits');
     }
@@ -45,7 +45,7 @@ class AesKeyWrapper {
     return Uint8List.fromList([...a, ...r]);
   }
 
-  static Uint8List unwrap(final Uint8List key, final Uint8List data) {
+  static Future<Uint8List> unwrap(final Uint8List key, final Uint8List data) async {
     if (data.lengthInBytes < 16) {
       throw StateError('Data to be unwrapped should be at least 128 bits');
     }

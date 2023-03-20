@@ -37,11 +37,11 @@ class RSAPublicParams extends KeyParams {
         ...publicExponent.toUnsignedBytes(),
       ]);
 
-  bool verify(
+  Future<bool> verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,
-  ) {
+  ) async {
     final signer = Signer('${hash.digestName}/RSA')
       ..init(
         false,

@@ -50,11 +50,11 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     return ECDHSessionKeyParams(ephemeralKey, wrappedKey);
   }
 
-  factory ECDHSessionKeyParams.encryptSessionKey(
+  static Future<ECDHSessionKeyParams> encryptSessionKey(
     final ECDHPublicParams publicParams,
     final SessionKey sessionKey,
     final Uint8List fingerprint,
-  ) {
+  ) async {
     final BigInt ephemeralKey;
     final Uint8List sharedKey;
 
@@ -97,7 +97,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     final param = _buildEcdhParam(publicParams, fingerprint);
     final keySize = (publicParams.kdfSymmetric.keySize + 7) >> 3;
 
-    final wrappedKey = AesKeyWrapper.wrap(
+    final wrappedKey = await AesKeyWrapper.wrap(
       _kdf(publicParams.kdfHash, sharedKey, keySize, param),
       _pkcs5Encode(Uint8List.fromList([
         ...sessionKey.encode(),
@@ -119,11 +119,11 @@ class ECDHSessionKeyParams extends SessionKeyParams {
         ...wrappedKey,
       ]);
 
-  SessionKey decrypt(
+  Future<SessionKey> decrypt(
     final ECSecretParams secretParams,
     final ECDHPublicParams publicParams,
     final Uint8List fingerprint,
-  ) {
+  ) async {
     final Uint8List sharedKey;
     switch (publicParams.curve) {
       case CurveInfo.curve25519:
@@ -154,7 +154,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     final param = _buildEcdhParam(publicParams, fingerprint);
     final keySize = (publicParams.kdfSymmetric.keySize + 7) >> 3;
     return decodeSessionKey(_pkcs5Decode(
-      AesKeyWrapper.unwrap(
+      await AesKeyWrapper.unwrap(
         _kdf(publicParams.kdfHash, sharedKey, keySize, param),
         wrappedKey,
       ),

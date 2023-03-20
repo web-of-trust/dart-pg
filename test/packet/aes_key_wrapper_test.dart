@@ -11,22 +11,8 @@ void main() {
     final key256 = Uint8List.fromList(List.generate(32, (index) => index));
 
     final keyData128 = Uint8List.fromList([
-      0x00,
-      0x11,
-      0x22,
-      0x33,
-      0x44,
-      0x55,
-      0x66,
-      0x77,
-      0x88,
-      0x99,
-      0xaa,
-      0xbb,
-      0xcc,
-      0xdd,
-      0xee,
-      0xff,
+      0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, // 0 - 7
+      0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
     ]);
     final keyData192 = Uint8List.fromList([
       0x00,
@@ -89,7 +75,7 @@ void main() {
       0x0f,
     ]);
 
-    test('128-bit test', () {
+    test('128-bit test', () async {
       final wrappedKey128128 = Uint8List.fromList([
         0x1f,
         0xa6,
@@ -116,20 +102,20 @@ void main() {
         0xcf,
         0xe5,
       ]);
-      final wrappedKey128 = AesKeyWrapper.wrap(key128, keyData128);
-      var unwrappedKey128 = AesKeyWrapper.unwrap(key128, wrappedKey128);
+      final wrappedKey128 = await AesKeyWrapper.wrap(key128, keyData128);
+      var unwrappedKey128 = await AesKeyWrapper.unwrap(key128, wrappedKey128);
 
       expect(wrappedKey128, equals(wrappedKey128128));
       expect(unwrappedKey128, equals(keyData128));
 
       final key = Helper.secureRandom().nextBytes(16);
       final keyData = Helper.secureRandom().nextBytes(32);
-      final wrappedKey = AesKeyWrapper.wrap(key, keyData);
-      var unwrappedKey = AesKeyWrapper.unwrap(key, wrappedKey);
+      final wrappedKey = await AesKeyWrapper.wrap(key, keyData);
+      var unwrappedKey = await AesKeyWrapper.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
-    test('192-bit test', () {
+    test('192-bit test', () async {
       final wrappedKey128192 = Uint8List.fromList([
         0x96,
         0x77,
@@ -191,24 +177,24 @@ void main() {
         0xd2
       ]);
 
-      final wrappedKey128 = AesKeyWrapper.wrap(key192, keyData128);
-      var unwrappedKey128 = AesKeyWrapper.unwrap(key192, wrappedKey128);
+      final wrappedKey128 = await AesKeyWrapper.wrap(key192, keyData128);
+      var unwrappedKey128 = await AesKeyWrapper.unwrap(key192, wrappedKey128);
       expect(wrappedKey128, equals(wrappedKey128192));
       expect(unwrappedKey128, equals(keyData128));
 
-      final wrappedKey192 = AesKeyWrapper.wrap(key192, keyData192);
-      var unwrappedKey192 = AesKeyWrapper.unwrap(key192, wrappedKey192);
+      final wrappedKey192 = await AesKeyWrapper.wrap(key192, keyData192);
+      var unwrappedKey192 = await AesKeyWrapper.unwrap(key192, wrappedKey192);
       expect(wrappedKey192, equals(wrappedKey192192));
       expect(unwrappedKey192, equals(keyData192));
 
       final key = Helper.secureRandom().nextBytes(24);
       final keyData = Helper.secureRandom().nextBytes(32);
-      final wrappedKey = AesKeyWrapper.wrap(key, keyData);
-      var unwrappedKey = AesKeyWrapper.unwrap(key, wrappedKey);
+      final wrappedKey = await AesKeyWrapper.wrap(key, keyData);
+      var unwrappedKey = await AesKeyWrapper.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
-    test('256-bit test', () {
+    test('256-bit test', () async {
       final wrappedKey128256 = Uint8List.fromList([
         0x64,
         0xe8,
@@ -312,25 +298,25 @@ void main() {
         0x21,
       ]);
 
-      final wrappedKey128 = AesKeyWrapper.wrap(key256, keyData128);
-      var unwrappedKey128 = AesKeyWrapper.unwrap(key256, wrappedKey128);
+      final wrappedKey128 = await AesKeyWrapper.wrap(key256, keyData128);
+      var unwrappedKey128 = await AesKeyWrapper.unwrap(key256, wrappedKey128);
       expect(wrappedKey128, equals(wrappedKey128256));
       expect(unwrappedKey128, equals(keyData128));
 
-      final wrappedKey192 = AesKeyWrapper.wrap(key256, keyData192);
-      var unwrappedKey192 = AesKeyWrapper.unwrap(key256, wrappedKey192);
+      final wrappedKey192 = await AesKeyWrapper.wrap(key256, keyData192);
+      var unwrappedKey192 = await AesKeyWrapper.unwrap(key256, wrappedKey192);
       expect(wrappedKey192, equals(wrappedKey192256));
       expect(unwrappedKey192, equals(keyData192));
 
-      final wrappedKey256 = AesKeyWrapper.wrap(key256, keyData256);
-      var unwrappedKey256 = AesKeyWrapper.unwrap(key256, wrappedKey256);
+      final wrappedKey256 = await AesKeyWrapper.wrap(key256, keyData256);
+      var unwrappedKey256 = await AesKeyWrapper.unwrap(key256, wrappedKey256);
       expect(wrappedKey256, equals(wrappedKey256256));
       expect(unwrappedKey256, equals(keyData256));
 
       final key = Helper.secureRandom().nextBytes(32);
       final keyData = Helper.secureRandom().nextBytes(32);
-      final wrappedKey = AesKeyWrapper.wrap(key, keyData);
-      var unwrappedKey = AesKeyWrapper.unwrap(key, wrappedKey);
+      final wrappedKey = await AesKeyWrapper.wrap(key, keyData);
+      var unwrappedKey = await AesKeyWrapper.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
   });

@@ -72,11 +72,11 @@ class DSAPublicParams extends KeyParams {
         ...publicExponent.toUnsignedBytes(),
       ]);
 
-  bool verify(
+  Future<bool> verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,
-  ) {
+  ) async {
     final signer = DSASigner(Digest(hash.digestName))
       ..init(
         false,
