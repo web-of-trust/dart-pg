@@ -71,7 +71,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
   int processBlock(
     final Uint8List input,
     final int inOff,
-    final int inLen,
+    final int inLength,
     final Uint8List output,
     final int outOff,
   ) {
@@ -80,37 +80,41 @@ class ElGamalEngine implements AsymmetricBlockCipher {
     }
 
     final maxLength = _forEncryption ? (_bitSize - 1 + 7) ~/ 8 : inputBlockSize;
-    if (inLen > maxLength) {
+    if (inLength > maxLength) {
       throw ArgumentError('input too large for $algorithmName cipher.');
     }
     final prime = _key!.prime;
 
     if (_key is ElGamalPrivateKey) {
       /// decryption
-      final gamma = input.sublist(0, inLen ~/ 2).toBigIntWithSign(1);
-      final phi = input.sublist(inLen ~/ 2).toBigIntWithSign(1);
+      final gamma = input.sublist(0, inLength ~/ 2).toBigIntWithSign(1);
+      final phi = input.sublist(inLength ~/ 2).toBigIntWithSign(1);
 
       final priv = _key as ElGamalPrivateKey;
       final m = (gamma.modPow(prime - (BigInt.one + priv.x), prime) * phi) % prime;
       output.setAll(outOff, m.toUnsignedBytes().sublist(0, output.length - outOff));
     } else {
       /// encryption
-      final block = (inOff != 0 || inLen != input.length) ? input.sublist(0, inLen) : input;
+      final block = (inOff != 0 || inLength != input.length) ? input.sublist(0, inLength) : input;
       final inp = block.toBigIntWithSign(1);
 
       if (inp > prime) {
         throw ArgumentError('input too large for $algorithmName cipher.');
       }
 
-      final k = _calculateK(prime);
+      final byteLength = outputBlockSize ~/ 2;
+      BigInt gamma, phi;
+      do {
+        final k = _calculateK(prime);
 
-      final pub = _key as ElGamalPublicKey;
-      final gamma = pub.generator.modPow(k, prime);
-      final phi = (inp * (pub.y.modPow(k, prime))) % prime;
+        final pub = _key as ElGamalPublicKey;
+        gamma = pub.generator.modPow(k, prime);
+        phi = (inp * (pub.y.modPow(k, prime))) % prime;
+      } while (gamma.byteLength < byteLength || phi.byteLength < byteLength);
 
       output.setAll(outOff, [
-        ...gamma.toUnsignedBytes().sublist(0, outputBlockSize ~/ 2),
-        ...phi.toUnsignedBytes().sublist(0, outputBlockSize ~/ 2),
+        ...gamma.toUnsignedBytes().sublist(0, byteLength),
+        ...phi.toUnsignedBytes().sublist(0, byteLength),
       ]);
     }
 

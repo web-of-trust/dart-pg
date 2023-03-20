@@ -69,8 +69,7 @@ class DSASigner implements Signer {
     final q = pri.order;
     final e = _calculateE(q, _hashMessageIfNeeded(message));
 
-    BigInt r;
-    BigInt s;
+    BigInt r, s;
 
     do {
       // generate s
