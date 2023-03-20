@@ -319,4 +319,38 @@ class PrivateKey extends Key {
       })),
     );
   }
+
+  /// Generates a new OpenPGP subkey, and returns a clone of the Key object with the new subkey added.
+  Future<PrivateKey> addSubkey(
+    final String passphrase, {
+    final KeyAlgorithm subkeyAlgorithm = KeyAlgorithm.rsaEncryptSign,
+    final RSAKeySize rsaKeySize = RSAKeySize.s4096,
+    final DHKeySize dhKeySize = DHKeySize.l2048n224,
+    final CurveInfo curve = CurveInfo.secp521r1,
+    final int keyExpirationTime = 0,
+    final bool subkeySign = false,
+    final DateTime? date,
+  }) async {
+    if (passphrase.isEmpty) {
+      throw ArgumentError('passphrase are required for key generation');
+    }
+    final secretSubkey = await SecretSubkeyPacket.generate(
+      subkeyAlgorithm,
+      rsaKeySize: rsaKeySize,
+      dhKeySize: dhKeySize,
+      curve: curve,
+      date: date,
+    ).then((secretSubkey) => secretSubkey.encrypt(passphrase));
+
+    return PrivateKey.fromPacketList(PacketList([
+      ...toPacketList(),
+      await SignaturePacket.createSubkeyBinding(
+        keyPacket,
+        secretSubkey,
+        keyExpirationTime: keyExpirationTime,
+        subkeySign: subkeySign,
+        date: date,
+      )
+    ]));
+  }
 }
