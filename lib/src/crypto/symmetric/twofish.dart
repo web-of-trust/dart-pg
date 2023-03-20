@@ -11,6 +11,7 @@ import '../math/int_ext.dart';
 import 'base_cipher.dart';
 
 /// A class that provides Twofish encryption operations.
+/// Ported from Bouncy Castle project
 class TwofishEngine extends BaseCipher {
   /// Q-Table 0
   static const _q0 = [

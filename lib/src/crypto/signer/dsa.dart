@@ -13,6 +13,7 @@ import '../math/byte_ext.dart';
 import '../math/int_ext.dart';
 
 /// Implementation of DSA (digital signature algorithm)
+/// Ported and modified from Bouncy Castle project
 class DSASigner implements Signer {
   final Digest? _digest;
 

@@ -11,6 +11,7 @@ import '../math/big_int.dart';
 import '../math/byte_ext.dart';
 
 /// Asymmetric block cipher using basic ElGamal algorithm.
+/// Ported and modified from Bouncy Castle project
 class ElGamalEngine implements AsymmetricBlockCipher {
   late ElGamalAsymmetricKey? _key;
 

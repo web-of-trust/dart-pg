@@ -11,6 +11,7 @@ import '../math/int_ext.dart';
 import 'base_cipher.dart';
 
 /// A class that provides a basic DES engine.
+/// Ported from Bouncy Castle project
 class DESEngine extends BaseCipher {
   static const _bytebit = [128, 64, 32, 16, 8, 4, 2, 1];
 

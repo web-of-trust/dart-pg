@@ -11,6 +11,7 @@ import '../math/int_ext.dart';
 import 'base_cipher.dart';
 
 /// A class that provides a basic International Data Encryption Algorithm (IDEA) engine.
+/// Ported from Bouncy Castle project
 class IDEAEngine extends BaseCipher {
   static const _mask = 0xffff;
   static const _base = 0x10001;

@@ -11,6 +11,7 @@ import 'base_cipher.dart';
 
 /// A class that provides Blowfish key encryption operations, such as encoding data and generating keys.
 /// All the algorithms herein are from Applied Cryptography and implement a simplified cryptography interface.
+/// Ported from Bouncy Castle project
 class BlowfishEngine extends BaseCipher {
   static const _kp = [
     0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344, // 0 - 3

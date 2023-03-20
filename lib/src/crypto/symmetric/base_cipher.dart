@@ -15,6 +15,7 @@ export 'triple_des.dart';
 export 'twofish.dart';
 
 /// Base implementation of [BlockCipher] which provides shared methods.
+/// Ported from Bouncy Castle project
 abstract class BaseCipher implements BlockCipher {
   @override
   Uint8List process(final Uint8List data) {

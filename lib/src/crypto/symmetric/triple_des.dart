@@ -8,6 +8,7 @@ import 'dart:typed_data';
 
 import 'des.dart';
 
+/// Ported from Bouncy Castle project
 class TripleDESEngine extends DESEngine {
   static const _blockSize = 8;
 

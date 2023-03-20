@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart';
 
+/// Ported from Bouncy Castle project
 class BufferedCipher {
   final BlockCipher _underlyingCipher;
 
