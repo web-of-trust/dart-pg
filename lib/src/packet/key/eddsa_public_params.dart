@@ -14,16 +14,15 @@ class EdDSAPublicParams extends ECPublicParams {
   EdDSAPublicParams(super.oid, super.q);
 
   factory EdDSAPublicParams.fromByteData(final Uint8List bytes) {
-    var pos = 0;
-    final length = bytes[pos++];
+    final length = bytes[0];
     ECPublicParams.validateOidLength(length);
     return EdDSAPublicParams(
       ASN1ObjectIdentifier.fromBytes(Uint8List.fromList([
         0x06,
         length,
-        ...bytes.sublist(pos, pos + length),
+        ...bytes.sublist(1, 1 + length),
       ])),
-      Helper.readMPI(bytes.sublist(pos + length)),
+      Helper.readMPI(bytes.sublist(1 + length)),
     );
   }
 
@@ -35,8 +34,7 @@ class EdDSAPublicParams extends ECPublicParams {
     final r = Helper.readMPI(signature);
     final s = Helper.readMPI(signature.sublist(r.byteLength + 2));
 
-    final verifyKey = VerifyKey(q.toUnsignedBytes().sublist(1));
-    return verifyKey.verify(
+    return VerifyKey(q.toUnsignedBytes().sublist(1)).verify(
       signature: Signature(Uint8List.fromList([
         ...r.toUnsignedBytes(),
         ...s.toUnsignedBytes(),

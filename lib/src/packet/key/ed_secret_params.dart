@@ -28,14 +28,15 @@ class EdSecretParams extends KeyParams {
     final Uint8List message,
     final HashAlgorithm hash,
   ) async {
-    final signingKey = SigningKey.fromSeed(seed.toUnsignedBytes());
-    final signed = signingKey.sign(Helper.hashDigest(message, hash));
-    final bitLength = 256.pack16();
+    final signed = SigningKey.fromSeed(seed.toUnsignedBytes()).sign(
+      Helper.hashDigest(message, hash),
+    );
+    final bitLength = (SignedMessage.signatureLength * 4).pack16();
     return Uint8List.fromList([
       ...bitLength, // r bit length
-      ...signed.signature.sublist(0, 32), // r
+      ...signed.signature.sublist(0, SignedMessage.signatureLength ~/ 2), // r
       ...bitLength, // s bit length
-      ...signed.signature.sublist(32), // s
+      ...signed.signature.sublist(SignedMessage.signatureLength ~/ 2), // s
     ]);
   }
 }

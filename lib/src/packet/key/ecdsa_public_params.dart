@@ -15,16 +15,15 @@ class ECDSAPublicParams extends ECPublicParams {
   ECDSAPublicParams(super.oid, super.q);
 
   factory ECDSAPublicParams.fromByteData(final Uint8List bytes) {
-    var pos = 0;
-    final length = bytes[pos++];
+    final length = bytes[0];
     ECPublicParams.validateOidLength(length);
     return ECDSAPublicParams(
       ASN1ObjectIdentifier.fromBytes(Uint8List.fromList([
         0x06,
         length,
-        ...bytes.sublist(pos, pos + length),
+        ...bytes.sublist(1, 1 + length),
       ])),
-      Helper.readMPI(bytes.sublist(pos + length)),
+      Helper.readMPI(bytes.sublist(1 + length)),
     );
   }
 
