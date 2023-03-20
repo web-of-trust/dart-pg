@@ -32,14 +32,14 @@ class User {
   });
 
   /// Checks if a given certificate of the user is revoked
-  bool isRevoked({
+  Future<bool> isRevoked({
     final SignaturePacket? signature,
     final DateTime? date,
-  }) {
+  }) async {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
         if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
-          if (revocation.verifyUserCertification(
+          if (await revocation.verifyUserCertification(
             mainKey!.keyPacket,
             userID: userID,
             userAttribute: userAttribute,
@@ -53,15 +53,15 @@ class User {
     return false;
   }
 
-  bool verify({
+  Future<bool> verify({
     final DateTime? date,
-  }) {
-    if (isRevoked(date: date)) {
+  }) async {
+    if (await isRevoked(date: date)) {
       return false;
     }
     if (mainKey != null) {
       for (final signature in selfCertifications) {
-        if (!signature.verifyUserCertification(
+        if (!await signature.verifyUserCertification(
           mainKey!.keyPacket,
           userID: userID,
           userAttribute: userAttribute,
@@ -76,24 +76,26 @@ class User {
 
   /// Generate third-party certifications over this user and its primary key
   /// return new user with new certifications.
-  User certify(
+  Future<User> certify(
     List<PrivateKey> signingKeys, {
     final DateTime? date,
-  }) {
+  }) async {
     if (signingKeys.isNotEmpty) {
       return User(
         mainKey: mainKey,
         userID: userID,
         userAttribute: userAttribute,
         selfCertifications: selfCertifications,
-        otherCertifications: signingKeys
-            .map((key) => SignaturePacket.createCertifySignature(
-                  key.getSigningKeyPacket(date: date),
-                  userID: userID,
-                  userAttribute: userAttribute,
-                  date: date,
-                ))
-            .toList(growable: false),
+        otherCertifications: await Future.wait(
+          signingKeys.map(
+            (key) async => SignaturePacket.createCertifySignature(
+              await key.getSigningKeyPacket(date: date),
+              userID: userID,
+              userAttribute: userAttribute,
+              date: date,
+            ),
+          ),
+        ),
         revocationSignatures: revocationSignatures,
       );
     }

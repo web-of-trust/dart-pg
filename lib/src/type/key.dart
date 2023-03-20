@@ -108,19 +108,19 @@ abstract class Key {
 
   /// Verify primary key.
   /// Checks for revocation signatures, expiration time and valid self signature.
-  bool verifyPrimaryKey({
+  Future<bool> verifyPrimaryKey({
     final String userID = '',
     final DateTime? date,
-  }) {
-    if (isRevoked(date: date)) {
+  }) async {
+    if (await isRevoked(date: date)) {
       return false;
     }
-    final user = getPrimaryUser(userID: userID, date: date);
-    if (!user.verify(date: date)) {
+    final user = await getPrimaryUser(userID: userID, date: date);
+    if (!await user.verify(date: date)) {
       return false;
     }
     for (final signature in directSignatures) {
-      if (!signature.verify(
+      if (!await signature.verify(
         keyPacket,
         keyPacket.writeForSign(),
         date: date,
@@ -131,10 +131,10 @@ abstract class Key {
     return true;
   }
 
-  User getPrimaryUser({
+  Future<User> getPrimaryUser({
     final String userID = '',
     final DateTime? date,
-  }) {
+  }) async {
     final validUsers = <User>[];
     for (final user in users) {
       if (user.userID == null) {
@@ -142,7 +142,7 @@ abstract class Key {
       }
       final selfCertifications = user.selfCertifications
         ..sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
-      if (user.isRevoked(
+      if (await user.isRevoked(
         date: date,
         signature: selfCertifications.isNotEmpty ? selfCertifications[0] : null,
       )) {
@@ -162,14 +162,14 @@ abstract class Key {
   }
 
   /// Checks if a signature on a key is revoked
-  bool isRevoked({
+  Future<bool> isRevoked({
     final SignaturePacket? signature,
     final DateTime? date,
-  }) {
+  }) async {
     if (revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
         if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
-          if (revocation.verify(
+          if (await revocation.verify(
             keyPacket,
             keyPacket.writeForSign(),
             date: date,
@@ -182,7 +182,7 @@ abstract class Key {
     return false;
   }
 
-  DateTime? getExpirationTime() {
+  Future<DateTime?> getExpirationTime() async {
     DateTime? expirationTime;
     final signatures = directSignatures.toList(growable: false)
       ..sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
@@ -195,7 +195,7 @@ abstract class Key {
       }
     }
     if (expirationTime == null) {
-      final user = getPrimaryUser();
+      final user = await getPrimaryUser();
       user.selfCertifications.sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
       for (final signature in user.selfCertifications) {
         if (signature.keyExpirationTime != null) {

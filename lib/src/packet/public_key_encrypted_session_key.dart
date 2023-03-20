@@ -86,11 +86,11 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  factory PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+  static Future<PublicKeyEncryptedSessionKeyPacket> encryptSessionKey(
     final PublicKeyPacket publicKey, {
     final Uint8List? sessionKeyData,
     final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
-  }) {
+  }) async {
     final sessionKey = SessionKey(
       sessionKeyData ?? Helper.generateEncryptionKey(sessionKeySymmetric),
       sessionKeySymmetric,
@@ -134,7 +134,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     ]);
   }
 
-  PublicKeyEncryptedSessionKeyPacket decrypt(final SecretKeyPacket key) {
+  Future<PublicKeyEncryptedSessionKeyPacket> decrypt(final SecretKeyPacket key) async {
     if (isDecrypted) {
       return this;
     } else {

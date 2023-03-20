@@ -142,9 +142,9 @@ class Message {
 
     final keyList = signingKeys.toList(growable: false);
     return Message(PacketList([
-      ...keyList.map((key) {
+      ...await Future.wait(keyList.map((key) async {
         final index = keyList.indexOf(key);
-        final keyPacket = key.getSigningKeyPacket(date: date);
+        final keyPacket = await key.getSigningKeyPacket(date: date);
         return OnePassSignaturePacket(
           signatureType,
           keyPacket.preferredHash,
@@ -152,15 +152,15 @@ class Message {
           keyPacket.keyID,
           (index == keyList.length - 1) ? 1 : 0,
         );
-      }),
+      })),
       literalData,
-      ...keyList.map(
-        (key) => SignaturePacket.createLiteralData(
-          key.getSigningKeyPacket(),
+      ...await Future.wait(keyList.map(
+        (key) async => SignaturePacket.createLiteralData(
+          await key.getSigningKeyPacket(),
           literalData,
           date: date,
         ),
-      ),
+      )),
     ]));
   }
 
@@ -178,13 +178,13 @@ class Message {
     }
     return Signature(
       PacketList(
-        signingKeys.map(
-          (key) => SignaturePacket.createLiteralData(
-            key.getSigningKeyPacket(),
+        await Future.wait(signingKeys.map(
+          (key) async => SignaturePacket.createLiteralData(
+            await key.getSigningKeyPacket(),
             literalDataPackets.elementAt(0),
             date: date,
           ),
-        ),
+        )),
       ),
     );
   }
@@ -203,7 +203,7 @@ class Message {
 
     return Message(
       packetList,
-      Verification.createVerifications(
+      await Verification.createVerifications(
         literalDataPackets.elementAt(0),
         packets.whereType<SignaturePacket>(),
         verificationKeys,
@@ -225,7 +225,7 @@ class Message {
     }
     return Message(
       packetList,
-      Verification.createVerifications(
+      await Verification.createVerifications(
         literalDataPackets.elementAt(0),
         signature.packets,
         verificationKeys,
@@ -247,18 +247,26 @@ class Message {
     }
     final sessionKeyData = Helper.generateEncryptionKey(sessionKeySymmetric);
 
-    final pkeskPackets = encryptionKeys.map((key) => PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
-          key.getEncryptionKeyPacket(),
+    final pkeskPackets = await Future.wait(
+      encryptionKeys.map(
+        (key) async => PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+          await key.getEncryptionKeyPacket(),
           sessionKeyData: sessionKeyData,
           sessionKeySymmetric: sessionKeySymmetric,
-        ));
-    final skeskPackets = await Future.wait(passwords.map((password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
+        ),
+      ),
+    );
+    final skeskPackets = await Future.wait(
+      passwords.map(
+        (password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
           password,
           sessionKeyData: sessionKeyData,
           sessionKeySymmetric: sessionKeySymmetric,
           encryptionKeySymmetric: encryptionKeySymmetric,
-        )));
-    final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+        ),
+      ),
+    );
+    final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
       sessionKeyData,
       packetList,
       symmetric: sessionKeySymmetric,
@@ -295,7 +303,9 @@ class Message {
     if (encryptedPacket is SymEncryptedIntegrityProtectedDataPacket) {
       for (var sessionKey in sessionKeys) {
         try {
-          final packets = encryptedPacket.decrypt(sessionKey.key, symmetric: sessionKey.symmetric).packets;
+          final packets = await encryptedPacket
+              .decrypt(sessionKey.key, symmetric: sessionKey.symmetric)
+              .then((packet) => packet.packets);
           if (packets != null) {
             return Message(packets);
           }
@@ -306,13 +316,13 @@ class Message {
     } else if (encryptedPacket is SymEncryptedDataPacket) {
       for (var sessionKey in sessionKeys) {
         try {
-          final packets = encryptedPacket
+          final packets = await encryptedPacket
               .decrypt(
                 sessionKey.key,
                 symmetric: sessionKey.symmetric,
                 allowUnauthenticatedMessages: allowUnauthenticatedMessages,
               )
-              .packets;
+              .then((packet) => packet.packets);
           if (packets != null) {
             return Message(packets);
           }
@@ -358,10 +368,14 @@ class Message {
       final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
       for (final pkesk in pkeskPackets) {
         for (final key in decryptionKeys) {
-          final keyPacket = key.getDecryptionKeyPacket();
+          final keyPacket = await key.getDecryptionKeyPacket();
           if (keyPacket.keyID == pkesk.publicKeyID) {
             try {
-              final sessionKey = pkesk.decrypt(key.getDecryptionKeyPacket()).sessionKey;
+              final sessionKey = await pkesk
+                  .decrypt(
+                    await key.getDecryptionKeyPacket(),
+                  )
+                  .then((pkesk) => pkesk.sessionKey);
               if (sessionKey != null) {
                 sessionKeys.add(sessionKey);
               }

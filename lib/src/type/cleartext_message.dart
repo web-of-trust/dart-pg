@@ -31,7 +31,7 @@ class CleartextMessage {
   }) async =>
       CleartextMessage(
         text,
-        Verification.createVerifications(
+        await Verification.createVerifications(
           LiteralDataPacket.fromText(text),
           signature.packets,
           verificationKeys,

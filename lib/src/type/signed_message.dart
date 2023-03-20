@@ -43,14 +43,14 @@ class SignedMessage extends CleartextMessage {
       text,
       Signature(
         PacketList(
-          signingKeys.map(
-            (key) => SignaturePacket.createLiteralData(
-              key.getSigningKeyPacket(),
+          await Future.wait(signingKeys.map(
+            (key) async => SignaturePacket.createLiteralData(
+              await key.getSigningKeyPacket(),
               LiteralDataPacket.fromText(text),
-              preferredHash: key.getPreferredHash(date: date),
+              preferredHash: await key.getPreferredHash(date: date),
               date: date,
             ),
-          ),
+          )),
         ),
       ),
     );
@@ -78,7 +78,7 @@ class SignedMessage extends CleartextMessage {
     return SignedMessage(
       text,
       signature,
-      Verification.createVerifications(
+      await Verification.createVerifications(
         LiteralDataPacket.fromText(text),
         signature.packets,
         verificationKeys,

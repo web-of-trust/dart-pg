@@ -75,15 +75,15 @@ class Subkey {
     return keyPacket.isEncryptionKey;
   }
 
-  bool verify({
+  Future<bool> verify({
     final DateTime? date,
-  }) {
-    if (isRevoked(date: date)) {
+  }) async {
+    if (await isRevoked(date: date)) {
       return false;
     }
     if (mainKey != null) {
       for (final signature in bindingSignatures) {
-        if (!signature.verify(
+        if (!await signature.verify(
           mainKey!.keyPacket,
           Uint8List.fromList([
             ...mainKey!.keyPacket.writeForSign(),
@@ -98,14 +98,14 @@ class Subkey {
     return true;
   }
 
-  bool isRevoked({
+  Future<bool> isRevoked({
     final SignaturePacket? signature,
     final DateTime? date,
-  }) {
+  }) async {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
         if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
-          if (revocation.verify(
+          if (await revocation.verify(
             mainKey!.keyPacket,
             Uint8List.fromList([
               ...mainKey!.keyPacket.writeForSign(),

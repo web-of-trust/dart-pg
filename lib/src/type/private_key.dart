@@ -172,17 +172,17 @@ class PrivateKey extends Key {
   @override
   String armor() => Armor.encode(ArmorType.privateKey, toPacketList().encode());
 
-  SecretKeyPacket getSigningKeyPacket({
+  Future<SecretKeyPacket> getSigningKeyPacket({
     final String keyID = '',
     final DateTime? date,
-  }) {
-    if (!verifyPrimaryKey(date: date)) {
+  }) async {
+    if (!await verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (subkey.isSigningKey && subkey.verify(date: date)) {
+        if (subkey.isSigningKey && await subkey.verify(date: date)) {
           return subkey.keyPacket as SecretKeyPacket;
         }
       }
@@ -193,17 +193,17 @@ class PrivateKey extends Key {
     return keyPacket;
   }
 
-  SecretKeyPacket getDecryptionKeyPacket({
+  Future<SecretKeyPacket> getDecryptionKeyPacket({
     final String keyID = '',
     final DateTime? date,
-  }) {
-    if (!verifyPrimaryKey(date: date)) {
+  }) async {
+    if (!await verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (!subkey.isSigningKey && subkey.verify(date: date)) {
+        if (!subkey.isSigningKey && await subkey.verify(date: date)) {
           return subkey.keyPacket as SecretKeyPacket;
         }
       }
@@ -214,11 +214,11 @@ class PrivateKey extends Key {
     return keyPacket;
   }
 
-  HashAlgorithm getPreferredHash({
+  Future<HashAlgorithm> getPreferredHash({
     final String userID = '',
     final DateTime? date,
-  }) {
-    final keyPacket = getSigningKeyPacket(date: date);
+  }) async {
+    final keyPacket = await getSigningKeyPacket(date: date);
     switch (keyPacket.algorithm) {
       case KeyAlgorithm.ecdh:
       case KeyAlgorithm.ecdsa:
@@ -231,7 +231,7 @@ class PrivateKey extends Key {
         return curve.hashAlgorithm;
       default:
         try {
-          final user = getPrimaryUser(userID: userID, date: date);
+          final user = await getPrimaryUser(userID: userID, date: date);
           for (final cert in user.selfCertifications) {
             if (cert.preferredHashAlgorithms != null && cert.preferredHashAlgorithms!.preferences.isNotEmpty) {
               return cert.preferredHashAlgorithms!.preferences[0];

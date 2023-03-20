@@ -436,11 +436,11 @@ class SignaturePacket extends ContainedPacket {
       ]);
 
   /// Verifies the signature packet.
-  bool verify(
+  Future<bool> verify(
     final KeyPacket verifyKey,
     final Uint8List dataToVerify, {
     final DateTime? date,
-  }) {
+  }) async {
     if (issuerKeyID.id != verifyKey.keyID.toString()) {
       throw ArgumentError('Signature was not issued by the given public key.');
     }
@@ -482,12 +482,12 @@ class SignaturePacket extends ContainedPacket {
     }
   }
 
-  bool verifyUserCertification(
+  Future<bool> verifyUserCertification(
     final KeyPacket verifyKey, {
     final UserIDPacket? userID,
     final UserAttributePacket? userAttribute,
     final DateTime? date,
-  }) {
+  }) async {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
       throw ArgumentError('Either a userID or userAttribute packet needs to be supplied for certification.');
@@ -502,11 +502,11 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  bool verifyLiteralData(
+  Future<bool> verifyLiteralData(
     final KeyPacket verifyKey,
     final LiteralDataPacket literalData, {
     final DateTime? date,
-  }) {
+  }) async {
     return verify(
       verifyKey,
       literalData.writeForSign(),

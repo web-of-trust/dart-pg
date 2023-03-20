@@ -31,11 +31,11 @@ class SymEncryptedDataPacket extends ContainedPacket {
 
   factory SymEncryptedDataPacket.fromByteData(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
 
-  factory SymEncryptedDataPacket.encryptPackets(
+  static Future<SymEncryptedDataPacket> encryptPackets(
     final Uint8List key,
     final PacketList packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
-  }) {
+  }) async {
     final cipher = BufferedCipher(symmetric.cipherEngine)
       ..init(
         true,
@@ -62,10 +62,10 @@ class SymEncryptedDataPacket extends ContainedPacket {
   }
 
   /// Encrypt the symmetrically-encrypted packet data
-  SymEncryptedDataPacket encrypt(
+  Future<SymEncryptedDataPacket> encrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
-  }) {
+  }) async {
     if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedDataPacket.encryptPackets(key, packets!, symmetric: symmetric);
     }
@@ -73,11 +73,11 @@ class SymEncryptedDataPacket extends ContainedPacket {
   }
 
   /// Decrypt the symmetrically-encrypted packet data
-  SymEncryptedDataPacket decrypt(
+  Future<SymEncryptedDataPacket> decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final bool allowUnauthenticatedMessages = false,
-  }) {
+  }) async {
     if (!allowUnauthenticatedMessages) {
       throw StateError('Message is not authenticated.');
     }

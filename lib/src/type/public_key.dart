@@ -49,17 +49,17 @@ class PublicKey extends Key {
   @override
   String armor() => Armor.encode(ArmorType.publicKey, toPacketList().encode());
 
-  PublicKeyPacket getEncryptionKeyPacket({
+  Future<PublicKeyPacket> getEncryptionKeyPacket({
     final String keyID = '',
     final DateTime? date,
-  }) {
-    if (!verifyPrimaryKey(date: date)) {
+  }) async {
+    if (!await verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (subkey.isEncryptionKey && subkey.verify(date: date)) {
+        if (subkey.isEncryptionKey && await subkey.verify(date: date)) {
           return subkey.keyPacket.publicKey;
         }
       }
@@ -70,17 +70,17 @@ class PublicKey extends Key {
     return keyPacket.publicKey;
   }
 
-  PublicKeyPacket getVerificationKeyPacket({
+  Future<PublicKeyPacket> getVerificationKeyPacket({
     final String keyID = '',
     final DateTime? date,
-  }) {
-    if (!verifyPrimaryKey(date: date)) {
+  }) async {
+    if (!await verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
     subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (!subkey.isEncryptionKey && subkey.verify(date: date)) {
+        if (!subkey.isEncryptionKey && await subkey.verify(date: date)) {
           return subkey.keyPacket as PublicKeyPacket;
         }
       }
