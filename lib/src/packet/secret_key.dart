@@ -282,11 +282,11 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams is RSASecretParams) {
       return (secretParams as RSASecretParams).validatePublicParams(publicParams as RSAPublicParams);
     }
-    if (secretParams is ElGamalSecretParams) {
-      return (secretParams as ElGamalSecretParams).validatePublicParams(publicParams as ElGamalPublicParams);
-    }
     if (secretParams is DSASecretParams) {
       return (secretParams as DSASecretParams).validatePublicParams(publicParams as DSAPublicParams);
+    }
+    if (secretParams is ElGamalSecretParams) {
+      return (secretParams as ElGamalSecretParams).validatePublicParams(publicParams as ElGamalPublicParams);
     }
     if (secretParams is ECSecretParams) {
       return (secretParams as ECSecretParams).validatePublicParams(publicParams as ECPublicParams);
@@ -294,7 +294,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams is EdSecretParams) {
       return (secretParams as EdSecretParams).validatePublicParams(publicParams as EdDSAPublicParams);
     }
-    return true;
+    return false;
   }
 
   @override
@@ -331,12 +331,12 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
         return RSASecretParams.fromByteData(packetData);
-      case KeyAlgorithm.elgamal:
-        return ElGamalSecretParams.fromByteData(packetData);
       case KeyAlgorithm.dsa:
         return DSASecretParams.fromByteData(packetData);
-      case KeyAlgorithm.ecdh:
+      case KeyAlgorithm.elgamal:
+        return ElGamalSecretParams.fromByteData(packetData);
       case KeyAlgorithm.ecdsa:
+      case KeyAlgorithm.ecdh:
         return ECSecretParams.fromByteData(packetData);
       case KeyAlgorithm.eddsa:
         return EdSecretParams.fromByteData(packetData);

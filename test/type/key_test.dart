@@ -33,7 +33,7 @@ void main() {
       final publicKey = PublicKey.fromArmored(dsaPublicKey);
       expect(publicKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
       expect(publicKey.algorithm, KeyAlgorithm.dsa);
-      expect(publicKey.isPrivate, false);
+      expect(publicKey.isPrivate, isFalse);
 
       final user = publicKey.users[0];
       expect(user.userID!.name, 'dsa elgamal pgp key');
@@ -50,7 +50,7 @@ void main() {
       final publicKey = PublicKey.fromArmored(eccPublicKey);
       expect(publicKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
       expect(publicKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(publicKey.isPrivate, false);
+      expect(publicKey.isPrivate, isFalse);
 
       final user = publicKey.users[0];
       expect(user.userID!.name, 'ecc pgp key');
@@ -67,7 +67,7 @@ void main() {
       final publicKey = PublicKey.fromArmored(curve25519PublicKey);
       expect(publicKey.fingerprint, '67287cc6376746e683fd24675654e554d72fcf47');
       expect(publicKey.algorithm, KeyAlgorithm.eddsa);
-      expect(publicKey.isPrivate, false);
+      expect(publicKey.isPrivate, isFalse);
 
       final user = publicKey.users[0];
       expect(user.userID!.name, 'curve 25519 pgp key');
@@ -86,8 +86,9 @@ void main() {
       final privateKey = await PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
       expect(privateKey.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
       expect(privateKey.algorithm, KeyAlgorithm.rsaEncryptSign);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyPacket.isDecrypted, true);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyPacket.isDecrypted, isTrue);
+      expect(privateKey.keyPacket.validate(), isTrue);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, 'rsa pgp key');
@@ -104,8 +105,9 @@ void main() {
       final privateKey = await PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
       expect(privateKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
       expect(privateKey.algorithm, KeyAlgorithm.dsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyPacket.isDecrypted, true);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyPacket.isDecrypted, isTrue);
+      expect(privateKey.keyPacket.validate(), isTrue);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, 'dsa elgamal pgp key');
@@ -122,8 +124,9 @@ void main() {
       final privateKey = await PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
       expect(privateKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyPacket.isDecrypted, true);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyPacket.isDecrypted, isTrue);
+      expect(privateKey.keyPacket.validate(), isTrue);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, 'ecc pgp key');
@@ -140,8 +143,9 @@ void main() {
       final privateKey = await PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
       expect(privateKey.fingerprint, '67287cc6376746e683fd24675654e554d72fcf47');
       expect(privateKey.algorithm, KeyAlgorithm.eddsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyPacket.isDecrypted, true);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyPacket.isDecrypted, isTrue);
+      expect(privateKey.keyPacket.validate(), isTrue);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, 'curve 25519 pgp key');
@@ -169,8 +173,9 @@ void main() {
         type: KeyGenerationType.rsa,
       );
       expect(privateKey.algorithm, KeyAlgorithm.rsaEncryptSign);
-      expect(privateKey.isPrivate, true);
+      expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyStrength, 4096);
+      expect(privateKey.keyPacket.validate(), isTrue);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -200,8 +205,9 @@ void main() {
         type: KeyGenerationType.dsa,
       );
       expect(privateKey.algorithm, KeyAlgorithm.dsa);
-      expect(privateKey.isPrivate, true);
+      expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyStrength, 2048);
+      expect(privateKey.keyPacket.validate(), isTrue);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -231,17 +237,12 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.prime256v1,
       );
-      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 256);
-
       final publicParams = privateKey.keyPacket.publicParams as ECDSAPublicParams;
-      final secretParams = privateKey.keyPacket.secretParams as ECSecretParams;
-      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.prime256v1.identifierString);
-
-      final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
-      final qPoint = parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
-      expect(qPoint, parameters.G * secretParams.d);
+      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyStrength, 256);
+      expect(privateKey.keyPacket.validate(), isTrue);
+      expect(publicParams.curve, CurveInfo.prime256v1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -255,7 +256,7 @@ void main() {
       expect(subkey.keyStrength, 256);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.prime256v1.identifierString);
+      expect(subkeyPublicParams.curve, CurveInfo.prime256v1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.prime256v1.hashAlgorithm);
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.prime256v1.symmetricAlgorithm);
     });
@@ -267,18 +268,12 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.secp256k1,
       );
-
-      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 256);
-
       final publicParams = privateKey.keyPacket.publicParams as ECDSAPublicParams;
-      final secretParams = privateKey.keyPacket.secretParams as ECSecretParams;
-      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.secp256k1.identifierString);
-
-      final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
-      final qPoint = parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
-      expect(qPoint, parameters.G * secretParams.d);
+      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyStrength, 256);
+      expect(privateKey.keyPacket.validate(), isTrue);
+      expect(publicParams.curve, CurveInfo.secp256k1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -292,7 +287,7 @@ void main() {
       expect(subkey.keyStrength, 256);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.secp256k1.identifierString);
+      expect(subkeyPublicParams.curve, CurveInfo.secp256k1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.secp256k1.hashAlgorithm);
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.secp256k1.symmetricAlgorithm);
     });
@@ -304,13 +299,12 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.secp384r1,
       );
-
-      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 384);
-
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
-      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.secp384r1.identifierString);
+      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyStrength, 384);
+      expect(privateKey.keyPacket.validate(), isTrue);
+      expect(publicParams.curve, CurveInfo.secp384r1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -324,7 +318,7 @@ void main() {
       expect(subkey.keyStrength, 384);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.secp384r1.identifierString);
+      expect(subkeyPublicParams.curve, CurveInfo.secp384r1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.secp384r1.hashAlgorithm);
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.secp384r1.symmetricAlgorithm);
     });
@@ -336,13 +330,12 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.secp521r1,
       );
-
-      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 521);
-
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
-      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.secp521r1.identifierString);
+      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyStrength, 521);
+      expect(privateKey.keyPacket.validate(), isTrue);
+      expect(publicParams.curve, CurveInfo.secp521r1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -356,7 +349,7 @@ void main() {
       expect(subkey.keyStrength, 521);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.secp521r1.identifierString);
+      expect(subkeyPublicParams.curve, CurveInfo.secp521r1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.secp521r1.hashAlgorithm);
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.secp521r1.symmetricAlgorithm);
     });
@@ -368,13 +361,12 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.brainpoolp256r1,
       );
-
-      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 256);
-
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
-      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp256r1.identifierString);
+      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyStrength, 256);
+      expect(privateKey.keyPacket.validate(), isTrue);
+      expect(publicParams.curve, CurveInfo.brainpoolp256r1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -388,7 +380,7 @@ void main() {
       expect(subkey.keyStrength, 256);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp256r1.identifierString);
+      expect(subkeyPublicParams.curve, CurveInfo.brainpoolp256r1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolp256r1.hashAlgorithm);
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp256r1.symmetricAlgorithm);
     });
@@ -400,12 +392,12 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.brainpoolp384r1,
       );
-      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 384);
-
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
-      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp384r1.identifierString);
+      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyStrength, 384);
+      expect(privateKey.keyPacket.validate(), isTrue);
+      expect(publicParams.curve, CurveInfo.brainpoolp384r1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -419,7 +411,7 @@ void main() {
       expect(subkey.keyStrength, 384);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp384r1.identifierString);
+      expect(subkeyPublicParams.curve, CurveInfo.brainpoolp384r1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolp384r1.hashAlgorithm);
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp384r1.symmetricAlgorithm);
     });
@@ -431,12 +423,12 @@ void main() {
         type: KeyGenerationType.ecc,
         curve: CurveInfo.brainpoolp512r1,
       );
-      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 512);
-
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
-      expect(publicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp512r1.identifierString);
+      expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyStrength, 512);
+      expect(privateKey.keyPacket.validate(), isTrue);
+      expect(publicParams.curve, CurveInfo.brainpoolp512r1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -450,7 +442,7 @@ void main() {
       expect(subkey.keyStrength, 512);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.oid.objectIdentifierAsString, CurveInfo.brainpoolp512r1.identifierString);
+      expect(subkeyPublicParams.curve, CurveInfo.brainpoolp512r1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolp512r1.hashAlgorithm);
       expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp512r1.symmetricAlgorithm);
 
@@ -472,11 +464,11 @@ void main() {
         passphrase,
         type: KeyGenerationType.curve25519,
       );
-      expect(privateKey.algorithm, KeyAlgorithm.eddsa);
-      expect(privateKey.isPrivate, true);
-      expect(privateKey.keyStrength, 255);
-
       final publicParams = privateKey.keyPacket.publicParams as EdDSAPublicParams;
+      expect(privateKey.algorithm, KeyAlgorithm.eddsa);
+      expect(privateKey.isPrivate, isTrue);
+      expect(privateKey.keyStrength, 255);
+      expect(privateKey.keyPacket.validate(), isTrue);
       expect(publicParams.curve, CurveInfo.ed25519);
 
       final user = privateKey.users[0];

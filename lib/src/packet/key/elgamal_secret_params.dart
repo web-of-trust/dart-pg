@@ -46,16 +46,16 @@ class ElGamalSecretParams extends KeyParams {
     // Since p-1 is not prime, g might have a smaller order that divides p-1
     // We want to make sure that the order is large enough to hinder a small subgroup attack
     // We just check g**i != 1 for all i up to a threshold
-    var res = publicParams.generator;
-    var i = BigInt.one;
-    final threshold = BigInt.two << 17;
-    while (i.compareTo(threshold) < 0) {
-      res = (res * publicParams.generator).modInverse(publicParams.prime);
-      if (res.compareTo(BigInt.one) == 0) {
-        return false;
-      }
-      i = i + BigInt.one;
-    }
+    // var res = publicParams.generator;
+    // var i = BigInt.one;
+    // final threshold = BigInt.two << 17;
+    // while (i.compareTo(threshold) < 0) {
+    //   res = (res * publicParams.generator).modInverse(publicParams.prime);
+    //   if (res.compareTo(BigInt.one) == 0) {
+    //     return false;
+    //   }
+    //   i = i + BigInt.one;
+    // }
 
     // Re-derive public key y' = g ** x mod p
     // Expect y == y'

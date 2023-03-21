@@ -54,7 +54,7 @@ class DSASecretParams extends KeyParams {
     }
 
     // Check that subgroup order q divides p-1
-    if ((publicParams.prime % publicParams.order).sign != 0) {
+    if (((publicParams.prime - BigInt.one) % publicParams.order).sign != 0) {
       return false;
     }
 
