@@ -299,8 +299,12 @@ class PrivateKey extends Key {
     if (passphrase.isEmpty) {
       throw ArgumentError('passphrase are required for key decryption');
     }
+    final secretKey = await keyPacket.decrypt(passphrase);
+    if (!secretKey.validate()) {
+      throw StateError('The key parameters are not consistent');
+    }
     return PrivateKey(
-      await keyPacket.decrypt(passphrase),
+      secretKey,
       revocationSignatures: revocationSignatures,
       directSignatures: directSignatures,
       users: users,
