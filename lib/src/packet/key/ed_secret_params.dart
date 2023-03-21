@@ -5,6 +5,7 @@
 import 'package:pinenacl/ed25519.dart';
 
 import '../../crypto/math/big_int.dart';
+import '../../crypto/math/byte_ext.dart';
 import '../../crypto/math/int_ext.dart';
 import '../../enum/hash_algorithm.dart';
 import '../../helpers.dart';
@@ -38,5 +39,15 @@ class EdSecretParams extends KeyParams {
       ...bitLength, // s bit length
       ...signed.signature.sublist(SignedMessage.signatureLength ~/ 2), // s
     ]);
+  }
+
+  /// Validate EdDSA parameters
+  bool validatePublicParams(EdDSAPublicParams publicParams) {
+    final signingKey = SigningKey.fromSeed(seed.toUnsignedBytes());
+    final dG = Uint8List.fromList([
+      0x40,
+      ...signingKey.verifyKey.asTypedList,
+    ]);
+    return publicParams.q.compareTo(dG.toBigIntWithSign(1)) == 0;
   }
 }

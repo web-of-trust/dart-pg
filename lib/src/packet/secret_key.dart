@@ -273,6 +273,30 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
   }
 
+  /// Check whether the private and public primary key parameters correspond
+  /// Together with verification of binding signatures, this guarantees key integrity
+  bool validate() {
+    if (secretParams == null) {
+      return false;
+    }
+    if (secretParams is RSASecretParams) {
+      return (secretParams as RSASecretParams).validatePublicParams(publicParams as RSAPublicParams);
+    }
+    if (secretParams is ElGamalSecretParams) {
+      return (secretParams as ElGamalSecretParams).validatePublicParams(publicParams as ElGamalPublicParams);
+    }
+    if (secretParams is DSASecretParams) {
+      return (secretParams as DSASecretParams).validatePublicParams(publicParams as DSAPublicParams);
+    }
+    if (secretParams is ECSecretParams) {
+      return (secretParams as ECSecretParams).validatePublicParams(publicParams as ECPublicParams);
+    }
+    if (secretParams is EdSecretParams) {
+      return (secretParams as EdSecretParams).validatePublicParams(publicParams as EdDSAPublicParams);
+    }
+    return true;
+  }
+
   @override
   Uint8List writeForSign() {
     return publicKey.writeForSign();
@@ -302,29 +326,22 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     final Uint8List packetData,
     final KeyAlgorithm algorithm,
   ) {
-    final KeyParams keyParams;
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:
       case KeyAlgorithm.rsaSign:
-        keyParams = RSASecretParams.fromByteData(packetData);
-        break;
+        return RSASecretParams.fromByteData(packetData);
       case KeyAlgorithm.elgamal:
-        keyParams = ElGamalSecretParams.fromByteData(packetData);
-        break;
+        return ElGamalSecretParams.fromByteData(packetData);
       case KeyAlgorithm.dsa:
-        keyParams = DSASecretParams.fromByteData(packetData);
-        break;
+        return DSASecretParams.fromByteData(packetData);
       case KeyAlgorithm.ecdh:
       case KeyAlgorithm.ecdsa:
-        keyParams = ECSecretParams.fromByteData(packetData);
-        break;
+        return ECSecretParams.fromByteData(packetData);
       case KeyAlgorithm.eddsa:
-        keyParams = EdSecretParams.fromByteData(packetData);
-        break;
+        return EdSecretParams.fromByteData(packetData);
       default:
         throw UnsupportedError('Unsupported public key algorithm encountered');
     }
-    return keyParams;
   }
 }

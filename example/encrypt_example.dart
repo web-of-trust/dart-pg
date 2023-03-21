@@ -11,8 +11,11 @@ Future<void> main() async {
   );
   final privateKey = await OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
-  final encryptedMessage =
-      await OpenPGP.encrypt(Message.createTextMessage(text), encryptionKeys: publicKeys, signingKeys: [privateKey]);
+  final encryptedMessage = await OpenPGP.encrypt(
+    Message.createTextMessage(text),
+    encryptionKeys: publicKeys,
+    signingKeys: [privateKey],
+  );
   final encrypted = encryptedMessage.armor();
   print(encrypted);
 }

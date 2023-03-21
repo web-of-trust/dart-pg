@@ -344,6 +344,7 @@ class PrivateKey extends Key {
 
     return PrivateKey.fromPacketList(PacketList([
       ...toPacketList(),
+      secretSubkey,
       await SignaturePacket.createSubkeyBinding(
         keyPacket,
         secretSubkey,

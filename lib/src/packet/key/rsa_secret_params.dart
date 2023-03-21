@@ -78,4 +78,21 @@ class RSASecretParams extends KeyParams {
       ...signature.bytes,
     ]);
   }
+
+  /// Validate RSA parameters
+  bool validatePublicParams(RSAPublicParams publicParams) {
+    // expect pq = n
+    if ((primeP * primeQ).compareTo(publicParams.modulus) != 0) {
+      return false;
+    }
+    // expect p*u = 1 mod q
+    if (((primeP * pInv) % primeQ).compareTo(BigInt.one) != 0) {
+      return false;
+    }
+
+    final nSizeOver3 = (publicParams.modulus.bitLength / 3).floor();
+    final r = Helper.randomBigIntInRange(BigInt.two, BigInt.two << nSizeOver3);
+    final rde = r * privateExponent * publicParams.publicExponent;
+    return (rde % (primeP - BigInt.one)).compareTo(r) == 0 && (rde % (primeQ - BigInt.one)).compareTo(r) == 0;
+  }
 }

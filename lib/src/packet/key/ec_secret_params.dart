@@ -4,10 +4,13 @@
 
 import 'dart:typed_data';
 
+import 'package:pinenacl/api.dart' as nacl;
 import 'package:pointycastle/export.dart';
 
 import '../../crypto/math/big_int.dart';
+import '../../crypto/math/byte_ext.dart';
 import '../../crypto/math/int_ext.dart';
+import '../../enum/curve_info.dart';
 import '../../enum/hash_algorithm.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
@@ -50,5 +53,26 @@ class ECSecretParams extends KeyParams {
       ...signature.s.bitLength.pack16(),
       ...signature.s.toUnsignedBytes(),
     ]);
+  }
+
+  /// Validate EC parameters
+  bool validatePublicParams(ECPublicParams publicParams) {
+    switch (publicParams.curve) {
+      case CurveInfo.curve25519:
+        final privateKey = nacl.PrivateKey(
+          Uint8List.fromList(d.toUnsignedBytes().reversed.toList()),
+        );
+        final dG = Uint8List.fromList([
+          0x40,
+          ...privateKey.publicKey.asTypedList,
+        ]);
+        return publicParams.q.compareTo(dG.toBigIntWithSign(1)) == 0;
+      case CurveInfo.ed25519:
+        return false;
+      default:
+        final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
+        final q = parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
+        return q != null && !q.isInfinity && (parameters.G * d) == q;
+    }
   }
 }

@@ -44,4 +44,37 @@ class DSASecretParams extends KeyParams {
       );
     return signer.generateSignature(message).encode();
   }
+
+  /// Validate DSA parameters
+  bool validatePublicParams(DSAPublicParams publicParams) {
+    // Check that 1 < g < p
+    if (publicParams.generator.compareTo(BigInt.one) <= 0 ||
+        publicParams.generator.compareTo(publicParams.prime) >= 0) {
+      return false;
+    }
+
+    // Check that subgroup order q divides p-1
+    if ((publicParams.prime % publicParams.order).sign != 0) {
+      return false;
+    }
+
+    // g has order q
+    // Check that g ** q = 1 mod p
+    if (publicParams.generator.modPow(publicParams.order, publicParams.prime).compareTo(BigInt.one) != 0) {
+      return false;
+    }
+
+    // Check q is large and probably prime (we mainly want to avoid small factors)
+    final qSize = publicParams.order.bitLength;
+    if (qSize < 150 || !(publicParams.order.isProbablePrime(32))) {
+      return false;
+    }
+
+    // Re-derive public key y' = g ** x mod p
+    // Expect y == y'
+    // Blinded exponentiation computes g**{rq + x} to compare to y
+    final r = Helper.randomBigIntInRange(BigInt.two << (qSize - 1), BigInt.two << qSize);
+    final rqx = (publicParams.order * r) + secretExponent;
+    return publicParams.publicExponent.compareTo(publicParams.generator.modPow(rqx, publicParams.prime)) == 0;
+  }
 }
