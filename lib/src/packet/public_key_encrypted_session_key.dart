@@ -100,25 +100,21 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
       sessionKeySymmetric,
     );
     final SessionKeyParams params;
-    switch (publicKey.algorithm) {
-      case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaEncrypt:
-        final rsaPublicKey = (publicKey.publicParams as RSAPublicParams).publicKey;
-        params = await RSASessionKeyParams.encryptSessionKey(rsaPublicKey, sessionKey);
-        break;
-      case KeyAlgorithm.elgamal:
-        final elGamalPublicKey = (publicKey.publicParams as ElGamalPublicParams).publicKey;
-        params = await ElGamalSessionKeyParams.encryptSessionKey(elGamalPublicKey, sessionKey);
-        break;
-      case KeyAlgorithm.ecdh:
-        params = await ECDHSessionKeyParams.encryptSessionKey(
-          (publicKey.publicParams as ECDHPublicParams),
-          sessionKey,
-          publicKey.fingerprint.hexToBytes(),
-        );
-        break;
-      default:
-        throw UnsupportedError('Unsupported PGP public key algorithm encountered');
+    final keyParams = publicKey.publicParams;
+    if (keyParams is RSAPublicParams) {
+      params = await RSASessionKeyParams.encryptSessionKey(keyParams.publicKey, sessionKey);
+    } else if (keyParams is ElGamalPublicParams) {
+      params = await ElGamalSessionKeyParams.encryptSessionKey(keyParams.publicKey, sessionKey);
+    } else if (keyParams is ECDHPublicParams) {
+      params = await ECDHSessionKeyParams.encryptSessionKey(
+        keyParams,
+        sessionKey,
+        publicKey.fingerprint.hexToBytes(),
+      );
+    } else {
+      throw UnsupportedError(
+        'Public key algorithm ${publicKey.algorithm.name} is unsupported for session key encryption.',
+      );
     }
     return PublicKeyEncryptedSessionKeyPacket(
       publicKey.keyID,
@@ -148,32 +144,30 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
       }
 
       final SessionKey? sessionKey;
-      switch (key.algorithm) {
-        case KeyAlgorithm.rsaEncryptSign:
-        case KeyAlgorithm.rsaEncrypt:
-          final privateKey = (key.secretParams as RSASecretParams).privateKey;
-          sessionKey = await (sessionKeyParams as RSASessionKeyParams).decrypt(privateKey);
-          break;
-        case KeyAlgorithm.elgamal:
-          final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
-          final secretExponent = (key.secretParams as ElGamalSecretParams).secretExponent;
-          sessionKey = await (sessionKeyParams as ElGamalSessionKeyParams).decrypt(
-            ElGamalPrivateKey(
-              secretExponent,
-              publicKey.prime,
-              publicKey.generator,
-            ),
-          );
-          break;
-        case KeyAlgorithm.ecdh:
-          sessionKey = await (sessionKeyParams as ECDHSessionKeyParams).decrypt(
-            key.secretParams as ECSecretParams,
-            key.publicParams as ECDHPublicParams,
-            key.fingerprint.hexToBytes(),
-          );
-          break;
-        default:
-          throw UnsupportedError('Unsupported PGP public key algorithm encountered');
+      final keyParams = sessionKeyParams;
+      if (keyParams is RSASessionKeyParams) {
+        final privateKey = (key.secretParams as RSASecretParams).privateKey;
+        sessionKey = await keyParams.decrypt(privateKey);
+      } else if (keyParams is ElGamalSessionKeyParams) {
+        final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
+        final secretExponent = (key.secretParams as ElGamalSecretParams).secretExponent;
+        sessionKey = await keyParams.decrypt(
+          ElGamalPrivateKey(
+            secretExponent,
+            publicKey.prime,
+            publicKey.generator,
+          ),
+        );
+      } else if (keyParams is ECDHSessionKeyParams) {
+        sessionKey = await keyParams.decrypt(
+          key.secretParams as ECSecretParams,
+          key.publicParams as ECDHPublicParams,
+          key.fingerprint.hexToBytes(),
+        );
+      } else {
+        throw UnsupportedError(
+          'Public key algorithm ${key.algorithm.name} is unsupported for session key decryption.',
+        );
       }
 
       return PublicKeyEncryptedSessionKeyPacket(
