@@ -79,7 +79,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
         break;
       default:
         throw UnsupportedError(
-          'Unsupported PGP public key algorithm encountered',
+          'Public key algorithm ${keyAlgorithm.name} of the PKESK packet is unsupported.',
         );
     }
 
@@ -140,7 +140,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     } else {
       // check that session key algo matches the secret key algo and secret key is decrypted
       if (publicKeyAlgorithm != key.algorithm || !key.isDecrypted) {
-        throw StateError('PKESK decryption error');
+        throw ArgumentError('Secret key packet is invalid for session key decryption');
       }
 
       final SessionKey? sessionKey;

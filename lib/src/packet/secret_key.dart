@@ -339,7 +339,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       case KeyAlgorithm.eddsa:
         return EdSecretParams.fromByteData(packetData);
       default:
-        throw UnsupportedError('Unsupported public key algorithm encountered');
+        throw UnsupportedError(
+          'Public key algorithm ${algorithm.name} is unsupported.',
+        );
     }
   }
 }
