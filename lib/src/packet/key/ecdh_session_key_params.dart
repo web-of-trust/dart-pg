@@ -96,11 +96,13 @@ class ECDHSessionKeyParams extends SessionKeyParams {
         ephemeralKey = publicKey.Q!.getEncoded(false).toBigIntWithSign(1);
     }
 
-    final param = _buildEcdhParam(publicParams, fingerprint);
-    final keySize = (publicParams.kdfSymmetric.keySize + 7) >> 3;
-
     final wrappedKey = await AesKeyWrapper.wrap(
-      _kdf(publicParams.kdfHash, sharedKey, keySize, param),
+      _kdf(
+        publicParams.kdfHash,
+        sharedKey,
+        _buildEcdhParam(publicParams, fingerprint),
+        (publicParams.kdfSymmetric.keySize + 7) >> 3,
+      ),
       _pkcs5Encode(Uint8List.fromList([
         ...sessionKey.encode(),
         ...sessionKey.computeChecksum(),
@@ -153,11 +155,14 @@ class ECDHSessionKeyParams extends SessionKeyParams {
             .toUnsignedBytes();
     }
 
-    final param = _buildEcdhParam(publicParams, fingerprint);
-    final keySize = (publicParams.kdfSymmetric.keySize + 7) >> 3;
     return decodeSessionKey(_pkcs5Decode(
       await AesKeyWrapper.unwrap(
-        _kdf(publicParams.kdfHash, sharedKey, keySize, param),
+        _kdf(
+          publicParams.kdfHash,
+          sharedKey,
+          _buildEcdhParam(publicParams, fingerprint),
+          (publicParams.kdfSymmetric.keySize + 7) >> 3,
+        ),
         wrappedKey,
       ),
     ));
@@ -167,8 +172,8 @@ class ECDHSessionKeyParams extends SessionKeyParams {
   static Uint8List _kdf(
     final HashAlgorithm hash,
     final Uint8List sharedKey,
-    final int keySize,
     final Uint8List param,
+    final int keySize,
   ) =>
       Helper.hashDigest(
         Uint8List.fromList([
