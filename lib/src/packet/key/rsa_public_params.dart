@@ -20,13 +20,18 @@ class RSAPublicParams implements VerificationParams {
 
   final RSAPublicKey publicKey;
 
-  RSAPublicParams(this.modulus, this.publicExponent) : publicKey = RSAPublicKey(modulus, publicExponent);
+  RSAPublicParams(this.modulus, this.publicExponent)
+      : publicKey = RSAPublicKey(
+          modulus,
+          publicExponent,
+        );
 
   factory RSAPublicParams.fromByteData(final Uint8List bytes) {
     final modulus = Helper.readMPI(bytes);
-    final publicExponent = Helper.readMPI(bytes.sublist(modulus.byteLength + 2));
-
-    return RSAPublicParams(modulus, publicExponent);
+    return RSAPublicParams(
+      modulus,
+      Helper.readMPI(bytes.sublist(modulus.byteLength + 2)),
+    );
   }
 
   @override

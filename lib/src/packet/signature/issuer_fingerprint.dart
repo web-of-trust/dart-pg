@@ -16,8 +16,9 @@ class IssuerFingerprint extends SignatureSubpacket {
   IssuerFingerprint(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.issuerFingerprint, data);
 
-  factory IssuerFingerprint.fromKey(final KeyPacket key) =>
-      IssuerFingerprint(Uint8List.fromList([key.version, ...key.fingerprint.hexToBytes()]));
+  factory IssuerFingerprint.fromKey(final KeyPacket key) => IssuerFingerprint(
+        Uint8List.fromList([key.version, ...key.fingerprint.hexToBytes()]),
+      );
 
   int get keyVersion => data[0];
 

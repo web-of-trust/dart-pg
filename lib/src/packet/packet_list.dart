@@ -41,7 +41,9 @@ class PacketList extends ListBase<ContainedPacket> {
 
       switch (reader.tag) {
         case PacketTag.publicKeyEncryptedSessionKey:
-          packets.add(PublicKeyEncryptedSessionKeyPacket.fromByteData(reader.data));
+          packets.add(
+            PublicKeyEncryptedSessionKeyPacket.fromByteData(reader.data),
+          );
           break;
         case PacketTag.signature:
           packets.add(SignaturePacket.fromByteData(reader.data));
@@ -86,7 +88,9 @@ class PacketList extends ListBase<ContainedPacket> {
           packets.add(UserAttributePacket.fromByteData(reader.data));
           break;
         case PacketTag.symEncryptedIntegrityProtectedData:
-          packets.add(SymEncryptedIntegrityProtectedDataPacket.fromByteData(reader.data));
+          packets.add(
+            SymEncryptedIntegrityProtectedDataPacket.fromByteData(reader.data),
+          );
           break;
         case PacketTag.modificationDetectionCode:
           packets.add(ModificationDetectionCodePacket.fromByteData(reader.data));

@@ -17,7 +17,9 @@ class EdSecretParams extends KeyParams {
 
   EdSecretParams(this.seed);
 
-  factory EdSecretParams.fromByteData(final Uint8List bytes) => EdSecretParams(Helper.readMPI(bytes));
+  factory EdSecretParams.fromByteData(final Uint8List bytes) => EdSecretParams(
+        Helper.readMPI(bytes),
+      );
 
   @override
   Uint8List encode() => Uint8List.fromList([

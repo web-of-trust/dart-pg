@@ -10,10 +10,17 @@ import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
 class PreferredKeyServer extends SignatureSubpacket {
-  PreferredKeyServer(final Uint8List data, {super.critical, super.isLongLength})
+  PreferredKeyServer(
+    final Uint8List data, {
+    super.critical,
+    super.isLongLength,
+  })
       : super(SignatureSubpacketType.preferredKeyServer, data);
 
-  factory PreferredKeyServer.fromKeyServer(final String keyServer, {final bool critical = false}) =>
+  factory PreferredKeyServer.fromKeyServer(
+    final String keyServer, {
+    final bool critical = false,
+  }) =>
       PreferredKeyServer(keyServer.stringToBytes(), critical: critical);
 
   String get keyServer => utf8.decode(data);

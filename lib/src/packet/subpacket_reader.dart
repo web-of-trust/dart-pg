@@ -18,9 +18,18 @@ class SubpacketReader {
 
   final bool isLongLength;
 
-  SubpacketReader(this.type, this.data, this.start, this.end, [this.isLongLength = false]);
+  SubpacketReader(
+    this.type,
+    this.data,
+    this.start,
+    this.end, [
+    this.isLongLength = false,
+  ]);
 
-  factory SubpacketReader.read(final Uint8List bytes, [final int start = 0]) {
+  factory SubpacketReader.read(
+    final Uint8List bytes, [
+    final int start = 0,
+  ]) {
     var pos = start;
     final header = bytes[pos++];
     if (header < 192) {

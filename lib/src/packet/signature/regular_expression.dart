@@ -13,7 +13,10 @@ class RegularExpression extends SignatureSubpacket {
   RegularExpression(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.revocable, data);
 
-  factory RegularExpression.fromExpression(final String expression, {final bool critical = false}) =>
+  factory RegularExpression.fromExpression(
+    final String expression, {
+    final bool critical = false,
+  }) =>
       RegularExpression(expression.stringToBytes(), critical: critical);
 
   String get expression => utf8.decode(data);

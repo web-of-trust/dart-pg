@@ -19,12 +19,23 @@ class RevocationReason extends SignatureSubpacket {
     final String description, {
     final bool critical = false,
   }) =>
-      RevocationReason(_revocationToBytes(reason, description), critical: critical);
+      RevocationReason(
+        _revocationToBytes(reason, description),
+        critical: critical,
+      );
 
-  RevocationReasonTag get reason => RevocationReasonTag.values.firstWhere((reason) => reason.value == data[0]);
+  RevocationReasonTag get reason => RevocationReasonTag.values.firstWhere(
+        (reason) => reason.value == data[0],
+      );
 
   String get description => utf8.decode(data.sublist(1));
 
-  static Uint8List _revocationToBytes(final RevocationReasonTag reason, final String description) =>
-      Uint8List.fromList([reason.value, ...utf8.encode(description)]);
+  static Uint8List _revocationToBytes(
+    final RevocationReasonTag reason,
+    final String description,
+  ) =>
+      Uint8List.fromList([
+        reason.value,
+        ...utf8.encode(description),
+      ]);
 }

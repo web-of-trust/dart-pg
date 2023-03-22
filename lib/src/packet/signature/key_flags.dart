@@ -10,9 +10,16 @@ import '../signature_subpacket.dart';
 
 /// Packet holding the key flag values.
 class KeyFlags extends SignatureSubpacket {
-  KeyFlags(final Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.keyFlags, data);
+  KeyFlags(
+    final Uint8List data, {
+    super.critical,
+    super.isLongLength,
+  }) : super(SignatureSubpacketType.keyFlags, data);
 
-  factory KeyFlags.fromFlags(final int flags, {final bool critical = false}) =>
+  factory KeyFlags.fromFlags(
+    final int flags, {
+    final bool critical = false,
+  }) =>
       KeyFlags(_flagsToBytes(flags), critical: critical);
 
   /// Return the flag values contained in the first 4 octets

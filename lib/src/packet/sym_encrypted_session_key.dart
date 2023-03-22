@@ -55,11 +55,15 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     /// A one-octet version number. The only currently defined version is 4.
     final skeskVersion = bytes[pos++];
     if (skeskVersion != version) {
-      throw UnsupportedError('Version $skeskVersion of the SKESK packet is unsupported.');
+      throw UnsupportedError(
+        'Version $skeskVersion of the SKESK packet is unsupported.',
+      );
     }
 
     /// A one-octet number describing the symmetric algorithm used.
-    final encryptionKeySymmetric = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    final encryptionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
+      (algo) => algo.value == bytes[pos],
+    );
     pos++;
 
     /// A string-to-key (S2K) specifier, length as defined above.
@@ -82,7 +86,9 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   }) async {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
     final key = await s2k.produceKey(password, encryptionKeySymmetric);
-    final cipher = BufferedCipher(encryptionKeySymmetric.cipherEngine)..init(true, KeyParameter(key));
+    final cipher = BufferedCipher(
+      encryptionKeySymmetric.cipherEngine,
+    )..init(true, KeyParameter(key));
     final sessionKey = SessionKey(
       sessionKeyData ?? Helper.generateEncryptionKey(sessionKeySymmetric),
       sessionKeySymmetric,
@@ -101,9 +107,13 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
       return this;
     } else {
       final key = await s2k.produceKey(password, encryptionKeySymmetric);
-      final cipher = BufferedCipher(encryptionKeySymmetric.cipherEngine)..init(false, KeyParameter(key));
+      final cipher = BufferedCipher(
+        encryptionKeySymmetric.cipherEngine,
+      )..init(false, KeyParameter(key));
       final decrypted = cipher.process(encrypted);
-      final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere((algo) => algo.value == decrypted[0]);
+      final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
+        (algo) => algo.value == decrypted[0],
+      );
       return SymEncryptedSessionKeyPacket(
         s2k,
         encrypted,

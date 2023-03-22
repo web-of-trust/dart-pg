@@ -70,7 +70,10 @@ class UserIDPacket extends ContainedPacket {
 
   static String _extractComment(final String userID) {
     if (userID.contains('(') && userID.contains(')')) {
-      return userID.substring(userID.indexOf('(') + 1, userID.indexOf(')'));
+      return userID.substring(
+        userID.indexOf('(') + 1,
+        userID.indexOf(')'),
+      );
     } else {
       return '';
     }

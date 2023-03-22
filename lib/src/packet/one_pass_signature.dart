@@ -48,11 +48,17 @@ class OnePassSignaturePacket extends ContainedPacket {
       );
     }
 
-    final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);
+    final signatureType = SignatureType.values.firstWhere(
+      (type) => type.value == bytes[pos],
+    );
     pos++;
-    final hashAlgorithm = HashAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    final hashAlgorithm = HashAlgorithm.values.firstWhere(
+      (algo) => algo.value == bytes[pos],
+    );
     pos++;
-    final keyAlgorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    final keyAlgorithm = KeyAlgorithm.values.firstWhere(
+      (algo) => algo.value == bytes[pos],
+    );
     pos++;
     final issuerKeyID = bytes.sublist(pos, pos + 8);
     return OnePassSignaturePacket(

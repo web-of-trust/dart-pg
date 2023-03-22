@@ -26,9 +26,18 @@ class RSASecretParams extends KeyParams {
 
   final RSAPrivateKey privateKey;
 
-  RSASecretParams(this.privateExponent, this.primeP, this.primeQ, {BigInt? pInv})
-      : pInv = pInv ?? primeP.modInverse(primeQ),
-        privateKey = RSAPrivateKey(primeP * primeQ, privateExponent, primeP, primeQ);
+  RSASecretParams(
+    this.privateExponent,
+    this.primeP,
+    this.primeQ, {
+    BigInt? pInv,
+  })  : pInv = pInv ?? primeP.modInverse(primeQ),
+        privateKey = RSAPrivateKey(
+          primeP * primeQ,
+          privateExponent,
+          primeP,
+          primeQ,
+        );
 
   /// RSA modulus n
   BigInt get modulus => privateKey.modulus!;

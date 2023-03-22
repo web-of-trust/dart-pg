@@ -10,10 +10,16 @@ import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
 class SignatureCreationTime extends SignatureSubpacket {
-  SignatureCreationTime(final Uint8List data, {super.critical, super.isLongLength})
-      : super(SignatureSubpacketType.signatureCreationTime, data);
+  SignatureCreationTime(
+    final Uint8List data, {
+    super.critical,
+    super.isLongLength,
+  }) : super(SignatureSubpacketType.signatureCreationTime, data);
 
-  factory SignatureCreationTime.fromTime(final DateTime time, {final bool critical = false}) =>
+  factory SignatureCreationTime.fromTime(
+    final DateTime time, {
+    final bool critical = false,
+  }) =>
       SignatureCreationTime(time.toBytes(), critical: critical);
 
   DateTime get creationTime => data.toDateTime();

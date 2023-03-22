@@ -19,7 +19,9 @@ abstract class ECPublicParams extends KeyParams {
   final CurveInfo curve;
 
   ECPublicParams(this.oid, this.q)
-      : curve = CurveInfo.values.firstWhere((info) => info.identifierString == oid.objectIdentifierAsString);
+      : curve = CurveInfo.values.firstWhere(
+          (info) => info.identifierString == oid.objectIdentifierAsString,
+        );
 
   @override
   Uint8List encode() {

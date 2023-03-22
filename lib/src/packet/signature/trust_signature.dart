@@ -17,7 +17,10 @@ class TrustSignature extends SignatureSubpacket {
     final int trustAmount, {
     final bool critical = false,
   }) =>
-      TrustSignature(Uint8List.fromList([trustLevel, trustAmount]), critical: critical);
+      TrustSignature(
+        Uint8List.fromList([trustLevel, trustAmount]),
+        critical: critical,
+      );
 
   int get trustLevel => data[0];
 

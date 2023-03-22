@@ -12,7 +12,10 @@ class PrimaryUserID extends SignatureSubpacket {
   PrimaryUserID(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.primaryUserID, data);
 
-  factory PrimaryUserID.fromIsPrimary(final bool isPrimary, {final bool critical = false}) =>
+  factory PrimaryUserID.fromIsPrimary(
+    final bool isPrimary, {
+    final bool critical = false,
+  }) =>
       PrimaryUserID(Uint8List.fromList([isPrimary ? 1 : 0]), critical: critical);
 
   bool get isPrimary => data[0] != 0;

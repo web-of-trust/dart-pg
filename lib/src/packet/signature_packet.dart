@@ -138,31 +138,43 @@ class SignaturePacket extends ContainedPacket {
     /// A one-octet version number (3 or 4 or 5).
     final version = bytes[pos++];
     if (version != 4) {
-      throw UnsupportedError('Version $version of the signature packet is unsupported.');
+      throw UnsupportedError(
+        'Version $version of the signature packet is unsupported.',
+      );
     }
 
     /// One-octet signature type.
-    final signatureType = SignatureType.values.firstWhere((type) => type.value == bytes[pos]);
+    final signatureType = SignatureType.values.firstWhere(
+      (type) => type.value == bytes[pos],
+    );
     pos++;
 
     /// One-octet public-key algorithm.
-    final keyAlgorithm = KeyAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
+    final keyAlgorithm = KeyAlgorithm.values.firstWhere(
+      (alg) => alg.value == bytes[pos],
+    );
     pos++;
 
     /// One-octet hash algorithm.
-    final hashAlgorithm = HashAlgorithm.values.firstWhere((alg) => alg.value == bytes[pos]);
+    final hashAlgorithm = HashAlgorithm.values.firstWhere(
+      (alg) => alg.value == bytes[pos],
+    );
     pos++;
 
     /// read hashed subpackets
     final hashedLength = bytes.sublist(pos, pos + 2).toUint16();
     pos += 2;
-    final hashedSubpackets = _readSubpackets(bytes.sublist(pos, pos + hashedLength));
+    final hashedSubpackets = _readSubpackets(
+      bytes.sublist(pos, pos + hashedLength),
+    );
     pos += hashedLength;
 
     /// read unhashed subpackets
     final unhashedLength = bytes.sublist(pos, pos + 2).toUint16();
     pos += 2;
-    final unhashedSubpackets = _readSubpackets(bytes.sublist(pos, pos + unhashedLength));
+    final unhashedSubpackets = _readSubpackets(
+      bytes.sublist(pos, pos + unhashedLength),
+    );
     pos += unhashedLength;
 
     /// Two-octet field holding left 16 bits of signed hash value.
@@ -340,19 +352,23 @@ class SignaturePacket extends ContainedPacket {
     final subpackets = <SignatureSubpacket>[];
     if (subkeySign) {
       subpackets.add(KeyFlags.fromFlags(KeyFlag.signData.value));
-      subpackets.add(EmbeddedSignature.fromSignature(await SignaturePacket.createSignature(
-        subkey,
-        SignatureType.keyBinding,
-        Uint8List.fromList([
-          ...signKey.writeForSign(),
-          ...subkey.writeForSign(),
-        ]),
-        keyExpirationTime: keyExpirationTime,
-        date: date,
-      )));
+      subpackets.add(EmbeddedSignature.fromSignature(
+        await SignaturePacket.createSignature(
+          subkey,
+          SignatureType.keyBinding,
+          Uint8List.fromList([
+            ...signKey.writeForSign(),
+            ...subkey.writeForSign(),
+          ]),
+          keyExpirationTime: keyExpirationTime,
+          date: date,
+        ),
+      ));
     } else {
       subpackets.add(
-        KeyFlags.fromFlags(KeyFlag.encryptCommunication.value | KeyFlag.encryptStorage.value),
+        KeyFlags.fromFlags(
+          KeyFlag.encryptCommunication.value | KeyFlag.encryptStorage.value,
+        ),
       );
     }
     return SignaturePacket.createSignature(
@@ -479,7 +495,9 @@ class SignaturePacket extends ContainedPacket {
     if (keyParams is VerificationParams) {
       return keyParams.verify(message, hashAlgorithm, signature);
     } else {
-      throw UnsupportedError('Unsupported public key algorithm for verification.');
+      throw UnsupportedError(
+        'Unsupported public key algorithm for verification.',
+      );
     }
   }
 
@@ -554,7 +572,9 @@ class SignaturePacket extends ContainedPacket {
       case KeyAlgorithm.eddsa:
         return await (key.secretParams as EdSecretParams).sign(message, hash);
       default:
-        throw UnsupportedError('Unsupported public key algorithm for signing.');
+        throw UnsupportedError(
+          'Unsupported public key algorithm for signing.',
+        );
     }
   }
 
@@ -574,7 +594,9 @@ class SignaturePacket extends ContainedPacket {
       final data = reader.data;
       if (data.isNotEmpty) {
         final critical = ((reader.type & 0x80) != 0);
-        final type = SignatureSubpacketType.values.firstWhere((type) => type.value == (reader.type & 0x7f));
+        final type = SignatureSubpacketType.values.firstWhere(
+          (type) => type.value == (reader.type & 0x7f),
+        );
         switch (type) {
           case SignatureSubpacketType.signatureCreationTime:
             subpackets.add(SignatureCreationTime(

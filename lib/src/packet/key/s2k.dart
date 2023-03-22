@@ -97,10 +97,17 @@ class S2K {
       final Uint8List toHash;
       switch (type) {
         case S2kType.simple:
-          toHash = Uint8List.fromList([...List.filled(prefixLen, 0), ...utf8.encode(passphrase)]);
+          toHash = Uint8List.fromList([
+            ...List.filled(prefixLen, 0),
+            ...utf8.encode(passphrase),
+          ]);
           break;
         case S2kType.salted:
-          toHash = Uint8List.fromList([...List.filled(prefixLen, 0), ...salt, ...utf8.encode(passphrase)]);
+          toHash = Uint8List.fromList([
+            ...List.filled(prefixLen, 0),
+            ...salt,
+            ...utf8.encode(passphrase),
+          ]);
           break;
         case S2kType.iterated:
           final data = [...List.filled(prefixLen, 0), ...salt, ...pBytes];

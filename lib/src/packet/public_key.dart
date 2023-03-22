@@ -54,7 +54,9 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     /// A one-octet version number (3 or 4 or 5).
     final version = bytes[pos++];
     if (version != keyVersion) {
-      throw UnsupportedError('Version $version of the key packet is unsupported.');
+      throw UnsupportedError(
+        'Version $version of the key packet is unsupported.',
+      );
     }
 
     /// A four-octet number denoting the time that the key was created.
@@ -62,7 +64,9 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     pos += 4;
 
     // A one-octet number denoting the public-key algorithm of this key.
-    final algorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    final algorithm = KeyAlgorithm.values.firstWhere(
+      (algo) => algo.value == bytes[pos],
+    );
     pos++;
 
     /// A series of values comprising the key material.
@@ -90,7 +94,9 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
         publicParams = EdDSAPublicParams.fromByteData(bytes.sublist(pos));
         break;
       default:
-        throw UnsupportedError('Unsupported PGP public key algorithm encountered');
+        throw UnsupportedError(
+          'Unsupported PGP public key algorithm encountered',
+        );
     }
     return PublicKeyPacket(
       creationTime,

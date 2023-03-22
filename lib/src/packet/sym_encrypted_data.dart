@@ -67,7 +67,11 @@ class SymEncryptedDataPacket extends ContainedPacket {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
   }) async {
     if (packets != null && packets!.isNotEmpty) {
-      return SymEncryptedDataPacket.encryptPackets(key, packets!, symmetric: symmetric);
+      return SymEncryptedDataPacket.encryptPackets(
+        key,
+        packets!,
+        symmetric: symmetric,
+      );
     }
     return this;
   }
@@ -89,7 +93,9 @@ class SymEncryptedDataPacket extends ContainedPacket {
       );
     return SymEncryptedDataPacket(
       encrypted,
-      packets: PacketList.packetDecode(cipher.process(encrypted.sublist(blockSize + 2))),
+      packets: PacketList.packetDecode(
+        cipher.process(encrypted.sublist(blockSize + 2)),
+      ),
     );
   }
 }

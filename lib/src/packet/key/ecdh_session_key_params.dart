@@ -85,7 +85,10 @@ class ECDHSessionKeyParams extends SessionKeyParams {
             ),
           );
         final keyPair = keyGen.generateKeyPair();
-        final agreement = ECDHBasicAgreement()..init(keyPair.privateKey as ECPrivateKey);
+        final agreement = ECDHBasicAgreement()
+          ..init(
+            keyPair.privateKey as ECPrivateKey,
+          );
         sharedKey = agreement
             .calculateAgreement(ECPublicKey(
               parameters.curve.decodePoint(publicParams.q.toUnsignedBytes()),

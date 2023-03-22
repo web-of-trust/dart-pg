@@ -196,7 +196,9 @@ class KeyPairParams {
         final keyGen = KeyGenerator('EC')
           ..init(
             ParametersWithRandom(
-              ECKeyGeneratorParameters(ECDomainParameters(curve.name.toLowerCase())),
+              ECKeyGeneratorParameters(
+                ECDomainParameters(curve.name.toLowerCase()),
+              ),
               Helper.secureRandom(),
             ),
           );

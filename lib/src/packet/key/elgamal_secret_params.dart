@@ -15,7 +15,9 @@ class ElGamalSecretParams implements KeyParams {
 
   ElGamalSecretParams(this.secretExponent);
 
-  factory ElGamalSecretParams.fromByteData(final Uint8List bytes) => ElGamalSecretParams(Helper.readMPI(bytes));
+  factory ElGamalSecretParams.fromByteData(final Uint8List bytes) => ElGamalSecretParams(
+        Helper.readMPI(bytes),
+      );
 
   @override
   Uint8List encode() => Uint8List.fromList([

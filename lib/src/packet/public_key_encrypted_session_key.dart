@@ -102,9 +102,15 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     final SessionKeyParams params;
     final keyParams = publicKey.publicParams;
     if (keyParams is RSAPublicParams) {
-      params = await RSASessionKeyParams.encryptSessionKey(keyParams.publicKey, sessionKey);
+      params = await RSASessionKeyParams.encryptSessionKey(
+        keyParams.publicKey,
+        sessionKey,
+      );
     } else if (keyParams is ElGamalPublicParams) {
-      params = await ElGamalSessionKeyParams.encryptSessionKey(keyParams.publicKey, sessionKey);
+      params = await ElGamalSessionKeyParams.encryptSessionKey(
+        keyParams.publicKey,
+        sessionKey,
+      );
     } else if (keyParams is ECDHPublicParams) {
       params = await ECDHSessionKeyParams.encryptSessionKey(
         keyParams,
@@ -140,7 +146,9 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     } else {
       // check that session key algo matches the secret key algo and secret key is decrypted
       if (publicKeyAlgorithm != key.algorithm || !key.isDecrypted) {
-        throw ArgumentError('Secret key packet is invalid for session key decryption');
+        throw ArgumentError(
+          'Secret key packet is invalid for session key decryption',
+        );
       }
 
       final SessionKey? sessionKey;
@@ -150,10 +158,9 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
         sessionKey = await keyParams.decrypt(privateKey);
       } else if (keyParams is ElGamalSessionKeyParams) {
         final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
-        final secretExponent = (key.secretParams as ElGamalSecretParams).secretExponent;
         sessionKey = await keyParams.decrypt(
           ElGamalPrivateKey(
-            secretExponent,
+            (key.secretParams as ElGamalSecretParams).secretExponent,
             publicKey.prime,
             publicKey.generator,
           ),

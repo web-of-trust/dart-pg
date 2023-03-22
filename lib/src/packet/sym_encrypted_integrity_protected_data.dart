@@ -35,7 +35,9 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   SymEncryptedIntegrityProtectedDataPacket(this.encrypted, {this.packets})
       : super(PacketTag.symEncryptedIntegrityProtectedData);
 
-  factory SymEncryptedIntegrityProtectedDataPacket.fromByteData(final Uint8List bytes) {
+  factory SymEncryptedIntegrityProtectedDataPacket.fromByteData(
+    final Uint8List bytes,
+  ) {
     /// A one-octet version number. The only currently defined version is 1.
     final seipVersion = bytes[0];
     if (seipVersion != version) {
@@ -102,16 +104,25 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
         ParametersWithIV(KeyParameter(key), Uint8List(symmetric.blockSize)),
       );
     final decrypted = cipher.process(encrypted);
-    final realHash = decrypted.sublist(decrypted.length - HashAlgorithm.sha1.digestSize);
-    final toHash = decrypted.sublist(0, decrypted.length - HashAlgorithm.sha1.digestSize);
-    final verifyHash = realHash.equals(Helper.hashDigest(toHash, HashAlgorithm.sha1));
+    final realHash = decrypted.sublist(
+      decrypted.length - HashAlgorithm.sha1.digestSize,
+    );
+    final toHash = decrypted.sublist(
+      0,
+      decrypted.length - HashAlgorithm.sha1.digestSize,
+    );
+    final verifyHash = realHash.equals(
+      Helper.hashDigest(toHash, HashAlgorithm.sha1),
+    );
     if (!verifyHash) {
       throw StateError('Modification detected.');
     }
 
     return SymEncryptedIntegrityProtectedDataPacket(
       encrypted,
-      packets: PacketList.packetDecode(toHash.sublist(symmetric.blockSize + 2, toHash.length - 2)),
+      packets: PacketList.packetDecode(
+        toHash.sublist(symmetric.blockSize + 2, toHash.length - 2),
+      ),
     );
   }
 }

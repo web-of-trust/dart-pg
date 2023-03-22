@@ -74,7 +74,9 @@ class CompressedDataPacket extends ContainedPacket {
           raw: algorithm == CompressionAlgorithm.zip,
         ).encode(packets.encode()));
       case CompressionAlgorithm.bzip2:
-        throw UnsupportedError('Compression algorithm ${algorithm.name} is unsupported.');
+        throw UnsupportedError(
+          'Compression algorithm ${algorithm.name} is unsupported.',
+        );
       default:
         return packets.encode();
     }
@@ -92,7 +94,9 @@ class CompressedDataPacket extends ContainedPacket {
           raw: algorithm == CompressionAlgorithm.zip,
         ).decode(compressed)));
       case CompressionAlgorithm.bzip2:
-        throw UnsupportedError('Compression algorithm ${algorithm.name} is unsupported.');
+        throw UnsupportedError(
+          'Compression algorithm ${algorithm.name} is unsupported.',
+        );
       default:
         return PacketList.packetDecode(compressed);
     }

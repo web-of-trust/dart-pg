@@ -10,9 +10,16 @@ import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
 class PolicyURI extends SignatureSubpacket {
-  PolicyURI(final Uint8List data, {super.critical, super.isLongLength}) : super(SignatureSubpacketType.policyURI, data);
+  PolicyURI(
+    final Uint8List data, {
+    super.critical,
+    super.isLongLength,
+  }) : super(SignatureSubpacketType.policyURI, data);
 
-  factory PolicyURI.fromURI(final String uri, {final bool critical = false}) =>
+  factory PolicyURI.fromURI(
+    final String uri, {
+    final bool critical = false,
+  }) =>
       PolicyURI(uri.stringToBytes(), critical: critical);
 
   String get uri => utf8.decode(data);

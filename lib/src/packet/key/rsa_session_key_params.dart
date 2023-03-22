@@ -20,7 +20,10 @@ class RSASessionKeyParams extends SessionKeyParams {
 
   RSASessionKeyParams(this.encrypted);
 
-  factory RSASessionKeyParams.fromByteData(final Uint8List bytes) => RSASessionKeyParams(Helper.readMPI(bytes));
+  factory RSASessionKeyParams.fromByteData(
+    final Uint8List bytes,
+  ) =>
+      RSASessionKeyParams(Helper.readMPI(bytes));
 
   static Future<RSASessionKeyParams> encryptSessionKey(
     final RSAPublicKey key,
@@ -28,7 +31,11 @@ class RSASessionKeyParams extends SessionKeyParams {
   ) async {
     return RSASessionKeyParams(
       _processInBlocks(
-        AsymmetricBlockCipher('RSA')..init(true, PublicKeyParameter<RSAPublicKey>(key)),
+        AsymmetricBlockCipher('RSA')
+          ..init(
+            true,
+            PublicKeyParameter<RSAPublicKey>(key),
+          ),
         Helper.emeEncode(
           Uint8List.fromList([
             ...sessionKey.encode(),
@@ -61,22 +68,33 @@ class RSASessionKeyParams extends SessionKeyParams {
     );
   }
 
-  static Uint8List _processInBlocks(final AsymmetricBlockCipher engine, final Uint8List input) {
-    final numBlocks = input.length ~/ engine.inputBlockSize + ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
+  static Uint8List _processInBlocks(
+    final AsymmetricBlockCipher engine,
+    final Uint8List input,
+  ) {
+    final numBlocks =
+        input.length ~/ engine.inputBlockSize + ((input.lengthInBytes % engine.inputBlockSize != 0) ? 1 : 0);
 
     final output = Uint8List(numBlocks * engine.outputBlockSize);
 
-    var inputOffset = 0;
-    var outputOffset = 0;
-    while (inputOffset < input.length) {
-      final chunkSize =
-          (inputOffset + engine.inputBlockSize <= input.length) ? engine.inputBlockSize : input.length - inputOffset;
+    var inpOff = 0;
+    var outOff = 0;
+    while (inpOff < input.length) {
+      final chunkSize = (inpOff + engine.inputBlockSize <= input.lengthInBytes)
+          ? engine.inputBlockSize
+          : input.lengthInBytes - inpOff;
 
-      outputOffset += engine.processBlock(input, inputOffset, chunkSize, output, outputOffset);
+      outOff += engine.processBlock(
+        input,
+        inpOff,
+        chunkSize,
+        output,
+        outOff,
+      );
 
-      inputOffset += chunkSize;
+      inpOff += chunkSize;
     }
 
-    return (output.length == outputOffset) ? output : output.sublist(0, outputOffset);
+    return (output.length == outOff) ? output : output.sublist(0, outOff);
   }
 }

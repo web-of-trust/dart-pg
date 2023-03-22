@@ -9,8 +9,14 @@ import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
 class PreferredCompressionAlgorithms extends SignatureSubpacket {
-  PreferredCompressionAlgorithms(final Uint8List data, {super.critical, super.isLongLength})
-      : super(SignatureSubpacketType.preferredCompressionAlgorithms, data);
+  PreferredCompressionAlgorithms(
+    final Uint8List data, {
+    super.critical,
+    super.isLongLength,
+  }) : super(
+          SignatureSubpacketType.preferredCompressionAlgorithms,
+          data,
+        );
 
   List<CompressionAlgorithm> get preferences =>
       data.map((pref) => CompressionAlgorithm.values.firstWhere((alg) => alg.value == pref)).toList();

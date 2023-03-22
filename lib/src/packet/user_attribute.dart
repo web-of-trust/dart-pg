@@ -28,7 +28,9 @@ class UserAttributePacket extends ContainedPacket {
     return attrs.isNotEmpty ? attrs.first : null;
   }
 
-  factory UserAttributePacket.fromByteData(final Uint8List bytes) => UserAttributePacket(_readSubpackets(bytes));
+  factory UserAttributePacket.fromByteData(final Uint8List bytes) => UserAttributePacket(
+        _readSubpackets(bytes),
+      );
 
   @override
   Uint8List toByteData() =>

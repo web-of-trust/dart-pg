@@ -20,11 +20,18 @@ class SignatureTarget extends SignatureSubpacket {
     final Uint8List hashData, {
     final bool critical = false,
   }) =>
-      SignatureTarget(_hashDataBytes(keyAlgorithm, hashAlgorithm, hashData), critical: critical);
+      SignatureTarget(
+        _hashDataBytes(keyAlgorithm, hashAlgorithm, hashData),
+        critical: critical,
+      );
 
-  KeyAlgorithm get keyAlgorithm => KeyAlgorithm.values.firstWhere((alg) => alg.value == data[0]);
+  KeyAlgorithm get keyAlgorithm => KeyAlgorithm.values.firstWhere(
+        (alg) => alg.value == data[0],
+      );
 
-  HashAlgorithm get hashAlgorithm => HashAlgorithm.values.firstWhere((alg) => alg.value == data[1]);
+  HashAlgorithm get hashAlgorithm => HashAlgorithm.values.firstWhere(
+        (alg) => alg.value == data[1],
+      );
 
   Uint8List get hashData => data.sublist(2);
 
@@ -33,5 +40,9 @@ class SignatureTarget extends SignatureSubpacket {
     final HashAlgorithm hashAlgorithm,
     final Uint8List hashData,
   ) =>
-      Uint8List.fromList([keyAlgorithm.value, hashAlgorithm.value, ...hashData]);
+      Uint8List.fromList([
+        keyAlgorithm.value,
+        hashAlgorithm.value,
+        ...hashData,
+      ]);
 }

@@ -13,7 +13,10 @@ class SignerUserID extends SignatureSubpacket {
   SignerUserID(final Uint8List data, {super.critical, super.isLongLength})
       : super(SignatureSubpacketType.signerUserID, data);
 
-  factory SignerUserID.fromUserID(final String userID, {final bool critical = false}) =>
+  factory SignerUserID.fromUserID(
+    final String userID, {
+    final bool critical = false,
+  }) =>
       SignerUserID(utf8.encoder.convert(userID), critical: critical);
 
   String get userID => utf8.decode(data);

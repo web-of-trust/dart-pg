@@ -21,7 +21,9 @@ class ECSecretParams extends KeyParams {
 
   ECSecretParams(this.d);
 
-  factory ECSecretParams.fromByteData(final Uint8List bytes) => ECSecretParams(Helper.readMPI(bytes));
+  factory ECSecretParams.fromByteData(final Uint8List bytes) => ECSecretParams(
+        Helper.readMPI(bytes),
+      );
 
   @override
   Uint8List encode() => Uint8List.fromList([

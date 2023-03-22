@@ -20,11 +20,18 @@ class RevocationKey extends SignatureSubpacket {
     final Uint8List fingerprint, {
     final bool critical = false,
   }) =>
-      RevocationKey(_revocationToBytes(signatureClass, keyAlgorithm, fingerprint), critical: critical);
+      RevocationKey(
+        _revocationToBytes(signatureClass, keyAlgorithm, fingerprint),
+        critical: critical,
+      );
 
-  RevocationKeyTag get signatureClass => RevocationKeyTag.values.firstWhere((tag) => tag.value == data[0]);
+  RevocationKeyTag get signatureClass => RevocationKeyTag.values.firstWhere(
+        (tag) => tag.value == data[0],
+      );
 
-  KeyAlgorithm get keyAlgorithm => KeyAlgorithm.values.firstWhere((alg) => alg.value == data[1]);
+  KeyAlgorithm get keyAlgorithm => KeyAlgorithm.values.firstWhere(
+        (alg) => alg.value == data[1],
+      );
 
   String get fingerprint => data.sublist(2).toHexadecimal();
 
@@ -33,5 +40,9 @@ class RevocationKey extends SignatureSubpacket {
     final KeyAlgorithm keyAlgorithm,
     final Uint8List fingerprint,
   ) =>
-      Uint8List.fromList([signatureClass.value, keyAlgorithm.value, ...fingerprint]);
+      Uint8List.fromList([
+        signatureClass.value,
+        keyAlgorithm.value,
+        ...fingerprint,
+      ]);
 }

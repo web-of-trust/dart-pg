@@ -57,7 +57,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     final length = publicKey.toByteData().length;
 
     var pos = length;
-    final s2kUsage = S2kUsage.values.firstWhere((usage) => usage.value == bytes[pos]);
+    final s2kUsage = S2kUsage.values.firstWhere(
+      (usage) => usage.value == bytes[pos],
+    );
     pos++;
 
     final S2K? s2k;
@@ -65,7 +67,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     switch (s2kUsage) {
       case S2kUsage.checksum:
       case S2kUsage.sha1:
-        symmetric = SymmetricAlgorithm.values.firstWhere((usage) => usage.value == bytes[pos]);
+        symmetric = SymmetricAlgorithm.values.firstWhere(
+          (usage) => usage.value == bytes[pos],
+        );
         pos++;
         s2k = S2K.fromByteData(bytes.sublist(pos));
         pos += s2k.length;
@@ -84,7 +88,10 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
     KeyParams? secretParams;
     if (s2kUsage == S2kUsage.none) {
-      secretParams = _parseSecretParams(bytes.sublist(pos), publicKey.algorithm);
+      secretParams = _parseSecretParams(
+        bytes.sublist(pos),
+        publicKey.algorithm,
+      );
     }
 
     return SecretKeyPacket(
@@ -172,7 +179,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     final keyParams = publicParams;
     if ((keyParams is ECPublicParams)) {
       final curve = CurveInfo.values.firstWhere(
-        (info) => info.identifierString == keyParams.oid.objectIdentifierAsString,
+        (info) => info.asn1Oid == keyParams.oid,
         orElse: () => CurveInfo.secp521r1,
       );
       return curve.hashAlgorithm;

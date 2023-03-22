@@ -11,10 +11,16 @@ import '../signature_subpacket.dart';
 
 /// packet giving time after creation at which the key expires.
 class KeyExpirationTime extends SignatureSubpacket {
-  KeyExpirationTime(final Uint8List data, {super.critical, super.isLongLength})
-      : super(SignatureSubpacketType.keyExpirationTime, data);
+  KeyExpirationTime(
+    final Uint8List data, {
+    super.critical,
+    super.isLongLength,
+  }) : super(SignatureSubpacketType.keyExpirationTime, data);
 
-  factory KeyExpirationTime.fromTime(final int seconds, {final bool critical = false}) =>
+  factory KeyExpirationTime.fromTime(
+    final int seconds, {
+    final bool critical = false,
+  }) =>
       KeyExpirationTime(seconds.pack32(), critical: critical);
 
   /// Return the number of seconds after creation time a key is valid for.
