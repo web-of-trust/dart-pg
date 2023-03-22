@@ -5,9 +5,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import '../crypto/math/int_ext.dart';
 import '../enum/armor_type.dart';
 import '../helpers.dart';
-import 'crc24.dart';
 
 class Armor {
   static const version = 'Dart PG v1.0.0';
@@ -222,7 +222,17 @@ class Armor {
     return base64.encode(data).chunk(76).join('\n');
   }
 
-  static String _crc24Checksum(final Uint8List data) {
-    return Crc24.base64Calculate(data);
+  static String _crc24Checksum(final Uint8List bytes) {
+    var crc = 0xb704ce;
+    for (final byte in bytes) {
+      crc ^= byte << 16;
+      for (var i = 0; i < 8; i++) {
+        crc <<= 1;
+        if ((crc & 0x1000000) != 0) {
+          crc ^= 0x1864cfb;
+        }
+      }
+    }
+    return base64.encode((crc & 0xffffff).pack32().sublist(1));
   }
 }

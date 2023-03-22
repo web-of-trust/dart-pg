@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dart_pg/src/armor/armor.dart';
-import 'package:dart_pg/src/armor/crc24.dart';
 import 'package:dart_pg/src/enum/armor_type.dart';
 import 'package:dart_pg/src/enum/hash_algorithm.dart';
 import 'package:faker/faker.dart';
@@ -10,15 +9,6 @@ import 'package:test/test.dart';
 void main() {
   group('armor tests', (() {
     final faker = Faker();
-
-    test('crc24 test', (() {
-      final bytes = utf8.encoder.convert('Lore ipsum dolor sit amet');
-      final crc = Crc24.calculate(bytes);
-      final base64Crc = Crc24.base64Calculate(bytes);
-
-      expect(crc, 14200356);
-      expect(base64Crc, '2K4k');
-    }));
 
     test('armor multipart section test', (() {
       final bytes = utf8.encoder.convert(faker.lorem.words(100).join(' '));
