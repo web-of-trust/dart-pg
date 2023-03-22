@@ -169,18 +169,15 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   int get keyStrength => _publicKey.keyStrength;
 
   HashAlgorithm get preferredHash {
-    switch (algorithm) {
-      case KeyAlgorithm.ecdh:
-      case KeyAlgorithm.ecdsa:
-      case KeyAlgorithm.eddsa:
-        final oid = (publicParams as ECPublicParams).oid;
-        final curve = CurveInfo.values.firstWhere(
-          (info) => info.identifierString == oid.objectIdentifierAsString,
-          orElse: () => CurveInfo.secp521r1,
-        );
-        return curve.hashAlgorithm;
-      default:
-        return HashAlgorithm.sha256;
+    final keyParams = publicParams;
+    if ((keyParams is ECPublicParams)) {
+      final curve = CurveInfo.values.firstWhere(
+        (info) => info.identifierString == keyParams.oid.objectIdentifierAsString,
+        orElse: () => CurveInfo.secp521r1,
+      );
+      return curve.hashAlgorithm;
+    } else {
+      return HashAlgorithm.sha256;
     }
   }
 
@@ -279,20 +276,21 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams == null) {
       return false;
     }
-    if (secretParams is RSASecretParams) {
-      return (secretParams as RSASecretParams).validatePublicParams(publicParams as RSAPublicParams);
+    final keyParams = secretParams;
+    if (keyParams is RSASecretParams) {
+      return keyParams.validatePublicParams(publicParams as RSAPublicParams);
     }
-    if (secretParams is DSASecretParams) {
-      return (secretParams as DSASecretParams).validatePublicParams(publicParams as DSAPublicParams);
+    if (keyParams is DSASecretParams) {
+      return keyParams.validatePublicParams(publicParams as DSAPublicParams);
     }
-    if (secretParams is ElGamalSecretParams) {
-      return (secretParams as ElGamalSecretParams).validatePublicParams(publicParams as ElGamalPublicParams);
+    if (keyParams is ElGamalSecretParams) {
+      return keyParams.validatePublicParams(publicParams as ElGamalPublicParams);
     }
-    if (secretParams is ECSecretParams) {
-      return (secretParams as ECSecretParams).validatePublicParams(publicParams as ECPublicParams);
+    if (keyParams is ECSecretParams) {
+      return keyParams.validatePublicParams(publicParams as ECPublicParams);
     }
-    if (secretParams is EdSecretParams) {
-      return (secretParams as EdSecretParams).validatePublicParams(publicParams as EdDSAPublicParams);
+    if (keyParams is EdSecretParams) {
+      return keyParams.validatePublicParams(publicParams as EdDSAPublicParams);
     }
     return false;
   }

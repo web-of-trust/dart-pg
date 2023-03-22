@@ -11,7 +11,7 @@ import '../../enum/hash_algorithm.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
-class RSAPublicParams extends KeyParams {
+class RSAPublicParams implements VerificationParams {
   /// RSA modulus n
   final BigInt modulus;
 
@@ -37,6 +37,7 @@ class RSAPublicParams extends KeyParams {
         ...publicExponent.toUnsignedBytes(),
       ]);
 
+  @override
   Future<bool> verify(
     final Uint8List message,
     final HashAlgorithm hash,

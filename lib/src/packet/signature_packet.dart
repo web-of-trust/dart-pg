@@ -475,18 +475,11 @@ class SignaturePacket extends ContainedPacket {
       throw StateError('Signed digest did not match');
     }
 
-    switch (keyAlgorithm) {
-      case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaSign:
-        return (verifyKey.publicParams as RSAPublicParams).verify(message, hashAlgorithm, signature);
-      case KeyAlgorithm.dsa:
-        return (verifyKey.publicParams as DSAPublicParams).verify(message, hashAlgorithm, signature);
-      case KeyAlgorithm.ecdsa:
-        return (verifyKey.publicParams as ECDSAPublicParams).verify(message, hashAlgorithm, signature);
-      case KeyAlgorithm.eddsa:
-        return (verifyKey.publicParams as EdDSAPublicParams).verify(message, hashAlgorithm, signature);
-      default:
-        throw UnsupportedError('Unsupported public key algorithm for verification.');
+    final keyParams = verifyKey.publicParams;
+    if (keyParams is VerificationParams) {
+      return keyParams.verify(message, hashAlgorithm, signature);
+    } else {
+      throw UnsupportedError('Unsupported public key algorithm for verification.');
     }
   }
 

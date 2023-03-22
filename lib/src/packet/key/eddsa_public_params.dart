@@ -10,7 +10,7 @@ import '../../enum/hash_algorithm.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
-class EdDSAPublicParams extends ECPublicParams {
+class EdDSAPublicParams extends ECPublicParams implements VerificationParams {
   EdDSAPublicParams(super.oid, super.q);
 
   factory EdDSAPublicParams.fromByteData(final Uint8List bytes) {
@@ -26,6 +26,7 @@ class EdDSAPublicParams extends ECPublicParams {
     );
   }
 
+  @override
   Future<bool> verify(
     final Uint8List message,
     final HashAlgorithm hash,

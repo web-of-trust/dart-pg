@@ -10,7 +10,7 @@ import '../../crypto/asymmetric/elgamal.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
-class ElGamalPublicParams extends KeyParams {
+class ElGamalPublicParams implements KeyParams {
   /// Elgamal prime p
   final BigInt prime;
 

@@ -10,8 +10,9 @@ import '../../crypto/math/big_int.dart';
 import '../../enum/hash_algorithm.dart';
 import '../../helpers.dart';
 import 'ec_public_params.dart';
+import 'verification_params.dart';
 
-class ECDSAPublicParams extends ECPublicParams {
+class ECDSAPublicParams extends ECPublicParams implements VerificationParams {
   ECDSAPublicParams(super.oid, super.q);
 
   factory ECDSAPublicParams.fromByteData(final Uint8List bytes) {
@@ -27,6 +28,7 @@ class ECDSAPublicParams extends ECPublicParams {
     );
   }
 
+  @override
   Future<bool> verify(
     final Uint8List message,
     final HashAlgorithm hash,

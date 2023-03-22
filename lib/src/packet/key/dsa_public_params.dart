@@ -13,7 +13,7 @@ import '../../enum/hash_algorithm.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
-class DSAPublicParams extends KeyParams {
+class DSAPublicParams implements VerificationParams {
   /// DSA prime p
   final BigInt prime;
 
@@ -72,6 +72,7 @@ class DSAPublicParams extends KeyParams {
         ...publicExponent.toUnsignedBytes(),
       ]);
 
+  @override
   Future<bool> verify(
     final Uint8List message,
     final HashAlgorithm hash,

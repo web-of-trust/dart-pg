@@ -9,7 +9,7 @@ import '../../crypto/math/int_ext.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
-class ElGamalSecretParams extends KeyParams {
+class ElGamalSecretParams implements KeyParams {
   /// Elgamal secret exponent x.
   final BigInt secretExponent;
 

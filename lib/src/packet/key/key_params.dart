@@ -16,6 +16,7 @@ export 'elgamal_public_params.dart';
 export 'elgamal_secret_params.dart';
 export 'rsa_public_params.dart';
 export 'rsa_secret_params.dart';
+export 'verification_params.dart';
 
 abstract class KeyParams {
   Uint8List encode();
