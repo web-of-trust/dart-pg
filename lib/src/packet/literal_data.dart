@@ -37,7 +37,8 @@ class LiteralDataPacket extends ContainedPacket {
 
   factory LiteralDataPacket.fromByteData(final Uint8List bytes) {
     var pos = 0;
-    final format = LiteralFormat.values.firstWhere((format) => format.value == bytes[pos]);
+    final format =
+        LiteralFormat.values.firstWhere((format) => format.value == bytes[pos]);
     pos++;
     final length = bytes[pos++];
     final filename = utf8.decode(bytes.sublist(pos, pos + length));
@@ -47,7 +48,9 @@ class LiteralDataPacket extends ContainedPacket {
 
     pos += 4;
     final data = bytes.sublist(pos);
-    final text = (format == LiteralFormat.text || format == LiteralFormat.utf8) ? utf8.decode(data) : '';
+    final text = (format == LiteralFormat.text || format == LiteralFormat.utf8)
+        ? utf8.decode(data)
+        : '';
 
     return LiteralDataPacket(
       data,
@@ -87,6 +90,10 @@ class LiteralDataPacket extends ContainedPacket {
   }
 
   Uint8List writeForSign() {
-    return data.isNotEmpty ? data : text.replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n').stringToBytes();
+    return data.isNotEmpty
+        ? data
+        : text
+            .replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n')
+            .stringToBytes();
   }
 }

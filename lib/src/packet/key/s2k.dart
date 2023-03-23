@@ -46,7 +46,8 @@ class S2K {
     var itCount = _defaultItCount;
     final type = S2kType.values.firstWhere((type) => type.value == bytes[pos]);
     pos++;
-    final hash = HashAlgorithm.values.firstWhere((hash) => hash.value == bytes[pos]);
+    final hash =
+        HashAlgorithm.values.firstWhere((hash) => hash.value == bytes[pos]);
     pos++;
 
     final Uint8List salt;

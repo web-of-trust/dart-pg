@@ -23,7 +23,8 @@ class TrustPacket extends ContainedPacket {
         Uint8List.fromList([trustCode & 0xff]),
       );
 
-  factory TrustPacket.fromByteData(final Uint8List bytes) => TrustPacket.fromTrustCode(
+  factory TrustPacket.fromByteData(final Uint8List bytes) =>
+      TrustPacket.fromTrustCode(
         bytes[0],
       );
 

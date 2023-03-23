@@ -20,7 +20,9 @@ class PacketReader {
   PacketReader(this.tag, this.data, this.start, this.end);
 
   factory PacketReader.read(final Uint8List bytes, [final int start = 0]) {
-    if (bytes.length <= start || bytes.sublist(start).length < 2 || (bytes[start] & 0x80) == 0) {
+    if (bytes.length <= start ||
+        bytes.sublist(start).length < 2 ||
+        (bytes[start] & 0x80) == 0) {
       throw StateError(
         'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
       );
@@ -66,7 +68,9 @@ class PacketReader {
             partialPos += partialLen;
             break;
           } else if (bytes[partialPos] >= 192 && bytes[partialPos] < 224) {
-            final partialLen = ((bytes[partialPos++] - 192) << 8) + (bytes[partialPos++]) + 192;
+            final partialLen = ((bytes[partialPos++] - 192) << 8) +
+                (bytes[partialPos++]) +
+                192;
             packetLength += partialLen;
             partialPos += partialLen;
             break;
@@ -78,7 +82,8 @@ class PacketReader {
           } else {
             partialPos++;
 
-            final partialLen = bytes.sublist(partialPos, partialPos + 4).toInt32();
+            final partialLen =
+                bytes.sublist(partialPos, partialPos + 4).toInt32();
             partialPos += 4;
 
             packetLength += partialLen;

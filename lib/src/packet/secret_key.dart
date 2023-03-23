@@ -80,7 +80,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
 
     Uint8List? iv;
-    if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
+    if (!(s2k != null && s2k.type == S2kType.gnu) &&
+        s2kUsage != S2kUsage.none) {
       final blockSize = symmetric.blockSize;
       iv = bytes.sublist(pos, pos + blockSize);
       pos += blockSize;
@@ -237,7 +238,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key = await s2k?.produceKey(passphrase, symmetric) ?? Uint8List((symmetric.keySize + 7) >> 3);
+        final key = await s2k?.produceKey(passphrase, symmetric) ??
+            Uint8List((symmetric.keySize + 7) >> 3);
         final cipher = BufferedCipher(symmetric.cipherEngine)
           ..init(
             false,
@@ -291,7 +293,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       return keyParams.validatePublicParams(publicParams as DSAPublicParams);
     }
     if (keyParams is ElGamalSecretParams) {
-      return keyParams.validatePublicParams(publicParams as ElGamalPublicParams);
+      return keyParams
+          .validatePublicParams(publicParams as ElGamalPublicParams);
     }
     if (keyParams is ECSecretParams) {
       return keyParams.validatePublicParams(publicParams as ECPublicParams);

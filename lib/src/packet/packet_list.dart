@@ -30,7 +30,8 @@ import 'user_id.dart';
 class PacketList extends ListBase<ContainedPacket> {
   final List<ContainedPacket> packets;
 
-  PacketList(final Iterable<ContainedPacket> packets) : packets = packets.toList(growable: false);
+  PacketList(final Iterable<ContainedPacket> packets)
+      : packets = packets.toList(growable: false);
 
   factory PacketList.packetDecode(final Uint8List bytes) {
     final packets = <ContainedPacket>[];
@@ -93,7 +94,8 @@ class PacketList extends ListBase<ContainedPacket> {
           );
           break;
         case PacketTag.modificationDetectionCode:
-          packets.add(ModificationDetectionCodePacket.fromByteData(reader.data));
+          packets
+              .add(ModificationDetectionCodePacket.fromByteData(reader.data));
           break;
       }
     }
@@ -101,7 +103,10 @@ class PacketList extends ListBase<ContainedPacket> {
   }
 
   Uint8List encode() => Uint8List.fromList(
-        packets.map((packet) => packet.encode()).expand((byte) => byte).toList(growable: false),
+        packets
+            .map((packet) => packet.encode())
+            .expand((byte) => byte)
+            .toList(growable: false),
       );
 
   PacketList filterByTags([final List<PacketTag> tags = const []]) {

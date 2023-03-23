@@ -41,7 +41,8 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     /// A one-octet version number. The only currently defined version is 1.
     final seipVersion = bytes[0];
     if (seipVersion != version) {
-      throw UnsupportedError('Version $seipVersion of the SEIP packet is unsupported.');
+      throw UnsupportedError(
+          'Version $seipVersion of the SEIP packet is unsupported.');
     }
     return SymEncryptedIntegrityProtectedDataPacket(bytes.sublist(1));
   }

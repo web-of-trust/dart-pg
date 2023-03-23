@@ -72,8 +72,10 @@ class ECSecretParams extends KeyParams {
       case CurveInfo.ed25519:
         return false;
       default:
-        final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
-        final q = parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
+        final parameters =
+            ECDomainParameters(publicParams.curve.name.toLowerCase());
+        final q =
+            parameters.curve.decodePoint(publicParams.q.toUnsignedBytes());
         return q != null && !q.isInfinity && (parameters.G * d) == q;
     }
   }

@@ -72,8 +72,8 @@ class RSASessionKeyParams extends SessionKeyParams {
     final AsymmetricBlockCipher engine,
     final Uint8List input,
   ) {
-    final numBlocks =
-        input.length ~/ engine.inputBlockSize + ((input.lengthInBytes % engine.inputBlockSize != 0) ? 1 : 0);
+    final numBlocks = input.length ~/ engine.inputBlockSize +
+        ((input.lengthInBytes % engine.inputBlockSize != 0) ? 1 : 0);
 
     final output = Uint8List(numBlocks * engine.outputBlockSize);
 

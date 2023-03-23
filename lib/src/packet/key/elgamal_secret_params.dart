@@ -15,7 +15,8 @@ class ElGamalSecretParams implements KeyParams {
 
   ElGamalSecretParams(this.secretExponent);
 
-  factory ElGamalSecretParams.fromByteData(final Uint8List bytes) => ElGamalSecretParams(
+  factory ElGamalSecretParams.fromByteData(final Uint8List bytes) =>
+      ElGamalSecretParams(
         Helper.readMPI(bytes),
       );
 
@@ -41,7 +42,10 @@ class ElGamalSecretParams implements KeyParams {
 
     // g should have order p-1
     // Check that g ** (p-1) = 1 mod p
-    if (publicParams.generator.modPow(publicParams.prime - BigInt.one, publicParams.prime).compareTo(BigInt.one) != 0) {
+    if (publicParams.generator
+            .modPow(publicParams.prime - BigInt.one, publicParams.prime)
+            .compareTo(BigInt.one) !=
+        0) {
       return false;
     }
 
@@ -62,8 +66,11 @@ class ElGamalSecretParams implements KeyParams {
     // Re-derive public key y' = g ** x mod p
     // Expect y == y'
     // Blinded exponentiation computes g**{r(p-1) + x} to compare to y
-    final r = Helper.randomBigIntInRange(BigInt.two << (pSize - 1), BigInt.two << pSize);
+    final r = Helper.randomBigIntInRange(
+        BigInt.two << (pSize - 1), BigInt.two << pSize);
     final rqx = ((publicParams.prime - BigInt.one) * r) + secretExponent;
-    return publicParams.publicExponent.compareTo(publicParams.generator.modPow(rqx, publicParams.prime)) == 0;
+    return publicParams.publicExponent.compareTo(
+            publicParams.generator.modPow(rqx, publicParams.prime)) ==
+        0;
   }
 }

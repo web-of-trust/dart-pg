@@ -50,7 +50,8 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     this.sessionKey,
   }) : super(PacketTag.publicKeyEncryptedSessionKey);
 
-  factory PublicKeyEncryptedSessionKeyPacket.fromByteData(final Uint8List bytes) {
+  factory PublicKeyEncryptedSessionKeyPacket.fromByteData(
+      final Uint8List bytes) {
     var pos = 0;
     final pkeskVersion = bytes[pos++];
     if (pkeskVersion != version) {
@@ -62,7 +63,8 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     final keyID = bytes.sublist(pos, pos + 8);
     pos += 8;
 
-    final keyAlgorithm = KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    final keyAlgorithm =
+        KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
     pos++;
 
     final SessionKeyParams params;
@@ -140,7 +142,8 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     ]);
   }
 
-  Future<PublicKeyEncryptedSessionKeyPacket> decrypt(final SecretKeyPacket key) async {
+  Future<PublicKeyEncryptedSessionKeyPacket> decrypt(
+      final SecretKeyPacket key) async {
     if (isDecrypted) {
       return this;
     } else {

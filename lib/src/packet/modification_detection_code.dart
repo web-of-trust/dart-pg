@@ -17,7 +17,8 @@ import 'contained_packet.dart';
 class ModificationDetectionCodePacket extends ContainedPacket {
   final Uint8List digest;
 
-  ModificationDetectionCodePacket(this.digest) : super(PacketTag.modificationDetectionCode);
+  ModificationDetectionCodePacket(this.digest)
+      : super(PacketTag.modificationDetectionCode);
 
   factory ModificationDetectionCodePacket.fromByteData(final Uint8List bytes) =>
       ModificationDetectionCodePacket(bytes);

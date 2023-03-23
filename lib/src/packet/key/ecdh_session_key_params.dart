@@ -76,7 +76,8 @@ class ECDHSessionKeyParams extends SessionKeyParams {
           'Curve ${publicParams.curve.name} is unsupported for ephemeral key generation.',
         );
       default:
-        final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
+        final parameters =
+            ECDomainParameters(publicParams.curve.name.toLowerCase());
         final keyGen = KeyGenerator('EC')
           ..init(
             ParametersWithRandom(
@@ -136,7 +137,8 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       case CurveInfo.curve25519:
         sharedKey = TweetNaCl.crypto_scalarmult(
           Uint8List(TweetNaCl.sharedKeyLength),
-          Uint8List.fromList(secretParams.d.toUnsignedBytes().reversed.toList()),
+          Uint8List.fromList(
+              secretParams.d.toUnsignedBytes().reversed.toList()),
           ephemeralKey.toUnsignedBytes(),
         );
         break;
@@ -145,7 +147,8 @@ class ECDHSessionKeyParams extends SessionKeyParams {
           'Curve ${publicParams.curve.name} is unsupported for key agreement calculation.',
         );
       default:
-        final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
+        final parameters =
+            ECDomainParameters(publicParams.curve.name.toLowerCase());
         final privateKey = ECPrivateKey(secretParams.d, parameters);
         final agreement = ECDHBasicAgreement()..init(privateKey);
         sharedKey = agreement
@@ -209,7 +212,8 @@ class ECDHSessionKeyParams extends SessionKeyParams {
   /// Add pkcs5 padding to a message
   static Uint8List _pkcs5Encode(final Uint8List message) {
     final c = 8 - (message.lengthInBytes % 8);
-    return Uint8List.fromList(List.filled(message.length + c, c))..setAll(0, message);
+    return Uint8List.fromList(List.filled(message.length + c, c))
+      ..setAll(0, message);
   }
 
   /// Remove pkcs5 padding from a message

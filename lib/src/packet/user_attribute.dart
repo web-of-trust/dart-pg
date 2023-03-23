@@ -28,13 +28,16 @@ class UserAttributePacket extends ContainedPacket {
     return attrs.isNotEmpty ? attrs.first : null;
   }
 
-  factory UserAttributePacket.fromByteData(final Uint8List bytes) => UserAttributePacket(
+  factory UserAttributePacket.fromByteData(final Uint8List bytes) =>
+      UserAttributePacket(
         _readSubpackets(bytes),
       );
 
   @override
-  Uint8List toByteData() =>
-      Uint8List.fromList(attributes.map((attr) => attr.encode()).expand((byte) => byte).toList(growable: false));
+  Uint8List toByteData() => Uint8List.fromList(attributes
+      .map((attr) => attr.encode())
+      .expand((byte) => byte)
+      .toList(growable: false));
 
   Uint8List writeForSign() {
     final bytes = toByteData();

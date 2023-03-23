@@ -29,7 +29,8 @@ class Armor {
   static const endOfLine = '-----\n';
 
   static const splitPattern = r'^-----[^-]+-----$';
-  static const emptyLinePattern = r'^[ \f\r\t\u00a0\u2000-\u200a\u202f\u205f\u3000]*$';
+  static const emptyLinePattern =
+      r'^[ \f\r\t\u00a0\u2000-\u200a\u202f\u205f\u3000]*$';
   static const headerPattern = r'^([^\s:]|[^\s:][^:]*[^\s:]): .+$';
   static const beginPattern =
       r'^-----BEGIN PGP (MESSAGE, PART \d+\/\d+|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$';
@@ -92,11 +93,13 @@ class Armor {
     final text = textLines.join('\r\n').trim();
     final data = base64.decode(dataLines.join().trim());
 
-    if ((checksum != _crc24Checksum(data)) && (checksum.isNotEmpty || checksumRequired)) {
+    if ((checksum != _crc24Checksum(data)) &&
+        (checksum.isNotEmpty || checksumRequired)) {
       throw StateError('Ascii armor integrity check failed');
     }
 
-    return Armor(type ?? ArmorType.multipartSection, data, headers: headers, text: text);
+    return Armor(type ?? ArmorType.multipartSection, data,
+        headers: headers, text: text);
   }
 
   /// Armor an OpenPGP binary packet block

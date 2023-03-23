@@ -67,10 +67,12 @@ class SignaturePacket extends ContainedPacket {
         super(PacketTag.signature);
 
   SignatureCreationTime get creationTime =>
-      _getSubpacket<SignatureCreationTime>(hashedSubpackets) ?? SignatureCreationTime.fromTime(DateTime.now());
+      _getSubpacket<SignatureCreationTime>(hashedSubpackets) ??
+      SignatureCreationTime.fromTime(DateTime.now());
 
   IssuerKeyID get issuerKeyID {
-    final issuerKeyID = _getSubpacket<IssuerKeyID>(hashedSubpackets) ?? _getSubpacket<IssuerKeyID>(unhashedSubpackets);
+    final issuerKeyID = _getSubpacket<IssuerKeyID>(hashedSubpackets) ??
+        _getSubpacket<IssuerKeyID>(unhashedSubpackets);
     if (issuerKeyID != null) {
       return issuerKeyID;
     } else if (issuerFingerprint != null) {
@@ -81,52 +83,68 @@ class SignaturePacket extends ContainedPacket {
     }
   }
 
-  SignatureExpirationTime? get signatureExpirationTime => _getSubpacket<SignatureExpirationTime>(hashedSubpackets);
+  SignatureExpirationTime? get signatureExpirationTime =>
+      _getSubpacket<SignatureExpirationTime>(hashedSubpackets);
 
-  ExportableCertification? get exportable => _getSubpacket<ExportableCertification>(hashedSubpackets);
+  ExportableCertification? get exportable =>
+      _getSubpacket<ExportableCertification>(hashedSubpackets);
 
-  TrustSignature? get trustSignature => _getSubpacket<TrustSignature>(hashedSubpackets);
+  TrustSignature? get trustSignature =>
+      _getSubpacket<TrustSignature>(hashedSubpackets);
 
-  RegularExpression? get regularExpression => _getSubpacket<RegularExpression>(hashedSubpackets);
+  RegularExpression? get regularExpression =>
+      _getSubpacket<RegularExpression>(hashedSubpackets);
 
   Revocable? get revocable => _getSubpacket<Revocable>(hashedSubpackets);
 
-  KeyExpirationTime? get keyExpirationTime => _getSubpacket<KeyExpirationTime>(hashedSubpackets);
+  KeyExpirationTime? get keyExpirationTime =>
+      _getSubpacket<KeyExpirationTime>(hashedSubpackets);
 
   PreferredSymmetricAlgorithms? get preferredSymmetricAlgorithms =>
       _getSubpacket<PreferredSymmetricAlgorithms>(hashedSubpackets);
 
-  RevocationKey? get revocationKey => _getSubpacket<RevocationKey>(hashedSubpackets);
+  RevocationKey? get revocationKey =>
+      _getSubpacket<RevocationKey>(hashedSubpackets);
 
-  NotationData? get notationData => _getSubpacket<NotationData>(hashedSubpackets);
+  NotationData? get notationData =>
+      _getSubpacket<NotationData>(hashedSubpackets);
 
-  PreferredHashAlgorithms? get preferredHashAlgorithms => _getSubpacket<PreferredHashAlgorithms>(hashedSubpackets);
+  PreferredHashAlgorithms? get preferredHashAlgorithms =>
+      _getSubpacket<PreferredHashAlgorithms>(hashedSubpackets);
 
   PreferredCompressionAlgorithms? get preferredCompressionAlgorithms =>
       _getSubpacket<PreferredCompressionAlgorithms>(hashedSubpackets);
 
-  KeyServerPreferences? get keyServerPreferences => _getSubpacket<KeyServerPreferences>(hashedSubpackets);
+  KeyServerPreferences? get keyServerPreferences =>
+      _getSubpacket<KeyServerPreferences>(hashedSubpackets);
 
-  PreferredKeyServer? get preferredKeyServer => _getSubpacket<PreferredKeyServer>(hashedSubpackets);
+  PreferredKeyServer? get preferredKeyServer =>
+      _getSubpacket<PreferredKeyServer>(hashedSubpackets);
 
-  PrimaryUserID? get primaryUserID => _getSubpacket<PrimaryUserID>(hashedSubpackets);
+  PrimaryUserID? get primaryUserID =>
+      _getSubpacket<PrimaryUserID>(hashedSubpackets);
 
   PolicyURI? get policyURI => _getSubpacket<PolicyURI>(hashedSubpackets);
 
   KeyFlags? get keyFlags => _getSubpacket<KeyFlags>(hashedSubpackets);
 
-  SignerUserID? get signerUserID => _getSubpacket<SignerUserID>(hashedSubpackets);
+  SignerUserID? get signerUserID =>
+      _getSubpacket<SignerUserID>(hashedSubpackets);
 
-  RevocationReason? get revocationReason => _getSubpacket<RevocationReason>(hashedSubpackets);
+  RevocationReason? get revocationReason =>
+      _getSubpacket<RevocationReason>(hashedSubpackets);
 
   Features? get features => _getSubpacket<Features>(hashedSubpackets);
 
-  SignatureTarget? get signatureTarget => _getSubpacket<SignatureTarget>(hashedSubpackets);
+  SignatureTarget? get signatureTarget =>
+      _getSubpacket<SignatureTarget>(hashedSubpackets);
 
-  EmbeddedSignature? get embeddedSignature => _getSubpacket<EmbeddedSignature>(hashedSubpackets);
+  EmbeddedSignature? get embeddedSignature =>
+      _getSubpacket<EmbeddedSignature>(hashedSubpackets);
 
   IssuerFingerprint? get issuerFingerprint =>
-      _getSubpacket<IssuerFingerprint>(hashedSubpackets) ?? _getSubpacket<IssuerFingerprint>(unhashedSubpackets);
+      _getSubpacket<IssuerFingerprint>(hashedSubpackets) ??
+      _getSubpacket<IssuerFingerprint>(unhashedSubpackets);
 
   bool get signatureNeverExpires => signatureExpirationTime == null;
 
@@ -472,7 +490,9 @@ class SignaturePacket extends ContainedPacket {
       );
     }
     if (signatureExpirationTime != null &&
-        signatureExpirationTime!.expirationTime.compareTo(date ?? DateTime.now()) < 0) {
+        signatureExpirationTime!.expirationTime
+                .compareTo(date ?? DateTime.now()) <
+            0) {
       /// Signature is expired
       return false;
     }
@@ -579,8 +599,11 @@ class SignaturePacket extends ContainedPacket {
   }
 
   /// Creates list of bytes with subpacket data
-  static Uint8List _writeSubpackets(final Iterable<SignatureSubpacket> subpackets) {
-    final bytes = subpackets.map((subpacket) => subpacket.encode()).expand((byte) => byte);
+  static Uint8List _writeSubpackets(
+      final Iterable<SignatureSubpacket> subpackets) {
+    final bytes = subpackets
+        .map((subpacket) => subpacket.encode())
+        .expand((byte) => byte);
     return Uint8List.fromList([...bytes.length.pack16(), ...bytes]);
   }
 
