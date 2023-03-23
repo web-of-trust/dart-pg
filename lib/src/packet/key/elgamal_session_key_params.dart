@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/api.dart';
+import 'package:pointycastle/export.dart';
 
 import '../../crypto/math/big_int.dart';
 import '../../crypto/math/byte_ext.dart';
@@ -35,20 +35,18 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
     final ElGamalPublicKey key,
     final SessionKey sessionKey,
   ) async {
-    final engine = ElGamalEngine()
+    final engine = PKCS1Encoding(ElGamalEngine())
       ..init(
         true,
         PublicKeyParameter<ElGamalPublicKey>(key),
       );
-    final cipherData = Uint8List(engine.outputBlockSize);
-    final plainData = Helper.emeEncode(
+    final cipherData = SessionKeyParams.processInBlocks(
+      engine,
       Uint8List.fromList([
         ...sessionKey.encode(),
         ...sessionKey.computeChecksum(),
       ]),
-      key.prime.byteLength,
     );
-    engine.processBlock(plainData, 0, plainData.length, cipherData, 0);
     return ElGamalSessionKeyParams(
       cipherData.sublist(0, engine.outputBlockSize ~/ 2).toBigIntWithSign(1),
       cipherData.sublist(engine.outputBlockSize ~/ 2).toBigIntWithSign(1),
@@ -64,17 +62,27 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
       ]);
 
   Future<SessionKey> decrypt(final ElGamalPrivateKey key) async {
-    final engine = ElGamalEngine()
-      ..init(
-        false,
-        PrivateKeyParameter<ElGamalPrivateKey>(key),
-      );
-    final plainData = Uint8List(engine.outputBlockSize);
-    final cipherData = Uint8List.fromList([
-      ...gamma.toUnsignedBytes(),
-      ...phi.toUnsignedBytes(),
-    ]);
-    engine.processBlock(cipherData, 0, cipherData.length, plainData, 0);
-    return decodeSessionKey(Helper.emeDecode(plainData));
+    final plainData = SessionKeyParams.processInBlocks(
+      ElGamalEngine()
+        ..init(
+          false,
+          PrivateKeyParameter<ElGamalPrivateKey>(key),
+        ),
+      Uint8List.fromList([
+        ...gamma.toUnsignedBytes(),
+        ...phi.toUnsignedBytes(),
+      ]),
+    );
+    return decodeSessionKey(_pkcs1Decode(plainData));
+  }
+
+  static _pkcs1Decode(final Uint8List encoded) {
+    var offset = 2;
+    var separatorNotFound = 1;
+    for (var j = offset; j < encoded.length; j++) {
+      separatorNotFound &= (encoded[j] != 0) ? 1 : 0;
+      offset += separatorNotFound;
+    }
+    return encoded.sublist(offset + 1);
   }
 }

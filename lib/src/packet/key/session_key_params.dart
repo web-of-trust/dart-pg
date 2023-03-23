@@ -4,6 +4,8 @@
 
 import 'dart:typed_data';
 
+import 'package:pointycastle/api.dart';
+
 import '../../enum/symmetric_algorithm.dart';
 import 'session_key.dart';
 
@@ -28,5 +30,35 @@ abstract class SessionKeyParams {
       throw StateError('Session key decryption error');
     }
     return sessionKey;
+  }
+
+  static Uint8List processInBlocks(
+    final AsymmetricBlockCipher engine,
+    final Uint8List input,
+  ) {
+    final numBlocks = input.length ~/ engine.inputBlockSize +
+        ((input.lengthInBytes % engine.inputBlockSize != 0) ? 1 : 0);
+
+    final output = Uint8List(numBlocks * engine.outputBlockSize);
+
+    var inpOff = 0;
+    var outOff = 0;
+    while (inpOff < input.length) {
+      final chunkSize = (inpOff + engine.inputBlockSize <= input.lengthInBytes)
+          ? engine.inputBlockSize
+          : input.lengthInBytes - inpOff;
+
+      outOff += engine.processBlock(
+        input,
+        inpOff,
+        chunkSize,
+        output,
+        outOff,
+      );
+
+      inpOff += chunkSize;
+    }
+
+    return (output.length == outOff) ? output : output.sublist(0, outOff);
   }
 }

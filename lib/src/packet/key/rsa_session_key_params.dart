@@ -30,19 +30,16 @@ class RSASessionKeyParams extends SessionKeyParams {
     final SessionKey sessionKey,
   ) async {
     return RSASessionKeyParams(
-      _processInBlocks(
-        AsymmetricBlockCipher('RSA')
+      SessionKeyParams.processInBlocks(
+        AsymmetricBlockCipher('RSA/PKCS1')
           ..init(
             true,
             PublicKeyParameter<RSAPublicKey>(key),
           ),
-        Helper.emeEncode(
-          Uint8List.fromList([
-            ...sessionKey.encode(),
-            ...sessionKey.computeChecksum(),
-          ]),
-          key.modulus!.byteLength,
-        ),
+        Uint8List.fromList([
+          ...sessionKey.encode(),
+          ...sessionKey.computeChecksum(),
+        ]),
       ).toBigIntWithSign(1),
     );
   }
@@ -55,46 +52,14 @@ class RSASessionKeyParams extends SessionKeyParams {
 
   Future<SessionKey> decrypt(final RSAPrivateKey key) async {
     return decodeSessionKey(
-      Helper.emeDecode(
-        _processInBlocks(
-          AsymmetricBlockCipher('RSA')
-            ..init(
-              false,
-              PrivateKeyParameter<RSAPrivateKey>(key),
-            ),
-          encrypted.toUnsignedBytes(),
-        ),
+      SessionKeyParams.processInBlocks(
+        AsymmetricBlockCipher('RSA/PKCS1')
+          ..init(
+            false,
+            PrivateKeyParameter<RSAPrivateKey>(key),
+          ),
+        encrypted.toUnsignedBytes(),
       ),
     );
-  }
-
-  static Uint8List _processInBlocks(
-    final AsymmetricBlockCipher engine,
-    final Uint8List input,
-  ) {
-    final numBlocks = input.length ~/ engine.inputBlockSize +
-        ((input.lengthInBytes % engine.inputBlockSize != 0) ? 1 : 0);
-
-    final output = Uint8List(numBlocks * engine.outputBlockSize);
-
-    var inpOff = 0;
-    var outOff = 0;
-    while (inpOff < input.length) {
-      final chunkSize = (inpOff + engine.inputBlockSize <= input.lengthInBytes)
-          ? engine.inputBlockSize
-          : input.lengthInBytes - inpOff;
-
-      outOff += engine.processBlock(
-        input,
-        inpOff,
-        chunkSize,
-        output,
-        outOff,
-      );
-
-      inpOff += chunkSize;
-    }
-
-    return (output.length == outOff) ? output : output.sublist(0, outOff);
   }
 }
