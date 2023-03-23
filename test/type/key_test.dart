@@ -357,14 +357,14 @@ void main() {
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
-        curve: CurveInfo.brainpoolp256r1,
+        curve: CurveInfo.brainpoolP256r1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyStrength, 256);
       expect(privateKey.keyPacket.validate(), isTrue);
-      expect(publicParams.curve, CurveInfo.brainpoolp256r1);
+      expect(publicParams.curve, CurveInfo.brainpoolP256r1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -378,9 +378,9 @@ void main() {
       expect(subkey.keyStrength, 256);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.curve, CurveInfo.brainpoolp256r1);
-      expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolp256r1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp256r1.symmetricAlgorithm);
+      expect(subkeyPublicParams.curve, CurveInfo.brainpoolP256r1);
+      expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolP256r1.hashAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolP256r1.symmetricAlgorithm);
     });
 
     test('brainpoolp384r1 curve', () async {
@@ -388,14 +388,14 @@ void main() {
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
-        curve: CurveInfo.brainpoolp384r1,
+        curve: CurveInfo.brainpoolP384r1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyStrength, 384);
       expect(privateKey.keyPacket.validate(), isTrue);
-      expect(publicParams.curve, CurveInfo.brainpoolp384r1);
+      expect(publicParams.curve, CurveInfo.brainpoolP384r1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -409,9 +409,9 @@ void main() {
       expect(subkey.keyStrength, 384);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.curve, CurveInfo.brainpoolp384r1);
-      expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolp384r1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp384r1.symmetricAlgorithm);
+      expect(subkeyPublicParams.curve, CurveInfo.brainpoolP384r1);
+      expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolP384r1.hashAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolP384r1.symmetricAlgorithm);
     });
 
     test('brainpoolp512r1 curve', () async {
@@ -419,14 +419,14 @@ void main() {
         [userID],
         passphrase,
         type: KeyGenerationType.ecc,
-        curve: CurveInfo.brainpoolp512r1,
+        curve: CurveInfo.brainpoolP512r1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyStrength, 512);
       expect(privateKey.keyPacket.validate(), isTrue);
-      expect(publicParams.curve, CurveInfo.brainpoolp512r1);
+      expect(publicParams.curve, CurveInfo.brainpoolP512r1);
 
       final user = privateKey.users[0];
       expect(user.userID!.name, name);
@@ -440,9 +440,9 @@ void main() {
       expect(subkey.keyStrength, 512);
 
       final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
-      expect(subkeyPublicParams.curve, CurveInfo.brainpoolp512r1);
-      expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolp512r1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolp512r1.symmetricAlgorithm);
+      expect(subkeyPublicParams.curve, CurveInfo.brainpoolP512r1);
+      expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolP512r1.hashAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolP512r1.symmetricAlgorithm);
 
       privateKey
           .addSubkey(passphrase, subkeyAlgorithm: KeyAlgorithm.ecdh, curve: CurveInfo.secp521r1)
