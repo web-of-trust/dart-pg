@@ -38,7 +38,8 @@ class User {
   }) async {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+        if (signature == null ||
+            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verifyUserCertification(
             mainKey!.keyPacket,
             userID: userID,

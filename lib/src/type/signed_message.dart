@@ -60,7 +60,9 @@ class SignedMessage extends CleartextMessage {
 
   /// Returns ASCII armored text of signed signature
   String armor() {
-    final hashes = signature.packets.map((packet) => packet.hashAlgorithm.name.toUpperCase());
+    final hashes = signature.packets.map(
+      (packet) => packet.hashAlgorithm.name.toUpperCase(),
+    );
     return Armor.encode(
       ArmorType.signedMessage,
       PacketList(signature.packets).encode(),

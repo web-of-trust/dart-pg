@@ -33,7 +33,9 @@ class Verification {
     for (var signaturePacket in signaturePackets) {
       for (final key in verificationKeys) {
         try {
-          final keyPacket = await key.getVerificationKeyPacket(keyID: signaturePacket.issuerKeyID.id);
+          final keyPacket = await key.getVerificationKeyPacket(
+            keyID: signaturePacket.issuerKeyID.id,
+          );
           verifications.add(Verification(
             keyPacket.keyID.id,
             Signature(PacketList([signaturePacket])),

@@ -55,7 +55,8 @@ class Subkey {
   bool get isSigningKey {
     if (keyPacket.isSigningKey) {
       for (final signature in bindingSignatures) {
-        if (signature.keyFlags != null && (signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
+        if (signature.keyFlags != null &&
+            (signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
           return false;
         }
       }
@@ -67,7 +68,8 @@ class Subkey {
     if (keyPacket.isEncryptionKey) {
       for (final signature in bindingSignatures) {
         if (signature.keyFlags != null &&
-            (signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
+            (signature.keyFlags!.flags & KeyFlag.signData.value) ==
+                KeyFlag.signData.value) {
           return false;
         }
       }
@@ -104,7 +106,8 @@ class Subkey {
   }) async {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+        if (signature == null ||
+            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verify(
             mainKey!.keyPacket,
             Uint8List.fromList([
@@ -146,7 +149,11 @@ class Subkey {
   }
 
   DateTime? getExpirationTime() {
-    bindingSignatures.sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
+    bindingSignatures.sort(
+      (a, b) => b.creationTime.creationTime.compareTo(
+        a.creationTime.creationTime,
+      ),
+    );
     for (final signature in bindingSignatures) {
       if (signature.keyExpirationTime != null) {
         final expirationTime = signature.keyExpirationTime!.time;

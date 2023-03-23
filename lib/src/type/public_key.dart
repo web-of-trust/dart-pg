@@ -56,7 +56,9 @@ class PublicKey extends Key {
     if (!await verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
-    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
+    subkeys.sort(
+      (a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime),
+    );
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
         if (subkey.isEncryptionKey && await subkey.verify(date: date)) {
@@ -64,7 +66,8 @@ class PublicKey extends Key {
         }
       }
     }
-    if (isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+    if (isSigningKey ||
+        (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
       throw StateError('Could not find valid encryption key packet.');
     }
     return keyPacket.publicKey;
@@ -77,7 +80,9 @@ class PublicKey extends Key {
     if (!await verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
-    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
+    subkeys.sort(
+      (a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime),
+    );
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
         if (!subkey.isEncryptionKey && await subkey.verify(date: date)) {
@@ -85,7 +90,8 @@ class PublicKey extends Key {
         }
       }
     }
-    if (isEncryptionKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+    if (isEncryptionKey ||
+        (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
       throw StateError('Could not find valid verification key packet.');
     }
     return keyPacket;

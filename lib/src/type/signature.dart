@@ -11,7 +11,9 @@ import '../packet/signature_packet.dart';
 class Signature {
   final List<SignaturePacket> packets;
 
-  Signature(PacketList packetList) : packets = packetList.whereType<SignaturePacket>().toList(growable: false);
+  Signature(PacketList packetList)
+      : packets =
+            packetList.whereType<SignaturePacket>().toList(growable: false);
 
   factory Signature.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
@@ -21,8 +23,10 @@ class Signature {
     return Signature(PacketList.packetDecode(armor.data));
   }
 
-  List<String> get signingKeyIDs => packets.map((packet) => packet.issuerKeyID.id).toList(growable: false);
+  List<String> get signingKeyIDs =>
+      packets.map((packet) => packet.issuerKeyID.id).toList(growable: false);
 
   /// Returns ASCII armored text of signature
-  String armor() => Armor.encode(ArmorType.signature, PacketList(packets).encode());
+  String armor() =>
+      Armor.encode(ArmorType.signature, PacketList(packets).encode());
 }

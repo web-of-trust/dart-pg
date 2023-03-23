@@ -38,7 +38,8 @@ class Message {
 
   final List<Verification> verifications;
 
-  Message(this.packetList, [final Iterable<Verification> verifications = const []])
+  Message(this.packetList,
+      [final Iterable<Verification> verifications = const []])
       : verifications = verifications.toList(growable: false);
 
   factory Message.fromArmored(final String armored) {
@@ -88,7 +89,8 @@ class Message {
       ]));
 
   LiteralDataPacket? get literalData {
-    final packets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
+    final packets =
+        unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     return packets.isNotEmpty ? packets.elementAt(0) : null;
   }
 
@@ -99,14 +101,19 @@ class Message {
     if (onePassSignatures.isNotEmpty) {
       return onePassSignatures.map((packet) => packet.issuerKeyID);
     }
-    return packetList.whereType<SignaturePacket>().map((packet) => KeyID(packet.issuerKeyID.data));
+    return packetList.whereType<SignaturePacket>().map(
+          (packet) => KeyID(packet.issuerKeyID.data),
+        );
   }
 
   /// Gets the key IDs of the keys to which the session key is encrypted
-  Iterable<KeyID> get encryptionKeyIDs =>
-      unwrapCompressed().packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().map((packet) => packet.publicKeyID);
+  Iterable<KeyID> get encryptionKeyIDs => unwrapCompressed()
+      .packetList
+      .whereType<PublicKeyEncryptedSessionKeyPacket>()
+      .map((packet) => packet.publicKeyID);
 
-  Iterable<SignaturePacket> get signaturePackets => unwrapCompressed().packetList.whereType<SignaturePacket>();
+  Iterable<SignaturePacket> get signaturePackets =>
+      unwrapCompressed().packetList.whereType<SignaturePacket>();
 
   /// Returns ASCII armored text of message
   String armor() => Armor.encode(ArmorType.message, packetList.encode());
@@ -219,7 +226,8 @@ class Message {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async {
-    final literalDataPackets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
+    final literalDataPackets =
+        unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
@@ -298,7 +306,10 @@ class Message {
       throw StateError('No encrypted data found');
     }
 
-    final sessionKeys = await _decryptSessionKeys(decryptionKeys: decryptionKeys, passwords: passwords);
+    final sessionKeys = await _decryptSessionKeys(
+      decryptionKeys: decryptionKeys,
+      passwords: passwords,
+    );
     final encryptedPacket = encryptedPackets[0];
     if (encryptedPacket is SymEncryptedIntegrityProtectedDataPacket) {
       for (var sessionKey in sessionKeys) {
@@ -365,7 +376,8 @@ class Message {
   }) async {
     final sessionKeys = <SessionKey>[];
     if (decryptionKeys.isNotEmpty) {
-      final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
+      final pkeskPackets =
+          packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
       for (final pkesk in pkeskPackets) {
         for (final key in decryptionKeys) {
           final keyPacket = await key.getDecryptionKeyPacket();
@@ -390,7 +402,9 @@ class Message {
       for (final skesk in skeskPackets) {
         for (final password in passwords) {
           try {
-            final sessionKey = await skesk.decrypt(password).then((skesk) => skesk.sessionKey);
+            final sessionKey = await skesk.decrypt(password).then(
+                  (skesk) => skesk.sessionKey,
+                );
             if (sessionKey != null) {
               sessionKeys.add(sessionKey);
             }

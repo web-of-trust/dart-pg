@@ -14,13 +14,21 @@ class CleartextMessage {
 
   final List<Verification> verifications;
 
-  CleartextMessage(final String text, [final Iterable<Verification> verifications = const []])
-      : _text = text.trimRight().replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n'),
+  CleartextMessage(
+    final String text, [
+    final Iterable<Verification> verifications = const [],
+  ])  : _text = text.trimRight().replaceAll(
+              RegExp(r'\r?\n', multiLine: true),
+              '\r\n',
+            ),
         verifications = verifications.toList(growable: false);
 
   String get text => _text;
 
-  String get normalizeText => _text.replaceAll(RegExp(r'\r\n', multiLine: true), '\n');
+  String get normalizeText => _text.replaceAll(
+        RegExp(r'\r\n', multiLine: true),
+        '\n',
+      );
 
   /// Verify detached signature
   /// Return cleartext message with verifications

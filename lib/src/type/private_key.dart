@@ -74,7 +74,9 @@ class PrivateKey extends Key {
     final DateTime? date,
   }) async {
     if (userIDs.isEmpty || passphrase.isEmpty) {
-      throw ArgumentError('UserIDs and passphrase are required for key generation');
+      throw ArgumentError(
+        'UserIDs and passphrase are required for key generation',
+      );
     }
 
     final KeyAlgorithm keyAlgorithm;
@@ -109,9 +111,12 @@ class PrivateKey extends Key {
       subkeyAlgorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
-      curve: (type == KeyGenerationType.curve25519) ? CurveInfo.curve25519 : curve,
+      curve:
+          (type == KeyGenerationType.curve25519) ? CurveInfo.curve25519 : curve,
       date: date,
-    ).then((secretSubkey) => secretSubkey.encrypt(subkeyPassphrase ?? passphrase));
+    ).then(
+      (secretSubkey) => secretSubkey.encrypt(subkeyPassphrase ?? passphrase),
+    );
 
     final packets = <ContainedPacket>[secretKey];
 
@@ -170,7 +175,10 @@ class PrivateKey extends Key {
   }
 
   @override
-  String armor() => Armor.encode(ArmorType.privateKey, toPacketList().encode());
+  String armor() => Armor.encode(
+        ArmorType.privateKey,
+        toPacketList().encode(),
+      );
 
   Future<SecretKeyPacket> getSigningKeyPacket({
     final String keyID = '',
@@ -179,7 +187,9 @@ class PrivateKey extends Key {
     if (!await verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
-    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
+    subkeys.sort(
+      (a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime),
+    );
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
         if (subkey.isSigningKey && await subkey.verify(date: date)) {
@@ -187,7 +197,8 @@ class PrivateKey extends Key {
         }
       }
     }
-    if (!isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+    if (!isSigningKey ||
+        (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
       throw StateError('Could not find valid signing key packet.');
     }
     return keyPacket;
@@ -200,7 +211,9 @@ class PrivateKey extends Key {
     if (!await verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
-    subkeys.sort((a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime));
+    subkeys.sort(
+      (a, b) => b.keyPacket.creationTime.compareTo(a.keyPacket.creationTime),
+    );
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
         if (!subkey.isSigningKey && await subkey.verify(date: date)) {
@@ -208,7 +221,8 @@ class PrivateKey extends Key {
         }
       }
     }
-    if (isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+    if (isSigningKey ||
+        (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
       throw StateError('Could not find valid decryption key packet.');
     }
     return keyPacket;
@@ -225,7 +239,7 @@ class PrivateKey extends Key {
       case KeyAlgorithm.eddsa:
         final oid = (keyPacket.publicParams as ECPublicParams).oid;
         final curve = CurveInfo.values.firstWhere(
-          (info) => info.identifierString == oid.objectIdentifierAsString,
+          (info) => info.asn1Oid == oid,
           orElse: () => CurveInfo.secp521r1,
         );
         return curve.hashAlgorithm;
@@ -233,7 +247,8 @@ class PrivateKey extends Key {
         try {
           final user = await getPrimaryUser(userID: userID, date: date);
           for (final cert in user.selfCertifications) {
-            if (cert.preferredHashAlgorithms != null && cert.preferredHashAlgorithms!.preferences.isNotEmpty) {
+            if (cert.preferredHashAlgorithms != null &&
+                cert.preferredHashAlgorithms!.preferences.isNotEmpty) {
               return cert.preferredHashAlgorithms!.preferences[0];
             }
           }
@@ -270,8 +285,11 @@ class PrivateKey extends Key {
       users: users,
       subkeys: await Future.wait(subkeys.map((subkey) async {
         final index = subkeys.indexOf(subkey);
-        final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
-        if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
+        final subkeyPassphrase = (index < subkeyPassphrases.length)
+            ? subkeyPassphrases.elementAt(index)
+            : passphrase;
+        if (subkeyPassphrase.isNotEmpty &&
+            subkey.keyPacket is SecretSubkeyPacket) {
           return Subkey(
             await (subkey.keyPacket as SecretSubkeyPacket).encrypt(
               subkeyPassphrase,
@@ -310,10 +328,14 @@ class PrivateKey extends Key {
       users: users,
       subkeys: await Future.wait(subkeys.map((subkey) async {
         final index = subkeys.indexOf(subkey);
-        final subkeyPassphrase = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
-        if (subkeyPassphrase.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
+        final subkeyPassphrase = (index < subkeyPassphrases.length)
+            ? subkeyPassphrases.elementAt(index)
+            : passphrase;
+        if (subkeyPassphrase.isNotEmpty &&
+            subkey.keyPacket is SecretSubkeyPacket) {
           return Subkey(
-            await (subkey.keyPacket as SecretSubkeyPacket).decrypt(subkeyPassphrase),
+            await (subkey.keyPacket as SecretSubkeyPacket)
+                .decrypt(subkeyPassphrase),
             revocationSignatures: subkey.revocationSignatures,
             bindingSignatures: subkey.bindingSignatures,
           );

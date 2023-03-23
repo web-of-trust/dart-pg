@@ -80,7 +80,8 @@ abstract class Key {
     if (keyPacket.isSigningKey) {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
-          if (signature.keyFlags != null && (signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
+          if (signature.keyFlags != null &&
+              (signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
             return false;
           }
         }
@@ -94,7 +95,8 @@ abstract class Key {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
           if (signature.keyFlags != null &&
-              (signature.keyFlags!.flags & KeyFlag.signData.value) == KeyFlag.signData.value) {
+              (signature.keyFlags!.flags & KeyFlag.signData.value) ==
+                  KeyFlag.signData.value) {
             return false;
           }
         }
@@ -141,7 +143,11 @@ abstract class Key {
         continue;
       }
       final selfCertifications = user.selfCertifications
-        ..sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
+        ..sort(
+          (a, b) => b.creationTime.creationTime.compareTo(
+            a.creationTime.creationTime,
+          ),
+        );
       if (await user.isRevoked(
         date: date,
         signature: selfCertifications.isNotEmpty ? selfCertifications[0] : null,
@@ -168,7 +174,8 @@ abstract class Key {
   }) async {
     if (revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+        if (signature == null ||
+            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verify(
             keyPacket,
             keyPacket.writeForSign(),
@@ -185,7 +192,11 @@ abstract class Key {
   Future<DateTime?> getExpirationTime() async {
     DateTime? expirationTime;
     final signatures = directSignatures.toList(growable: false)
-      ..sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
+      ..sort(
+        (a, b) => b.creationTime.creationTime.compareTo(
+          a.creationTime.creationTime,
+        ),
+      );
     for (final signature in signatures) {
       if (signature.keyExpirationTime != null) {
         final keyExpirationTime = signature.keyExpirationTime!.time;
@@ -196,12 +207,18 @@ abstract class Key {
     }
     if (expirationTime == null) {
       final user = await getPrimaryUser();
-      user.selfCertifications.sort((a, b) => b.creationTime.creationTime.compareTo(a.creationTime.creationTime));
+      user.selfCertifications.sort(
+        (a, b) => b.creationTime.creationTime.compareTo(
+          a.creationTime.creationTime,
+        ),
+      );
       for (final signature in user.selfCertifications) {
         if (signature.keyExpirationTime != null) {
           final keyExpirationTime = signature.keyExpirationTime!.time;
           final creationTime = signature.creationTime.creationTime;
-          expirationTime = creationTime.add(Duration(seconds: keyExpirationTime));
+          expirationTime = creationTime.add(
+            Duration(seconds: keyExpirationTime),
+          );
           break;
         }
       }
@@ -214,7 +231,9 @@ abstract class Key {
         ...revocationSignatures,
         ...directSignatures,
         ...users.map((user) => user.toPacketList()).expand((packet) => packet),
-        ...subkeys.map((subkey) => subkey.toPacketList()).expand((packet) => packet),
+        ...subkeys
+            .map((subkey) => subkey.toPacketList())
+            .expand((packet) => packet),
       ]);
 
   static Map<String, dynamic> readPacketList(final PacketList packetList) {
