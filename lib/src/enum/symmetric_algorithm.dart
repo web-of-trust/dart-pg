@@ -84,7 +84,7 @@ enum SymmetricAlgorithm {
       case idea:
         return CFBBlockCipher(IDEAEngine(), blockSize);
       case tripledes:
-        return CFBBlockCipher(TripleDESEngine(), blockSize);
+        return BlockCipher('DESede/CFB-${blockSize * 8}');
       case twofish:
         return CFBBlockCipher(TwofishEngine(), blockSize);
       default:

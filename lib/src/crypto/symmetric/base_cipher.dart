@@ -11,7 +11,6 @@ export 'buffered_cipher.dart';
 export 'camellia.dart';
 export 'cast5.dart';
 export 'idea.dart';
-export 'triple_des.dart';
 export 'twofish.dart';
 
 /// Base implementation of [BlockCipher] which provides shared methods.

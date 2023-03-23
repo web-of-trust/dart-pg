@@ -1,18 +1,13 @@
-import 'dart:convert';
-
-import 'package:dart_pg/src/crypto/math/byte_ext.dart';
 import 'package:dart_pg/src/crypto/symmetric/blowfish.dart';
 import 'package:dart_pg/src/crypto/symmetric/buffered_cipher.dart';
 import 'package:dart_pg/src/crypto/symmetric/camellia.dart';
 import 'package:dart_pg/src/crypto/symmetric/camellia_light.dart';
 import 'package:dart_pg/src/crypto/symmetric/cast5.dart';
 import 'package:dart_pg/src/crypto/symmetric/idea.dart';
-import 'package:dart_pg/src/crypto/symmetric/triple_des.dart';
 import 'package:dart_pg/src/crypto/symmetric/twofish.dart';
 import 'package:pointycastle/export.dart';
 import 'package:test/test.dart';
 import 'package:dart_pg/src/helpers.dart';
-import 'package:dart_pg/src/crypto/symmetric/des.dart';
 
 void main() {
   group('Block cipher tests', (() {
@@ -31,42 +26,6 @@ void main() {
         _kp('00112233445566778899aabbccddeeff'),
         'f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff',
         'b8bc6ed5c899265d2bcfad1fc6d4287d',
-      );
-    }));
-
-    test('Triple DES test', (() {
-      final input = '4e6f77206973207468652074696d6520666f7220616c6c20';
-
-      _blockCipherVectorTest(
-        0,
-        TripleDESEngine(),
-        _kp('0123456789abcdef0123456789abcdef'),
-        input,
-        '3fa40e8a984d48156a271787ab8883f9893d51ec4b563b53',
-      );
-
-      _blockCipherVectorTest(
-        1,
-        TripleDESEngine(),
-        _kp('0123456789abcdeffedcba9876543210'),
-        input,
-        'd80a0d8b2bae5e4e6a0094171abcfc2775d2235a706e232c',
-      );
-
-      _blockCipherVectorTest(
-        2,
-        TripleDESEngine(),
-        _kp('0123456789abcdef0123456789abcdef0123456789abcdef'),
-        input,
-        '3fa40e8a984d48156a271787ab8883f9893d51ec4b563b53',
-      );
-
-      _blockCipherVectorTest(
-        3,
-        TripleDESEngine(),
-        _kp('0123456789abcdeffedcba98765432100123456789abcdef'),
-        input,
-        'd80a0d8b2bae5e4e6a0094171abcfc2775d2235a706e232c',
       );
     }));
 
@@ -159,77 +118,6 @@ void main() {
         _kp('0131d9619dc1376e'),
         '5cd54ca83def57da',
         'b1b8cc0b250f09a0',
-      );
-    }));
-
-    /// DES tester - vectors from <a href=https://www.itl.nist.gov/fipspubs/fip81.htm>FIPS 81</a>
-    test('DES test', (() {
-      final input1 = utf8.encoder.convert('Now is the time for all ').toHexadecimal();
-      final input2 = utf8.encoder.convert('Now is the').toHexadecimal();
-
-      final input3 = '4e6f7720697320746865aabbcc';
-      final key = '0123456789abcdef';
-      final iv = '1234567890abcdef';
-
-      _blockCipherVectorTest(
-        0,
-        DESEngine(),
-        _kp(key),
-        input1,
-        '3fa40e8a984d48156a271787ab8883f9893d51ec4b563b53',
-      );
-
-      _blockCipherVectorTest(
-        1,
-        CBCBlockCipher(DESEngine()),
-        _kpWithIV(key, iv),
-        input1,
-        'e5c7cdde872bf27c43e934008c389c0f683788499a7c05f6',
-      );
-
-      /// Test with 8 bit CBC mode
-      _blockCipherVectorTest(
-        2,
-        CFBBlockCipher(DESEngine(), 1),
-        _kpWithIV(key, iv),
-        input2,
-        'f31fda07011462ee187f',
-      );
-
-      /// Test with 64 bit CBC mode
-      _blockCipherVectorTest(
-        3,
-        CFBBlockCipher(DESEngine(), 64 ~/ 8),
-        _kpWithIV(key, iv),
-        input1,
-        'f3096249c7f46e51a69e839b1a92f78403467133898ea622',
-      );
-
-      /// Test with 8 bit OFB mode
-      _blockCipherVectorTest(
-        4,
-        OFBBlockCipher(DESEngine(), 1),
-        _kpWithIV(key, iv),
-        input2,
-        'f34a2850c9c64985d684',
-      );
-
-      /// Test with 64 bit CFB mode
-      _blockCipherVectorTest(
-        3,
-        CFBBlockCipher(DESEngine(), 64 ~/ 8),
-        _kpWithIV(key, iv),
-        input3,
-        'f3096249c7f46e51a69e0954bf',
-      );
-
-      /// Test with 64 bit OFB mode
-      _blockCipherVectorTest(
-        4,
-        OFBBlockCipher(DESEngine(), 64 ~/ 8),
-        _kpWithIV(key, iv),
-        input3,
-        'f3096249c7f46e5135f2c0eb8b',
       );
     }));
 
