@@ -18,6 +18,8 @@ class PreferredCompressionAlgorithms extends SignatureSubpacket {
           data,
         );
 
-  List<CompressionAlgorithm> get preferences =>
-      data.map((pref) => CompressionAlgorithm.values.firstWhere((alg) => alg.value == pref)).toList();
+  List<CompressionAlgorithm> get preferences => data
+      .map((pref) =>
+          CompressionAlgorithm.values.firstWhere((alg) => alg.value == pref))
+      .toList();
 }

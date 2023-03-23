@@ -14,8 +14,7 @@ class PreferredKeyServer extends SignatureSubpacket {
     final Uint8List data, {
     super.critical,
     super.isLongLength,
-  })
-      : super(SignatureSubpacketType.preferredKeyServer, data);
+  }) : super(SignatureSubpacketType.preferredKeyServer, data);
 
   factory PreferredKeyServer.fromKeyServer(
     final String keyServer, {

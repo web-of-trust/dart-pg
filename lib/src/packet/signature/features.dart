@@ -22,11 +22,14 @@ class Features extends SignatureSubpacket {
       Features(Uint8List.fromList([features]), critical: critical);
 
   bool get supprtModificationDetection =>
-      (data[0] & SupportFeature.modificationDetection.value) == SupportFeature.modificationDetection.value;
+      (data[0] & SupportFeature.modificationDetection.value) ==
+      SupportFeature.modificationDetection.value;
 
   bool get supportAeadEncryptedData =>
-      (data[0] & SupportFeature.aeadEncryptedData.value) == SupportFeature.aeadEncryptedData.value;
+      (data[0] & SupportFeature.aeadEncryptedData.value) ==
+      SupportFeature.aeadEncryptedData.value;
 
   bool get supportVersion5PublicKey =>
-      (data[0] & SupportFeature.version5PublicKey.value) == SupportFeature.version5PublicKey.value;
+      (data[0] & SupportFeature.version5PublicKey.value) ==
+      SupportFeature.version5PublicKey.value;
 }

@@ -13,9 +13,10 @@ class PreferredHashAlgorithms extends SignatureSubpacket {
     final Uint8List data, {
     super.critical,
     super.isLongLength,
-  })
-      : super(SignatureSubpacketType.preferredHashAlgorithms, data);
+  }) : super(SignatureSubpacketType.preferredHashAlgorithms, data);
 
-  List<HashAlgorithm> get preferences =>
-      data.map((pref) => HashAlgorithm.values.firstWhere((alg) => alg.value == pref)).toList();
+  List<HashAlgorithm> get preferences => data
+      .map(
+          (pref) => HashAlgorithm.values.firstWhere((alg) => alg.value == pref))
+      .toList();
 }

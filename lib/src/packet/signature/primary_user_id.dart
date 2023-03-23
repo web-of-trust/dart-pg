@@ -16,7 +16,8 @@ class PrimaryUserID extends SignatureSubpacket {
     final bool isPrimary, {
     final bool critical = false,
   }) =>
-      PrimaryUserID(Uint8List.fromList([isPrimary ? 1 : 0]), critical: critical);
+      PrimaryUserID(Uint8List.fromList([isPrimary ? 1 : 0]),
+          critical: critical);
 
   bool get isPrimary => data[0] != 0;
 }

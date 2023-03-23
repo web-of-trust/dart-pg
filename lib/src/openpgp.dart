@@ -67,14 +67,21 @@ class OpenPGP {
     final String passphrase, [
     final Iterable<String> subkeyPassphrases = const [],
   ]) async =>
-      PrivateKey.fromArmored(armoredPrivateKey).decrypt(passphrase, subkeyPassphrases);
+      PrivateKey.fromArmored(armoredPrivateKey).decrypt(
+        passphrase,
+        subkeyPassphrases,
+      );
 
   /// Read an armored OpenPGP private key and returns a PrivateKey object
-  static Future<PrivateKey> readPrivateKey(final String armoredPrivateKey) async =>
+  static Future<PrivateKey> readPrivateKey(
+    final String armoredPrivateKey,
+  ) async =>
       PrivateKey.fromArmored(armoredPrivateKey);
 
   /// Read an armored OpenPGP public key and returns a PublicKey object
-  static Future<PublicKey> readPublicKey(final String armoredPublicKey) async =>
+  static Future<PublicKey> readPublicKey(
+    final String armoredPublicKey,
+  ) async =>
       PublicKey.fromArmored(armoredPublicKey);
 
   /// Sign a cleartext message.
@@ -124,11 +131,15 @@ class OpenPGP {
       );
 
   /// Read an armored OpenPGP signature and returns a Signature object
-  static Future<Signature> readSignature(final String armoredSignature) async =>
+  static Future<Signature> readSignature(
+    final String armoredSignature,
+  ) async =>
       Signature.fromArmored(armoredSignature);
 
   /// Read an armored OpenPGP signed message and returns a SignedMessage object
-  static Future<SignedMessage> readSignedMessage(final String armoredSignedMessage) async =>
+  static Future<SignedMessage> readSignedMessage(
+    final String armoredSignedMessage,
+  ) async =>
       SignedMessage.fromArmored(armoredSignedMessage);
 
   /// Read an armored OpenPGP message and returns a Message object
@@ -166,7 +177,12 @@ class OpenPGP {
     final DateTime? date,
   }) async =>
       (signingKeys.isNotEmpty)
-          ? message.sign(signingKeys, date: date).then((message) => message.compress(compression)).then(
+          ? message
+              .sign(signingKeys, date: date)
+              .then(
+                (message) => message.compress(compression),
+              )
+              .then(
                 (message) => message.encrypt(
                   encryptionKeys: encryptionKeys,
                   passwords: passwords,

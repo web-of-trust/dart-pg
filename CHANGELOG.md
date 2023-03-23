@@ -8,5 +8,5 @@
 - Support ECC curves: secP256k1, secP384r1, secP521r1, brainpoolP256r1, brainpoolP384r1, brainpoolP512r1, curve25519, ed25519, prime256v1.
 
 ## 1.0.1 (2023-03-23)
-- Refactor code
 - Remove Crc24 class
+- Refactor & format code by Dart formatter

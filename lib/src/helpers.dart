@@ -54,7 +54,16 @@ class Helper {
   static final _random = Random.secure();
 
   static final _secureRandom = pc.SecureRandom('Fortuna')
-    ..seed(pc.KeyParameter(Uint8List.fromList(List.generate(32, ((_) => _random.nextInt(0xffffffff))))));
+    ..seed(
+      pc.KeyParameter(
+        Uint8List.fromList(
+          List.generate(
+            32,
+            ((_) => _random.nextInt(0xffffffff)),
+          ),
+        ),
+      ),
+    );
 
   static BigInt readMPI(Uint8List bytes) {
     final bitLength = bytes.sublist(0, 2).toUint16();
@@ -63,16 +72,23 @@ class Helper {
 
   static pc.SecureRandom secureRandom() => _secureRandom;
 
-  static Uint8List generatePrefix([final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256]) {
+  static Uint8List generatePrefix([
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+  ]) {
     final prefix = _secureRandom.nextBytes(symmetric.blockSize);
     final repeat = [prefix[prefix.length - 2], prefix[prefix.length - 1]];
     return Uint8List.fromList([...prefix, ...repeat]);
   }
 
-  static Uint8List generateEncryptionKey([final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256]) =>
+  static Uint8List generateEncryptionKey([
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+  ]) =>
       _secureRandom.nextBytes((symmetric.keySize + 7) >> 3);
 
-  static Uint8List hashDigest(final Uint8List input, [HashAlgorithm hash = HashAlgorithm.sha256]) {
+  static Uint8List hashDigest(
+    final Uint8List input, [
+    HashAlgorithm hash = HashAlgorithm.sha256,
+  ]) {
     switch (hash) {
       case HashAlgorithm.md5:
         return Uint8List.fromList(md5.convert(input).bytes);
@@ -118,7 +134,11 @@ class Helper {
     return encoded.sublist(offset + 1);
   }
 
-  static BigInt randomBigIntInRange(final BigInt min, final BigInt max, {pc.SecureRandom? random}) {
+  static BigInt randomBigIntInRange(
+    final BigInt min,
+    final BigInt max, {
+    pc.SecureRandom? random,
+  }) {
     random = random ?? secureRandom();
     BigInt k;
     do {
