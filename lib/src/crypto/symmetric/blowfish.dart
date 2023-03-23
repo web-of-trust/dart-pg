@@ -9,8 +9,10 @@ import '../math/byte_ext.dart';
 import '../math/int_ext.dart';
 import 'base_cipher.dart';
 
-/// A class that provides Blowfish key encryption operations, such as encoding data and generating keys.
-/// All the algorithms herein are from Applied Cryptography and implement a simplified cryptography interface.
+/// A class that provides Blowfish key encryption operations,
+/// such as encoding data and generating keys.
+/// All the algorithms herein are from Applied Cryptography
+/// and implement a simplified cryptography interface.
 /// Ported from Bouncy Castle project
 class BlowfishEngine extends BaseCipher {
   static const _kp = [
@@ -356,7 +358,9 @@ class BlowfishEngine extends BaseCipher {
   }
 
   int _f(final int x) {
-    return ((_s0[(x >> 24) & 0xff] + _s1[(x >> 16) & 0xff]) ^ _s2[(x >> 8) & 0xff]) + _s3[x & 0xff];
+    return ((_s0[(x >> 24) & 0xff] + _s1[(x >> 16) & 0xff]) ^
+            _s2[(x >> 8) & 0xff]) +
+        _s3[x & 0xff];
   }
 
   /// apply the encryption cycle to each value pair in the table.

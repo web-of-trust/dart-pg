@@ -92,7 +92,10 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
       final priv = _key as ElGamalPrivateKey;
       final m = (gamma.modPow(prime - (BigInt.one + priv.x), prime) * phi) % prime;
-      output.setAll(outOff, m.toUnsignedBytes().sublist(0, output.length - outOff));
+      output.setAll(
+        outOff,
+        m.toUnsignedBytes().sublist(0, output.length - outOff),
+      );
     } else {
       /// encryption
       final block = (inOff != 0 || inLength != input.length) ? input.sublist(0, inLength) : input;
@@ -103,11 +106,11 @@ class ElGamalEngine implements AsymmetricBlockCipher {
       }
 
       final byteLength = outputBlockSize ~/ 2;
+      final pub = _key as ElGamalPublicKey;
       BigInt gamma, phi;
       do {
         final k = _calculateK(prime);
 
-        final pub = _key as ElGamalPublicKey;
         gamma = pub.generator.modPow(k, prime);
         phi = (inp * (pub.y.modPow(k, prime))) % prime;
       } while (gamma.byteLength < byteLength || phi.byteLength < byteLength);

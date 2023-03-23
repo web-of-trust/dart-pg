@@ -14,7 +14,10 @@ class BufferedCipher {
 
   int _bufOff = 0;
 
-  BufferedCipher(this._underlyingCipher) : _buffer = Uint8List(_underlyingCipher.blockSize);
+  BufferedCipher(this._underlyingCipher)
+      : _buffer = Uint8List(
+          _underlyingCipher.blockSize,
+        );
 
   BlockCipher get underlyingCipher => _underlyingCipher;
 

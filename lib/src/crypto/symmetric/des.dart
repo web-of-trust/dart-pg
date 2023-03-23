@@ -215,7 +215,9 @@ class DESEngine extends BaseCipher {
       }
       _workingKey = generateWorkingKey(forEncryption, params.key);
     } else {
-      throw ArgumentError('Invalid parameter passed to $algorithmName init - ${params.runtimeType}');
+      throw ArgumentError(
+        'Invalid parameter passed to $algorithmName init - ${params.runtimeType}',
+      );
     }
   }
 
@@ -296,11 +298,15 @@ class DESEngine extends BaseCipher {
       final i1 = newKey[i];
       final i2 = newKey[i + 1];
 
-      newKey[i] =
-          ((i1 & 0x00fc0000) << 6) | ((i1 & 0x00000fc0) << 10) | ((i2 & 0x00fc0000) >> 10) | ((i2 & 0x00000fc0) >> 6);
+      newKey[i] = ((i1 & 0x00fc0000) << 6) |
+          ((i1 & 0x00000fc0) << 10) |
+          ((i2 & 0x00fc0000) >> 10) |
+          ((i2 & 0x00000fc0) >> 6);
 
-      newKey[i + 1] =
-          ((i1 & 0x0003f000) << 12) | ((i1 & 0x0000003f) << 16) | ((i2 & 0x0003f000) >> 4) | (i2 & 0x0000003f);
+      newKey[i + 1] = ((i1 & 0x0003f000) << 12) |
+          ((i1 & 0x0000003f) << 16) |
+          ((i2 & 0x0003f000) >> 4) |
+          (i2 & 0x0000003f);
     }
 
     return newKey;
@@ -385,6 +391,10 @@ class DESEngine extends BaseCipher {
     right ^= work;
     left ^= (work << 4);
 
-    output.setRange(outOff, outOff + _blockSize, [...left.pack32(), ...right.pack32()]);
+    output.setRange(
+      outOff,
+      outOff + _blockSize,
+      [...left.pack32(), ...right.pack32()],
+    );
   }
 }

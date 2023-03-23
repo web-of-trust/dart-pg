@@ -25,7 +25,8 @@ class CamelliaEngine extends BaseCipher {
 
   //// The first camellia sbox
   static const _sbox1_1110 = [
-    0x70707000, 0x82828200, 0x2c2c2c00, 0xececec00, 0xb3b3b300, 0x27272700, // 0 - 5
+    0x70707000, 0x82828200, 0x2c2c2c00, 0xececec00, 0xb3b3b300,
+    0x27272700, // 0 - 5
     0xc0c0c000, 0xe5e5e500, 0xe4e4e400, 0x85858500, 0x57575700, 0x35353500,
     0xeaeaea00, 0x0c0c0c00, 0xaeaeae00, 0x41414100, 0x23232300, 0xefefef00,
     0x6b6b6b00, 0x93939300, 0x45454500, 0x19191900, 0xa5a5a500, 0x21212100,
@@ -72,7 +73,8 @@ class CamelliaEngine extends BaseCipher {
 
   /// The second camellia sbox
   static const _sbox2_0222 = [
-    0x00e0e0e0, 0x00050505, 0x00585858, 0x00d9d9d9, 0x00676767, 0x004e4e4e, // 0 - 5
+    0x00e0e0e0, 0x00050505, 0x00585858, 0x00d9d9d9, 0x00676767,
+    0x004e4e4e, // 0 - 5
     0x00818181, 0x00cbcbcb, 0x00c9c9c9, 0x000b0b0b, 0x00aeaeae, 0x006a6a6a,
     0x00d5d5d5, 0x00181818, 0x005d5d5d, 0x00828282, 0x00464646, 0x00dfdfdf,
     0x00d6d6d6, 0x00272727, 0x008a8a8a, 0x00323232, 0x004b4b4b, 0x00424242,
@@ -119,7 +121,8 @@ class CamelliaEngine extends BaseCipher {
 
   /// The third camellia sbox
   static const _sbox3_3033 = [
-    0x38003838, 0x41004141, 0x16001616, 0x76007676, 0xd900d9d9, 0x93009393, // 0 - 5
+    0x38003838, 0x41004141, 0x16001616, 0x76007676, 0xd900d9d9,
+    0x93009393, // 0 - 5
     0x60006060, 0xf200f2f2, 0x72007272, 0xc200c2c2, 0xab00abab, 0x9a009a9a,
     0x75007575, 0x06000606, 0x57005757, 0xa000a0a0, 0x91009191, 0xf700f7f7,
     0xb500b5b5, 0xc900c9c9, 0xa200a2a2, 0x8c008c8c, 0xd200d2d2, 0x90009090,
@@ -162,12 +165,12 @@ class CamelliaEngine extends BaseCipher {
     0x20002020, 0x14001414, 0xe900e9e9, 0xbd00bdbd, 0xdd00dddd, 0xe400e4e4,
     0xa100a1a1, 0xe000e0e0, 0x8a008a8a, 0xf100f1f1, 0xd600d6d6, 0x7a007a7a,
     0xbb00bbbb, 0xe300e3e3, 0x40004040, 0x4f004f4f
-
   ];
 
   /// The fourth camellia sbox
   static const _sbox4_4404 = [
-    0x70700070, 0x2c2c002c, 0xb3b300b3, 0xc0c000c0, 0xe4e400e4, 0x57570057, // 0 - 5
+    0x70700070, 0x2c2c002c, 0xb3b300b3, 0xc0c000c0, 0xe4e400e4,
+    0x57570057, // 0 - 5
     0xeaea00ea, 0xaeae00ae, 0x23230023, 0x6b6b006b, 0x45450045, 0xa5a500a5,
     0xeded00ed, 0x4f4f004f, 0x1d1d001d, 0x92920092, 0x86860086, 0xafaf00af,
     0x7c7c007c, 0x1f1f001f, 0x3e3e003e, 0xdcdc00dc, 0x5e5e005e, 0x0b0b000b,
@@ -235,7 +238,9 @@ class CamelliaEngine extends BaseCipher {
 
   @override
   void init(bool forEncryption, CipherParameters? params) {
-    if (params is! KeyParameter) throw Exception('only simple KeyParameter expected.');
+    if (params is! KeyParameter) {
+      throw Exception('only simple KeyParameter expected.');
+    }
 
     _setKey(forEncryption, params.key);
 
@@ -249,7 +254,9 @@ class CamelliaEngine extends BaseCipher {
     Uint8List output,
     int outOff,
   ) {
-    if (!initialised) throw Exception('Camellia engine not initialised');
+    if (!initialised) {
+      throw Exception('Camellia engine not initialised');
+    }
 
     if ((inOff + _blockSize) > input.length) {
       throw Exception('input buffer too short');
@@ -274,10 +281,14 @@ class CamelliaEngine extends BaseCipher {
     List<int> ko,
     int outOff,
   ) {
-    ko[outOff] = ki[inOff].shiftLeft32(rot) | ki[1 + inOff].shiftRight32(32 - rot);
-    ko[1 + outOff] = ki[1 + inOff].shiftLeft32(rot) | ki[2 + inOff].shiftRight32(32 - rot);
-    ko[2 + outOff] = ki[2 + inOff].shiftLeft32(rot) | ki[3 + inOff].shiftRight32(32 - rot);
-    ko[3 + outOff] = ki[3 + inOff].shiftLeft32(rot) | ki[inOff].shiftRight32(32 - rot);
+    ko[outOff] =
+        ki[inOff].shiftLeft32(rot) | ki[1 + inOff].shiftRight32(32 - rot);
+    ko[1 + outOff] =
+        ki[1 + inOff].shiftLeft32(rot) | ki[2 + inOff].shiftRight32(32 - rot);
+    ko[2 + outOff] =
+        ki[2 + inOff].shiftLeft32(rot) | ki[3 + inOff].shiftRight32(32 - rot);
+    ko[3 + outOff] =
+        ki[3 + inOff].shiftLeft32(rot) | ki[inOff].shiftRight32(32 - rot);
     ki[inOff] = ko[outOff];
     ki[1 + inOff] = ko[1 + outOff];
     ki[2 + inOff] = ko[2 + outOff];
@@ -291,10 +302,14 @@ class CamelliaEngine extends BaseCipher {
     List<int> ko,
     int outOff,
   ) {
-    ko[2 + outOff] = ki[inOff].shiftLeft32(rot) | ki[1 + inOff].shiftRight32(32 - rot);
-    ko[3 + outOff] = ki[1 + inOff].shiftLeft32(rot) | ki[2 + inOff].shiftRight32(32 - rot);
-    ko[outOff] = ki[2 + inOff].shiftLeft32(rot) | ki[3 + inOff].shiftRight32(32 - rot);
-    ko[1 + outOff] = ki[3 + inOff].shiftLeft32(rot) | ki[inOff].shiftRight32(32 - rot);
+    ko[2 + outOff] =
+        ki[inOff].shiftLeft32(rot) | ki[1 + inOff].shiftRight32(32 - rot);
+    ko[3 + outOff] =
+        ki[1 + inOff].shiftLeft32(rot) | ki[2 + inOff].shiftRight32(32 - rot);
+    ko[outOff] =
+        ki[2 + inOff].shiftLeft32(rot) | ki[3 + inOff].shiftRight32(32 - rot);
+    ko[1 + outOff] =
+        ki[3 + inOff].shiftLeft32(rot) | ki[inOff].shiftRight32(32 - rot);
     ki[inOff] = ko[2 + outOff];
     ki[1 + inOff] = ko[3 + outOff];
     ki[2 + inOff] = ko[outOff];
@@ -308,10 +323,14 @@ class CamelliaEngine extends BaseCipher {
     List<int> ko,
     int outOff,
   ) {
-    ko[outOff] = ki[1 + inOff].shiftLeft32(rot - 32) | ki[2 + inOff].shiftRight32(64 - rot);
-    ko[1 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) | ki[3 + inOff].shiftRight32(64 - rot);
-    ko[2 + outOff] = ki[3 + inOff].shiftLeft32(rot - 32) | ki[inOff].shiftRight32(64 - rot);
-    ko[3 + outOff] = ki[inOff].shiftLeft32(rot - 32) | ki[1 + inOff].shiftRight32(64 - rot);
+    ko[outOff] = ki[1 + inOff].shiftLeft32(rot - 32) |
+        ki[2 + inOff].shiftRight32(64 - rot);
+    ko[1 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) |
+        ki[3 + inOff].shiftRight32(64 - rot);
+    ko[2 + outOff] =
+        ki[3 + inOff].shiftLeft32(rot - 32) | ki[inOff].shiftRight32(64 - rot);
+    ko[3 + outOff] =
+        ki[inOff].shiftLeft32(rot - 32) | ki[1 + inOff].shiftRight32(64 - rot);
     ki[inOff] = ko[outOff];
     ki[1 + inOff] = ko[1 + outOff];
     ki[2 + inOff] = ko[2 + outOff];
@@ -325,10 +344,14 @@ class CamelliaEngine extends BaseCipher {
     List<int> ko,
     int outOff,
   ) {
-    ko[2 + outOff] = ki[1 + inOff].shiftLeft32(rot - 32) | ki[2 + inOff].shiftRight32(64 - rot);
-    ko[3 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) | ki[3 + inOff].shiftRight32(64 - rot);
-    ko[outOff] = ki[3 + inOff].shiftLeft32(rot - 32) | ki[inOff].shiftRight32(64 - rot);
-    ko[1 + outOff] = ki[inOff].shiftLeft32(rot - 32) | ki[1 + inOff].shiftRight32(64 - rot);
+    ko[2 + outOff] = ki[1 + inOff].shiftLeft32(rot - 32) |
+        ki[2 + inOff].shiftRight32(64 - rot);
+    ko[3 + outOff] = ki[2 + inOff].shiftLeft32(rot - 32) |
+        ki[3 + inOff].shiftRight32(64 - rot);
+    ko[outOff] =
+        ki[3 + inOff].shiftLeft32(rot - 32) | ki[inOff].shiftRight32(64 - rot);
+    ko[1 + outOff] =
+        ki[inOff].shiftLeft32(rot - 32) | ki[1 + inOff].shiftRight32(64 - rot);
     ki[inOff] = ko[2 + outOff];
     ki[1 + inOff] = ko[3 + outOff];
     ki[2 + inOff] = ko[outOff];

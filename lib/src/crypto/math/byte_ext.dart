@@ -5,25 +5,43 @@
 import 'dart:typed_data';
 
 extension Uint8ListExt on Uint8List {
-  int toIn16([Endian endian = Endian.big]) => buffer.asByteData().getInt16(0, endian);
+  int toIn16([
+    Endian endian = Endian.big,
+  ]) =>
+      buffer.asByteData().getInt16(0, endian);
 
-  int toUint16([Endian endian = Endian.big]) => buffer.asByteData().getUint16(0, endian);
+  int toUint16([
+    Endian endian = Endian.big,
+  ]) =>
+      buffer.asByteData().getUint16(0, endian);
 
   int toLeIn16() => toIn16(Endian.little);
 
   int toLeUint16() => toUint16(Endian.little);
 
-  int toInt32([Endian endian = Endian.big]) => buffer.asByteData().getInt32(0, endian);
+  int toInt32([
+    Endian endian = Endian.big,
+  ]) =>
+      buffer.asByteData().getInt32(0, endian);
 
-  int toUint32([Endian endian = Endian.big]) => buffer.asByteData().getUint32(0, endian);
+  int toUint32([
+    Endian endian = Endian.big,
+  ]) =>
+      buffer.asByteData().getUint32(0, endian);
 
   int toLeInt32() => toInt32(Endian.little);
 
   int toLeUint32() => toUint32(Endian.little);
 
-  int toInt64([Endian endian = Endian.big]) => buffer.asByteData().getInt64(0, endian);
+  int toInt64([
+    Endian endian = Endian.big,
+  ]) =>
+      buffer.asByteData().getInt64(0, endian);
 
-  int toUint64([Endian endian = Endian.big]) => buffer.asByteData().getUint64(0, endian);
+  int toUint64([
+    Endian endian = Endian.big,
+  ]) =>
+      buffer.asByteData().getUint64(0, endian);
 
   int toLeInt64() => toInt64(Endian.little);
 
@@ -75,7 +93,9 @@ extension Uint8ListExt on Uint8List {
     return result;
   }
 
-  DateTime toDateTime() => DateTime.fromMillisecondsSinceEpoch(toInt32() * 1000);
+  DateTime toDateTime() => DateTime.fromMillisecondsSinceEpoch(
+        toInt32() * 1000,
+      );
 
   String toHexadecimal() {
     final result = StringBuffer();
