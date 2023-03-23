@@ -42,7 +42,7 @@ extension BigIntExt on BigInt {
       return Uint8List.fromList([0]);
     }
     final byteMask = BigInt.from(0xff);
-    final size = bitLength + (isNegative ? 8 : 7) >> 3;
+    final size = (bitLength + (isNegative ? 8 : 7)) >> 3;
     var result = Uint8List(size);
     var number = this;
     for (var i = 0; i < size; i++) {
