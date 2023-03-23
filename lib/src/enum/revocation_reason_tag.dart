@@ -7,12 +7,16 @@
 enum RevocationReasonTag {
   /// No reason specified (key revocations or cert revocations)
   noReason(0),
+
   /// Key is superseded (key revocations)
   keySuperseded(1),
+
   /// Key material has been compromised (key revocations)
   keyCompromised(2),
+
   /// Key is retired and no longer used (key revocations)
   keyRetired(3),
+
   /// User ID information is no longer valid (cert revocations)
   userIDInvalid(32);
 
