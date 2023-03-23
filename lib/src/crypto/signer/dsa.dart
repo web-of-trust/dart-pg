@@ -232,7 +232,8 @@ class DSAKeyGeneratorParameters extends KeyGeneratorParameters {
       final x = random.nextBigInteger(bitStrength);
       final c = x % divisor;
       prime = x - (c - BigInt.one);
-    } while (!prime.isProbablePrime(certainty) || prime.bitLength != bitStrength);
+    } while (
+        !prime.isProbablePrime(certainty) || prime.bitLength != bitStrength);
 
     final p1 = prime - BigInt.one;
     final e = p1 ~/ order;

@@ -20,7 +20,8 @@ extension BigIntExt on BigInt {
 
     if (sign > 0) {
       rawSize = (bitLength + 7) >> 3;
-      needsPaddingByte = ((this >> (rawSize - 1) * 8) & negativeFlag) == negativeFlag ? 1 : 0;
+      needsPaddingByte =
+          ((this >> (rawSize - 1) * 8) & negativeFlag) == negativeFlag ? 1 : 0;
     } else {
       needsPaddingByte = 0;
       rawSize = (bitLength + 8) >> 3;
