@@ -10,3 +10,8 @@
 ## 1.0.1 (2023-03-23)
 - Remove Crc24 class
 - Refactor & format code by Dart formatter
+
+## 1.0.2 (2023-03-23)
+- Update pointycastle to 3.7.1
+- Use Pointy Castle DESede engine for SymmetricAlgorithm.tripledes
+- Use Pointy Castle PKCS1Encoding for RSA & Elgamal session key encryption
