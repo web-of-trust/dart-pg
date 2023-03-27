@@ -98,8 +98,12 @@ class Armor {
       throw StateError('Ascii armor integrity check failed');
     }
 
-    return Armor(type ?? ArmorType.multipartSection, data,
-        headers: headers, text: text);
+    return Armor(
+      type ?? ArmorType.multipartSection,
+      data,
+      headers: headers,
+      text: text,
+    );
   }
 
   /// Armor an OpenPGP binary packet block
@@ -180,8 +184,6 @@ class Armor {
           '$signatureEnd$endOfLine',
         ];
         break;
-      default:
-        result = [];
     }
     return result.join();
   }

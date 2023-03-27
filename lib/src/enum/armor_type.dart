@@ -4,15 +4,11 @@
 
 /// Armor type
 enum ArmorType {
-  multipartSection(0),
-  multipartLast(1),
-  signedMessage(2),
-  message(3),
-  publicKey(4),
-  privateKey(5),
-  signature(6);
-
-  final int value;
-
-  const ArmorType(this.value);
+  multipartSection,
+  multipartLast,
+  signedMessage,
+  message,
+  publicKey,
+  privateKey,
+  signature,
 }
