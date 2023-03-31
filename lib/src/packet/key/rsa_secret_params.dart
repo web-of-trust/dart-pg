@@ -100,7 +100,7 @@ class RSASecretParams extends KeyParams {
     }
 
     final nSizeOver3 = (publicParams.modulus.bitLength / 3).floor();
-    final r = Helper.randomBigIntInRange(BigInt.two, BigInt.two << nSizeOver3);
+    final r = Helper.randomBigInt(BigInt.two, BigInt.two << nSizeOver3);
     final rde = r * privateExponent * publicParams.publicExponent;
     return (rde % (primeP - BigInt.one)).compareTo(r) == 0 &&
         (rde % (primeQ - BigInt.one)).compareTo(r) == 0;

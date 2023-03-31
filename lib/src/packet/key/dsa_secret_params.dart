@@ -79,7 +79,7 @@ class DSASecretParams extends KeyParams {
     // Re-derive public key y' = g ** x mod p
     // Expect y == y'
     // Blinded exponentiation computes g**{rq + x} to compare to y
-    final r = Helper.randomBigIntInRange(
+    final r = Helper.randomBigInt(
         BigInt.two << (qSize - 1), BigInt.two << qSize);
     final rqx = (publicParams.order * r) + secretExponent;
     return publicParams.publicExponent.compareTo(

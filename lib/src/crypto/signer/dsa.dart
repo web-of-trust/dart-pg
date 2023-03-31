@@ -292,7 +292,7 @@ class DSAKeyGenerator implements KeyGenerator {
   BigInt _generateSecretExponent(final BigInt order) {
     int minWeight = order.bitLength >> 2;
     for (;;) {
-      BigInt x = Helper.randomBigIntInRange(
+      BigInt x = Helper.randomBigInt(
         BigInt.one,
         order - BigInt.one,
         random: _random,

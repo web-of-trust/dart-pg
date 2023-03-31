@@ -196,7 +196,7 @@ class ElGamalKeyGeneratorParameters extends KeyGeneratorParameters {
 
     final p2 = prime - BigInt.two;
     do {
-      final h = Helper.randomBigIntInRange(BigInt.two, p2, random: random);
+      final h = Helper.randomBigInt(BigInt.two, p2, random: random);
       generator = h.modPow(BigInt.two, prime);
     } while (generator.compareTo(BigInt.one) == 0);
 
@@ -256,7 +256,7 @@ class ElGamalKeyGenerator implements KeyGenerator {
     final max = prime - BigInt.two;
     final minWeight = max.bitLength >> 2;
     for (;;) {
-      BigInt x = Helper.randomBigIntInRange(BigInt.two, max, random: _random);
+      BigInt x = Helper.randomBigInt(BigInt.two, max, random: _random);
       if (x.nafWeight > minWeight) {
         return x;
       }

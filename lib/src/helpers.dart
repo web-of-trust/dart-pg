@@ -108,7 +108,7 @@ class Helper {
     }
   }
 
-  static BigInt randomBigIntInRange(
+  static BigInt randomBigInt(
     final BigInt min,
     final BigInt max, {
     pc.SecureRandom? random,
