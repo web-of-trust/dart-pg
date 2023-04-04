@@ -14,10 +14,11 @@ import '../../crypto/math/int_ext.dart';
 import '../../enum/curve_info.dart';
 import '../../enum/hash_algorithm.dart';
 import '../../enum/key_algorithm.dart';
+import '../../enum/symmetric_algorithm.dart';
 import '../../helpers.dart';
-import 'aes_key_wrapper.dart';
 import 'ec_secret_params.dart';
 import 'ecdh_public_params.dart';
+import 'key_wrap.dart';
 import 'session_key.dart';
 import 'session_key_params.dart';
 
@@ -76,8 +77,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
           'Curve ${publicParams.curve.name} is unsupported for ephemeral key generation.',
         );
       default:
-        final parameters =
-            ECDomainParameters(publicParams.curve.name.toLowerCase());
+        final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
         final keyGen = KeyGenerator('EC')
           ..init(
             ParametersWithRandom(
@@ -100,7 +100,8 @@ class ECDHSessionKeyParams extends SessionKeyParams {
         ephemeralKey = publicKey.Q!.getEncoded(false).toBigIntWithSign(1);
     }
 
-    final wrappedKey = await AesKeyWrapper.wrap(
+    final keyWrapper = _selectKeyWrapper(publicParams.kdfSymmetric);
+    final wrappedKey = await keyWrapper.wrap(
       _kdf(
         publicParams.kdfHash,
         sharedKey,
@@ -137,8 +138,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       case CurveInfo.curve25519:
         sharedKey = TweetNaCl.crypto_scalarmult(
           Uint8List(TweetNaCl.sharedKeyLength),
-          Uint8List.fromList(
-              secretParams.d.toUnsignedBytes().reversed.toList()),
+          Uint8List.fromList(secretParams.d.toUnsignedBytes().reversed.toList()),
           ephemeralKey.toUnsignedBytes(),
         );
         break;
@@ -147,8 +147,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
           'Curve ${publicParams.curve.name} is unsupported for key agreement calculation.',
         );
       default:
-        final parameters =
-            ECDomainParameters(publicParams.curve.name.toLowerCase());
+        final parameters = ECDomainParameters(publicParams.curve.name.toLowerCase());
         final privateKey = ECPrivateKey(secretParams.d, parameters);
         final agreement = ECDHBasicAgreement()..init(privateKey);
         sharedKey = agreement
@@ -161,8 +160,9 @@ class ECDHSessionKeyParams extends SessionKeyParams {
             .toUnsignedBytes();
     }
 
+    final keyWrapper = _selectKeyWrapper(publicParams.kdfSymmetric);
     return decodeSessionKey(_pkcs5Decode(
-      await AesKeyWrapper.unwrap(
+      await keyWrapper.unwrap(
         _kdf(
           publicParams.kdfHash,
           sharedKey,
@@ -212,8 +212,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
   /// Add pkcs5 padding to a message
   static Uint8List _pkcs5Encode(final Uint8List message) {
     final c = 8 - (message.lengthInBytes % 8);
-    return Uint8List.fromList(List.filled(message.length + c, c))
-      ..setAll(0, message);
+    return Uint8List.fromList(List.filled(message.length + c, c))..setAll(0, message);
   }
 
   /// Remove pkcs5 padding from a message
@@ -230,5 +229,16 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       }
     }
     return Uint8List(0);
+  }
+
+  static KeyWrap _selectKeyWrapper(SymmetricAlgorithm symmetric) {
+    switch (symmetric) {
+      case SymmetricAlgorithm.camellia128:
+      case SymmetricAlgorithm.camellia192:
+      case SymmetricAlgorithm.camellia256:
+        return CamelliaKeyWrap();
+      default:
+        return AesKeyWrap();
+    }
   }
 }

@@ -8,16 +8,21 @@ import 'package:pointycastle/api.dart';
 
 import '../../crypto/math/byte_ext.dart';
 
-/// Implementation of RFC 3394 AES Key Wrap & Key Unwrap funcions
-class AesKeyWrapper {
+export 'aes_key_wrap.dart';
+export 'camellia_key_wrap.dart';
+
+/// An implementation of the key wrapper based on RFC 3394.
+abstract class KeyWrap {
   static final _iv = Uint8List.fromList([
     0xa6, 0xa6, 0xa6, 0xa6, // 0 - 3
     0xa6, 0xa6, 0xa6, 0xa6
   ]);
 
-  static final _aes = BlockCipher('AES/ECB');
+  final BlockCipher _cipher;
 
-  static Future<Uint8List> wrap(
+  KeyWrap(this._cipher);
+
+  Future<Uint8List> wrap(
     final Uint8List key,
     final Uint8List data,
   ) async {
@@ -28,7 +33,7 @@ class AesKeyWrapper {
       throw StateError('Data to be wrapped must be a multiple of 8 bytes');
     }
 
-    _aes.init(true, KeyParameter(key));
+    _cipher.init(true, KeyParameter(key));
     final a = Uint8List.fromList(_iv);
     final r = Uint8List.fromList(data);
     final n = data.lengthInBytes ~/ 8;
@@ -38,7 +43,7 @@ class AesKeyWrapper {
           ...a,
           ...r.sublist((i - 1) * 8, i * 8),
         ]);
-        _aes.processBlock(buffer, 0, buffer, 0);
+        _cipher.processBlock(buffer, 0, buffer, 0);
 
         a.setAll(0, buffer.sublist(0, 8));
         a[7] ^= (n * j + i) & 0xff;
@@ -48,7 +53,7 @@ class AesKeyWrapper {
     return Uint8List.fromList([...a, ...r]);
   }
 
-  static Future<Uint8List> unwrap(
+  Future<Uint8List> unwrap(
     final Uint8List key,
     final Uint8List data,
   ) async {
@@ -59,7 +64,7 @@ class AesKeyWrapper {
       throw StateError('Data to be unwrapped must be a multiple of 8 bytes');
     }
 
-    _aes.init(false, KeyParameter(key));
+    _cipher.init(false, KeyParameter(key));
     final a = data.sublist(0, 8);
     final r = data.sublist(8);
     final n = (data.lengthInBytes ~/ 8) - 1;
@@ -70,7 +75,7 @@ class AesKeyWrapper {
           ...a,
           ...r.sublist((i - 1) * 8, i * 8),
         ]);
-        _aes.processBlock(buffer, 0, buffer, 0);
+        _cipher.processBlock(buffer, 0, buffer, 0);
 
         a.setAll(0, buffer.sublist(0, 8));
         r.setAll((i - 1) * 8, buffer.sublist(8, 16));
