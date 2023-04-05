@@ -15,3 +15,7 @@
 - Update pointycastle to 3.7.1
 - Use Pointy Castle DESede engine for SymmetricAlgorithm.tripledes
 - Use Pointy Castle PKCS1Encoding for RSA & Elgamal session key encryption
+
+## 1.1.0 (2023-04-05)
+- Add Camellia key wrapper for ECDH algorithm
+- Refactor KeyGenerationType enum
