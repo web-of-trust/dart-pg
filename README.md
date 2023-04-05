@@ -129,7 +129,7 @@ final verifications = cleartextMessage.verifications;
 ```
 
 ### Generate new key pair
-rsa keys:
+rsa type:
 ```dart
 const passphrase = 'secret stuff';
 final userID = [name, '($comment)', '<$email>'].join(' ');
@@ -142,7 +142,7 @@ final privateKey = await OpenPGP.generateKey(
 final publicKey = privateKey.toPublic;
 ```
 
-dsa keys (uses DSA algorithm for signing & ElGamal algorithm for encryption):
+dsa type (uses DSA algorithm for signing & ElGamal algorithm for encryption):
 ```dart
 const passphrase = 'secret stuff';
 final userID = [name, '($comment)', '<$email>'].join(' ');
@@ -155,7 +155,7 @@ final privateKey = await OpenPGP.generateKey(
 final publicKey = privateKey.toPublic;
 ```
 
-ecc keys (uses ECDSA algorithm for signing & ECDH algorithm for encryption): Possible values for curve are
+ecdsa type (uses ECDSA algorithm for signing & ECDH algorithm for encryption): Possible values for curve are
 secp256k1, secp384r1, secp521r1, brainpoolp256r1, brainpoolp384r1, brainpoolp512r1 and prime256v1
 ```dart
 const passphrase = 'secret stuff';
@@ -163,20 +163,20 @@ final userID = [name, '($comment)', '<$email>'].join(' ');
 final privateKey = await OpenPGP.generateKey(
     [userID],
     passphrase,
-    type: KeyGenerationType.ecc,
+    type: KeyGenerationType.ecdsa,
     curve: CurveInfo.secp521r1,
 );
 final publicKey = privateKey.toPublic;
 ```
 
-curve25519 keys (uses EdDSA algorithm with ed25519 for signing & ECDH algorithm with curve25519 for encryption):
+eddsa type (uses EdDSA algorithm with ed25519 for signing & ECDH algorithm with curve25519 for encryption):
 ```dart
 const passphrase = 'secret stuff';
 final userID = [name, '($comment)', '<$email>'].join(' ');
 final privateKey = await OpenPGP.generateKey(
     [userID],
     passphrase,
-    type: KeyGenerationType.curve25519,
+    type: KeyGenerationType.eddsa,
 );
 final publicKey = privateKey.toPublic;
 ```
