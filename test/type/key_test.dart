@@ -232,7 +232,7 @@ void main() {
       final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecc,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.prime256v1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECDSAPublicParams;
@@ -263,7 +263,7 @@ void main() {
       final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecc,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.secp256k1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECDSAPublicParams;
@@ -294,7 +294,7 @@ void main() {
       final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecc,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.secp384r1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
@@ -325,7 +325,7 @@ void main() {
       final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecc,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.secp521r1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
@@ -356,7 +356,7 @@ void main() {
       final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecc,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.brainpoolP256r1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
@@ -387,7 +387,7 @@ void main() {
       final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecc,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.brainpoolP384r1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
@@ -418,7 +418,7 @@ void main() {
       final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.ecc,
+        type: KeyGenerationType.ecdsa,
         curve: CurveInfo.brainpoolP512r1,
       );
       final publicParams = privateKey.keyPacket.publicParams as ECPublicParams;
@@ -460,7 +460,7 @@ void main() {
       final privateKey = await PrivateKey.generate(
         [userID],
         passphrase,
-        type: KeyGenerationType.curve25519,
+        type: KeyGenerationType.eddsa,
       );
       final publicParams = privateKey.keyPacket.publicParams as EdDSAPublicParams;
       expect(privateKey.algorithm, KeyAlgorithm.eddsa);
