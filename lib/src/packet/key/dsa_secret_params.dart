@@ -19,8 +19,7 @@ class DSASecretParams extends KeyParams {
 
   DSASecretParams(this.secretExponent);
 
-  factory DSASecretParams.fromByteData(final Uint8List bytes) =>
-      DSASecretParams(
+  factory DSASecretParams.fromByteData(final Uint8List bytes) => DSASecretParams(
         Helper.readMPI(bytes),
       );
 
@@ -63,10 +62,7 @@ class DSASecretParams extends KeyParams {
 
     // g has order q
     // Check that g ** q = 1 mod p
-    if (publicParams.generator
-            .modPow(publicParams.order, publicParams.prime)
-            .compareTo(BigInt.one) !=
-        0) {
+    if (publicParams.generator.modPow(publicParams.order, publicParams.prime).compareTo(BigInt.one) != 0) {
       return false;
     }
 
@@ -80,10 +76,13 @@ class DSASecretParams extends KeyParams {
     // Expect y == y'
     // Blinded exponentiation computes g**{rq + x} to compare to y
     final r = Helper.randomBigInt(
-        BigInt.two << (qSize - 1), BigInt.two << qSize);
+      BigInt.two << (qSize - 1),
+      BigInt.two << qSize,
+    );
     final rqx = (publicParams.order * r) + secretExponent;
     return publicParams.publicExponent.compareTo(
-            publicParams.generator.modPow(rqx, publicParams.prime)) ==
+          publicParams.generator.modPow(rqx, publicParams.prime),
+        ) ==
         0;
   }
 }
