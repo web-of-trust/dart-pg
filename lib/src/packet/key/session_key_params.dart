@@ -18,10 +18,13 @@ abstract class SessionKeyParams {
   Uint8List encode();
 
   SessionKey decodeSessionKey(final Uint8List data) {
-    final sessionKeySymmetric =
-        SymmetricAlgorithm.values.firstWhere((algo) => algo.value == data[0]);
-    final sessionKey =
-        SessionKey(data.sublist(1, data.length - 2), sessionKeySymmetric);
+    final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
+      (algo) => algo.value == data[0],
+    );
+    final sessionKey = SessionKey(
+      data.sublist(1, data.length - 2),
+      sessionKeySymmetric,
+    );
     final checksum = data.sublist(data.length - 2);
     final computedChecksum = sessionKey.computeChecksum();
     final isValidChecksum = (computedChecksum[0] == checksum[0]) &&
