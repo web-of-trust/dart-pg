@@ -44,10 +44,12 @@ class ECDHPublicParams extends ECPublicParams {
 
     final kdfBytes = bytes.sublist(pos);
     final reserved = kdfBytes[1];
-    final kdfHash =
-        HashAlgorithm.values.firstWhere((hash) => hash.value == kdfBytes[2]);
-    final kdfSymmetric =
-        SymmetricAlgorithm.values.firstWhere((sym) => sym.value == kdfBytes[3]);
+    final kdfHash = HashAlgorithm.values.firstWhere(
+      (hash) => hash.value == kdfBytes[2],
+    );
+    final kdfSymmetric = SymmetricAlgorithm.values.firstWhere(
+      (sym) => sym.value == kdfBytes[3],
+    );
     return ECDHPublicParams(
       oid,
       q,
