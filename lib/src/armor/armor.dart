@@ -35,6 +35,8 @@ class Armor {
   static const beginPattern =
       r'^-----BEGIN PGP (MESSAGE, PART \d+\/\d+|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$';
 
+  static const base64Chunk = 76;
+
   final ArmorType type;
 
   final Uint8List data;
@@ -224,7 +226,7 @@ class Armor {
   }
 
   static String _base64Encode(final Uint8List data) {
-    return base64.encode(data).chunk(76).join('\n');
+    return base64.encode(data).chunk(base64Chunk).join('\n');
   }
 
   static String _crc24Checksum(final Uint8List bytes) {
