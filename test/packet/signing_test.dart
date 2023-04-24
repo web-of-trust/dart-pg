@@ -15,7 +15,7 @@ import 'package:dart_pg/src/packet/user_id.dart';
 import 'package:faker/faker.dart';
 import 'package:test/test.dart';
 
-import '../test_data.dart';
+import '../data/key_data.dart';
 
 void main() {
   group('sub packet', () {

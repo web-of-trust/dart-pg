@@ -16,7 +16,7 @@ import 'package:dart_pg/src/packet/secret_key.dart';
 import 'package:dart_pg/src/packet/secret_subkey.dart';
 import 'package:test/test.dart';
 
-import '../test_data.dart';
+import '../data/key_data.dart';
 
 void main() {
   group('public key packet', () {

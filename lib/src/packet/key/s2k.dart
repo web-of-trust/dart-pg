@@ -44,10 +44,13 @@ class S2K {
   factory S2K.fromByteData(final Uint8List bytes) {
     var pos = 0;
     var itCount = _defaultItCount;
-    final type = S2kType.values.firstWhere((type) => type.value == bytes[pos]);
+    final type = S2kType.values.firstWhere(
+      (type) => type.value == bytes[pos],
+    );
     pos++;
-    final hash =
-        HashAlgorithm.values.firstWhere((hash) => hash.value == bytes[pos]);
+    final hash = HashAlgorithm.values.firstWhere(
+      (hash) => hash.value == bytes[pos],
+    );
     pos++;
 
     final Uint8List salt;
@@ -90,67 +93,55 @@ class S2K {
     final String passphrase,
     final int keyLen,
   ) async {
-    final pBytes = passphrase.stringToBytes();
-    final keyBytes = Uint8List(keyLen);
-
-    var rLen = 0;
-    var prefixLen = 0;
-    while (rLen < keyLen) {
-      final Uint8List toHash;
-      switch (type) {
-        case S2kType.simple:
-          toHash = Uint8List.fromList([
-            ...List.filled(prefixLen, 0),
-            ...utf8.encode(passphrase),
-          ]);
-          break;
-        case S2kType.salted:
-          toHash = Uint8List.fromList([
-            ...List.filled(prefixLen, 0),
+    switch (type) {
+      case S2kType.simple:
+        return _hash(passphrase.stringToBytes(), keyLen);
+      case S2kType.salted:
+        return _hash(
+          Uint8List.fromList([
             ...salt,
-            ...utf8.encode(passphrase),
-          ]);
-          break;
-        case S2kType.iterated:
-          final data = [...List.filled(prefixLen, 0), ...salt, ...pBytes];
-          toHash = Uint8List(this.count);
-          toHash.setAll(0, data);
-          var count = this.count - data.length;
-          var pos = data.length;
-          while (count > 0) {
-            if (count < salt.length) {
-              toHash.setAll(pos, salt.sublist(0, count));
-              break;
-            } else {
-              toHash.setAll(pos, salt);
-              count -= salt.length;
-              pos += salt.length;
-            }
-
-            if (count < pBytes.length) {
-              toHash.setAll(pos, pBytes.sublist(0, count));
-              count = 0;
-            } else {
-              toHash.setAll(pos, pBytes);
-              count -= pBytes.length;
-              pos += pBytes.length;
-            }
-          }
-          break;
-        default:
-          throw UnsupportedError('s2k type not supported.');
-      }
-
-      final result = Helper.hashDigest(toHash, hash);
-      if (rLen + result.length > keyLen) {
-        keyBytes.setAll(rLen, result.sublist(0, keyLen - rLen));
-      } else {
-        keyBytes.setAll(rLen, result);
-      }
-      rLen += result.length;
-      prefixLen++;
+            ...passphrase.stringToBytes(),
+          ]),
+          keyLen,
+        );
+      case S2kType.iterated:
+        return _hash(
+          _iterate(Uint8List.fromList([
+            ...salt,
+            ...passphrase.stringToBytes(),
+          ])),
+          keyLen,
+        );
+      default:
+        throw UnsupportedError('s2k type not supported.');
     }
+  }
 
-    return keyBytes;
+  Uint8List _iterate(Uint8List data) {
+    final count = this.count;
+    if (data.length > count) {
+      return data;
+    }
+    final dataLength = data.length;
+    final repeat = (count / dataLength).ceil();
+    final result = Uint8List(repeat * dataLength);
+    var pos = 0;
+    while (pos < result.length) {
+      result.setAll(pos, data);
+      pos += dataLength;
+    }
+    return result.sublist(0, count);
+  }
+
+  Uint8List _hash(Uint8List data, int size) {
+    var result = Helper.hashDigest(data, hash);
+    while (result.length < size) {
+      data = Uint8List.fromList([0, ...data]);
+      result = Uint8List.fromList([
+        ...result,
+        ...Helper.hashDigest(data, hash),
+      ]);
+    }
+    return result.sublist(0, size);
   }
 }

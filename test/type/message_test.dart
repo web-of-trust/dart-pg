@@ -10,7 +10,7 @@ import 'package:dart_pg/src/type/signed_message.dart';
 import 'package:faker/faker.dart';
 import 'package:test/test.dart';
 
-import '../test_data.dart';
+import '../data/key_data.dart';
 
 void main() {
   group('Cleartext signing', () {
