@@ -7,7 +7,6 @@ import 'dart:typed_data';
 
 import '../../enum/hash_algorithm.dart';
 import '../../enum/s2k_type.dart';
-import '../../enum/symmetric_algorithm.dart';
 import '../../helpers.dart';
 
 /// Implementation of the String-to-key specifier
@@ -41,6 +40,7 @@ class S2K {
     this.itCount = _defaultItCount,
   });
 
+  /// Parsing function for a string-to-key specifier
   factory S2K.fromByteData(final Uint8List bytes) {
     var pos = 0;
     var itCount = _defaultItCount;
@@ -70,6 +70,7 @@ class S2K {
 
   int get length => type.length;
 
+  /// Serializes s2k information
   Uint8List encode() {
     final bytes = [type.value, hash.value];
     switch (type) {
@@ -84,12 +85,12 @@ class S2K {
     }
   }
 
+  /// Produces a key using the specified passphrase and the defined hashAlgorithm
   Future<Uint8List> produceKey(
     final String passphrase,
-    final SymmetricAlgorithm algorithm,
+    final int keyLen,
   ) async {
     final pBytes = passphrase.stringToBytes();
-    final keyLen = (algorithm.keySize + 7) >> 3;
     final keyBytes = Uint8List(keyLen);
 
     var rLen = 0;

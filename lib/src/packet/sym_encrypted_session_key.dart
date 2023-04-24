@@ -85,7 +85,10 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     final S2kType type = S2kType.iterated,
   }) async {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
-    final key = await s2k.produceKey(password, encryptionKeySymmetric);
+    final key = await s2k.produceKey(
+      password,
+      (encryptionKeySymmetric.keySize + 7) >> 3,
+    );
     final cipher = BufferedCipher(
       encryptionKeySymmetric.cipherEngine,
     )..init(true, KeyParameter(key));
@@ -106,7 +109,10 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     if (isDecrypted) {
       return this;
     } else {
-      final key = await s2k.produceKey(password, encryptionKeySymmetric);
+      final key = await s2k.produceKey(
+        password,
+        (encryptionKeySymmetric.keySize + 7) >> 3,
+      );
       final cipher = BufferedCipher(
         encryptionKeySymmetric.cipherEngine,
       )..init(false, KeyParameter(key));

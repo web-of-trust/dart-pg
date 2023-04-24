@@ -111,8 +111,7 @@ class PrivateKey extends Key {
       subkeyAlgorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
-      curve:
-          (type == KeyGenerationType.eddsa) ? CurveInfo.curve25519 : curve,
+      curve: (type == KeyGenerationType.eddsa) ? CurveInfo.curve25519 : curve,
       date: date,
     ).then(
       (secretSubkey) => secretSubkey.encrypt(subkeyPassphrase ?? passphrase),

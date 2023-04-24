@@ -19,7 +19,8 @@ class DSASecretParams extends KeyParams {
 
   DSASecretParams(this.secretExponent);
 
-  factory DSASecretParams.fromByteData(final Uint8List bytes) => DSASecretParams(
+  factory DSASecretParams.fromByteData(final Uint8List bytes) =>
+      DSASecretParams(
         Helper.readMPI(bytes),
       );
 
@@ -62,7 +63,10 @@ class DSASecretParams extends KeyParams {
 
     // g has order q
     // Check that g ** q = 1 mod p
-    if (publicParams.generator.modPow(publicParams.order, publicParams.prime).compareTo(BigInt.one) != 0) {
+    if (publicParams.generator
+            .modPow(publicParams.order, publicParams.prime)
+            .compareTo(BigInt.one) !=
+        0) {
       return false;
     }
 

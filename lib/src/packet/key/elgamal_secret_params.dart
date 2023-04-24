@@ -66,8 +66,8 @@ class ElGamalSecretParams implements KeyParams {
     // Re-derive public key y' = g ** x mod p
     // Expect y == y'
     // Blinded exponentiation computes g**{r(p-1) + x} to compare to y
-    final r = Helper.randomBigInt(
-        BigInt.two << (pSize - 1), BigInt.two << pSize);
+    final r =
+        Helper.randomBigInt(BigInt.two << (pSize - 1), BigInt.two << pSize);
     final rqx = ((publicParams.prime - BigInt.one) * r) + secretExponent;
     return publicParams.publicExponent.compareTo(
             publicParams.generator.modPow(rqx, publicParams.prime)) ==
