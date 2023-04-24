@@ -19,3 +19,6 @@
 ## 1.1.0 (2023-04-05)
 - Add Camellia key wrapper for ECDH algorithm
 - Refactor KeyGenerationType enum
+
+## 1.1.1 (2023-04-24)
+- Fix s2k iterated produce key
