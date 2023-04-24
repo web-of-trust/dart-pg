@@ -27,18 +27,21 @@ class S2K {
   /// Hash function identifier, or 0 for gnu-dummy keys
   final HashAlgorithm hash;
 
-  /// s2k iteration count byte
+  /// s2k iteration count
   final int itCount;
 
   /// Eight bytes of salt in a binary string.
   final Uint8List salt;
+
+  /// s2k iteration count byte
+  final int count;
 
   S2K(
     this.salt, {
     this.type = S2kType.iterated,
     this.hash = HashAlgorithm.sha1,
     this.itCount = _defaultItCount,
-  });
+  }) : count = (16 + (itCount & 15)) << ((itCount >> 4) + _expbias);
 
   /// Parsing function for a string-to-key specifier
   factory S2K.fromByteData(final Uint8List bytes) {
@@ -66,10 +69,13 @@ class S2K {
         salt = Uint8List(0);
         break;
     }
-    return S2K(salt, type: type, hash: hash, itCount: itCount);
+    return S2K(
+      salt,
+      type: type,
+      hash: hash,
+      itCount: itCount,
+    );
   }
-
-  int get count => (16 + (itCount & 15)) << ((itCount >> 4) + _expbias);
 
   int get length => type.length;
 
@@ -118,17 +124,15 @@ class S2K {
   }
 
   Uint8List _iterate(Uint8List data) {
-    final count = this.count;
     if (data.length > count) {
       return data;
     }
-    final dataLength = data.length;
-    final repeat = (count / dataLength).ceil();
-    final result = Uint8List(repeat * dataLength);
+    final length = data.length;
+    final result = Uint8List((count / length).ceil() * length);
     var pos = 0;
     while (pos < result.length) {
       result.setAll(pos, data);
-      pos += dataLength;
+      pos += length;
     }
     return result.sublist(0, count);
   }
@@ -136,10 +140,12 @@ class S2K {
   Uint8List _hash(Uint8List data, int size) {
     var result = Helper.hashDigest(data, hash);
     while (result.length < size) {
-      data = Uint8List.fromList([0, ...data]);
       result = Uint8List.fromList([
         ...result,
-        ...Helper.hashDigest(data, hash),
+        ...Helper.hashDigest(
+          Uint8List.fromList([0, ...data]),
+          hash,
+        ),
       ]);
     }
     return result.sublist(0, size);
