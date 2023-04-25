@@ -23,20 +23,20 @@ abstract class KeyWrap {
   KeyWrap(this._cipher);
 
   Future<Uint8List> wrap(
+    final Uint8List kek,
     final Uint8List key,
-    final Uint8List data,
   ) async {
-    if (data.lengthInBytes < 16) {
-      throw StateError('Data to be wrapped should be at least 128 bits');
+    if (key.lengthInBytes < 16) {
+      throw StateError('Key to be wrapped should be at least 128 bits');
     }
-    if (data.lengthInBytes % 8 != 0) {
-      throw StateError('Data to be wrapped must be a multiple of 8 bytes');
+    if (key.lengthInBytes % 8 != 0) {
+      throw StateError('Key to be wrapped must be a multiple of 8 bytes');
     }
 
-    _cipher.init(true, KeyParameter(key));
+    _cipher.init(true, KeyParameter(kek));
     final a = Uint8List.fromList(_iv);
-    final r = Uint8List.fromList(data);
-    final n = data.lengthInBytes ~/ 8;
+    final r = Uint8List.fromList(key);
+    final n = key.lengthInBytes ~/ 8;
     for (var j = 0; j <= 5; j++) {
       for (var i = 1; i <= n; i++) {
         final buffer = Uint8List.fromList([
@@ -54,20 +54,20 @@ abstract class KeyWrap {
   }
 
   Future<Uint8List> unwrap(
-    final Uint8List key,
-    final Uint8List data,
+    final Uint8List kek,
+    final Uint8List wrappedKey,
   ) async {
-    if (data.lengthInBytes < 16) {
-      throw StateError('Data to be unwrapped should be at least 128 bits');
+    if (wrappedKey.lengthInBytes < 16) {
+      throw StateError('Wrapped key to be unwrapped should be at least 128 bits');
     }
-    if (data.lengthInBytes % 8 != 0) {
-      throw StateError('Data to be unwrapped must be a multiple of 8 bytes');
+    if (wrappedKey.lengthInBytes % 8 != 0) {
+      throw StateError('Wrapped key to be unwrapped must be a multiple of 8 bytes');
     }
 
-    _cipher.init(false, KeyParameter(key));
-    final a = data.sublist(0, 8);
-    final r = data.sublist(8);
-    final n = (data.lengthInBytes ~/ 8) - 1;
+    _cipher.init(false, KeyParameter(kek));
+    final a = wrappedKey.sublist(0, 8);
+    final r = wrappedKey.sublist(8);
+    final n = (wrappedKey.lengthInBytes ~/ 8) - 1;
     for (var j = 5; j >= 0; j--) {
       for (var i = n; i >= 1; i--) {
         a[7] ^= (n * j + i) & 0xff;
