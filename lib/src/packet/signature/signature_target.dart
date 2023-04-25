@@ -11,7 +11,7 @@ import '../signature_subpacket.dart';
 
 /// RFC 4880, Section 5.2.3.25 - Signature Target subpacket.
 class SignatureTarget extends SignatureSubpacket {
-  SignatureTarget(final Uint8List data, {super.critical, super.isLongLength})
+  SignatureTarget(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.signatureTarget, data);
 
   factory SignatureTarget.fromHashData(

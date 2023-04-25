@@ -59,14 +59,14 @@ class UserAttributePacket extends ContainedPacket {
           case ImageAttributeSubpacket.jpeg:
             attributes.add(ImageAttributeSubpacket(
               reader.data,
-              isLongLength: reader.isLongLength,
+              isLong: reader.isLong,
             ));
             break;
           default:
             attributes.add(UserAttributeSubpacket(
               reader.type,
               reader.data,
-              isLongLength: reader.isLongLength,
+              isLong: reader.isLong,
             ));
         }
       }

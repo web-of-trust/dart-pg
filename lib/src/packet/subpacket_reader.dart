@@ -16,14 +16,14 @@ class SubpacketReader {
 
   final int end;
 
-  final bool isLongLength;
+  final bool isLong;
 
   SubpacketReader(
     this.type,
     this.data,
     this.start,
     this.end, [
-    this.isLongLength = false,
+    this.isLong = false,
   ]);
 
   factory SubpacketReader.read(

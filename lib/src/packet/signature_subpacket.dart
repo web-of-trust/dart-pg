@@ -36,7 +36,7 @@ class SignatureSubpacket {
 
   final bool critical;
 
-  final bool isLongLength;
+  final bool isLong;
 
   final Uint8List data;
 
@@ -44,14 +44,14 @@ class SignatureSubpacket {
     this.type,
     this.data, {
     this.critical = false,
-    this.isLongLength = false,
+    this.isLong = false,
   });
 
   Uint8List encode() {
     final List<int> header;
     final bodyLen = data.length + 1;
 
-    if (isLongLength) {
+    if (isLong) {
       header = [0xff, ...bodyLen.pack32()];
     } else {
       if (bodyLen < 192) {

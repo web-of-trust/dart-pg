@@ -64,7 +64,7 @@ void main() {
             type,
             data,
             critical: critical,
-            isLongLength: reader.isLongLength,
+            isLong: reader.isLong,
           ));
         }
       }

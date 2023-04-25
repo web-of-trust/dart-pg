@@ -11,7 +11,7 @@ import '../signature_subpacket.dart';
 
 /// Represents revocation reason OpenPGP signature sub packet.
 class RevocationReason extends SignatureSubpacket {
-  RevocationReason(final Uint8List data, {super.critical, super.isLongLength})
+  RevocationReason(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.revocationReason, data);
 
   factory RevocationReason.fromRevocation(

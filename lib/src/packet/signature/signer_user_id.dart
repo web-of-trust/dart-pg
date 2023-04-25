@@ -10,7 +10,7 @@ import '../signature_subpacket.dart';
 
 /// packet giving the User ID of the signer.
 class SignerUserID extends SignatureSubpacket {
-  SignerUserID(final Uint8List data, {super.critical, super.isLongLength})
+  SignerUserID(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.signerUserID, data);
 
   factory SignerUserID.fromUserID(

@@ -15,7 +15,7 @@ class NotationData extends SignatureSubpacket {
   static const headerNameLength = 2;
   static const headerValueLength = 2;
 
-  NotationData(final Uint8List data, {super.critical, super.isLongLength})
+  NotationData(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.notationData, data);
 
   factory NotationData.fromNotation(

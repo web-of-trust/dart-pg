@@ -11,7 +11,7 @@ class ExportableCertification extends SignatureSubpacket {
   ExportableCertification(
     final Uint8List data, {
     super.critical,
-    super.isLongLength,
+    super.isLong,
   }) : super(SignatureSubpacketType.exportableCertification, data);
 
   factory ExportableCertification.fromExportable(

@@ -11,7 +11,7 @@ import '../signature_subpacket.dart';
 
 /// packet giving the issuer key ID.
 class IssuerKeyID extends SignatureSubpacket {
-  IssuerKeyID(final Uint8List data, {super.critical, super.isLongLength})
+  IssuerKeyID(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.issuerKeyID, data);
 
   factory IssuerKeyID.fromString(

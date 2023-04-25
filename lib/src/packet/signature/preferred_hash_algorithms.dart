@@ -12,7 +12,7 @@ class PreferredHashAlgorithms extends SignatureSubpacket {
   PreferredHashAlgorithms(
     final Uint8List data, {
     super.critical,
-    super.isLongLength,
+    super.isLong,
   }) : super(SignatureSubpacketType.preferredHashAlgorithms, data);
 
   List<HashAlgorithm> get preferences => data

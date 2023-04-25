@@ -12,7 +12,7 @@ class Revocable extends SignatureSubpacket {
   Revocable(
     final Uint8List data, {
     super.critical,
-    super.isLongLength,
+    super.isLong,
   }) : super(SignatureSubpacketType.revocable, data);
 
   factory Revocable.fromRevocable(

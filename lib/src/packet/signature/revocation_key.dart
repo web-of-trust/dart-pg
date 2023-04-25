@@ -11,7 +11,7 @@ import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
 class RevocationKey extends SignatureSubpacket {
-  RevocationKey(final Uint8List data, {super.critical, super.isLongLength})
+  RevocationKey(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.revocationKey, data);
 
   factory RevocationKey.fromRevocation(

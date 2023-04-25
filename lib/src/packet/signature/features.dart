@@ -12,7 +12,7 @@ class Features extends SignatureSubpacket {
   Features(
     final Uint8List data, {
     super.critical,
-    super.isLongLength,
+    super.isLong,
   }) : super(SignatureSubpacketType.features, data);
 
   factory Features.fromFeatures(

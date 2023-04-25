@@ -14,7 +14,7 @@ class KeyExpirationTime extends SignatureSubpacket {
   KeyExpirationTime(
     final Uint8List data, {
     super.critical,
-    super.isLongLength,
+    super.isLong,
   }) : super(SignatureSubpacketType.keyExpirationTime, data);
 
   factory KeyExpirationTime.fromTime(
