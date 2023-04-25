@@ -28,7 +28,7 @@ abstract class KeyWrap {
     final Uint8List kek,
     final Uint8List key,
   ) async {
-    if (kek.lengthInBytes < keySize) {
+    if (kek.lengthInBytes != keySize) {
       throw ArgumentError('Key encryption key size must be $keySize bytes.');
     }
     if (key.lengthInBytes < 16) {
@@ -62,7 +62,7 @@ abstract class KeyWrap {
     final Uint8List kek,
     final Uint8List wrappedKey,
   ) async {
-    if (kek.lengthInBytes < keySize) {
+    if (kek.lengthInBytes != keySize) {
       throw ArgumentError('Key encryption key size must be $keySize bytes.');
     }
     if (wrappedKey.lengthInBytes < 16) {
