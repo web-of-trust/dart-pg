@@ -76,10 +76,9 @@ void main() {
       0x0f,
     ]);
 
-    final aes = AesKeyWrap();
-    final camellia = CamelliaKeyWrap();
-
     test('aes 128-bit test', () async {
+      final aes = AesKeyWrap(16);
+
       final wrappedKey128128 = Uint8List.fromList([
         0x1f,
         0xa6,
@@ -120,6 +119,7 @@ void main() {
     });
 
     test('aes 192-bit test', () async {
+      final aes = AesKeyWrap(24);
       final wrappedKey128192 = Uint8List.fromList([
         0x96,
         0x77,
@@ -199,6 +199,7 @@ void main() {
     });
 
     test('aes 256-bit test', () async {
+      final aes = AesKeyWrap(32);
       final wrappedKey128256 = Uint8List.fromList([
         0x64,
         0xe8,
@@ -325,6 +326,8 @@ void main() {
     });
 
     test('camellia 128-bit test', () async {
+      final camellia = CamelliaKeyWrap(16);
+
       final wrappedKey128 = await camellia.wrap(key128, keyData128);
       var unwrappedKey128 = await camellia.unwrap(key128, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
@@ -337,6 +340,8 @@ void main() {
     });
 
     test('camellia 192-bit test', () async {
+      final camellia = CamelliaKeyWrap(24);
+
       final wrappedKey128 = await camellia.wrap(key192, keyData128);
       var unwrappedKey128 = await camellia.unwrap(key192, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
@@ -353,6 +358,8 @@ void main() {
     });
 
     test('camellia 256-bit test', () async {
+      final camellia = CamelliaKeyWrap(32);
+
       final wrappedKey128 = await camellia.wrap(key256, keyData128);
       var unwrappedKey128 = await camellia.unwrap(key256, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
