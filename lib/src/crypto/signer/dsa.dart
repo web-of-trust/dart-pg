@@ -279,7 +279,7 @@ class DSAKeyGenerator implements KeyGenerator {
   }
 
   @override
-  void init(CipherParameters params) {
+  void init(final CipherParameters params) {
     if (params is ParametersWithRandom) {
       _random = params.random;
       _params = params.parameters as DSAKeyGeneratorParameters;

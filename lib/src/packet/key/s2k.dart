@@ -123,7 +123,7 @@ class S2K {
     }
   }
 
-  Uint8List _iterate(Uint8List data) {
+  Uint8List _iterate(final Uint8List data) {
     if (data.length > count) {
       return data;
     }
@@ -137,7 +137,7 @@ class S2K {
     return result.sublist(0, count);
   }
 
-  Uint8List _hash(Uint8List data, int size) {
+  Uint8List _hash(final Uint8List data, final int size) {
     var result = Helper.hashDigest(data, hash);
     while (result.length < size) {
       result = Uint8List.fromList([
