@@ -12,8 +12,10 @@ abstract class ContainedPacket {
 
   ContainedPacket(this.tag);
 
+  /// Serializes packet data to bytes
   Uint8List toByteData();
 
+  /// Serializes packet to bytes
   Uint8List encode({
     final bool oldFormat = false,
     final bool partial = false,
