@@ -244,9 +244,9 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       case SymmetricAlgorithm.camellia128:
       case SymmetricAlgorithm.camellia192:
       case SymmetricAlgorithm.camellia256:
-        return CamelliaKeyWrap();
+        return CamelliaKeyWrap((symmetric.keySize + 7) >> 3);
       default:
-        return AesKeyWrap();
+        return AesKeyWrap((symmetric.keySize + 7) >> 3);
     }
   }
 }

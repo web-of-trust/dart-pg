@@ -18,22 +18,27 @@ abstract class KeyWrap {
     0xa6, 0xa6, 0xa6, 0xa6
   ]);
 
-  final BlockCipher _cipher;
+  final BlockCipher cipher;
 
-  KeyWrap(this._cipher);
+  final int keySize;
+
+  KeyWrap(this.cipher, this.keySize);
 
   Future<Uint8List> wrap(
     final Uint8List kek,
     final Uint8List key,
   ) async {
+    if (kek.lengthInBytes < keySize) {
+      throw ArgumentError('Key encryption key size must be $keySize bytes.');
+    }
     if (key.lengthInBytes < 16) {
-      throw StateError('Key to be wrapped should be at least 128 bits');
+      throw ArgumentError('Key length must be at least 16 octets.');
     }
     if (key.lengthInBytes % 8 != 0) {
-      throw StateError('Key to be wrapped must be a multiple of 8 bytes');
+      throw ArgumentError('Key length must be a multiple of 64 bits.');
     }
 
-    _cipher.init(true, KeyParameter(kek));
+    cipher.init(true, KeyParameter(kek));
     final a = Uint8List.fromList(_iv);
     final r = Uint8List.fromList(key);
     final n = key.lengthInBytes ~/ 8;
@@ -43,7 +48,7 @@ abstract class KeyWrap {
           ...a,
           ...r.sublist((i - 1) * 8, i * 8),
         ]);
-        _cipher.processBlock(buffer, 0, buffer, 0);
+        cipher.processBlock(buffer, 0, buffer, 0);
 
         a.setAll(0, buffer.sublist(0, 8));
         a[7] ^= (n * j + i) & 0xff;
@@ -57,14 +62,17 @@ abstract class KeyWrap {
     final Uint8List kek,
     final Uint8List wrappedKey,
   ) async {
+    if (kek.lengthInBytes < keySize) {
+      throw ArgumentError('Key encryption key size must be $keySize bytes.');
+    }
     if (wrappedKey.lengthInBytes < 16) {
-      throw StateError('Wrapped key to be unwrapped should be at least 128 bits');
+      throw ArgumentError('Wrapped key length must be at least 16 octets.');
     }
     if (wrappedKey.lengthInBytes % 8 != 0) {
-      throw StateError('Wrapped key to be unwrapped must be a multiple of 8 bytes');
+      throw ArgumentError('Wrapped key length must be a multiple of 64 bits.');
     }
 
-    _cipher.init(false, KeyParameter(kek));
+    cipher.init(false, KeyParameter(kek));
     final a = wrappedKey.sublist(0, 8);
     final r = wrappedKey.sublist(8);
     final n = (wrappedKey.lengthInBytes ~/ 8) - 1;
@@ -75,7 +83,7 @@ abstract class KeyWrap {
           ...a,
           ...r.sublist((i - 1) * 8, i * 8),
         ]);
-        _cipher.processBlock(buffer, 0, buffer, 0);
+        cipher.processBlock(buffer, 0, buffer, 0);
 
         a.setAll(0, buffer.sublist(0, 8));
         r.setAll((i - 1) * 8, buffer.sublist(8, 16));
@@ -83,7 +91,7 @@ abstract class KeyWrap {
     }
 
     if (!_iv.equals(a)) {
-      throw StateError('Checksum failed');
+      throw StateError('Integrity check failed.');
     }
 
     return r;
