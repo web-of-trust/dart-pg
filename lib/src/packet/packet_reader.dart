@@ -30,18 +30,16 @@ class PacketReader {
 
     var pos = start;
 
-    final headerByte = bytes[pos];
+    final headerByte = bytes[pos++];
     final oldFormat = ((headerByte & 0x40) != 0) ? false : true;
     final tagByte = oldFormat ? (headerByte & 0x3F) >> 2 : headerByte & 0x3F;
     final tag = PacketTag.values.firstWhere((tag) => tag.value == tagByte);
 
-    final packetLengthType = oldFormat ? bytes[pos] & 0x03 : 0;
-    pos++;
-
     var packetLength = bytes.length - start;
     var realRacketLength = -1;
     if (oldFormat) {
-      switch (packetLengthType) {
+      final lengthType = headerByte & 0x03;
+      switch (lengthType) {
         case 0:
           packetLength = bytes[pos++];
           break;
