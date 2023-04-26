@@ -13,29 +13,25 @@ class PacketReader {
 
   final Uint8List data;
 
-  final int start;
+  final int offset;
 
-  final int end;
+  PacketReader(this.tag, this.data, this.offset);
 
-  PacketReader(this.tag, this.data, this.start, this.end);
-
-  factory PacketReader.read(final Uint8List bytes, [final int start = 0]) {
-    if (bytes.length <= start ||
-        bytes.sublist(start).length < 2 ||
-        (bytes[start] & 0x80) == 0) {
+  factory PacketReader.read(final Uint8List bytes, [final int offset = 0]) {
+    if (bytes.length <= offset || bytes.sublist(offset).length < 2 || (bytes[offset] & 0x80) == 0) {
       throw StateError(
         'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
       );
     }
 
-    var pos = start;
+    var pos = offset;
 
     final headerByte = bytes[pos++];
     final oldFormat = ((headerByte & 0x40) != 0) ? false : true;
     final tagByte = oldFormat ? (headerByte & 0x3f) >> 2 : headerByte & 0x3f;
     final tag = PacketTag.values.firstWhere((tag) => tag.value == tagByte);
 
-    var packetLength = bytes.length - start;
+    var packetLength = bytes.length - offset;
     if (oldFormat) {
       final lengthType = headerByte & 0x03;
       switch (lengthType) {
@@ -74,8 +70,12 @@ class PacketReader {
             break;
           } else {
             partialPos++;
-            final partialLen =
-                bytes.sublist(partialPos, partialPos + 4).toInt32();
+            final partialLen = bytes
+                .sublist(
+                  partialPos,
+                  partialPos + 4,
+                )
+                .toInt32();
             partialPos += 4;
             partialPos += partialLen;
           }
@@ -91,7 +91,6 @@ class PacketReader {
     return PacketReader(
       tag,
       bytes.sublist(pos, pos + packetLength),
-      start,
       pos + packetLength,
     );
   }
