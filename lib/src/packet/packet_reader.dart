@@ -78,8 +78,7 @@ class PacketReader {
                   partialPos + 4,
                 )
                 .toInt32();
-            partialPos += 4;
-            partialPos += partialLen;
+            partialPos += partialLen + 4;
           }
         }
         packetLength = partialPos - pos;
