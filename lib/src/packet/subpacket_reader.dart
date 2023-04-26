@@ -12,31 +12,27 @@ class SubpacketReader {
 
   final Uint8List data;
 
-  final int start;
-
-  final int end;
+  final int offset;
 
   final bool isLong;
 
   SubpacketReader(
     this.type,
     this.data,
-    this.start,
-    this.end, [
+    this.offset, [
     this.isLong = false,
   ]);
 
   factory SubpacketReader.read(
     final Uint8List bytes, [
-    final int start = 0,
+    final int offset = 0,
   ]) {
-    var pos = start;
+    var pos = offset;
     final header = bytes[pos++];
     if (header < 192) {
       return SubpacketReader(
         bytes[pos],
         bytes.sublist(pos + 1, pos + header),
-        start,
         pos + header,
       );
     } else if (header < 255) {
@@ -44,7 +40,6 @@ class SubpacketReader {
       return SubpacketReader(
         bytes[pos],
         bytes.sublist(pos + 1, pos + length),
-        start,
         pos + length,
       );
     } else if (header == 255) {
@@ -53,11 +48,10 @@ class SubpacketReader {
       return SubpacketReader(
         bytes[pos],
         bytes.sublist(pos + 1, pos + length),
-        start,
         pos + length,
         true,
       );
     }
-    return SubpacketReader(0, Uint8List(0), start, start);
+    return SubpacketReader(0, Uint8List(0), offset);
   }
 }

@@ -613,7 +613,7 @@ class SignaturePacket extends ContainedPacket {
     var offset = 0;
     while (offset < bytes.length) {
       final reader = SubpacketReader.read(bytes, offset);
-      offset = reader.end;
+      offset = reader.offset;
       final data = reader.data;
       if (data.isNotEmpty) {
         final critical = ((reader.type & 0x80) != 0);

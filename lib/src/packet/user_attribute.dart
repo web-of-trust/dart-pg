@@ -53,7 +53,7 @@ class UserAttributePacket extends ContainedPacket {
     var offset = 0;
     while (offset < bytes.length) {
       final reader = SubpacketReader.read(bytes, offset);
-      offset = reader.end;
+      offset = reader.offset;
       if (reader.data.isNotEmpty) {
         switch (reader.type) {
           case ImageAttributeSubpacket.jpeg:
