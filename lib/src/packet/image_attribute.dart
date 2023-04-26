@@ -9,8 +9,6 @@ import 'user_attribute_subpacket.dart';
 class ImageAttributeSubpacket extends UserAttributeSubpacket {
   static const jpeg = 1;
 
-  static final Uint8List _zeroes = Uint8List(12);
-
   ImageAttributeSubpacket(final Uint8List data, {super.isLong})
       : super(jpeg, data);
 
@@ -23,7 +21,7 @@ class ImageAttributeSubpacket extends UserAttributeSubpacket {
       0x00,
       0x01,
       imageType & 0xff,
-      ..._zeroes,
+      ...Uint8List(12),
       ...imageData,
     ]));
   }
