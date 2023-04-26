@@ -42,7 +42,8 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     final seipVersion = bytes[0];
     if (seipVersion != version) {
       throw UnsupportedError(
-          'Version $seipVersion of the SEIP packet is unsupported.');
+        'Version $seipVersion of the SEIP packet is unsupported.',
+      );
     }
     return SymEncryptedIntegrityProtectedDataPacket(bytes.sublist(1));
   }
@@ -66,7 +67,10 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     final cipher = BufferedCipher(symmetric.cipherEngine)
       ..init(
         true,
-        ParametersWithIV(KeyParameter(key), Uint8List(symmetric.blockSize)),
+        ParametersWithIV(
+          KeyParameter(key),
+          Uint8List(symmetric.blockSize),
+        ),
       );
     return SymEncryptedIntegrityProtectedDataPacket(
       cipher.process(plainText),
@@ -102,7 +106,10 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     final cipher = BufferedCipher(symmetric.cipherEngine)
       ..init(
         false,
-        ParametersWithIV(KeyParameter(key), Uint8List(symmetric.blockSize)),
+        ParametersWithIV(
+          KeyParameter(key),
+          Uint8List(symmetric.blockSize),
+        ),
       );
     final decrypted = cipher.process(encrypted);
     final realHash = decrypted.sublist(

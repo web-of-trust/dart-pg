@@ -41,7 +41,10 @@ class SymEncryptedDataPacket extends ContainedPacket {
     final cipher = BufferedCipher(symmetric.cipherEngine)
       ..init(
         true,
-        ParametersWithIV(KeyParameter(key), Uint8List(symmetric.blockSize)),
+        ParametersWithIV(
+          KeyParameter(key),
+          Uint8List(symmetric.blockSize),
+        ),
       );
     final prefix = cipher.process(Helper.generatePrefix(symmetric));
 
@@ -92,7 +95,9 @@ class SymEncryptedDataPacket extends ContainedPacket {
       ..init(
         false,
         ParametersWithIV(
-            KeyParameter(key), encrypted.sublist(2, blockSize + 2)),
+          KeyParameter(key),
+          encrypted.sublist(2, blockSize + 2),
+        ),
       );
     return SymEncryptedDataPacket(
       encrypted,
