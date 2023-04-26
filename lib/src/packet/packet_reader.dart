@@ -32,11 +32,10 @@ class PacketReader {
 
     final headerByte = bytes[pos++];
     final oldFormat = ((headerByte & 0x40) != 0) ? false : true;
-    final tagByte = oldFormat ? (headerByte & 0x3F) >> 2 : headerByte & 0x3F;
+    final tagByte = oldFormat ? (headerByte & 0x3f) >> 2 : headerByte & 0x3f;
     final tag = PacketTag.values.firstWhere((tag) => tag.value == tagByte);
 
     var packetLength = bytes.length - start;
-    var realRacketLength = -1;
     if (oldFormat) {
       final lengthType = headerByte & 0x03;
       switch (lengthType) {
@@ -54,41 +53,34 @@ class PacketReader {
     } else {
       if (bytes[pos] < 192) {
         packetLength = bytes[pos++];
-      } else if (bytes[pos] >= 192 && bytes[pos] < 224) {
+      } else if (bytes[pos] > 191 && bytes[pos] < 224) {
         packetLength = ((bytes[pos++] - 192) << 8) + (bytes[pos++]) + 192;
       } else if (bytes[pos] > 223 && bytes[pos] < 255) {
-        packetLength = 1 << (bytes[pos++] & 0x1F);
-        var partialPos = pos + packetLength;
+        var partialPos = pos + 1 << (bytes[pos++] & 0x1f);
         while (true) {
           if (bytes[pos] < 192) {
             final partialLen = bytes[partialPos++];
-            packetLength += partialLen;
             partialPos += partialLen;
             break;
-          } else if (bytes[partialPos] >= 192 && bytes[partialPos] < 224) {
+          } else if (bytes[partialPos] > 191 && bytes[partialPos] < 224) {
             final partialLen = ((bytes[partialPos++] - 192) << 8) +
                 (bytes[partialPos++]) +
                 192;
-            packetLength += partialLen;
             partialPos += partialLen;
             break;
           } else if (bytes[partialPos] > 223 && bytes[partialPos] < 255) {
-            final partialLen = 1 << (bytes[partialPos++] & 0x1F);
-            packetLength += partialLen;
+            final partialLen = 1 << (bytes[partialPos++] & 0x1f);
             partialPos += partialLen;
             break;
           } else {
             partialPos++;
-
             final partialLen =
                 bytes.sublist(partialPos, partialPos + 4).toInt32();
             partialPos += 4;
-
-            packetLength += partialLen;
             partialPos += partialLen;
           }
         }
-        realRacketLength = partialPos - pos;
+        packetLength = partialPos - pos;
       } else {
         pos++;
         packetLength = bytes.sublist(pos, pos + 4).toInt32();
@@ -96,15 +88,11 @@ class PacketReader {
       }
     }
 
-    if (realRacketLength == -1) {
-      realRacketLength = packetLength;
-    }
-
     return PacketReader(
       tag,
-      bytes.sublist(pos, pos + realRacketLength),
+      bytes.sublist(pos, pos + packetLength),
       start,
-      pos + realRacketLength,
+      pos + packetLength,
     );
   }
 }
