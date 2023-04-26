@@ -49,7 +49,7 @@ class DSASecretParams extends KeyParams {
   }
 
   /// Validate DSA parameters
-  bool validatePublicParams(DSAPublicParams publicParams) {
+  bool validatePublicParams(final DSAPublicParams publicParams) {
     // Check that 1 < g < p
     if (publicParams.generator.compareTo(BigInt.one) <= 0 ||
         publicParams.generator.compareTo(publicParams.prime) >= 0) {

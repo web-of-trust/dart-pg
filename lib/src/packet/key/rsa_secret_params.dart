@@ -89,7 +89,7 @@ class RSASecretParams extends KeyParams {
   }
 
   /// Validate RSA parameters
-  bool validatePublicParams(RSAPublicParams publicParams) {
+  bool validatePublicParams(final RSAPublicParams publicParams) {
     // expect pq = n
     if ((primeP * primeQ).compareTo(publicParams.modulus) != 0) {
       return false;

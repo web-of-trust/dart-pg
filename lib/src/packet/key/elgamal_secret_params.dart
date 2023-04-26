@@ -27,7 +27,7 @@ class ElGamalSecretParams implements KeyParams {
       ]);
 
   /// Validate ElGamal parameters
-  validatePublicParams(ElGamalPublicParams publicParams) {
+  validatePublicParams(final ElGamalPublicParams publicParams) {
     // Check that 1 < g < p
     if (publicParams.generator.compareTo(BigInt.one) <= 0 ||
         publicParams.generator.compareTo(publicParams.prime) >= 0) {

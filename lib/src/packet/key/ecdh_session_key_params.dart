@@ -239,7 +239,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
     return Uint8List(0);
   }
 
-  static KeyWrap _selectKeyWrapper(SymmetricAlgorithm symmetric) {
+  static KeyWrap _selectKeyWrapper(final SymmetricAlgorithm symmetric) {
     switch (symmetric) {
       case SymmetricAlgorithm.camellia128:
       case SymmetricAlgorithm.camellia192:

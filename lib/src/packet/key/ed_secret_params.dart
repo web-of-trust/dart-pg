@@ -44,7 +44,7 @@ class EdSecretParams extends KeyParams {
   }
 
   /// Validate EdDSA parameters
-  bool validatePublicParams(EdDSAPublicParams publicParams) {
+  bool validatePublicParams(final EdDSAPublicParams publicParams) {
     final signingKey = SigningKey.fromSeed(seed.toUnsignedBytes());
     final dG = Uint8List.fromList([
       0x40,

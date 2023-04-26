@@ -32,7 +32,7 @@ abstract class ECPublicParams extends KeyParams {
     ]);
   }
 
-  static validateOidLength(int length) {
+  static validateOidLength(final int length) {
     if (length == 0 || length == 0xff) {
       throw Exception('Future extensions not yet implemented');
     }

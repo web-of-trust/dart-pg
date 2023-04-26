@@ -58,7 +58,7 @@ class ECSecretParams extends KeyParams {
   }
 
   /// Validate EC parameters
-  bool validatePublicParams(ECPublicParams publicParams) {
+  bool validatePublicParams(final ECPublicParams publicParams) {
     switch (publicParams.curve) {
       case CurveInfo.curve25519:
         final privateKey = nacl.PrivateKey(

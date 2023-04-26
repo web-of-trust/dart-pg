@@ -9,6 +9,6 @@ import 'key_wrap.dart';
 
 /// An implementation of the Camellia key wrapper based on RFC 3657/RFC 3394.
 class CamelliaKeyWrap extends KeyWrap {
-  CamelliaKeyWrap(int keySize)
+  CamelliaKeyWrap(final int keySize)
       : super(ECBBlockCipher(CamelliaEngine()), keySize);
 }
