@@ -22,7 +22,7 @@ class RSASecretParams extends KeyParams {
   final BigInt primeQ;
 
   /// The multiplicative inverse of p, mod q
-  final BigInt pInv;
+  final BigInt coefficients;
 
   final RSAPrivateKey privateKey;
 
@@ -31,7 +31,7 @@ class RSASecretParams extends KeyParams {
     this.primeP,
     this.primeQ, {
     BigInt? pInv,
-  })  : pInv = pInv ?? primeP.modInverse(primeQ),
+  })  : coefficients = pInv ?? primeP.modInverse(primeQ),
         privateKey = RSAPrivateKey(
           primeP * primeQ,
           privateExponent,
@@ -68,8 +68,8 @@ class RSASecretParams extends KeyParams {
         ...primeP.toUnsignedBytes(),
         ...primeQ.bitLength.pack16(),
         ...primeQ.toUnsignedBytes(),
-        ...pInv.bitLength.pack16(),
-        ...pInv.toUnsignedBytes(),
+        ...coefficients.bitLength.pack16(),
+        ...coefficients.toUnsignedBytes(),
       ]);
 
   Future<Uint8List> sign(
@@ -95,7 +95,7 @@ class RSASecretParams extends KeyParams {
       return false;
     }
     // expect p*u = 1 mod q
-    if (((primeP * pInv) % primeQ).compareTo(BigInt.one) != 0) {
+    if (((primeP * coefficients) % primeQ).compareTo(BigInt.one) != 0) {
       return false;
     }
 

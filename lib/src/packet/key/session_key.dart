@@ -18,14 +18,16 @@ class SessionKey {
 
   SessionKey(this.key, [this.symmetric = SymmetricAlgorithm.aes256]);
 
+  /// Serializes session key to bytes
   Uint8List encode() => Uint8List.fromList([symmetric.value, ...key]);
 
+  /// Compute checksum
   Uint8List computeChecksum() {
-    var s = 0;
+    var sum = 0;
     for (var i = 0; i < key.lengthInBytes; i++) {
-      s = (s + key[i]) & 0xffff;
+      sum = (sum + key[i]) & 0xffff;
     }
-    return s.pack16();
+    return sum.pack16();
   }
 
   @override
