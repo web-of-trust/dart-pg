@@ -24,7 +24,7 @@ class DSAPublicParams implements VerificationParams {
   final BigInt generator;
 
   /// DSA public-key value y (= g ** x mod p where x is secret).
-  final BigInt publicExponent;
+  final BigInt exponent;
 
   final DSAPublicKey publicKey;
 
@@ -32,31 +32,25 @@ class DSAPublicParams implements VerificationParams {
     this.prime,
     this.order,
     this.generator,
-    this.publicExponent,
+    this.exponent,
   ) : publicKey = DSAPublicKey(
-          publicExponent,
+          exponent,
           prime,
           order,
           generator,
         );
 
   factory DSAPublicParams.fromByteData(final Uint8List bytes) {
-    final primeP = Helper.readMPI(bytes);
-
-    var pos = primeP.byteLength + 2;
-    final groupOrder = Helper.readMPI(bytes.sublist(pos));
-
-    pos += groupOrder.byteLength + 2;
-    final groupGenerator = Helper.readMPI(bytes.sublist(pos));
-
-    pos += groupGenerator.byteLength + 2;
-    final publicExponent = Helper.readMPI(bytes.sublist(pos));
+    final prime = Helper.readMPI(bytes);
+    final order = Helper.readMPI(bytes.sublist(prime.byteLength + 2));
+    final generator = Helper.readMPI(bytes.sublist(order.byteLength + 2));
+    final exponent = Helper.readMPI(bytes.sublist(generator.byteLength + 2));
 
     return DSAPublicParams(
-      primeP,
-      groupOrder,
-      groupGenerator,
-      publicExponent,
+      prime,
+      order,
+      generator,
+      exponent,
     );
   }
 
@@ -68,8 +62,8 @@ class DSAPublicParams implements VerificationParams {
         ...order.toUnsignedBytes(),
         ...generator.bitLength.pack16(),
         ...generator.toUnsignedBytes(),
-        ...publicExponent.bitLength.pack16(),
-        ...publicExponent.toUnsignedBytes(),
+        ...exponent.bitLength.pack16(),
+        ...exponent.toUnsignedBytes(),
       ]);
 
   @override

@@ -13,7 +13,7 @@ import 'key_params.dart';
 
 class RSASecretParams extends KeyParams {
   /// RSA secret exponent d
-  final BigInt privateExponent;
+  final BigInt exponent;
 
   /// RSA secret prime value p
   final BigInt primeP;
@@ -27,14 +27,14 @@ class RSASecretParams extends KeyParams {
   final RSAPrivateKey privateKey;
 
   RSASecretParams(
-    this.privateExponent,
+    this.exponent,
     this.primeP,
     this.primeQ, {
     BigInt? pInv,
   })  : coefficients = pInv ?? primeP.modInverse(primeQ),
         privateKey = RSAPrivateKey(
           primeP * primeQ,
-          privateExponent,
+          exponent,
           primeP,
           primeQ,
         );
@@ -62,8 +62,8 @@ class RSASecretParams extends KeyParams {
 
   @override
   Uint8List encode() => Uint8List.fromList([
-        ...privateExponent.bitLength.pack16(),
-        ...privateExponent.toUnsignedBytes(),
+        ...exponent.bitLength.pack16(),
+        ...exponent.toUnsignedBytes(),
         ...primeP.bitLength.pack16(),
         ...primeP.toUnsignedBytes(),
         ...primeQ.bitLength.pack16(),
@@ -101,7 +101,7 @@ class RSASecretParams extends KeyParams {
 
     final nSizeOver3 = (publicParams.modulus.bitLength / 3).floor();
     final r = Helper.randomBigInt(BigInt.two, BigInt.two << nSizeOver3);
-    final rde = r * privateExponent * publicParams.publicExponent;
+    final rde = r * exponent * publicParams.exponent;
     return (rde % (primeP - BigInt.one)).compareTo(r) == 0 &&
         (rde % (primeQ - BigInt.one)).compareTo(r) == 0;
   }

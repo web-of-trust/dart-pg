@@ -15,9 +15,9 @@ import 'key_params.dart';
 
 class DSASecretParams extends KeyParams {
   /// DSA secret exponent x
-  final BigInt secretExponent;
+  final BigInt exponent;
 
-  DSASecretParams(this.secretExponent);
+  DSASecretParams(this.exponent);
 
   factory DSASecretParams.fromByteData(final Uint8List bytes) =>
       DSASecretParams(
@@ -26,8 +26,8 @@ class DSASecretParams extends KeyParams {
 
   @override
   Uint8List encode() => Uint8List.fromList([
-        ...secretExponent.bitLength.pack16(),
-        ...secretExponent.toUnsignedBytes(),
+        ...exponent.bitLength.pack16(),
+        ...exponent.toUnsignedBytes(),
       ]);
 
   Future<Uint8List> sign(
@@ -39,7 +39,7 @@ class DSASecretParams extends KeyParams {
       ..init(
         true,
         PrivateKeyParameter<DSAPrivateKey>(DSAPrivateKey(
-          secretExponent,
+          exponent,
           publicParams.prime,
           publicParams.order,
           publicParams.generator,
@@ -83,8 +83,8 @@ class DSASecretParams extends KeyParams {
       BigInt.two << (qSize - 1),
       BigInt.two << qSize,
     );
-    final rqx = (publicParams.order * r) + secretExponent;
-    return publicParams.publicExponent.compareTo(
+    final rqx = (publicParams.order * r) + exponent;
+    return publicParams.exponent.compareTo(
           publicParams.generator.modPow(rqx, publicParams.prime),
         ) ==
         0;

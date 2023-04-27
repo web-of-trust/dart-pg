@@ -169,7 +169,7 @@ void main() {
       final decryptedParams = decryptedKey.secretParams as RSASecretParams;
 
       expect(decryptedKey.fingerprint, secretKey.fingerprint);
-      expect(decryptedParams.privateExponent, secretParams.privateExponent);
+      expect(decryptedParams.exponent, secretParams.exponent);
       expect(decryptedParams.primeP, secretParams.primeP);
       expect(decryptedParams.primeQ, secretParams.primeQ);
       expect(decryptedParams.coefficients, secretParams.coefficients);
@@ -206,7 +206,7 @@ void main() {
       final subkeyDecryptedParams = subkeyDecryptedKey.secretParams as RSASecretParams;
 
       expect(subkeyDecryptedKey.fingerprint, secretSubkey.fingerprint);
-      expect(subkeyDecryptedParams.privateExponent, subkeySecretParams.privateExponent);
+      expect(subkeyDecryptedParams.exponent, subkeySecretParams.exponent);
       expect(subkeyDecryptedParams.primeP, subkeySecretParams.primeP);
       expect(subkeyDecryptedParams.primeQ, subkeySecretParams.primeQ);
       expect(subkeyDecryptedParams.coefficients, subkeySecretParams.coefficients);

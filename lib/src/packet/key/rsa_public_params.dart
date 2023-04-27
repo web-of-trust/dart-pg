@@ -16,14 +16,14 @@ class RSAPublicParams implements VerificationParams {
   final BigInt modulus;
 
   /// RSA public encryption exponent e
-  final BigInt publicExponent;
+  final BigInt exponent;
 
   final RSAPublicKey publicKey;
 
-  RSAPublicParams(this.modulus, this.publicExponent)
+  RSAPublicParams(this.modulus, this.exponent)
       : publicKey = RSAPublicKey(
           modulus,
-          publicExponent,
+          exponent,
         );
 
   factory RSAPublicParams.fromByteData(final Uint8List bytes) {
@@ -38,8 +38,8 @@ class RSAPublicParams implements VerificationParams {
   Uint8List encode() => Uint8List.fromList([
         ...modulus.bitLength.pack16(),
         ...modulus.toUnsignedBytes(),
-        ...publicExponent.bitLength.pack16(),
-        ...publicExponent.toUnsignedBytes(),
+        ...exponent.bitLength.pack16(),
+        ...exponent.toUnsignedBytes(),
       ]);
 
   @override
