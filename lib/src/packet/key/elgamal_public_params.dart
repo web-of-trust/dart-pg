@@ -18,23 +18,19 @@ class ElGamalPublicParams implements KeyParams {
   final BigInt generator;
 
   /// Elgamal public key value y (= g ** x mod p where x is secret)
-  final BigInt publicExponent;
+  final BigInt exponent;
 
   final ElGamalPublicKey publicKey;
 
-  ElGamalPublicParams(this.prime, this.generator, this.publicExponent)
-      : publicKey = ElGamalPublicKey(publicExponent, prime, generator);
+  ElGamalPublicParams(this.prime, this.generator, this.exponent)
+      : publicKey = ElGamalPublicKey(exponent, prime, generator);
 
   factory ElGamalPublicParams.fromByteData(final Uint8List bytes) {
-    final primeP = Helper.readMPI(bytes);
+    final prime = Helper.readMPI(bytes);
+    final generator = Helper.readMPI(bytes.sublist(prime.byteLength + 2));
+    final exponent = Helper.readMPI(bytes.sublist(generator.byteLength + 2));
 
-    var pos = primeP.byteLength + 2;
-    final groupGenerator = Helper.readMPI(bytes.sublist(pos));
-
-    pos += groupGenerator.byteLength + 2;
-    final publicExponent = Helper.readMPI(bytes.sublist(pos));
-
-    return ElGamalPublicParams(primeP, groupGenerator, publicExponent);
+    return ElGamalPublicParams(prime, generator, exponent);
   }
 
   @override
@@ -43,7 +39,7 @@ class ElGamalPublicParams implements KeyParams {
         ...prime.toUnsignedBytes(),
         ...generator.bitLength.pack16(),
         ...generator.toUnsignedBytes(),
-        ...publicExponent.bitLength.pack16(),
-        ...publicExponent.toUnsignedBytes(),
+        ...exponent.bitLength.pack16(),
+        ...exponent.toUnsignedBytes(),
       ]);
 }

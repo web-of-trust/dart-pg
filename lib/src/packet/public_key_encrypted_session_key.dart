@@ -163,7 +163,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
         final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
         sessionKey = await keyParams.decrypt(
           ElGamalPrivateKey(
-            (key.secretParams as ElGamalSecretParams).secretExponent,
+            (key.secretParams as ElGamalSecretParams).exponent,
             publicKey.prime,
             publicKey.generator,
           ),

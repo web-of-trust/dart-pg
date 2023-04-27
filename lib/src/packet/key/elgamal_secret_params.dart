@@ -11,9 +11,9 @@ import 'key_params.dart';
 
 class ElGamalSecretParams implements KeyParams {
   /// Elgamal secret exponent x.
-  final BigInt secretExponent;
+  final BigInt exponent;
 
-  ElGamalSecretParams(this.secretExponent);
+  ElGamalSecretParams(this.exponent);
 
   factory ElGamalSecretParams.fromByteData(final Uint8List bytes) =>
       ElGamalSecretParams(
@@ -22,8 +22,8 @@ class ElGamalSecretParams implements KeyParams {
 
   @override
   Uint8List encode() => Uint8List.fromList([
-        ...secretExponent.bitLength.pack16(),
-        ...secretExponent.toUnsignedBytes(),
+        ...exponent.bitLength.pack16(),
+        ...exponent.toUnsignedBytes(),
       ]);
 
   /// Validate ElGamal parameters
@@ -68,8 +68,8 @@ class ElGamalSecretParams implements KeyParams {
     // Blinded exponentiation computes g**{r(p-1) + x} to compare to y
     final r =
         Helper.randomBigInt(BigInt.two << (pSize - 1), BigInt.two << pSize);
-    final rqx = ((publicParams.prime - BigInt.one) * r) + secretExponent;
-    return publicParams.publicExponent.compareTo(
+    final rqx = ((publicParams.prime - BigInt.one) * r) + exponent;
+    return publicParams.exponent.compareTo(
             publicParams.generator.modPow(rqx, publicParams.prime)) ==
         0;
   }
