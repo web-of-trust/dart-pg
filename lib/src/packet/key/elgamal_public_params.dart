@@ -27,8 +27,12 @@ class ElGamalPublicParams implements KeyParams {
 
   factory ElGamalPublicParams.fromByteData(final Uint8List bytes) {
     final prime = Helper.readMPI(bytes);
-    final generator = Helper.readMPI(bytes.sublist(prime.byteLength + 2));
-    final exponent = Helper.readMPI(bytes.sublist(generator.byteLength + 2));
+
+    var pos = prime.byteLength + 2;
+    final generator = Helper.readMPI(bytes.sublist(pos));
+
+    pos += generator.byteLength + 2;
+    final exponent = Helper.readMPI(bytes.sublist(pos));
 
     return ElGamalPublicParams(prime, generator, exponent);
   }

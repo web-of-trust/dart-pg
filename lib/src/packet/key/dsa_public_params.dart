@@ -42,9 +42,15 @@ class DSAPublicParams implements VerificationParams {
 
   factory DSAPublicParams.fromByteData(final Uint8List bytes) {
     final prime = Helper.readMPI(bytes);
-    final order = Helper.readMPI(bytes.sublist(prime.byteLength + 2));
-    final generator = Helper.readMPI(bytes.sublist(order.byteLength + 2));
-    final exponent = Helper.readMPI(bytes.sublist(generator.byteLength + 2));
+
+    var pos = prime.byteLength + 2;
+    final order = Helper.readMPI(bytes.sublist(pos));
+
+    pos += order.byteLength + 2;
+    final generator = Helper.readMPI(bytes.sublist(pos));
+
+    pos += generator.byteLength + 2;
+    final exponent = Helper.readMPI(bytes.sublist(pos));
 
     return DSAPublicParams(
       prime,
