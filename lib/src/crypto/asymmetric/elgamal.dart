@@ -81,8 +81,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
       throw StateError('$algorithmName not initialised');
     }
 
-    final maxLength = _forEncryption ? (_bitSize - 1 + 7) ~/ 8 : inputBlockSize;
-    if (inLength > maxLength) {
+    if (inLength > inputBlockSize) {
       throw ArgumentError('input too large for $algorithmName cipher.');
     }
     final prime = _key!.prime;

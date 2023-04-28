@@ -22,9 +22,9 @@ class ECDSAPublicParams extends ECPublicParams implements VerificationParams {
       ASN1ObjectIdentifier.fromBytes(Uint8List.fromList([
         0x06,
         length,
-        ...bytes.sublist(1, 1 + length),
+        ...bytes.sublist(1, length + 1),
       ])),
-      Helper.readMPI(bytes.sublist(1 + length)),
+      Helper.readMPI(bytes.sublist(length + 1)),
     );
   }
 
