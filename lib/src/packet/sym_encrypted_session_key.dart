@@ -31,7 +31,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   static const version = 4;
 
   /// Algorithm to encrypt the session key with
-  final SymmetricAlgorithm encryptionKeySymmetric;
+  final SymmetricAlgorithm symmetric;
 
   final S2K s2k;
 
@@ -45,7 +45,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   SymEncryptedSessionKeyPacket(
     this.s2k,
     this.encrypted, {
-    this.encryptionKeySymmetric = SymmetricAlgorithm.aes256,
+    this.symmetric = SymmetricAlgorithm.aes256,
     this.sessionKey,
   }) : super(PacketTag.symEncryptedSessionKey);
 
@@ -72,7 +72,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     return SymEncryptedSessionKeyPacket(
       s2k,
       bytes.sublist(pos + s2k.length),
-      encryptionKeySymmetric: encryptionKeySymmetric,
+      symmetric: encryptionKeySymmetric,
     );
   }
 
@@ -87,7 +87,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
     final key = await s2k.produceKey(
       password,
-      (encryptionKeySymmetric.keySize + 7) >> 3,
+      encryptionKeySymmetric.keySizeInByte,
     );
     final cipher = BufferedCipher(
       encryptionKeySymmetric.cipherEngine,
@@ -100,7 +100,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     return SymEncryptedSessionKeyPacket(
       s2k,
       cipher.process(sessionKey.encode()),
-      encryptionKeySymmetric: encryptionKeySymmetric,
+      symmetric: encryptionKeySymmetric,
       sessionKey: sessionKey,
     );
   }
@@ -111,10 +111,10 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     } else {
       final key = await s2k.produceKey(
         password,
-        (encryptionKeySymmetric.keySize + 7) >> 3,
+        symmetric.keySizeInByte,
       );
       final cipher = BufferedCipher(
-        encryptionKeySymmetric.cipherEngine,
+        symmetric.cipherEngine,
       )..init(false, KeyParameter(key));
       final decrypted = cipher.process(encrypted);
       final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
@@ -123,7 +123,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
       return SymEncryptedSessionKeyPacket(
         s2k,
         encrypted,
-        encryptionKeySymmetric: encryptionKeySymmetric,
+        symmetric: symmetric,
         sessionKey: SessionKey(decrypted.sublist(1), sessionKeySymmetric),
       );
     }
@@ -133,7 +133,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   Uint8List toByteData() {
     return Uint8List.fromList([
       version,
-      encryptionKeySymmetric.value,
+      symmetric.value,
       ...s2k.encode(),
       ...encrypted,
     ]);

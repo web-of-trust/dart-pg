@@ -47,6 +47,10 @@ enum SymmetricAlgorithm {
     }
   }
 
+  int get keySizeInByte {
+    return (keySize + 7) >> 3;
+  }
+
   int get blockSize {
     switch (this) {
       case plaintext:

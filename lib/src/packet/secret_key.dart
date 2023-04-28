@@ -207,8 +207,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final s2k = S2K(random.nextBytes(8), hash: hash, type: type);
       final iv = random.nextBytes(symmetric.blockSize);
 
-      final keyLen = (symmetric.keySize + 7) >> 3;
-      final key = await s2k.produceKey(passphrase, keyLen);
+      final key = await s2k.produceKey(passphrase, symmetric.keySizeInByte);
       final cipher = BufferedCipher(symmetric.cipherEngine)
         ..init(
           true,
@@ -239,9 +238,9 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final keyLen = (symmetric.keySize + 7) >> 3;
         final key =
-            await s2k?.produceKey(passphrase, keyLen) ?? Uint8List(keyLen);
+            await s2k?.produceKey(passphrase, symmetric.keySizeInByte) ??
+                Uint8List(symmetric.keySizeInByte);
         final cipher = BufferedCipher(symmetric.cipherEngine)
           ..init(
             false,

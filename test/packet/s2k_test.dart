@@ -23,10 +23,10 @@ void main() {
       expect(skesk.s2k.type, S2kType.simple);
       expect(skesk.s2k.hash, HashAlgorithm.sha1);
       expect(skesk.s2k.salt, equals(salt));
-      expect(skesk.encryptionKeySymmetric, SymmetricAlgorithm.aes256);
+      expect(skesk.symmetric, SymmetricAlgorithm.aes256);
 
       final s2k = S2K(salt, type: skesk.s2k.type, hash: skesk.s2k.hash);
-      final key = await s2k.produceKey(passphrase, (skesk.encryptionKeySymmetric.keySize + 7) >> 3);
+      final key = await s2k.produceKey(passphrase, (skesk.symmetric.keySize + 7) >> 3);
       expect(key.toHexadecimal(), '7110eda4d09e062aa5e4a390b0a572ac0d2c0220f352b0d292b65164c2a67301');
     });
 
@@ -39,10 +39,10 @@ void main() {
       expect(skesk.s2k.type, S2kType.salted);
       expect(skesk.s2k.hash, HashAlgorithm.sha1);
       expect(skesk.s2k.salt, equals(salt));
-      expect(skesk.encryptionKeySymmetric, SymmetricAlgorithm.aes256);
+      expect(skesk.symmetric, SymmetricAlgorithm.aes256);
 
       final s2k = S2K(salt, type: skesk.s2k.type, hash: skesk.s2k.hash);
-      final key = await s2k.produceKey(passphrase, (skesk.encryptionKeySymmetric.keySize + 7) >> 3);
+      final key = await s2k.produceKey(passphrase, (skesk.symmetric.keySize + 7) >> 3);
       expect(key.toHexadecimal(), '8b79077ca448f6fb3d3ad2a264d3b938d357c9fb3e41219fd962df960a9afa08');
     });
 
@@ -55,10 +55,10 @@ void main() {
       expect(skesk.s2k.type, S2kType.salted);
       expect(skesk.s2k.hash, HashAlgorithm.sha1);
       expect(skesk.s2k.salt, equals(salt));
-      expect(skesk.encryptionKeySymmetric, SymmetricAlgorithm.aes256);
+      expect(skesk.symmetric, SymmetricAlgorithm.aes256);
 
       final s2k = S2K(salt, type: skesk.s2k.type, hash: skesk.s2k.hash);
-      final key = await s2k.produceKey(passphrase, (skesk.encryptionKeySymmetric.keySize + 7) >> 3);
+      final key = await s2k.produceKey(passphrase, (skesk.symmetric.keySize + 7) >> 3);
       expect(key.toHexadecimal(), 'b7d48aae9b943b22a4d390083e8460b5edfa118fe1688bf0c473b8094d1a8d10');
     });
 
@@ -73,10 +73,10 @@ void main() {
       expect(skesk.s2k.hash, HashAlgorithm.sha1);
       expect(skesk.s2k.itCount, itCount);
       expect(skesk.s2k.salt, equals(salt));
-      expect(skesk.encryptionKeySymmetric, SymmetricAlgorithm.aes256);
+      expect(skesk.symmetric, SymmetricAlgorithm.aes256);
 
       final s2k = S2K(salt, type: skesk.s2k.type, hash: skesk.s2k.hash, itCount: skesk.s2k.itCount);
-      final key = await s2k.produceKey(passphrase, (skesk.encryptionKeySymmetric.keySize + 7) >> 3);
+      final key = await s2k.produceKey(passphrase, (skesk.symmetric.keySize + 7) >> 3);
       expect(key.toHexadecimal(), '575ad156187a3f8cec11108309236eb499f1e682f0d1afadfac4ecf97613108a');
     });
 
@@ -91,10 +91,10 @@ void main() {
       expect(skesk.s2k.hash, HashAlgorithm.sha1);
       expect(skesk.s2k.itCount, itCount);
       expect(skesk.s2k.salt, equals(salt));
-      expect(skesk.encryptionKeySymmetric, SymmetricAlgorithm.aes256);
+      expect(skesk.symmetric, SymmetricAlgorithm.aes256);
 
       final s2k = S2K(salt, type: skesk.s2k.type, hash: skesk.s2k.hash, itCount: skesk.s2k.itCount);
-      final key = await s2k.produceKey(passphrase, (skesk.encryptionKeySymmetric.keySize + 7) >> 3);
+      final key = await s2k.produceKey(passphrase, (skesk.symmetric.keySize + 7) >> 3);
       expect(key.toHexadecimal(), '736c226b8c64e4e6d0325c6c552ef7c0738f98f48fed65fd8c93265103efa23a');
     });
 
@@ -109,10 +109,10 @@ void main() {
       expect(skesk.s2k.hash, HashAlgorithm.sha1);
       expect(skesk.s2k.itCount, itCount);
       expect(skesk.s2k.salt, equals(salt));
-      expect(skesk.encryptionKeySymmetric, SymmetricAlgorithm.aes192);
+      expect(skesk.symmetric, SymmetricAlgorithm.aes192);
 
       final s2k = S2K(salt, type: skesk.s2k.type, hash: skesk.s2k.hash, itCount: skesk.s2k.itCount);
-      final key = await s2k.produceKey(passphrase, (skesk.encryptionKeySymmetric.keySize + 7) >> 3);
+      final key = await s2k.produceKey(passphrase, (skesk.symmetric.keySize + 7) >> 3);
       expect(key.toHexadecimal(), '915e96fc694e7f90a6850b740125ea005199c725f3bd27e3');
     });
 
@@ -128,10 +128,10 @@ void main() {
       expect(skesk.s2k.hash, HashAlgorithm.sha1);
       expect(skesk.s2k.itCount, itCount);
       expect(skesk.s2k.salt, equals(salt));
-      expect(skesk.encryptionKeySymmetric, SymmetricAlgorithm.twofish);
+      expect(skesk.symmetric, SymmetricAlgorithm.twofish);
 
       final s2k = S2K(salt, type: skesk.s2k.type, hash: skesk.s2k.hash, itCount: skesk.s2k.itCount);
-      final key = await s2k.produceKey(passphrase, (skesk.encryptionKeySymmetric.keySize + 7) >> 3);
+      final key = await s2k.produceKey(passphrase, (skesk.symmetric.keySize + 7) >> 3);
       expect(key.toHexadecimal(), 'ea264fada5a859c40d88a159b344ecf1f51ff327fdb3c558b0a7dc299777173e');
     });
 
@@ -147,10 +147,10 @@ void main() {
       expect(skesk.s2k.hash, HashAlgorithm.sha1);
       expect(skesk.s2k.itCount, itCount);
       expect(skesk.s2k.salt, equals(salt));
-      expect(skesk.encryptionKeySymmetric, SymmetricAlgorithm.aes128);
+      expect(skesk.symmetric, SymmetricAlgorithm.aes128);
 
       final s2k = S2K(salt, type: skesk.s2k.type, hash: skesk.s2k.hash, itCount: skesk.s2k.itCount);
-      final key = await s2k.produceKey(passphrase, (skesk.encryptionKeySymmetric.keySize + 7) >> 3);
+      final key = await s2k.produceKey(passphrase, (skesk.symmetric.keySize + 7) >> 3);
       expect(key.toHexadecimal(), 'f3d0ce52ed6143637443e3399437fd0f');
     });
   });
