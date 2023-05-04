@@ -60,7 +60,7 @@ class Message {
           packet.signatureType,
           packet.hashAlgorithm,
           packet.keyAlgorithm,
-          KeyID(packet.issuerKeyID.data),
+          packet.issuerKeyID.data,
           (index == signatures.length - 1) ? 1 : 0,
         );
       }),
@@ -99,7 +99,7 @@ class Message {
     final packetList = unwrapCompressed().packetList;
     final onePassSignatures = packetList.whereType<OnePassSignaturePacket>();
     if (onePassSignatures.isNotEmpty) {
-      return onePassSignatures.map((packet) => packet.issuerKeyID);
+      return onePassSignatures.map((packet) => KeyID(packet.issuerKeyID));
     }
     return packetList.whereType<SignaturePacket>().map(
           (packet) => KeyID(packet.issuerKeyID.data),
@@ -156,7 +156,7 @@ class Message {
           signatureType,
           keyPacket.preferredHash,
           keyPacket.algorithm,
-          keyPacket.keyID,
+          keyPacket.keyID.bytes,
           (index == keyList.length - 1) ? 1 : 0,
         );
       })),
