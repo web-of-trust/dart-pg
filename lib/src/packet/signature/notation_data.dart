@@ -57,17 +57,17 @@ class NotationData extends SignatureSubpacket {
     final nameData = utf8.encode(notationName);
     final nameLength = min(nameData.length, 0xffff);
     if (nameLength != nameData.length) {
-      throw Exception('notationName exceeds maximum length.');
+      throw ArgumentError('notationName exceeds maximum length.');
     }
 
     final valueData = utf8.encode(notationValue);
     final valueLength = min(valueData.length, 0xffff);
     if (valueLength != valueData.length) {
-      throw Exception('notationValue exceeds maximum length.');
+      throw ArgumentError('notationValue exceeds maximum length.');
     }
 
     return Uint8List.fromList([
-      ...[humanReadable ? 0x80 : 0x00, 0x0, 0x0, 0x0],
+      ...[humanReadable ? 0x80 : 0, 0, 0, 0],
       (nameLength >> 8) & 0xff,
       (nameLength >> 0) & 0xff,
       (valueLength >> 8) & 0xff,
