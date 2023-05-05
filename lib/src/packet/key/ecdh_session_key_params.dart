@@ -107,7 +107,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       _kdf(
         publicParams.kdfHash,
         sharedKey,
-        _buildEcdhParam(publicParams, fingerprint),
+        _ecdhParam(publicParams, fingerprint),
         (publicParams.kdfSymmetric.keySize + 7) >> 3,
       ),
       _pkcs5Encode(Uint8List.fromList([
@@ -172,7 +172,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
         _kdf(
           publicParams.kdfHash,
           sharedKey,
-          _buildEcdhParam(publicParams, fingerprint),
+          _ecdhParam(publicParams, fingerprint),
           (publicParams.kdfSymmetric.keySize + 7) >> 3,
         ),
         wrappedKey,
@@ -200,7 +200,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
       ).sublist(0, keySize);
 
   /// Build Param for ECDH algorithm (RFC 6637)
-  static Uint8List _buildEcdhParam(
+  static Uint8List _ecdhParam(
     final ECDHPublicParams publicParams,
     final Uint8List fingerprint,
   ) =>
