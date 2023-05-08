@@ -15,6 +15,9 @@ import '../../helpers.dart';
 /// They are used in two places, currently: to encrypt the secret part of private keys in the private keyring,
 /// and to convert passphrases to encryption keys for symmetrically encrypted messages.
 class S2K {
+  /// Default salt length
+  static const saltLength = 8;
+
   /// Exponent bias, defined in RFC4880
   static const _expbias = 6;
 

@@ -200,7 +200,11 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       assert(symmetric != SymmetricAlgorithm.plaintext);
 
       final random = Helper.secureRandom();
-      final s2k = S2K(random.nextBytes(8), hash: hash, type: type);
+      final s2k = S2K(
+        random.nextBytes(S2K.saltLength),
+        hash: hash,
+        type: type,
+      );
       final iv = random.nextBytes(symmetric.blockSize);
 
       final key = await s2k.produceKey(passphrase, symmetric.keySizeInByte);

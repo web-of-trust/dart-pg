@@ -84,7 +84,11 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     final HashAlgorithm hash = HashAlgorithm.sha256,
     final S2kType type = S2kType.iterated,
   }) async {
-    final s2k = S2K(Helper.secureRandom().nextBytes(8), hash: hash, type: type);
+    final s2k = S2K(
+      Helper.secureRandom().nextBytes(S2K.saltLength),
+      hash: hash,
+      type: type,
+    );
     final key = await s2k.produceKey(
       password,
       encryptionKeySymmetric.keySizeInByte,
