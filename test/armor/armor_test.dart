@@ -64,7 +64,7 @@ void main() {
         hashAlgo: HashAlgorithm.sha256.digestName,
       );
 
-      final beginReg = RegExp(r'BEGIN PGP SIGNED MESSAGE-');
+      final beginReg = RegExp(r'BEGIN PGP SIGNED MESSAGE');
       expect(beginReg.hasMatch(armored), true);
 
       final beginSignReg = RegExp(r'BEGIN PGP SIGNATURE');
