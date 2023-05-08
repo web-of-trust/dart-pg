@@ -15,7 +15,6 @@ class PublicSubkeyPacket extends PublicKeyPacket implements SubkeyPacket {
   PublicSubkeyPacket(
     super.createdTime,
     super.publicParams, {
-    super.expirationDays,
     super.algorithm,
   });
 
@@ -24,7 +23,6 @@ class PublicSubkeyPacket extends PublicKeyPacket implements SubkeyPacket {
     return PublicSubkeyPacket(
       publicKey.creationTime,
       publicKey.publicParams,
-      expirationDays: publicKey.expirationDays,
       algorithm: publicKey.algorithm,
     );
   }

@@ -162,9 +162,6 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   KeyParams get publicParams => _publicKey.publicParams;
 
   @override
-  int get expirationDays => _publicKey.expirationDays;
-
-  @override
   String get fingerprint => _publicKey.fingerprint;
 
   @override

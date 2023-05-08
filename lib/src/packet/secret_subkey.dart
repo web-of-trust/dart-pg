@@ -101,7 +101,6 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
       PublicSubkeyPacket(
         publicKey.creationTime,
         publicKey.publicParams,
-        expirationDays: publicKey.expirationDays,
         algorithm: publicKey.algorithm,
       ),
       secretKey.keyData,

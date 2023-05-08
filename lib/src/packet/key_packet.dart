@@ -21,8 +21,6 @@ abstract class KeyPacket implements ContainedPacket {
 
   DateTime get creationTime;
 
-  int get expirationDays;
-
   KeyAlgorithm get algorithm;
 
   KeyParams get publicParams;

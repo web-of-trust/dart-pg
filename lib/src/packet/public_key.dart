@@ -27,9 +27,6 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   final DateTime creationTime;
 
   @override
-  final int expirationDays;
-
-  @override
   final KeyAlgorithm algorithm;
 
   @override
@@ -42,7 +39,6 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
   PublicKeyPacket(
     this.creationTime,
     this.publicParams, {
-    this.expirationDays = 0,
     this.algorithm = KeyAlgorithm.rsaEncryptSign,
   }) : super(PacketTag.publicKey) {
     _calculateFingerprintAndKeyID();
@@ -63,7 +59,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     final creationTime = bytes.sublist(pos, pos + 4).toDateTime();
     pos += 4;
 
-    // A one-octet number denoting the public-key algorithm of this key.
+    /// A one-octet number denoting the public-key algorithm of this key.
     final algorithm = KeyAlgorithm.values.firstWhere(
       (algo) => algo.value == bytes[pos],
     );
@@ -78,17 +74,17 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
       case KeyAlgorithm.rsaSign:
         publicParams = RSAPublicParams.fromByteData(bytes.sublist(pos));
         break;
-      case KeyAlgorithm.elgamal:
-        publicParams = ElGamalPublicParams.fromByteData(bytes.sublist(pos));
-        break;
       case KeyAlgorithm.dsa:
         publicParams = DSAPublicParams.fromByteData(bytes.sublist(pos));
         break;
-      case KeyAlgorithm.ecdh:
-        publicParams = ECDHPublicParams.fromByteData(bytes.sublist(pos));
+      case KeyAlgorithm.elgamal:
+        publicParams = ElGamalPublicParams.fromByteData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.ecdsa:
         publicParams = ECDSAPublicParams.fromByteData(bytes.sublist(pos));
+        break;
+      case KeyAlgorithm.ecdh:
+        publicParams = ECDHPublicParams.fromByteData(bytes.sublist(pos));
         break;
       case KeyAlgorithm.eddsa:
         publicParams = EdDSAPublicParams.fromByteData(bytes.sublist(pos));
@@ -107,8 +103,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   /// Computes and set the fingerprint of the key
   void _calculateFingerprintAndKeyID() {
-    final toHash = writeForSign();
-    _fingerprint = Uint8List.fromList(sha1.convert(toHash).bytes);
+    _fingerprint = Uint8List.fromList(sha1.convert(writeForSign()).bytes);
     _keyID = KeyID(_fingerprint.sublist(12, 20));
   }
 
@@ -167,12 +162,11 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   @override
   Uint8List toByteData() {
-    final keyData = publicParams.encode();
     return Uint8List.fromList([
       version,
       ...creationTime.toBytes(),
       algorithm.value,
-      ...keyData,
+      ...publicParams.encode(),
     ]);
   }
 }
