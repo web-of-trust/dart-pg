@@ -54,14 +54,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
   factory SecretKeyPacket.fromByteData(final Uint8List bytes) {
     final publicKey = PublicKeyPacket.fromByteData(bytes);
-    final length = publicKey.toByteData().length;
 
-    var pos = length;
+    var pos = publicKey.toByteData().length;
     final s2kUsage = S2kUsage.values.firstWhere(
       (usage) => usage.value == bytes[pos],
     );
-    pos++;
 
+    pos++;
     final S2K? s2k;
     final SymmetricAlgorithm symmetric;
     switch (s2kUsage) {
@@ -322,7 +321,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     } else {
       return Uint8List.fromList([
         ...publicKey.toByteData(),
-        s2kUsage.value,
+        S2kUsage.none.value,
         ...keyData,
       ]);
     }
