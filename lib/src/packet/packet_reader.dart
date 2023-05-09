@@ -57,28 +57,25 @@ class PacketReader {
         var partialPos = pos + 1 << (bytes[pos++] & 0x1f);
         while (true) {
           if (bytes[pos] < 192) {
-            final partialLen = bytes[partialPos++];
-            partialPos += partialLen;
+            partialPos += bytes[partialPos++];
             break;
           } else if (bytes[partialPos] > 191 && bytes[partialPos] < 224) {
-            final partialLen = ((bytes[partialPos++] - 192) << 8) +
+            partialPos += ((bytes[partialPos++] - 192) << 8) +
                 (bytes[partialPos++]) +
                 192;
-            partialPos += partialLen;
             break;
           } else if (bytes[partialPos] > 223 && bytes[partialPos] < 255) {
-            final partialLen = 1 << (bytes[partialPos++] & 0x1f);
-            partialPos += partialLen;
+            partialPos += 1 << (bytes[partialPos++] & 0x1f);
             break;
           } else {
             partialPos++;
-            final partialLen = bytes
-                .sublist(
-                  partialPos,
-                  partialPos + 4,
-                )
-                .toInt32();
-            partialPos += partialLen + 4;
+            partialPos += bytes
+                    .sublist(
+                      partialPos,
+                      partialPos + 4,
+                    )
+                    .toInt32() +
+                4;
           }
         }
         packetLength = partialPos - pos;
