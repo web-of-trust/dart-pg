@@ -75,17 +75,11 @@ class LiteralDataPacket extends ContainedPacket {
   @override
   Uint8List toByteData() {
     return Uint8List.fromList([
-      ...writeHeader(),
-      ...writeForSign(),
-    ]);
-  }
-
-  Uint8List writeHeader() {
-    return Uint8List.fromList([
       format.value,
       filename.length,
       ...filename.stringToBytes(),
       ...time.toBytes(),
+      ...writeForSign(),
     ]);
   }
 
