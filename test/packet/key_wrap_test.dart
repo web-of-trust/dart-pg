@@ -106,7 +106,7 @@ void main() {
         0xe5,
       ]);
       final wrappedKey128 = await aes.wrap(key128, keyData128);
-      var unwrappedKey128 = await aes.unwrap(key128, wrappedKey128);
+      final unwrappedKey128 = await aes.unwrap(key128, wrappedKey128);
 
       expect(wrappedKey128, equals(wrappedKey128128));
       expect(unwrappedKey128, equals(keyData128));
@@ -114,7 +114,7 @@ void main() {
       final key = Helper.secureRandom().nextBytes(16);
       final keyData = Helper.secureRandom().nextBytes(32);
       final wrappedKey = await aes.wrap(key, keyData);
-      var unwrappedKey = await aes.unwrap(key, wrappedKey);
+      final unwrappedKey = await aes.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
@@ -182,19 +182,19 @@ void main() {
       ]);
 
       final wrappedKey128 = await aes.wrap(key192, keyData128);
-      var unwrappedKey128 = await aes.unwrap(key192, wrappedKey128);
+      final unwrappedKey128 = await aes.unwrap(key192, wrappedKey128);
       expect(wrappedKey128, equals(wrappedKey128192));
       expect(unwrappedKey128, equals(keyData128));
 
       final wrappedKey192 = await aes.wrap(key192, keyData192);
-      var unwrappedKey192 = await aes.unwrap(key192, wrappedKey192);
+      final unwrappedKey192 = await aes.unwrap(key192, wrappedKey192);
       expect(wrappedKey192, equals(wrappedKey192192));
       expect(unwrappedKey192, equals(keyData192));
 
       final key = Helper.secureRandom().nextBytes(24);
       final keyData = Helper.secureRandom().nextBytes(32);
       final wrappedKey = await aes.wrap(key, keyData);
-      var unwrappedKey = await aes.unwrap(key, wrappedKey);
+      final unwrappedKey = await aes.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
@@ -304,24 +304,24 @@ void main() {
       ]);
 
       final wrappedKey128 = await aes.wrap(key256, keyData128);
-      var unwrappedKey128 = await aes.unwrap(key256, wrappedKey128);
+      final unwrappedKey128 = await aes.unwrap(key256, wrappedKey128);
       expect(wrappedKey128, equals(wrappedKey128256));
       expect(unwrappedKey128, equals(keyData128));
 
       final wrappedKey192 = await aes.wrap(key256, keyData192);
-      var unwrappedKey192 = await aes.unwrap(key256, wrappedKey192);
+      final unwrappedKey192 = await aes.unwrap(key256, wrappedKey192);
       expect(wrappedKey192, equals(wrappedKey192256));
       expect(unwrappedKey192, equals(keyData192));
 
       final wrappedKey256 = await aes.wrap(key256, keyData256);
-      var unwrappedKey256 = await aes.unwrap(key256, wrappedKey256);
+      final unwrappedKey256 = await aes.unwrap(key256, wrappedKey256);
       expect(wrappedKey256, equals(wrappedKey256256));
       expect(unwrappedKey256, equals(keyData256));
 
       final key = Helper.secureRandom().nextBytes(32);
       final keyData = Helper.secureRandom().nextBytes(32);
       final wrappedKey = await aes.wrap(key, keyData);
-      var unwrappedKey = await aes.unwrap(key, wrappedKey);
+      final unwrappedKey = await aes.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
@@ -329,13 +329,13 @@ void main() {
       final camellia = CamelliaKeyWrap(16);
 
       final wrappedKey128 = await camellia.wrap(key128, keyData128);
-      var unwrappedKey128 = await camellia.unwrap(key128, wrappedKey128);
+      final unwrappedKey128 = await camellia.unwrap(key128, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
 
       final key = Helper.secureRandom().nextBytes(16);
       final keyData = Helper.secureRandom().nextBytes(32);
       final wrappedKey = await camellia.wrap(key, keyData);
-      var unwrappedKey = await camellia.unwrap(key, wrappedKey);
+      final unwrappedKey = await camellia.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
@@ -343,17 +343,17 @@ void main() {
       final camellia = CamelliaKeyWrap(24);
 
       final wrappedKey128 = await camellia.wrap(key192, keyData128);
-      var unwrappedKey128 = await camellia.unwrap(key192, wrappedKey128);
+      final unwrappedKey128 = await camellia.unwrap(key192, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
 
       final wrappedKey192 = await camellia.wrap(key192, keyData192);
-      var unwrappedKey192 = await camellia.unwrap(key192, wrappedKey192);
+      final unwrappedKey192 = await camellia.unwrap(key192, wrappedKey192);
       expect(unwrappedKey192, equals(keyData192));
 
       final key = Helper.secureRandom().nextBytes(24);
       final keyData = Helper.secureRandom().nextBytes(32);
       final wrappedKey = await camellia.wrap(key, keyData);
-      var unwrappedKey = await camellia.unwrap(key, wrappedKey);
+      final unwrappedKey = await camellia.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
@@ -361,21 +361,21 @@ void main() {
       final camellia = CamelliaKeyWrap(32);
 
       final wrappedKey128 = await camellia.wrap(key256, keyData128);
-      var unwrappedKey128 = await camellia.unwrap(key256, wrappedKey128);
+      final unwrappedKey128 = await camellia.unwrap(key256, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
 
       final wrappedKey192 = await camellia.wrap(key256, keyData192);
-      var unwrappedKey192 = await camellia.unwrap(key256, wrappedKey192);
+      final unwrappedKey192 = await camellia.unwrap(key256, wrappedKey192);
       expect(unwrappedKey192, equals(keyData192));
 
       final wrappedKey256 = await camellia.wrap(key256, keyData256);
-      var unwrappedKey256 = await camellia.unwrap(key256, wrappedKey256);
+      final unwrappedKey256 = await camellia.unwrap(key256, wrappedKey256);
       expect(unwrappedKey256, equals(keyData256));
 
       final key = Helper.secureRandom().nextBytes(32);
       final keyData = Helper.secureRandom().nextBytes(32);
       final wrappedKey = await camellia.wrap(key, keyData);
-      var unwrappedKey = await camellia.unwrap(key, wrappedKey);
+      final unwrappedKey = await camellia.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
   });
