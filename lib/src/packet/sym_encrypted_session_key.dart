@@ -77,10 +77,9 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   static Future<SymEncryptedSessionKeyPacket> encryptSessionKey(
-    final String password, {
-    final Uint8List? sessionKeyData,
-    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
-    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
+    final String password,
+    final SessionKey sessionKey, {
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final HashAlgorithm hash = HashAlgorithm.sha256,
     final S2kType type = S2kType.iterated,
   }) async {
@@ -91,26 +90,22 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
     final key = await s2k.produceKey(
       password,
-      encryptionKeySymmetric.keySizeInByte,
+      symmetric.keySizeInByte,
     );
     final cipher = BufferedCipher(
-      encryptionKeySymmetric.cipherEngine,
+      symmetric.cipherEngine,
     )..init(
         true,
         ParametersWithIV(
           KeyParameter(key),
-          Uint8List(encryptionKeySymmetric.blockSize),
+          Uint8List(symmetric.blockSize),
         ),
       );
-    final sessionKey = SessionKey(
-      sessionKeyData ?? Helper.generateEncryptionKey(sessionKeySymmetric),
-      sessionKeySymmetric,
-    );
 
     return SymEncryptedSessionKeyPacket(
       s2k,
       cipher.process(sessionKey.encode()),
-      symmetric: encryptionKeySymmetric,
+      symmetric: symmetric,
       sessionKey: sessionKey,
     );
   }

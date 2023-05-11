@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dart_pg/src/helpers.dart';
+import 'package:dart_pg/src/packet/key/session_key.dart';
 import 'package:dart_pg/src/packet/key_packet.dart';
 import 'package:dart_pg/src/packet/literal_data.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
@@ -42,7 +43,7 @@ void main() {
     });
 
     test('password protected session key test', () async {
-      final skesk = await SymEncryptedSessionKeyPacket.encryptSessionKey(kek);
+      final skesk = await SymEncryptedSessionKeyPacket.encryptSessionKey(kek, SessionKey.produceKey());
       final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         skesk.sessionKey!.key,
         packets,
@@ -74,7 +75,8 @@ void main() {
         base64.decode(rsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
 
-      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(secretKey.publicKey);
+      final pkesk =
+          await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(secretKey.publicKey, SessionKey.produceKey());
       final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         pkesk.sessionKey!.key,
         packets,
@@ -102,7 +104,8 @@ void main() {
         base64.decode(elgamalSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
 
-      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(secretKey.publicKey);
+      final pkesk =
+          await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(secretKey.publicKey, SessionKey.produceKey());
       final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         pkesk.sessionKey!.key,
         packets,
@@ -133,7 +136,7 @@ void main() {
         base64.decode(ecdhPublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       );
 
-      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(publicKey);
+      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(publicKey, SessionKey.produceKey());
       final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         pkesk.sessionKey!.key,
         packets,
@@ -164,7 +167,7 @@ void main() {
         base64.decode(curve25519PublicSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
       );
 
-      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(publicKey);
+      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(publicKey, SessionKey.produceKey());
       final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         pkesk.sessionKey!.key,
         packets,

@@ -8,6 +8,7 @@ import 'package:dart_pg/src/crypto/math/int_ext.dart';
 
 import '../../crypto/math/byte_ext.dart';
 import '../../enum/symmetric_algorithm.dart';
+import '../../helpers.dart';
 
 class SessionKey {
   /// Algorithm to encrypt the message with
@@ -17,6 +18,10 @@ class SessionKey {
   final Uint8List key;
 
   SessionKey(this.key, [this.symmetric = SymmetricAlgorithm.aes256]);
+
+  factory SessionKey.produceKey([SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256]) {
+    return SessionKey(Helper.generateEncryptionKey(symmetric), symmetric);
+  }
 
   /// Serializes session key to bytes
   Uint8List encode() => Uint8List.fromList([symmetric.value, ...key]);

@@ -7,7 +7,6 @@ import 'dart:typed_data';
 import '../crypto/asymmetric/elgamal.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/packet_tag.dart';
-import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
 import 'contained_packet.dart';
 import 'key/key_id.dart';
@@ -93,14 +92,9 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   }
 
   static Future<PublicKeyEncryptedSessionKeyPacket> encryptSessionKey(
-    final PublicKeyPacket publicKey, {
-    final Uint8List? sessionKeyData,
-    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
-  }) async {
-    final sessionKey = SessionKey(
-      sessionKeyData ?? Helper.generateEncryptionKey(sessionKeySymmetric),
-      sessionKeySymmetric,
-    );
+    final PublicKeyPacket publicKey,
+    final SessionKey sessionKey,
+  ) async {
     final SessionKeyParams params;
     final keyParams = publicKey.publicParams;
     if (keyParams is RSAPublicParams) {
