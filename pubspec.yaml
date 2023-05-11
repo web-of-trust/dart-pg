@@ -1,13 +1,13 @@
 name: dart_pg
 description:  Dart PG (Dart Privacy Guard) - The OpenPGP implementation in Dart language.
-version: 1.1.1
+version: 1.1.2
 homepage: https://github.com/nguyennv/dart_pg
 
 environment:
-  sdk: '>=2.18.4 <3.0.0'
+  sdk: '>=2.19.0 <3.0.0'
 
 dependencies:
-  crypto: ^3.0.2
+  crypto: ^3.0.3
   fixnum: ^1.1.0
   pinenacl: ^0.5.1
   pointycastle: ^3.7.3

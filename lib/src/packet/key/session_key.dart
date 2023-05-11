@@ -19,7 +19,9 @@ class SessionKey {
 
   SessionKey(this.key, [this.symmetric = SymmetricAlgorithm.aes256]);
 
-  factory SessionKey.produceKey([SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256]) {
+  factory SessionKey.produceKey([
+    SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+  ]) {
     return SessionKey(Helper.generateEncryptionKey(symmetric), symmetric);
   }
 

@@ -37,8 +37,10 @@ class Message {
 
   final List<Verification> verifications;
 
-  Message(this.packetList, [final Iterable<Verification> verifications = const []])
-      : verifications = verifications.toList(growable: false);
+  Message(
+    this.packetList, [
+    final Iterable<Verification> verifications = const [],
+  ]) : verifications = verifications.toList(growable: false);
 
   factory Message.fromArmored(final String armored) {
     final armor = Armor.decode(armored);
@@ -87,7 +89,8 @@ class Message {
       ]));
 
   LiteralDataPacket? get literalData {
-    final packets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
+    final packets =
+        unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     return packets.isNotEmpty ? packets.elementAt(0) : null;
   }
 
@@ -104,10 +107,13 @@ class Message {
   }
 
   /// Gets the key IDs of the keys to which the session key is encrypted
-  Iterable<KeyID> get encryptionKeyIDs =>
-      unwrapCompressed().packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().map((packet) => packet.publicKeyID);
+  Iterable<KeyID> get encryptionKeyIDs => unwrapCompressed()
+      .packetList
+      .whereType<PublicKeyEncryptedSessionKeyPacket>()
+      .map((packet) => packet.publicKeyID);
 
-  Iterable<SignaturePacket> get signaturePackets => unwrapCompressed().packetList.whereType<SignaturePacket>();
+  Iterable<SignaturePacket> get signaturePackets =>
+      unwrapCompressed().packetList.whereType<SignaturePacket>();
 
   /// Returns ASCII armored text of message
   String armor() => Armor.encode(ArmorType.message, packetList.encode());
@@ -220,7 +226,8 @@ class Message {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async {
-    final literalDataPackets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
+    final literalDataPackets =
+        unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
@@ -251,7 +258,8 @@ class Message {
     final pkeskPackets = await Future.wait(
       encryptionKeys.map(
         (key) async => PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
-          await key.getEncryptionKeyPacket(), sessionKey
+          await key.getEncryptionKeyPacket(),
+          sessionKey,
         ),
       ),
     );
@@ -366,7 +374,8 @@ class Message {
   }) async {
     final sessionKeys = <SessionKey>[];
     if (decryptionKeys.isNotEmpty) {
-      final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
+      final pkeskPackets =
+          packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
       for (final pkesk in pkeskPackets) {
         for (final key in decryptionKeys) {
           final keyPacket = await key.getDecryptionKeyPacket();

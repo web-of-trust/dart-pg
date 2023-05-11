@@ -22,3 +22,7 @@
 
 ## 1.1.1 (2023-04-24)
 - Fix s2k iterated produce key
+
+## 1.1.2 (2023-05-11)
+- Pass ParametersWithIV to cipher in SKESK packet
+- Refactor session key encryption
