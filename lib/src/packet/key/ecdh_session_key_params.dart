@@ -46,9 +46,11 @@ class ECDHSessionKeyParams extends SessionKeyParams {
 
     final pos = ephemeralKey.byteLength + 2;
     final length = bytes[pos];
-    final wrappedKey = bytes.sublist(pos + 1, pos + length + 1);
 
-    return ECDHSessionKeyParams(ephemeralKey, wrappedKey);
+    return ECDHSessionKeyParams(
+      ephemeralKey,
+      bytes.sublist(pos + 1, pos + length + 1),
+    );
   }
 
   static Future<ECDHSessionKeyParams> encryptSessionKey(

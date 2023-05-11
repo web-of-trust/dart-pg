@@ -95,7 +95,13 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
     final cipher = BufferedCipher(
       encryptionKeySymmetric.cipherEngine,
-    )..init(true, KeyParameter(key));
+    )..init(
+        true,
+        ParametersWithIV(
+          KeyParameter(key),
+          Uint8List(encryptionKeySymmetric.blockSize),
+        ),
+      );
     final sessionKey = SessionKey(
       sessionKeyData ?? Helper.generateEncryptionKey(sessionKeySymmetric),
       sessionKeySymmetric,
@@ -119,7 +125,13 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
       );
       final cipher = BufferedCipher(
         symmetric.cipherEngine,
-      )..init(false, KeyParameter(key));
+      )..init(
+          false,
+          ParametersWithIV(
+            KeyParameter(key),
+            Uint8List(symmetric.blockSize),
+          ),
+        );
       final decrypted = cipher.process(encrypted);
       final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
         (algo) => algo.value == decrypted[0],
