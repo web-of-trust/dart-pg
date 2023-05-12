@@ -47,6 +47,9 @@ class PacketReader {
           packetLength = bytes.sublist(pos, pos + 4).toInt32();
           pos += 4;
           break;
+        default:
+          packetLength = bytes.length - pos;
+          break;
       }
     } else {
       if (bytes[pos] < 192) {
