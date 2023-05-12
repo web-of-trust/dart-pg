@@ -118,24 +118,32 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
         password,
         symmetric.keySizeInByte,
       );
-      final cipher = BufferedCipher(
-        symmetric.cipherEngine,
-      )..init(
-          false,
-          ParametersWithIV(
-            KeyParameter(key),
-            Uint8List(symmetric.blockSize),
-          ),
+
+      final SessionKey sessionKey;
+      if (encrypted.isNotEmpty) {
+        final cipher = BufferedCipher(
+          symmetric.cipherEngine,
+        )..init(
+            false,
+            ParametersWithIV(
+              KeyParameter(key),
+              Uint8List(symmetric.blockSize),
+            ),
+          );
+        final decrypted = cipher.process(encrypted);
+        final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
+          (algo) => algo.value == decrypted[0],
         );
-      final decrypted = cipher.process(encrypted);
-      final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
-        (algo) => algo.value == decrypted[0],
-      );
+        sessionKey = SessionKey(decrypted.sublist(1), sessionKeySymmetric);
+      } else {
+        sessionKey = SessionKey(key, symmetric);
+      }
+
       return SymEncryptedSessionKeyPacket(
         s2k,
         encrypted,
         symmetric: symmetric,
-        sessionKey: SessionKey(decrypted.sublist(1), sessionKeySymmetric),
+        sessionKey: sessionKey,
       );
     }
   }

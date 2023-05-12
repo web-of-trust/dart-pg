@@ -147,7 +147,7 @@ void main() {
 
       expect(secretKey.fingerprint, '93456c517e3eddb679bb510c2213de9391374950');
       expect(secretKey.algorithm, KeyAlgorithm.rsaEncryptSign);
-      expect(secretParams.coefficients, secretParams.primeP.modInverse(secretParams.primeQ));
+      expect(secretParams.coefficient, secretParams.primeP.modInverse(secretParams.primeQ));
       expect(publicParams.modulus, secretParams.modulus);
 
       expect(secretKey.isDecrypted, true);
@@ -172,7 +172,7 @@ void main() {
       expect(decryptedParams.exponent, secretParams.exponent);
       expect(decryptedParams.primeP, secretParams.primeP);
       expect(decryptedParams.primeQ, secretParams.primeQ);
-      expect(decryptedParams.coefficients, secretParams.coefficients);
+      expect(decryptedParams.coefficient, secretParams.coefficient);
 
       final secretSubkey = SecretSubkeyPacket.fromByteData(
         base64.decode(secretSubkeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
@@ -182,7 +182,7 @@ void main() {
 
       expect(secretSubkey.fingerprint, 'c503083b150f47a5d6fdb661c865808a31866def');
       expect(secretSubkey.algorithm, KeyAlgorithm.rsaEncryptSign);
-      expect(subkeySecretParams.coefficients, subkeySecretParams.primeP.modInverse(subkeySecretParams.primeQ));
+      expect(subkeySecretParams.coefficient, subkeySecretParams.primeP.modInverse(subkeySecretParams.primeQ));
       expect(subkeyPublicParams.modulus, subkeySecretParams.modulus);
 
       expect(secretSubkey.isDecrypted, true);
@@ -209,7 +209,7 @@ void main() {
       expect(subkeyDecryptedParams.exponent, subkeySecretParams.exponent);
       expect(subkeyDecryptedParams.primeP, subkeySecretParams.primeP);
       expect(subkeyDecryptedParams.primeQ, subkeySecretParams.primeQ);
-      expect(subkeyDecryptedParams.coefficients, subkeySecretParams.coefficients);
+      expect(subkeyDecryptedParams.coefficient, subkeySecretParams.coefficient);
     }));
   });
 }

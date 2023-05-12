@@ -22,7 +22,7 @@ class RSASecretParams extends KeyParams {
   final BigInt primeQ;
 
   /// The multiplicative inverse of p, mod q
-  final BigInt coefficients;
+  final BigInt coefficient;
 
   final RSAPrivateKey privateKey;
 
@@ -30,8 +30,8 @@ class RSASecretParams extends KeyParams {
     this.exponent,
     this.primeP,
     this.primeQ, {
-    BigInt? pInv,
-  })  : coefficients = pInv ?? primeP.modInverse(primeQ),
+    BigInt? coefficient,
+  })  : coefficient = coefficient ?? primeP.modInverse(primeQ),
         privateKey = RSAPrivateKey(
           primeP * primeQ,
           exponent,
@@ -55,9 +55,14 @@ class RSASecretParams extends KeyParams {
     final primeQ = Helper.readMPI(bytes.sublist(pos));
 
     pos += primeQ.byteLength + 2;
-    final pInv = Helper.readMPI(bytes.sublist(pos));
+    final coefficient = Helper.readMPI(bytes.sublist(pos));
 
-    return RSASecretParams(privateExponent, primeP, primeQ, pInv: pInv);
+    return RSASecretParams(
+      privateExponent,
+      primeP,
+      primeQ,
+      coefficient: coefficient,
+    );
   }
 
   @override
@@ -68,8 +73,8 @@ class RSASecretParams extends KeyParams {
         ...primeP.toUnsignedBytes(),
         ...primeQ.bitLength.pack16(),
         ...primeQ.toUnsignedBytes(),
-        ...coefficients.bitLength.pack16(),
-        ...coefficients.toUnsignedBytes(),
+        ...coefficient.bitLength.pack16(),
+        ...coefficient.toUnsignedBytes(),
       ]);
 
   Future<Uint8List> sign(
@@ -95,7 +100,7 @@ class RSASecretParams extends KeyParams {
       return false;
     }
     // expect p*u = 1 mod q
-    if (((primeP * coefficients) % primeQ).compareTo(BigInt.one) != 0) {
+    if (((primeP * coefficient) % primeQ).compareTo(BigInt.one) != 0) {
       return false;
     }
 
