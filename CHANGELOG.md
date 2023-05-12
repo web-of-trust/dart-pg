@@ -26,3 +26,6 @@
 ## 1.1.2 (2023-05-11)
 - Pass ParametersWithIV to cipher in SKESK packet
 - Refactor session key encryption
+
+## 1.1.3 (2023-05-12)
+- Fix decrypt session key in SKESK
