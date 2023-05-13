@@ -3,11 +3,11 @@
 // file that was distributed with this source code.
 
 import 'dart:typed_data';
-import 'package:crypto/crypto.dart';
 
 import '../crypto/math/byte_ext.dart';
 import '../crypto/math/int_ext.dart';
 import '../enum/key_algorithm.dart';
+import '../enum/hash_algorithm.dart';
 import '../enum/packet_tag.dart';
 import '../helpers.dart';
 import 'key/key_id.dart';
@@ -103,7 +103,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   /// Computes and set the fingerprint of the key
   void _calculateFingerprintAndKeyID() {
-    _fingerprint = Uint8List.fromList(sha1.convert(writeForSign()).bytes);
+    _fingerprint = Uint8List.fromList(Helper.hashDigest(writeForSign(), HashAlgorithm.sha1));
     _keyID = KeyID(_fingerprint.sublist(12, 20));
   }
 
