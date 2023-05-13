@@ -29,3 +29,7 @@
 
 ## 1.1.3 (2023-05-12)
 - Fix decrypt session key in SKESK
+
+## 1.1.4 (2023-05-14)
+- Remove cryptor dependency
+- Fix old format packet reading

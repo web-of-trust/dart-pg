@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
 import 'package:pointycastle/api.dart' as pc;
 
 import 'crypto/math/byte_ext.dart';
@@ -89,23 +88,7 @@ class Helper {
     final Uint8List input, [
     HashAlgorithm hash = HashAlgorithm.sha256,
   ]) {
-    switch (hash) {
-      case HashAlgorithm.md5:
-        return Uint8List.fromList(md5.convert(input).bytes);
-      case HashAlgorithm.sha1:
-        return Uint8List.fromList(sha1.convert(input).bytes);
-      case HashAlgorithm.ripemd160:
-        final digest = pc.Digest(hash.digestName);
-        return digest.process(input);
-      case HashAlgorithm.sha256:
-        return Uint8List.fromList(sha256.convert(input).bytes);
-      case HashAlgorithm.sha384:
-        return Uint8List.fromList(sha384.convert(input).bytes);
-      case HashAlgorithm.sha512:
-        return Uint8List.fromList(sha512.convert(input).bytes);
-      case HashAlgorithm.sha224:
-        return Uint8List.fromList(sha224.convert(input).bytes);
-    }
+    return pc.Digest(hash.digestName).process(input);
   }
 
   static BigInt randomBigInt(
