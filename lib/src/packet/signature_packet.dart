@@ -246,9 +246,8 @@ class SignaturePacket extends ContainedPacket {
       ...dataToSign,
       ...signatureData,
       ..._calculateTrailer(
-        signatureType,
-        signatureData.lengthInBytes,
         version,
+        signatureData.lengthInBytes,
       )
     ]);
     return SignaturePacket(
@@ -501,9 +500,8 @@ class SignaturePacket extends ContainedPacket {
       ...dataToVerify,
       ...signatureData,
       ..._calculateTrailer(
-        signatureType,
-        signatureData.lengthInBytes,
         version,
+        signatureData.lengthInBytes,
       )
     ]);
     final hash = Helper.hashDigest(message, hashAlgorithm);
@@ -556,9 +554,8 @@ class SignaturePacket extends ContainedPacket {
   }
 
   static Uint8List _calculateTrailer(
-    final SignatureType signatureType,
-    final int dataLength,
     final int version,
+    final int dataLength,
   ) {
     return Uint8List.fromList([
       version,

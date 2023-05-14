@@ -100,6 +100,8 @@ class PacketList extends ListBase<ContainedPacket> {
             ModificationDetectionCodePacket.fromByteData(reader.data),
           );
           break;
+        case PacketTag.aeadEncryptedData:
+          break;
       }
     }
     return PacketList(packets);
