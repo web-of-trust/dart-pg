@@ -29,7 +29,7 @@ enum SignatureSubpacketType {
   signatureTarget(31),
   embeddedSignature(32),
   issuerFingerprint(33),
-  preferredAEADAlgorithms(34),
+  preferredAeadAlgorithms(34),
   intendedRecipientFingerprint(35),
   attestedCertifications(37);
 

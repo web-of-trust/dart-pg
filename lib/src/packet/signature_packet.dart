@@ -782,6 +782,13 @@ class SignaturePacket extends ContainedPacket {
               isLong: reader.isLong,
             ));
             break;
+          case SignatureSubpacketType.preferredAeadAlgorithms:
+            subpackets.add(PreferredAeadAlgorithms(
+              data,
+              critical: critical,
+              isLong: reader.isLong,
+            ));
+            break;
           default:
             subpackets.add(SignatureSubpacket(
               type,
