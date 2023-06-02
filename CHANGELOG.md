@@ -34,5 +34,5 @@
 - Remove cryptor dependency
 - Fix old format packet reading
 
-## 1.1.4-1 (2023-05-13)
+## 1.1.4-1 (2023-06-02)
 - Change homepage url
