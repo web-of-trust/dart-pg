@@ -271,6 +271,9 @@ class PrivateKey extends Key {
     if (passphrase.isEmpty) {
       throw ArgumentError('passphrase are required for key encryption');
     }
+    if (!keyPacket.isDecrypted) {
+      throw StateError('Private key must be decrypted before encrypting');
+    }
     return PrivateKey(
       await keyPacket.encrypt(
         passphrase,
