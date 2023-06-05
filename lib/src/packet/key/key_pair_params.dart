@@ -225,9 +225,13 @@ class KeyPairParams {
   }
 
   static KeyPairParams _generateCurve25519KeyPair() {
-    final privateKey = nacl.PrivateKey.fromSeed(
-      Helper.secureRandom().nextBytes(TweetNaCl.seedSize),
+    final secretKey = Helper.secureRandom().nextBytes(TweetNaCl.secretKeyLength);
+    secretKey[0] = (secretKey[0] & 127) | 64;
+    secretKey[TweetNaCl.secretKeyLength - 1] &= 248;
+    final privateKey = nacl.PrivateKey(
+      Uint8List.fromList(secretKey.reversed.toList()),
     );
+
     return KeyPairParams(
       ECDHPublicParams(
         CurveInfo.curve25519.asn1Oid,
