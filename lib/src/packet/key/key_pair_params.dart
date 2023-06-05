@@ -225,7 +225,8 @@ class KeyPairParams {
   }
 
   static KeyPairParams _generateCurve25519KeyPair() {
-    final secretKey = Helper.secureRandom().nextBytes(TweetNaCl.secretKeyLength);
+    final secretKey =
+        Helper.secureRandom().nextBytes(TweetNaCl.secretKeyLength);
     secretKey[0] = (secretKey[0] & 127) | 64;
     secretKey[TweetNaCl.secretKeyLength - 1] &= 248;
     final privateKey = nacl.PrivateKey(

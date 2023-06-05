@@ -103,7 +103,8 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
 
   /// Computes and set the fingerprint of the key
   void _calculateFingerprintAndKeyID() {
-    _fingerprint = Uint8List.fromList(Helper.hashDigest(writeForSign(), HashAlgorithm.sha1));
+    _fingerprint = Uint8List.fromList(
+        Helper.hashDigest(writeForSign(), HashAlgorithm.sha1));
     _keyID = KeyID(_fingerprint.sublist(12, 20));
   }
 
