@@ -36,3 +36,6 @@
 
 ## 1.1.4-1 (2023-06-02)
 - Change homepage url
+
+## 1.1.4-2 (2023-06-05)
+- Fix lower 3 bits of the secret key are not cleared of curve25519 key generation
