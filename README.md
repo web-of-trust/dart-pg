@@ -14,10 +14,10 @@ parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-r
   [EdDSA](https://en.wikipedia.org/wiki/EdDSA)
   and [ECDH](https://en.wikipedia.org/wiki/Elliptic-curve_Diffie%E2%80%93Hellman).
 * Support symmetric ciphers: 3DES, IDEA (for backward compatibility), CAST5, Blowfish, Twofish,
-  [AES-128, AES-192, AES-256](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard),
-  [Camellia-128, Camellia-192, Camellia-256](https://en.wikipedia.org/wiki/Camellia_(cipher)).
+  [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard),
+  [Camellia](https://en.wikipedia.org/wiki/Camellia_(cipher)).
 * Support hash algorithms: MD5, SHA-1, RIPEMD-160, SHA-256, SHA-384, SHA-512, SHA-224.
-* Support compression algorithms: Uncompressed, ZIP, ZLIB.
+* Support compression algorithms: ZIP, ZLIB.
 * Support [ECC](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) curves:
   [secP256k1, secP384r1, secP521r1](https://www.rfc-editor.org/rfc/rfc6090),
   [brainpoolP256r1, brainpoolP384r1, brainpoolP512r1](https://www.rfc-editor.org/rfc/rfc5639),
