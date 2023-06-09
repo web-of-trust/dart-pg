@@ -34,8 +34,6 @@
 - Remove cryptor dependency
 - Fix old format packet reading
 
-## 1.1.4-1 (2023-06-02)
+## 1.1.5 (2023-06-09)
 - Change homepage url
-
-## 1.1.4-2 (2023-06-05)
 - Fix lower 3 bits of the secret key are not cleared of curve25519 key generation
