@@ -64,12 +64,38 @@ class Helper {
       ),
     );
 
+  static pc.SecureRandom _secureWithSeed(final Uint8List seed) {
+    if (seed.isNotEmpty) {
+      return pc.SecureRandom('Fortuna')
+        ..seed(
+          pc.KeyParameter(
+              seed
+          ),
+        );
+    } else {
+      return pc.SecureRandom('Fortuna')
+        ..seed(
+          pc.KeyParameter(
+            Uint8List.fromList(
+              List.generate(
+                32,
+                ((_) => _random.nextInt(0xffffffff)),
+              ),
+            ),
+          ),
+        );
+    }
+  }
+
   static BigInt readMPI(Uint8List bytes) {
     final bitLength = bytes.sublist(0, 2).toUint16();
     return bytes.sublist(2, ((bitLength + 7) >> 3) + 2).toBigIntWithSign(1);
   }
 
   static pc.SecureRandom secureRandom() => _secureRandom;
+  static pc.SecureRandom secureWithSeed(final Uint8List seed) {
+    return _secureWithSeed(seed);
+  }
 
   static Uint8List generatePrefix([
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,

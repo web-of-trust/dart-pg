@@ -48,6 +48,7 @@ class OpenPGP {
     final int keyExpirationTime = 0,
     final String? subkeyPassphrase,
     final DateTime? date,
+    required Uint8List seed
   }) async =>
       PrivateKey.generate(
         userIDs,
@@ -59,6 +60,7 @@ class OpenPGP {
         keyExpirationTime: keyExpirationTime,
         subkeyPassphrase: subkeyPassphrase,
         date: date,
+        seed: seed
       );
 
   /// Read an armored & unlock OpenPGP private key with the given passphrase.

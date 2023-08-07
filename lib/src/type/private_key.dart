@@ -24,6 +24,7 @@ import '../packet/signature_packet.dart';
 import '../packet/user_id.dart';
 import 'key.dart';
 import 'subkey.dart';
+import 'dart:typed_data';
 
 /// Class that represents an OpenPGP Private Key
 class PrivateKey extends Key {
@@ -72,6 +73,7 @@ class PrivateKey extends Key {
     final int keyExpirationTime = 0,
     final String? subkeyPassphrase,
     final DateTime? date,
+    required Uint8List seed,
   }) async {
     if (userIDs.isEmpty || passphrase.isEmpty) {
       throw ArgumentError(
@@ -106,6 +108,7 @@ class PrivateKey extends Key {
       dhKeySize: dhKeySize,
       curve: (type == KeyGenerationType.eddsa) ? CurveInfo.ed25519 : curve,
       date: date,
+      seed: seed
     ).then((secretKey) => secretKey.encrypt(passphrase));
     final secretSubkey = await SecretSubkeyPacket.generate(
       subkeyAlgorithm,
@@ -113,6 +116,7 @@ class PrivateKey extends Key {
       dhKeySize: dhKeySize,
       curve: (type == KeyGenerationType.eddsa) ? CurveInfo.curve25519 : curve,
       date: date,
+      seed: seed
     ).then(
       (secretSubkey) => secretSubkey.encrypt(subkeyPassphrase ?? passphrase),
     );
@@ -358,6 +362,7 @@ class PrivateKey extends Key {
     final int keyExpirationTime = 0,
     final bool subkeySign = false,
     final DateTime? date,
+    required Uint8List seed,
   }) async {
     if (passphrase.isEmpty) {
       throw ArgumentError('passphrase are required for key generation');
@@ -368,6 +373,7 @@ class PrivateKey extends Key {
       dhKeySize: dhKeySize,
       curve: curve,
       date: date,
+      seed: seed
     ).then((secretSubkey) => secretSubkey.encrypt(passphrase));
 
     return PrivateKey.fromPacketList(PacketList([
