@@ -55,11 +55,11 @@ enum SymmetricAlgorithm {
     switch (this) {
       case plaintext:
         return 0;
+      case blowfish:
       case cast5:
       case idea:
       case tripledes:
         return 8;
-      case blowfish:
       case aes128:
       case aes192:
       case aes256:
