@@ -64,7 +64,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
       ...Helper.hashDigest(toHash, HashAlgorithm.sha1),
     ]);
 
-    final cipher = BufferedCipher(symmetric.cipherEngine)
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         true,
         ParametersWithIV(
@@ -103,7 +103,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
   }) async {
-    final cipher = BufferedCipher(symmetric.cipherEngine)
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         false,
         ParametersWithIV(

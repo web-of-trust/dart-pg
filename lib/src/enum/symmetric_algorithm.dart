@@ -71,7 +71,7 @@ enum SymmetricAlgorithm {
     }
   }
 
-  BlockCipher get cipherEngine {
+  BlockCipher get cfbCipherEngine {
     switch (this) {
       case aes128:
       case aes192:
@@ -91,6 +91,31 @@ enum SymmetricAlgorithm {
         return BlockCipher('DESede/CFB-${blockSize * 8}');
       case twofish:
         return CFBBlockCipher(TwofishEngine(), blockSize);
+      default:
+        throw UnsupportedError('Unsupported symmetric algorithm encountered');
+    }
+  }
+
+  BlockCipher get cipherEngine {
+    switch (this) {
+      case aes128:
+      case aes192:
+      case aes256:
+        return AESEngine();
+      case blowfish:
+        return BlowfishEngine();
+      case camellia128:
+      case camellia192:
+      case camellia256:
+        return CamelliaEngine();
+      case cast5:
+        return CAST5Engine();
+      case idea:
+        return IDEAEngine();
+      case tripledes:
+        return DESedeEngine();
+      case twofish:
+        return TwofishEngine();
       default:
         throw UnsupportedError('Unsupported symmetric algorithm encountered');
     }

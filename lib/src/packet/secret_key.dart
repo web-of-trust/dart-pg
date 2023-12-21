@@ -208,7 +208,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final iv = random.nextBytes(symmetric.blockSize);
 
       final key = await s2k.produceKey(passphrase, symmetric.keySizeInByte);
-      final cipher = BufferedCipher(symmetric.cipherEngine)
+      final cipher = BufferedCipher(symmetric.cfbCipherEngine)
         ..init(
           true,
           ParametersWithIV(KeyParameter(key), iv),
@@ -241,7 +241,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         final key =
             await s2k?.produceKey(passphrase, symmetric.keySizeInByte) ??
                 Uint8List(symmetric.keySizeInByte);
-        final cipher = BufferedCipher(symmetric.cipherEngine)
+        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
           ..init(
             false,
             ParametersWithIV(

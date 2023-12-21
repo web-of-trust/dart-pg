@@ -38,7 +38,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
     final PacketList packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
   }) async {
-    final cipher = BufferedCipher(symmetric.cipherEngine)
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         true,
         ParametersWithIV(
@@ -91,7 +91,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
       throw StateError('Message is not authenticated.');
     }
     final blockSize = symmetric.blockSize;
-    final cipher = BufferedCipher(symmetric.cipherEngine)
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         false,
         ParametersWithIV(

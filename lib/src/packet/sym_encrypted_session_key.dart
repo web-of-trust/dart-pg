@@ -93,7 +93,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
       symmetric.keySizeInByte,
     );
     final cipher = BufferedCipher(
-      symmetric.cipherEngine,
+      symmetric.cfbCipherEngine,
     )..init(
         true,
         ParametersWithIV(
@@ -122,7 +122,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
       final SessionKey sessionKey;
       if (encrypted.isNotEmpty) {
         final cipher = BufferedCipher(
-          symmetric.cipherEngine,
+          symmetric.cfbCipherEngine,
         )..init(
             false,
             ParametersWithIV(
