@@ -240,6 +240,20 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
+  int processByte(
+    final int input,
+    final Uint8List output,
+    final int outOff,
+  ) {
+    _mainBlock[_mainBlockPos] = input;
+    if (++_mainBlockPos == _mainBlock.length) {
+      _processMainBlock(output, outOff);
+      return _blockSize;
+    }
+    return 0;
+  }
+
+  @override
   int processBytes(
     final Uint8List input,
     final int inOff,
@@ -275,37 +289,20 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
+  int getOutputSize(final int len) {
+    final totalData = len + _mainBlockPos;
+    if (_forEncryption) {
+      return totalData + _macSize;
+    }
+    return totalData < _macSize ? 0 : totalData - _macSize;
+  }
+
+  @override
   void processAADByte(final int input) {
     _hashBlock[_hashBlockPos] = input;
     if (++_hashBlockPos == _hashBlock.length) {
       _processHashBlock();
     }
-  }
-
-  @override
-  int processByte(
-    final int input,
-    final Uint8List output,
-    final int outOff,
-  ) {
-    _mainBlock[_mainBlockPos] = input;
-    if (++_mainBlockPos == _mainBlock.length) {
-      _processMainBlock(output, outOff);
-      return _blockSize;
-    }
-    return 0;
-  }
-
-  @override
-  void reset() {
-    _reset(true);
-  }
-
-  Uint8List process(final Uint8List data) {
-    final out = Uint8List(getOutputSize(data.length));
-    final len = processBytes(data, 0, data.length, out, 0);
-    final outLen = len + doFinal(out, len);
-    return Uint8List.view(out.buffer, 0, outLen);
   }
 
   @override
@@ -323,12 +320,15 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
-  int getOutputSize(final int len) {
-    final totalData = len + _mainBlockPos;
-    if (_forEncryption) {
-      return totalData + _macSize;
-    }
-    return totalData < _macSize ? 0 : totalData - _macSize;
+  void reset() {
+    _reset(true);
+  }
+
+  Uint8List process(final Uint8List data) {
+    final out = Uint8List(getOutputSize(data.length));
+    final len = processBytes(data, 0, data.length, out, 0);
+    final outLen = len + doFinal(out, len);
+    return Uint8List.view(out.buffer, 0, outLen);
   }
 
   void _reset(final bool clearMac) {
