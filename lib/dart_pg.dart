@@ -5,3 +5,4 @@
 library dart_pg;
 
 export 'src/openpgp.dart';
+export 'src/openpgp_sync.dart';
