@@ -91,24 +91,24 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  static Future<PublicKeyEncryptedSessionKeyPacket> encryptSessionKey(
+  static PublicKeyEncryptedSessionKeyPacket encryptSessionKey(
     final PublicKeyPacket publicKey,
     final SessionKey sessionKey,
-  ) async {
+  ) {
     final SessionKeyParams params;
     final keyParams = publicKey.publicParams;
     if (keyParams is RSAPublicParams) {
-      params = await RSASessionKeyParams.encryptSessionKey(
+      params = RSASessionKeyParams.encryptSessionKey(
         keyParams.publicKey,
         sessionKey,
       );
     } else if (keyParams is ElGamalPublicParams) {
-      params = await ElGamalSessionKeyParams.encryptSessionKey(
+      params = ElGamalSessionKeyParams.encryptSessionKey(
         keyParams.publicKey,
         sessionKey,
       );
     } else if (keyParams is ECDHPublicParams) {
-      params = await ECDHSessionKeyParams.encryptSessionKey(
+      params = ECDHSessionKeyParams.encryptSessionKey(
         keyParams,
         sessionKey,
         publicKey.fingerprint.hexToBytes(),
@@ -136,8 +136,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
     ]);
   }
 
-  Future<PublicKeyEncryptedSessionKeyPacket> decrypt(
-      final SecretKeyPacket key) async {
+  PublicKeyEncryptedSessionKeyPacket decrypt(final SecretKeyPacket key) {
     if (isDecrypted) {
       return this;
     } else {
@@ -152,10 +151,10 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
       final keyParams = sessionKeyParams;
       if (keyParams is RSASessionKeyParams) {
         final privateKey = (key.secretParams as RSASecretParams).privateKey;
-        sessionKey = await keyParams.decrypt(privateKey);
+        sessionKey = keyParams.decrypt(privateKey);
       } else if (keyParams is ElGamalSessionKeyParams) {
         final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
-        sessionKey = await keyParams.decrypt(
+        sessionKey = keyParams.decrypt(
           ElGamalPrivateKey(
             (key.secretParams as ElGamalSecretParams).exponent,
             publicKey.prime,
@@ -163,7 +162,7 @@ class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
           ),
         );
       } else if (keyParams is ECDHSessionKeyParams) {
-        sessionKey = await keyParams.decrypt(
+        sessionKey = keyParams.decrypt(
           key.secretParams as ECSecretParams,
           key.publicParams as ECDHPublicParams,
           key.fingerprint.hexToBytes(),

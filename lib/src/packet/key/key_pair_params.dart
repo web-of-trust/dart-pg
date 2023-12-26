@@ -31,12 +31,12 @@ class KeyPairParams {
 
   KeyPairParams(this.publicParams, this.secretParams);
 
-  static Future<KeyPairParams> generate(
+  static KeyPairParams generate(
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
-  }) async {
+  }) {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:

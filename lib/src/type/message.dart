@@ -124,10 +124,10 @@ class Message {
   }
 
   /// Sign the message (the literal data packet of the message)
-  Future<Message> sign(
+  Message sign(
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
-  }) async {
+  }) {
     if (signingKeys.isEmpty) {
       throw ArgumentError('No signing keys provided');
     }
@@ -149,9 +149,9 @@ class Message {
 
     final keyList = signingKeys.toList(growable: false);
     return Message(PacketList([
-      ...await Future.wait(keyList.map((key) async {
+      ...keyList.map((key) {
         final index = keyList.indexOf(key);
-        final keyPacket = await key.getSigningKeyPacket(date: date);
+        final keyPacket = key.getSigningKeyPacket(date: date);
         return OnePassSignaturePacket(
           signatureType,
           keyPacket.preferredHash,
@@ -159,23 +159,23 @@ class Message {
           keyPacket.keyID.bytes,
           (index == keyList.length - 1) ? 1 : 0,
         );
-      })),
+      }),
       literalData,
-      ...await Future.wait(keyList.map(
-        (key) async => SignaturePacket.createLiteralData(
-          await key.getSigningKeyPacket(),
+      ...keyList.map(
+        (key) => SignaturePacket.createLiteralData(
+          key.getSigningKeyPacket(),
           literalData,
           date: date,
         ),
-      )),
+      ),
     ]));
   }
 
   /// Create a detached signature for the message (the literal data packet of the message)
-  Future<Signature> signDetached(
+  Signature signDetached(
     final List<PrivateKey> signingKeys, {
     final DateTime? date,
-  }) async {
+  }) {
     if (signingKeys.isEmpty) {
       throw ArgumentError('No signing keys provided');
     }
@@ -185,23 +185,23 @@ class Message {
     }
     return Signature(
       PacketList(
-        await Future.wait(signingKeys.map(
-          (key) async => SignaturePacket.createLiteralData(
-            await key.getSigningKeyPacket(),
+        signingKeys.map(
+          (key) => SignaturePacket.createLiteralData(
+            key.getSigningKeyPacket(),
             literalDataPackets.elementAt(0),
             date: date,
           ),
-        )),
+        ),
       ),
     );
   }
 
   /// Verify message signatures
   /// Return new message with verifications
-  Future<Message> verify(
+  Message verify(
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) async {
+  }) {
     final packets = unwrapCompressed().packetList;
     final literalDataPackets = packets.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
@@ -210,7 +210,7 @@ class Message {
 
     return Message(
       packetList,
-      await Verification.createVerifications(
+      Verification.createVerifications(
         literalDataPackets.elementAt(0),
         packets.whereType<SignaturePacket>(),
         verificationKeys,
@@ -221,11 +221,11 @@ class Message {
 
   /// Verify detached message signature
   /// Return new message with verifications
-  Future<Message> verifySignature(
+  Message verifySignature(
     final Signature signature,
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) async {
+  }) {
     final literalDataPackets =
         unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
@@ -233,7 +233,7 @@ class Message {
     }
     return Message(
       packetList,
-      await Verification.createVerifications(
+      Verification.createVerifications(
         literalDataPackets.elementAt(0),
         signature.packets,
         verificationKeys,
@@ -244,35 +244,31 @@ class Message {
 
   /// Encrypt the message either with public keys, passwords, or both at once.
   /// Return new message with encrypted content.
-  Future<Message> encrypt({
+  Message encrypt({
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
     final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
     final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
-  }) async {
+  }) {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No encryption keys or passwords provided');
     }
     final sessionKey = SessionKey.produceKey(sessionKeySymmetric);
 
-    final pkeskPackets = await Future.wait(
-      encryptionKeys.map(
-        (key) async => PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
-          await key.getEncryptionKeyPacket(),
-          sessionKey,
-        ),
+    final pkeskPackets = encryptionKeys.map(
+      (key) => PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+        key.getEncryptionKeyPacket(),
+        sessionKey,
       ),
     );
-    final skeskPackets = await Future.wait(
-      passwords.map(
-        (password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
-          password,
-          sessionKey,
-          symmetric: encryptionKeySymmetric,
-        ),
+    final skeskPackets = passwords.map(
+      (password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
+        password,
+        sessionKey,
+        symmetric: encryptionKeySymmetric,
       ),
     );
-    final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+    final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
       sessionKey.key,
       packetList,
       symmetric: sessionKeySymmetric,
@@ -287,11 +283,11 @@ class Message {
 
   /// Decrypt the message. One of `decryptionKeys` or `passwords` must be specified.
   /// Return new message with decrypted content.
-  Future<Message> decrypt({
+  Message decrypt({
     final Iterable<PrivateKey> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
     final bool allowUnauthenticatedMessages = false,
-  }) async {
+  }) {
     if (decryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No decryption keys or passwords provided');
     }
@@ -304,7 +300,7 @@ class Message {
       throw StateError('No encrypted data found');
     }
 
-    final sessionKeys = await _decryptSessionKeys(
+    final sessionKeys = _decryptSessionKeys(
       decryptionKeys: decryptionKeys,
       passwords: passwords,
     );
@@ -312,9 +308,9 @@ class Message {
     if (encryptedPacket is SymEncryptedIntegrityProtectedDataPacket) {
       for (var sessionKey in sessionKeys) {
         try {
-          final packets = await encryptedPacket
+          final packets = encryptedPacket
               .decrypt(sessionKey.key, symmetric: sessionKey.symmetric)
-              .then((packet) => packet.packets);
+              .packets;
           if (packets != null) {
             return Message(packets);
           }
@@ -325,13 +321,13 @@ class Message {
     } else if (encryptedPacket is SymEncryptedDataPacket) {
       for (var sessionKey in sessionKeys) {
         try {
-          final packets = await encryptedPacket
+          final packets = encryptedPacket
               .decrypt(
                 sessionKey.key,
                 symmetric: sessionKey.symmetric,
                 allowUnauthenticatedMessages: allowUnauthenticatedMessages,
               )
-              .then((packet) => packet.packets);
+              .packets;
           if (packets != null) {
             return Message(packets);
           }
@@ -345,9 +341,9 @@ class Message {
 
   /// Compress the message (the literal and -if signed- signature data packets of the message)
   /// Return new message with compressed content.
-  Future<Message> compress([
+  Message compress([
     final CompressionAlgorithm algorithm = CompressionAlgorithm.uncompressed,
-  ]) async {
+  ]) {
     if (algorithm != CompressionAlgorithm.uncompressed) {
       return Message(PacketList([
         CompressedDataPacket.fromPacketList(
@@ -368,24 +364,24 @@ class Message {
     return this;
   }
 
-  Future<List<SessionKey>> _decryptSessionKeys({
+  List<SessionKey> _decryptSessionKeys({
     final Iterable<PrivateKey> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
-  }) async {
+  }) {
     final sessionKeys = <SessionKey>[];
     if (decryptionKeys.isNotEmpty) {
       final pkeskPackets =
           packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
       for (final pkesk in pkeskPackets) {
         for (final key in decryptionKeys) {
-          final keyPacket = await key.getDecryptionKeyPacket();
+          final keyPacket = key.getDecryptionKeyPacket();
           if (keyPacket.keyID == pkesk.publicKeyID) {
             try {
-              final sessionKey = await pkesk
+              final sessionKey = pkesk
                   .decrypt(
-                    await key.getDecryptionKeyPacket(),
+                    key.getDecryptionKeyPacket(),
                   )
-                  .then((pkesk) => pkesk.sessionKey);
+                  .sessionKey;
               if (sessionKey != null) {
                 sessionKeys.add(sessionKey);
               }
@@ -400,9 +396,7 @@ class Message {
       for (final skesk in skeskPackets) {
         for (final password in passwords) {
           try {
-            final sessionKey = await skesk.decrypt(password).then(
-                  (skesk) => skesk.sessionKey,
-                );
+            final sessionKey = skesk.decrypt(password).sessionKey;
             if (sessionKey != null) {
               sessionKeys.add(sessionKey);
             }

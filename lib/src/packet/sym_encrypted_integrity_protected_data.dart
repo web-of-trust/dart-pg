@@ -48,11 +48,11 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     return SymEncryptedIntegrityProtectedDataPacket(bytes.sublist(1));
   }
 
-  static Future<SymEncryptedIntegrityProtectedDataPacket> encryptPackets(
+  static SymEncryptedIntegrityProtectedDataPacket encryptPackets(
     final Uint8List key,
     final PacketList packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
-  }) async {
+  }) {
     final toHash = Uint8List.fromList([
       ...Helper.generatePrefix(symmetric),
       ...packets.encode(),
@@ -84,10 +84,10 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   }
 
   /// Encrypt the payload in the packet.
-  Future<SymEncryptedIntegrityProtectedDataPacket> encrypt(
+  SymEncryptedIntegrityProtectedDataPacket encrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
-  }) async {
+  }) {
     if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         key,
@@ -99,10 +99,10 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   }
 
   /// Decrypts the encrypted data contained in the packet.
-  Future<SymEncryptedIntegrityProtectedDataPacket> decrypt(
+  SymEncryptedIntegrityProtectedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
-  }) async {
+  })  {
     final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         false,

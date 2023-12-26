@@ -31,11 +31,11 @@ class SignedMessage extends CleartextMessage {
   }
 
   /// Sign a cleartext.
-  static Future<SignedMessage> signCleartext(
+  static SignedMessage signCleartext(
     final String text,
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
-  }) async {
+  }) {
     if (signingKeys.isEmpty) {
       throw ArgumentError('No signing keys provided');
     }
@@ -43,14 +43,14 @@ class SignedMessage extends CleartextMessage {
       text,
       Signature(
         PacketList(
-          await Future.wait(signingKeys.map(
-            (key) async => SignaturePacket.createLiteralData(
-              await key.getSigningKeyPacket(),
+          signingKeys.map(
+            (key) => SignaturePacket.createLiteralData(
+              key.getSigningKeyPacket(),
               LiteralDataPacket.fromText(text),
-              preferredHash: await key.getPreferredHash(date: date),
+              preferredHash: key.getPreferredHash(date: date),
               date: date,
             ),
-          )),
+          ),
         ),
       ),
     );
@@ -73,14 +73,14 @@ class SignedMessage extends CleartextMessage {
 
   /// Verify signatures of cleartext signed message
   /// Return signed message with verifications
-  Future<SignedMessage> verify(
+  SignedMessage verify(
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) async {
+  }) {
     return SignedMessage(
       text,
       signature,
-      await Verification.createVerifications(
+      Verification.createVerifications(
         LiteralDataPacket.fromText(text),
         signature.packets,
         verificationKeys,

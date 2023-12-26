@@ -212,7 +212,7 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  static Future<SignaturePacket> createSignature(
+  static SignaturePacket createSignature(
     final SecretKeyPacket signKey,
     final SignatureType signatureType,
     final Uint8List dataToSign, {
@@ -220,7 +220,7 @@ class SignaturePacket extends ContainedPacket {
     final List<SignatureSubpacket> subpackets = const [],
     final int keyExpirationTime = 0,
     final DateTime? date,
-  }) async {
+  }) {
     final version = signKey.version;
     final keyAlgorithm = signKey.algorithm;
     final hashAlgorithm = preferredHash ?? signKey.preferredHash;
@@ -257,19 +257,19 @@ class SignaturePacket extends ContainedPacket {
       keyAlgorithm,
       hashAlgorithm,
       Helper.hashDigest(message, hashAlgorithm).sublist(0, 2),
-      await _signMessage(signKey, hashAlgorithm, message),
+      _signMessage(signKey, hashAlgorithm, message),
       hashedSubpackets: hashedSubpackets,
     );
   }
 
-  static Future<SignaturePacket> createSelfCertificate(
+  static SignaturePacket createSelfCertificate(
     final SecretKeyPacket signKey, {
     final HashAlgorithm? preferredHash,
     final UserIDPacket? userID,
     final UserAttributePacket? userAttribute,
     final int keyExpirationTime = 0,
     final DateTime? date,
-  }) async {
+  }) {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
       throw ArgumentError(
@@ -309,14 +309,14 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  static Future<SignaturePacket> createCertifySignature(
+  static SignaturePacket createCertifySignature(
     final SecretKeyPacket signKey, {
     final HashAlgorithm? preferredHash,
     final UserIDPacket? userID,
     final UserAttributePacket? userAttribute,
     final int keyExpirationTime = 0,
     final DateTime? date,
-  }) async {
+  }) {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
       throw ArgumentError(
@@ -339,13 +339,13 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  static Future<SignaturePacket> createKeyBinding(
+  static SignaturePacket createKeyBinding(
     final SecretKeyPacket signKey,
     final KeyPacket bindKey, {
     final HashAlgorithm? preferredHash,
     final int keyExpirationTime = 0,
     final DateTime? date,
-  }) async {
+  }) {
     return SignaturePacket.createSignature(
       signKey,
       SignatureType.keyBinding,
@@ -359,19 +359,19 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  static Future<SignaturePacket> createSubkeyBinding(
+  static SignaturePacket createSubkeyBinding(
     final SecretKeyPacket signKey,
     final SecretSubkeyPacket subkey, {
     final HashAlgorithm? preferredHash,
     final int keyExpirationTime = 0,
     final bool subkeySign = false,
     final DateTime? date,
-  }) async {
+  }) {
     final subpackets = <SignatureSubpacket>[];
     if (subkeySign) {
       subpackets.add(KeyFlags.fromFlags(KeyFlag.signData.value));
       subpackets.add(EmbeddedSignature.fromSignature(
-        await SignaturePacket.createSignature(
+        SignaturePacket.createSignature(
           subkey,
           SignatureType.keyBinding,
           Uint8List.fromList([
@@ -403,13 +403,13 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  static Future<SignaturePacket> createKeyRevocation(
+  static SignaturePacket createKeyRevocation(
     final SecretKeyPacket signKey, {
     final HashAlgorithm? preferredHash,
     final RevocationReasonTag reason = RevocationReasonTag.noReason,
     final String description = '',
     final DateTime? date,
-  }) async {
+  }) {
     return SignaturePacket.createSignature(
       signKey,
       SignatureType.keyRevocation,
@@ -422,14 +422,14 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  static Future<SignaturePacket> createSubkeyRevocation(
+  static SignaturePacket createSubkeyRevocation(
     final SecretKeyPacket signKey,
     final SubkeyPacket subKey, {
     final HashAlgorithm? preferredHash,
     final RevocationReasonTag reason = RevocationReasonTag.noReason,
     final String description = '',
     final DateTime? date,
-  }) async {
+  }) {
     return SignaturePacket.createSignature(
       signKey,
       SignatureType.subkeyRevocation,
@@ -443,12 +443,12 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  static Future<SignaturePacket> createLiteralData(
+  static SignaturePacket createLiteralData(
     final SecretKeyPacket signKey,
     final LiteralDataPacket literalData, {
     final HashAlgorithm? preferredHash,
     final DateTime? date,
-  }) async {
+  }) {
     final SignatureType signatureType;
     switch (literalData.format) {
       case LiteralFormat.text:
@@ -476,11 +476,11 @@ class SignaturePacket extends ContainedPacket {
       ]);
 
   /// Verifies the signature packet.
-  Future<bool> verify(
+  bool verify(
     final KeyPacket verifyKey,
     final Uint8List dataToVerify, {
     final DateTime? date,
-  }) async {
+  }) {
     if (issuerKeyID.id != verifyKey.keyID.toString()) {
       throw ArgumentError('Signature was not issued by the given public key.');
     }
@@ -521,12 +521,12 @@ class SignaturePacket extends ContainedPacket {
     }
   }
 
-  Future<bool> verifyUserCertification(
+  bool verifyUserCertification(
     final KeyPacket verifyKey, {
     final UserIDPacket? userID,
     final UserAttributePacket? userAttribute,
     final DateTime? date,
-  }) async {
+  }) {
     final bytes = userID?.writeForSign() ?? userAttribute?.writeForSign();
     if (bytes == null) {
       throw ArgumentError(
@@ -543,11 +543,11 @@ class SignaturePacket extends ContainedPacket {
     );
   }
 
-  Future<bool> verifyLiteralData(
+  bool verifyLiteralData(
     final KeyPacket verifyKey,
     final LiteralDataPacket literalData, {
     final DateTime? date,
-  }) async {
+  }) {
     return verify(
       verifyKey,
       literalData.writeForSign(),
@@ -568,29 +568,29 @@ class SignaturePacket extends ContainedPacket {
   }
 
   /// Signs provided data. This needs to be done prior to serialization.
-  static Future<Uint8List> _signMessage(
+  static Uint8List _signMessage(
     final SecretKeyPacket key,
     final HashAlgorithm hash,
     final Uint8List message,
-  ) async {
+  ) {
     switch (key.algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaSign:
-        return await (key.secretParams as RSASecretParams).sign(message, hash);
+        return (key.secretParams as RSASecretParams).sign(message, hash);
       case KeyAlgorithm.dsa:
-        return await (key.secretParams as DSASecretParams).sign(
+        return (key.secretParams as DSASecretParams).sign(
           key.publicParams as DSAPublicParams,
           message,
           hash,
         );
       case KeyAlgorithm.ecdsa:
-        return await (key.secretParams as ECSecretParams).sign(
+        return (key.secretParams as ECSecretParams).sign(
           key.publicParams as ECPublicParams,
           message,
           hash,
         );
       case KeyAlgorithm.eddsa:
-        return await (key.secretParams as EdSecretParams).sign(message, hash);
+        return (key.secretParams as EdSecretParams).sign(message, hash);
       default:
         throw UnsupportedError(
           'Unsupported public key algorithm for signing.',

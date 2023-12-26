@@ -19,8 +19,8 @@ void main() {
     final text = faker.randomGenerator.string(1000);
 
     test('atached test', () async {
-      final signedMessage = await SignedMessage.signCleartext(text, [signingKey]);
-      final verifiedMessage = await signedMessage.verify([verificationKey]);
+      final signedMessage = SignedMessage.signCleartext(text, [signingKey]);
+      final verifiedMessage = signedMessage.verify([verificationKey]);
       final signature = signedMessage.signature;
 
       expect(signedMessage.verifications.isEmpty, isTrue);
@@ -39,9 +39,10 @@ void main() {
 
     test('detached test', () async {
       final signature =
-          await SignedMessage.signCleartext(text, [signingKey]).then((signedMessage) => signedMessage.signature);
+          SignedMessage.signCleartext(text, [signingKey]).signature;
       final cleartextMessage = CleartextMessage(text);
-      final verifiedMessage = await cleartextMessage.verifySignature(signature, [verificationKey]);
+      final verifiedMessage =
+          cleartextMessage.verifySignature(signature, [verificationKey]);
 
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -62,11 +63,11 @@ void main() {
     final text = faker.randomGenerator.string(1000);
 
     test('atached test', () async {
-      final signedMessage = await Message.createTextMessage(text).sign([signingKey]);
+      final signedMessage = Message.createTextMessage(text).sign([signingKey]);
       expect(signedMessage.signingKeyIDs.elementAt(0).id, signingKey.keyID.id);
       expect(signedMessage.verifications.isEmpty, isTrue);
 
-      final verifiedMessage = await signedMessage.verify([verificationKey]);
+      final verifiedMessage = signedMessage.verify([verificationKey]);
       final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -82,8 +83,9 @@ void main() {
 
     test('detached test', () async {
       final message = Message.createTextMessage(text);
-      final signature = await message.signDetached([signingKey]);
-      final verifiedMessage = await message.verifySignature(signature, [verificationKey]);
+      final signature = message.signDetached([signingKey]);
+      final verifiedMessage =
+          message.verifySignature(signature, [verificationKey]);
 
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
@@ -102,9 +104,14 @@ void main() {
     final text = faker.randomGenerator.string(1000);
 
     test('zip test', () async {
-      final compressedMessage = await Message.createTextMessage(text).compress(CompressionAlgorithm.zip);
+      final compressedMessage =
+          Message.createTextMessage(text).compress(CompressionAlgorithm.zip);
       expect(compressedMessage.packetList.length, 1);
-      expect(compressedMessage.packetList.whereType<CompressedDataPacket>().elementAt(0).algorithm,
+      expect(
+          compressedMessage.packetList
+              .whereType<CompressedDataPacket>()
+              .elementAt(0)
+              .algorithm,
           CompressionAlgorithm.zip);
 
       final message = compressedMessage.unwrapCompressed();
@@ -114,9 +121,14 @@ void main() {
     });
 
     test('zlib test', () async {
-      final compressedMessage = await Message.createTextMessage(text).compress(CompressionAlgorithm.zlib);
+      final compressedMessage =
+          Message.createTextMessage(text).compress(CompressionAlgorithm.zlib);
       expect(compressedMessage.packetList.length, 1);
-      expect(compressedMessage.packetList.whereType<CompressedDataPacket>().elementAt(0).algorithm,
+      expect(
+          compressedMessage.packetList
+              .whereType<CompressedDataPacket>()
+              .elementAt(0)
+              .algorithm,
           CompressionAlgorithm.zlib);
 
       final message = compressedMessage.unwrapCompressed();
@@ -127,7 +139,8 @@ void main() {
 
     test('bzip2 test', () {
       expect(
-        () => Message.createTextMessage(text).compress(CompressionAlgorithm.bzip2),
+        () => Message.createTextMessage(text)
+            .compress(CompressionAlgorithm.bzip2),
         throwsUnsupportedError,
       );
     });
@@ -147,37 +160,49 @@ void main() {
     final text = faker.randomGenerator.string(1000);
     final createTextMessage = Message.createTextMessage(text);
     final signedMessage = createTextMessage.sign([signingKey]);
-    final encryptedMessage = signedMessage.then(
-      (signedMessage) => signedMessage.encrypt(encryptionKeys: encryptionKeys, passwords: [password]),
-    );
+    final encryptedMessage = signedMessage
+        .encrypt(encryptionKeys: encryptionKeys, passwords: [password]);
 
     test('encrypted test', () {
-      encryptedMessage.then((message) {
-        expect(message.literalData, isNull);
-        expect(message.packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().length, encryptionKeys.length);
-        expect(message.packetList.whereType<SymEncryptedSessionKeyPacket>().length, 1);
-        expect(message.packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>(), isNotEmpty);
-      });
+      final message = encryptedMessage;
+      expect(message.literalData, isNull);
+      expect(
+          message.packetList
+              .whereType<PublicKeyEncryptedSessionKeyPacket>()
+              .length,
+          encryptionKeys.length);
+      expect(
+          message.packetList.whereType<SymEncryptedSessionKeyPacket>().length,
+          1);
+      expect(
+          message.packetList
+              .whereType<SymEncryptedIntegrityProtectedDataPacket>(),
+          isNotEmpty);
     });
 
     test('password only test', () async {
-      final encryptedMessage = await createTextMessage.encrypt(passwords: [password]);
+      final encryptedMessage = createTextMessage.encrypt(passwords: [password]);
       expect(encryptedMessage.literalData, isNull);
-      expect(encryptedMessage.packetList.whereType<SymEncryptedSessionKeyPacket>(), isNotEmpty);
-      expect(encryptedMessage.packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>(), isNotEmpty);
+      expect(
+          encryptedMessage.packetList.whereType<SymEncryptedSessionKeyPacket>(),
+          isNotEmpty);
+      expect(
+          encryptedMessage.packetList
+              .whereType<SymEncryptedIntegrityProtectedDataPacket>(),
+          isNotEmpty);
 
-      final decryptedMessage = await encryptedMessage.decrypt(passwords: [password]);
+      final decryptedMessage = encryptedMessage.decrypt(passwords: [password]);
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
     });
 
     test('password decrypt test', () async {
-      final decryptedMessage = await encryptedMessage.then((message) => message.decrypt(passwords: [password]));
+      final decryptedMessage = encryptedMessage.decrypt(passwords: [password]);
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
+      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);
@@ -191,14 +216,15 @@ void main() {
     });
 
     test('rsa decrypt test', () async {
-      final decryptionKey = await PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
+      final decryptionKey =
+          PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
       final decryptedMessage =
-          await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
+          encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
+      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);
@@ -212,14 +238,15 @@ void main() {
     });
 
     test('elgamal decrypt test', () async {
-      final decryptionKey = await PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
+      final decryptionKey =
+          PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
       final decryptedMessage =
-          await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
+          encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
+      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);
@@ -233,14 +260,15 @@ void main() {
     });
 
     test('ecc decrypt test', () async {
-      final decryptionKey = await PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
+      final decryptionKey =
+          PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
       final decryptedMessage =
-          await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
+          encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
+      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);
@@ -254,14 +282,15 @@ void main() {
     });
 
     test('curve25519 decrypt test', () async {
-      final decryptionKey = await PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
+      final decryptionKey =
+          PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
       final decryptedMessage =
-          await encryptedMessage.then((message) => message.decrypt(decryptionKeys: [decryptionKey]));
+          encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
       expect(decryptedMessage.literalData, isNotNull);
       expect(decryptedMessage.literalData!.text, text);
 
-      final verifiedMessage = await decryptedMessage.verify([verificationKey]);
-      final signaturePackets = await signedMessage.then((signedMessage) => signedMessage.signaturePackets);
+      final verifiedMessage = decryptedMessage.verify([verificationKey]);
+      final signaturePackets = signedMessage.signaturePackets;
       expect(verifiedMessage.verifications.isNotEmpty, isTrue);
       for (final verification in verifiedMessage.verifications) {
         expect(verification.keyID, verificationKey.keyID.id);

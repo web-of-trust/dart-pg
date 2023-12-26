@@ -10,7 +10,6 @@ import 'enum/dh_key_size.dart';
 import 'enum/key_generation_type.dart';
 import 'enum/rsa_key_size.dart';
 import 'enum/symmetric_algorithm.dart';
-
 import 'type/cleartext_message.dart';
 import 'type/message.dart';
 import 'type/private_key.dart';
@@ -24,7 +23,6 @@ export 'enum/dh_key_size.dart';
 export 'enum/key_generation_type.dart';
 export 'enum/rsa_key_size.dart';
 export 'enum/symmetric_algorithm.dart';
-
 export 'type/cleartext_message.dart';
 export 'type/message.dart';
 export 'type/private_key.dart';
@@ -102,7 +100,7 @@ class OpenPGP {
         cleartext,
         signingKeys,
         date: date,
-      ).then((signedMessage) => signedMessage.signature);
+      ).signature;
 
   /// Verify signatures of cleartext signed message
   /// Return signed message with verifications
@@ -177,25 +175,18 @@ class OpenPGP {
     final DateTime? date,
   }) async =>
       (signingKeys.isNotEmpty)
-          ? message
-              .sign(signingKeys, date: date)
-              .then(
-                (message) => message.compress(compression),
-              )
-              .then(
-                (message) => message.encrypt(
-                  encryptionKeys: encryptionKeys,
-                  passwords: passwords,
-                  sessionKeySymmetric: sessionKeySymmetric,
-                  encryptionKeySymmetric: encryptionKeySymmetric,
-                ),
-              )
-          : message.compress(compression).then((message) => message.encrypt(
+          ? message.sign(signingKeys, date: date).compress(compression).encrypt(
                 encryptionKeys: encryptionKeys,
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
                 encryptionKeySymmetric: encryptionKeySymmetric,
-              ));
+              )
+          : message.compress(compression).encrypt(
+                encryptionKeys: encryptionKeys,
+                passwords: passwords,
+                sessionKeySymmetric: sessionKeySymmetric,
+                encryptionKeySymmetric: encryptionKeySymmetric,
+              );
 
   /// Decrypt a message with the user's private key, or a password.
   /// One of `decryptionKeys` or `passwords` must be specified
@@ -215,7 +206,7 @@ class OpenPGP {
                 passwords: passwords,
                 allowUnauthenticatedMessages: allowUnauthenticatedMessages,
               )
-              .then((message) => message.verify(verificationKeys, date: date))
+              .verify(verificationKeys, date: date)
           : message.decrypt(
               decryptionKeys: decryptionKeys,
               passwords: passwords,

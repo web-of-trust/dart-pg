@@ -43,11 +43,11 @@ class RSAPublicParams implements VerificationParams {
       ]);
 
   @override
-  Future<bool> verify(
+  bool verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,
-  ) async {
+  ) {
     final signer = Signer('${hash.digestName}/RSA')
       ..init(
         false,

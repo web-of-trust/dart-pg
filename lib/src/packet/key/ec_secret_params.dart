@@ -31,11 +31,11 @@ class ECSecretParams extends KeyParams {
         ...d.toUnsignedBytes(),
       ]);
 
-  Future<Uint8List> sign(
+  Uint8List sign(
     final ECPublicParams publicParams,
     final Uint8List message,
     final HashAlgorithm hash,
-  ) async {
+  ) {
     final signer = Signer('${hash.digestName}/DET-ECDSA')
       ..init(
         true,

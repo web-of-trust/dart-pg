@@ -98,10 +98,10 @@ class S2K {
   }
 
   /// Produces a key using the specified passphrase and the defined hashAlgorithm
-  Future<Uint8List> produceKey(
+  Uint8List produceKey(
     final String passphrase,
     final int keyLen,
-  ) async {
+  ) {
     switch (type) {
       case S2kType.simple:
         return _hash(passphrase.stringToBytes(), keyLen);

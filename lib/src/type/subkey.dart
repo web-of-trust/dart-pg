@@ -77,15 +77,15 @@ class Subkey {
     return keyPacket.isEncryptionKey;
   }
 
-  Future<bool> verify({
+  bool verify({
     final DateTime? date,
-  }) async {
-    if (await isRevoked(date: date)) {
+  }) {
+    if (isRevoked(date: date)) {
       return false;
     }
     if (mainKey != null) {
       for (final signature in bindingSignatures) {
-        if (!await signature.verify(
+        if (!signature.verify(
           mainKey!.keyPacket,
           Uint8List.fromList([
             ...mainKey!.keyPacket.writeForSign(),
@@ -100,15 +100,15 @@ class Subkey {
     return true;
   }
 
-  Future<bool> isRevoked({
+  bool isRevoked({
     final SignaturePacket? signature,
     final DateTime? date,
-  }) async {
+  }) {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
         if (signature == null ||
             revocation.issuerKeyID.id == signature.issuerKeyID.id) {
-          if (await revocation.verify(
+          if (revocation.verify(
             mainKey!.keyPacket,
             Uint8List.fromList([
               ...mainKey!.keyPacket.writeForSign(),
@@ -124,17 +124,17 @@ class Subkey {
     return false;
   }
 
-  Future<Subkey> revoke({
+  Subkey revoke({
     RevocationReasonTag reason = RevocationReasonTag.noReason,
     String description = '',
     final DateTime? date,
-  }) async {
+  }) {
     if (mainKey != null && mainKey is PrivateKey) {
       return Subkey(
         keyPacket,
         mainKey: mainKey,
         revocationSignatures: [
-          await SignaturePacket.createSubkeyRevocation(
+          SignaturePacket.createSubkeyRevocation(
             (mainKey as PrivateKey).keyPacket,
             keyPacket,
             reason: reason,

@@ -29,11 +29,11 @@ class ECDSAPublicParams extends ECPublicParams implements VerificationParams {
   }
 
   @override
-  Future<bool> verify(
+  bool verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,
-  ) async {
+  ) {
     final parameters = ECDomainParameters(curve.name.toLowerCase());
     final signer = Signer('${hash.digestName}/DET-ECDSA')
       ..init(

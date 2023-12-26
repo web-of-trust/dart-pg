@@ -37,14 +37,14 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     return _fromSecretKey(secretKey);
   }
 
-  static Future<SecretSubkeyPacket> generate(
+  static SecretSubkeyPacket generate(
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
     final DateTime? date,
-  }) async {
-    final keyPair = await KeyPairParams.generate(
+  }) {
+    final keyPair = KeyPairParams.generate(
       algorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
@@ -66,15 +66,15 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   PublicSubkeyPacket get publicKey => super.publicKey as PublicSubkeyPacket;
 
   @override
-  Future<SecretSubkeyPacket> encrypt(
+  SecretSubkeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
-  }) async {
+  }) {
     if (secretParams != null) {
-      return _fromSecretKey(await super.encrypt(
+      return _fromSecretKey(super.encrypt(
         passphrase,
         s2kUsage: s2kUsage,
         symmetric: symmetric,
@@ -87,9 +87,9 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
   }
 
   @override
-  Future<SecretSubkeyPacket> decrypt(final String passphrase) async {
+  SecretSubkeyPacket decrypt(final String passphrase) {
     if (secretParams == null) {
-      return _fromSecretKey(await super.decrypt(passphrase));
+      return _fromSecretKey(super.decrypt(passphrase));
     } else {
       return this;
     }

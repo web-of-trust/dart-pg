@@ -25,10 +25,10 @@ class RSASessionKeyParams extends SessionKeyParams {
   ) =>
       RSASessionKeyParams(Helper.readMPI(bytes));
 
-  static Future<RSASessionKeyParams> encryptSessionKey(
+  static RSASessionKeyParams encryptSessionKey(
     final RSAPublicKey key,
     final SessionKey sessionKey,
-  ) async {
+  ) {
     return RSASessionKeyParams(
       SessionKeyParams.processInBlocks(
         AsymmetricBlockCipher('RSA/PKCS1')
@@ -50,7 +50,7 @@ class RSASessionKeyParams extends SessionKeyParams {
         ...encrypted.toUnsignedBytes(),
       ]);
 
-  Future<SessionKey> decrypt(final RSAPrivateKey key) async {
+  SessionKey decrypt(final RSAPrivateKey key) {
     return decodeSessionKey(
       SessionKeyParams.processInBlocks(
         AsymmetricBlockCipher('RSA/PKCS1')

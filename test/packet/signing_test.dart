@@ -35,9 +35,10 @@ void main() {
     });
 
     test('features test', () {
-      final features = Features.fromFeatures(SupportFeature.modificationDetection.value |
-          SupportFeature.aeadEncryptedData.value |
-          SupportFeature.version5PublicKey.value);
+      final features = Features.fromFeatures(
+          SupportFeature.modificationDetection.value |
+              SupportFeature.aeadEncryptedData.value |
+              SupportFeature.version5PublicKey.value);
       expect(features.supprtModificationDetection, true);
       expect(features.supportAeadEncryptedData, true);
       expect(features.supportVersion5PublicKey, true);
@@ -45,11 +46,15 @@ void main() {
 
     test('write & read test', () {
       final random = Helper.secureRandom();
-      final initSubpackets =
-          SignatureSubpacketType.values.map((type) => SignatureSubpacket(type, random.nextBytes(10))).toList();
+      final initSubpackets = SignatureSubpacketType.values
+          .map((type) => SignatureSubpacket(type, random.nextBytes(10)))
+          .toList();
 
       final bytes = Uint8List.fromList(
-        initSubpackets.map((subpacket) => subpacket.encode()).expand((byte) => byte).toList(),
+        initSubpackets
+            .map((subpacket) => subpacket.encode())
+            .expand((byte) => byte)
+            .toList(),
       );
       final subpackets = <SignatureSubpacket>[];
       var offset = 0;
@@ -59,7 +64,8 @@ void main() {
         final data = reader.data;
         if (data.isNotEmpty) {
           final critical = ((reader.type & 0x80) != 0);
-          final type = SignatureSubpacketType.values.firstWhere((type) => type.value == (reader.type & 0x7f));
+          final type = SignatureSubpacketType.values
+              .firstWhere((type) => type.value == (reader.type & 0x7f));
           subpackets.add(SignatureSubpacket(
             type,
             data,
@@ -85,72 +91,100 @@ void main() {
     final dataToSign = Helper.secureRandom().nextBytes(1000);
 
     test('rsa test', () async {
-      final secretKey = await SecretKeyPacket.fromByteData(
-              base64.decode(rsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')))
+      final secretKey = SecretKeyPacket.fromByteData(base64.decode(
+              rsaSecretKeyPacket.replaceAll(
+                  RegExp(r'\r?\n', multiLine: true), '')))
           .decrypt(passphrase);
-      final publicKey = PublicKeyPacket.fromByteData(
-          base64.decode(rsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
-      final signature = await SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
+      final publicKey = PublicKeyPacket.fromByteData(base64.decode(
+          rsaPublicKeyPacket.replaceAll(
+              RegExp(r'\r?\n', multiLine: true), '')));
+      final signature = SignaturePacket.createSignature(
+          secretKey, SignatureType.standalone, dataToSign);
 
-      expect(await signature.verify(publicKey, dataToSign), isTrue);
+      expect(signature.verify(publicKey, dataToSign), isTrue);
 
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
-      final selfCertificate = await SignaturePacket.createSelfCertificate(secretKey, userID: userID);
-      expect(await selfCertificate.verifyUserCertification(publicKey, userID: userID), isTrue);
-      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.certifyKeys.value);
-      expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
+      final selfCertificate =
+          SignaturePacket.createSelfCertificate(secretKey, userID: userID);
+      expect(selfCertificate.verifyUserCertification(publicKey, userID: userID),
+          isTrue);
+      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value,
+          KeyFlag.certifyKeys.value);
+      expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value,
+          KeyFlag.signData.value);
     });
 
     test('dsa test', () async {
-      final secretKey = await SecretKeyPacket.fromByteData(
-        base64.decode(dsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
+      final secretKey = SecretKeyPacket.fromByteData(
+        base64.decode(dsaSecretKeyPacket.replaceAll(
+            RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
-      final publicKey = PublicKeyPacket.fromByteData(
-          base64.decode(dsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
-      final signature = await SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
+      final publicKey = PublicKeyPacket.fromByteData(base64.decode(
+          dsaPublicKeyPacket.replaceAll(
+              RegExp(r'\r?\n', multiLine: true), '')));
+      final signature = SignaturePacket.createSignature(
+          secretKey, SignatureType.standalone, dataToSign);
 
-      expect(await signature.verify(publicKey, dataToSign), isTrue);
+      expect(signature.verify(publicKey, dataToSign), isTrue);
 
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
-      final selfCertificate = await SignaturePacket.createSelfCertificate(secretKey, userID: userID);
-      expect(await selfCertificate.verifyUserCertification(publicKey, userID: userID), isTrue);
-      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.certifyKeys.value);
-      expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
+      final selfCertificate =
+          SignaturePacket.createSelfCertificate(secretKey, userID: userID);
+      expect(selfCertificate.verifyUserCertification(publicKey, userID: userID),
+          isTrue);
+      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value,
+          KeyFlag.certifyKeys.value);
+      expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value,
+          KeyFlag.signData.value);
     });
 
     test('ecdsa test', () async {
-      final secretKey = await SecretKeyPacket.fromByteData(
-        base64.decode(ecdsaSecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
+      final secretKey = SecretKeyPacket.fromByteData(
+        base64.decode(ecdsaSecretKeyPacket.replaceAll(
+            RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
-      final publicKey = PublicKeyPacket.fromByteData(
-          base64.decode(ecdsaPublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
-      final signature = await SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
+      final publicKey = PublicKeyPacket.fromByteData(base64.decode(
+          ecdsaPublicKeyPacket.replaceAll(
+              RegExp(r'\r?\n', multiLine: true), '')));
+      final signature = SignaturePacket.createSignature(
+          secretKey, SignatureType.standalone, dataToSign);
 
-      expect(await signature.verify(publicKey, dataToSign), isTrue);
+      expect(signature.verify(publicKey, dataToSign), isTrue);
 
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
-      final selfCertificate = await SignaturePacket.createSelfCertificate(secretKey, userID: userID);
-      expect(await selfCertificate.verifyUserCertification(publicKey, userID: userID), isTrue);
-      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.certifyKeys.value);
-      expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
+      final selfCertificate =
+          SignaturePacket.createSelfCertificate(secretKey, userID: userID);
+      expect(selfCertificate.verifyUserCertification(publicKey, userID: userID),
+          isTrue);
+      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value,
+          KeyFlag.certifyKeys.value);
+      expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value,
+          KeyFlag.signData.value);
     });
 
     test('curve25519 test', () async {
-      final secretKey = await SecretKeyPacket.fromByteData(
-        base64.decode(curve25519SecretKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')),
+      final secretKey = SecretKeyPacket.fromByteData(
+        base64.decode(curve25519SecretKeyPacket.replaceAll(
+            RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
-      final publicKey = PublicKeyPacket.fromByteData(
-          base64.decode(curve25519PublicKeyPacket.replaceAll(RegExp(r'\r?\n', multiLine: true), '')));
-      final signature = await SignaturePacket.createSignature(secretKey, SignatureType.standalone, dataToSign);
+      final publicKey = PublicKeyPacket.fromByteData(base64.decode(
+          curve25519PublicKeyPacket.replaceAll(
+              RegExp(r'\r?\n', multiLine: true), '')));
+      final signature = SignaturePacket.createSignature(
+          secretKey, SignatureType.standalone, dataToSign);
 
-      expect(await signature.verify(publicKey, dataToSign), isTrue);
+      expect(signature.verify(publicKey, dataToSign), isTrue);
 
       final userID = UserIDPacket([name, '($comment)', '<$email>'].join(' '));
-      final selfCertificate = await SignaturePacket.createSelfCertificate(secretKey, userID: userID);
+      final selfCertificate =
+          SignaturePacket.createSelfCertificate(secretKey, userID: userID);
 
-      expect(await selfCertificate.verifyUserCertification(publicKey, userID: userID), isTrue);
-      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value, KeyFlag.certifyKeys.value);
-      expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value, KeyFlag.signData.value);
+      expect(selfCertificate.verifyUserCertification(publicKey, userID: userID),
+          isTrue);
+      expect(selfCertificate.keyFlags!.flags & KeyFlag.certifyKeys.value,
+          KeyFlag.certifyKeys.value);
+      expect(selfCertificate.keyFlags!.flags & KeyFlag.signData.value,
+          KeyFlag.signData.value);
     });
   });
 }

@@ -73,11 +73,11 @@ class DSAPublicParams implements VerificationParams {
       ]);
 
   @override
-  Future<bool> verify(
+  bool verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,
-  ) async {
+  ) {
     final signer = DSASigner(Digest(hash.digestName))
       ..init(
         false,

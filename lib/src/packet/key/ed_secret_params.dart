@@ -27,10 +27,10 @@ class EdSecretParams extends KeyParams {
         ...seed.toUnsignedBytes(),
       ]);
 
-  Future<Uint8List> sign(
+  Uint8List sign(
     final Uint8List message,
     final HashAlgorithm hash,
-  ) async {
+  ) {
     final signed = SigningKey.fromSeed(seed.toUnsignedBytes()).sign(
       Helper.hashDigest(message, hash),
     );

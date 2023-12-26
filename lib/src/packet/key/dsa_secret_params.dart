@@ -30,11 +30,11 @@ class DSASecretParams extends KeyParams {
         ...exponent.toUnsignedBytes(),
       ]);
 
-  Future<Uint8List> sign(
+  Uint8List sign(
     final DSAPublicParams publicParams,
     final Uint8List message,
     final HashAlgorithm hash,
-  ) async {
+  ) {
     final signer = DSASigner(Digest(hash.digestName))
       ..init(
         true,

@@ -20,12 +20,12 @@ class Verification {
 
   Verification(this.keyID, this.signature, this.verified);
 
-  static Future<List<Verification>> createVerifications(
+  static List<Verification> createVerifications(
     final LiteralDataPacket literalData,
     final Iterable<SignaturePacket> signaturePackets,
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) async {
+  }) {
     if (verificationKeys.isEmpty) {
       throw ArgumentError('No verification keys provided');
     }
@@ -33,13 +33,13 @@ class Verification {
     for (var signaturePacket in signaturePackets) {
       for (final key in verificationKeys) {
         try {
-          final keyPacket = await key.getVerificationKeyPacket(
+          final keyPacket = key.getVerificationKeyPacket(
             keyID: signaturePacket.issuerKeyID.id,
           );
           verifications.add(Verification(
             keyPacket.keyID.id,
             Signature(PacketList([signaturePacket])),
-            await signaturePacket.verifyLiteralData(
+            signaturePacket.verifyLiteralData(
               keyPacket,
               literalData,
               date: date,

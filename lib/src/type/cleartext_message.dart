@@ -32,14 +32,14 @@ class CleartextMessage {
 
   /// Verify detached signature
   /// Return cleartext message with verifications
-  Future<CleartextMessage> verifySignature(
+  CleartextMessage verifySignature(
     final Signature signature,
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
-  }) async =>
+  }) =>
       CleartextMessage(
         text,
-        await Verification.createVerifications(
+        Verification.createVerifications(
           LiteralDataPacket.fromText(text),
           signature.packets,
           verificationKeys,

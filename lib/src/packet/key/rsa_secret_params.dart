@@ -3,6 +3,7 @@
 // file that was distributed with this source code.
 
 import 'dart:typed_data';
+
 import 'package:pointycastle/pointycastle.dart';
 
 import '../../crypto/math/big_int.dart';
@@ -77,10 +78,10 @@ class RSASecretParams extends KeyParams {
         ...coefficient.toUnsignedBytes(),
       ]);
 
-  Future<Uint8List> sign(
+  Uint8List sign(
     final Uint8List message,
     final HashAlgorithm hash,
-  ) async {
+  ) {
     final signer = Signer('${hash.digestName}/RSA')
       ..init(
         true,

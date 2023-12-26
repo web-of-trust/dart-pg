@@ -8,7 +8,7 @@ import '../../enum/hash_algorithm.dart';
 import 'key_params.dart';
 
 abstract class VerificationParams extends KeyParams {
-  Future<bool> verify(
+  bool verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,

@@ -27,11 +27,11 @@ class EdDSAPublicParams extends ECPublicParams implements VerificationParams {
   }
 
   @override
-  Future<bool> verify(
+  bool verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,
-  ) async {
+  ) {
     final r = Helper.readMPI(signature);
     final s = Helper.readMPI(signature.sublist(r.byteLength + 2));
 

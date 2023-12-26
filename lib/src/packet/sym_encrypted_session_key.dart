@@ -12,8 +12,8 @@ import '../enum/packet_tag.dart';
 import '../enum/s2k_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
-import 'key/s2k.dart';
 import 'contained_packet.dart';
+import 'key/s2k.dart';
 import 'key/session_key.dart';
 
 /// SymEncryptedSessionKey represents a Symmetric-Key Encrypted Session Key packet.
@@ -76,19 +76,19 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  static Future<SymEncryptedSessionKeyPacket> encryptSessionKey(
+  static SymEncryptedSessionKeyPacket encryptSessionKey(
     final String password,
     final SessionKey sessionKey, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final HashAlgorithm hash = HashAlgorithm.sha256,
     final S2kType type = S2kType.iterated,
-  }) async {
+  }) {
     final s2k = S2K(
       Helper.secureRandom().nextBytes(S2K.saltLength),
       hash: hash,
       type: type,
     );
-    final key = await s2k.produceKey(
+    final key = s2k.produceKey(
       password,
       symmetric.keySizeInByte,
     );
@@ -110,11 +110,11 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  Future<SymEncryptedSessionKeyPacket> decrypt(final String password) async {
+  SymEncryptedSessionKeyPacket decrypt(final String password) {
     if (isDecrypted) {
       return this;
     } else {
-      final key = await s2k.produceKey(
+      final key = s2k.produceKey(
         password,
         symmetric.keySizeInByte,
       );

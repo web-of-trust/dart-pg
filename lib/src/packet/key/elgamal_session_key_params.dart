@@ -6,10 +6,10 @@ import 'dart:typed_data';
 
 import 'package:pointycastle/export.dart';
 
+import '../../crypto/asymmetric/elgamal.dart';
 import '../../crypto/math/big_int.dart';
 import '../../crypto/math/byte_ext.dart';
 import '../../crypto/math/int_ext.dart';
-import '../../crypto/asymmetric/elgamal.dart';
 import '../../helpers.dart';
 import 'session_key.dart';
 import 'session_key_params.dart';
@@ -31,10 +31,10 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
     return ElGamalSessionKeyParams(gamma, phi);
   }
 
-  static Future<ElGamalSessionKeyParams> encryptSessionKey(
+  static ElGamalSessionKeyParams encryptSessionKey(
     final ElGamalPublicKey key,
     final SessionKey sessionKey,
-  ) async {
+  ) {
     final engine = PKCS1Encoding(ElGamalEngine())
       ..init(
         true,
@@ -61,7 +61,7 @@ class ElGamalSessionKeyParams extends SessionKeyParams {
         ...phi.toUnsignedBytes(),
       ]);
 
-  Future<SessionKey> decrypt(final ElGamalPrivateKey key) async {
+  SessionKey decrypt(final ElGamalPrivateKey key) {
     final plainData = SessionKeyParams.processInBlocks(
       ElGamalEngine()
         ..init(
