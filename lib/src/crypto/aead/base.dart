@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-abstract class BaseCipher {
+abstract class Base {
   /// Encrypt plaintext input.
   Uint8List encrypt(
     final Uint8List plaintext,

@@ -7,10 +7,10 @@ import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 
 import '../../enum/symmetric_algorithm.dart';
-import 'base_cipher.dart';
+import 'base.dart';
 
 /// GCM Authenticated-Encryption class
-class Gcm implements BaseCipher {
+class Gcm implements Base {
   final Uint8List _key;
 
   final GCMBlockCipher _aeadCipher;

@@ -8,10 +8,10 @@ import 'package:pointycastle/api.dart';
 
 import '../../enum/symmetric_algorithm.dart';
 import '../modes/ocb_cipher.dart';
-import 'base_cipher.dart';
+import 'base.dart';
 
 /// OCB Authenticated-Encryption class
-class Ocb implements BaseCipher {
+class Ocb implements Base {
   final Uint8List _key;
 
   final OCBCipher _aeadCipher;

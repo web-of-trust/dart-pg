@@ -7,10 +7,10 @@ import 'package:pointycastle/export.dart';
 
 import '../../enum/symmetric_algorithm.dart';
 
-import 'base_cipher.dart';
+import 'base.dart';
 
 /// EAX Authenticated-Encryption class
-class Eax implements BaseCipher {
+class Eax implements Base {
   final Uint8List _key;
 
   final EAX _aeadCipher;
