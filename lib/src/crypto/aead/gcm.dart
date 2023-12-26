@@ -26,7 +26,7 @@ class Gcm implements Base {
       _symmetric.cipherEngine,
     );
     cipher.init(
-      false,
+      true,
       AEADParameters(
         KeyParameter(_key),
         cipher.blockSize * 8,
@@ -47,7 +47,7 @@ class Gcm implements Base {
       _symmetric.cipherEngine,
     );
     cipher.init(
-      true,
+      false,
       AEADParameters(
         KeyParameter(_key),
         cipher.blockSize * 8,
