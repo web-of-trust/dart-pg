@@ -10,6 +10,7 @@ import '../../enum/symmetric_algorithm.dart';
 import 'base.dart';
 
 /// EAX Authenticated-Encryption class
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Eax implements Base {
   final Uint8List _key;
   final SymmetricAlgorithm _symmetric;

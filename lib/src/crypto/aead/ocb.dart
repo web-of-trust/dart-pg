@@ -11,6 +11,7 @@ import '../modes/ocb_cipher.dart';
 import 'base.dart';
 
 /// OCB Authenticated-Encryption class
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Ocb implements Base {
   final Uint8List _key;
   final SymmetricAlgorithm _symmetric;

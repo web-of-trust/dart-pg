@@ -4,6 +4,8 @@
 
 import 'dart:typed_data';
 
+/// AEAD Authenticated-Encryption base class
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class Base {
   /// Encrypt plaintext input.
   Uint8List encrypt(

@@ -8,8 +8,9 @@ import 'package:dart_pg/src/crypto/math/byte_ext.dart';
 import 'package:pointycastle/api.dart';
 
 /// An implementation of RFC 7253 on The OCB Authenticated-Encryption Algorithm.
-/// See https://tools.ietf.org/html/rfc7253
 /// Ported and modified from Bouncy Castle project
+/// See https://tools.ietf.org/html/rfc7253
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class OCBCipher implements AEADCipher {
   static const _blockSize = 16;
 

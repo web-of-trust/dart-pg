@@ -4,6 +4,7 @@
 
 /// Aead Algorithms
 /// See https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis#name-aead-encrypted-data-packet-
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum AeadAlgorithm {
   eax(1),
   ocb(2),
