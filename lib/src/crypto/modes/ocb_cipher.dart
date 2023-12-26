@@ -9,6 +9,7 @@ import 'package:pointycastle/api.dart';
 
 /// An implementation of RFC 7253 on The OCB Authenticated-Encryption Algorithm.
 /// See https://tools.ietf.org/html/rfc7253
+/// Ported and modified from Bouncy Castle project
 class OCBCipher implements AEADCipher {
   static const _blockSize = 16;
 
@@ -57,12 +58,12 @@ class OCBCipher implements AEADCipher {
         'Main cipher must have a block size of $_blockSize',
       );
     }
-
     if (_hashCipher.algorithmName != _mainCipher.algorithmName) {
       throw ArgumentError(
         'Hash cipher and main cipher must be the same algorithm',
       );
     }
+    _macSize = _blockSize;
   }
 
   /// True if initialized for encryption
@@ -110,7 +111,6 @@ class OCBCipher implements AEADCipher {
       var param = params;
       newNonce = param.iv;
       _initialAssociatedText = Uint8List(0);
-      _macSize = _blockSize;
       keyParam = param.parameters as KeyParameter;
     } else {
       throw ArgumentError('invalid parameters passed to AEADBlockCipher');

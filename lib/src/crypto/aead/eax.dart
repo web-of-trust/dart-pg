@@ -12,13 +12,9 @@ import 'base.dart';
 /// EAX Authenticated-Encryption class
 class Eax implements Base {
   final Uint8List _key;
+  final SymmetricAlgorithm _symmetric;
 
-  final EAX _aeadCipher;
-
-  Eax(this._key, final SymmetricAlgorithm symmetric)
-      : _aeadCipher = EAX(
-          symmetric.cipherEngine,
-        );
+  Eax(this._key, this._symmetric);
 
   @override
   Uint8List encrypt(
@@ -26,19 +22,20 @@ class Eax implements Base {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    _aeadCipher
-      ..reset()
-      ..init(
-        true,
-        AEADParameters(
-          KeyParameter(_key),
-          _aeadCipher.macSize,
-          nonce,
-          adata,
-        ),
-      );
+    final cipher = EAX(
+      _symmetric.cipherEngine,
+    );
+    cipher.init(
+      true,
+      AEADParameters(
+        KeyParameter(_key),
+        cipher.macSize * 8,
+        nonce,
+        adata,
+      ),
+    );
 
-    return _process(plaintext);
+    return _process(cipher, plaintext);
   }
 
   @override
@@ -47,19 +44,20 @@ class Eax implements Base {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    _aeadCipher
-      ..reset()
-      ..init(
-        false,
-        AEADParameters(
-          KeyParameter(_key),
-          _aeadCipher.macSize,
-          nonce,
-          adata,
-        ),
-      );
+    final cipher = EAX(
+      _symmetric.cipherEngine,
+    );
+    cipher.init(
+      false,
+      AEADParameters(
+        KeyParameter(_key),
+        cipher.macSize * 8,
+        nonce,
+        adata,
+      ),
+    );
 
-    return _process(ciphertext);
+    return _process(cipher, ciphertext);
   }
 
   @override
@@ -76,18 +74,18 @@ class Eax implements Base {
     return nonce;
   }
 
-  Uint8List _process(final Uint8List input) {
+  static Uint8List _process(final AEADCipher cipher, final Uint8List input) {
     final output = Uint8List(
-      _aeadCipher.getOutputSize(input.length),
+      cipher.getOutputSize(input.length),
     );
-    final len = _aeadCipher.processBytes(
+    final len = cipher.processBytes(
       input,
       0,
       input.length,
       output,
       0,
     );
-    final outLen = len + _aeadCipher.doFinal(output, len);
+    final outLen = len + cipher.doFinal(output, len);
     return Uint8List.view(output.buffer, 0, outLen);
   }
 }

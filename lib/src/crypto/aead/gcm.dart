@@ -12,33 +12,9 @@ import 'base.dart';
 /// GCM Authenticated-Encryption class
 class Gcm implements Base {
   final Uint8List _key;
+  final SymmetricAlgorithm _symmetric;
 
-  final GCMBlockCipher _aeadCipher;
-
-  Gcm(this._key, final SymmetricAlgorithm symmetric)
-      : _aeadCipher = GCMBlockCipher(
-          symmetric.cipherEngine,
-        );
-
-  @override
-  Uint8List decrypt(
-    final Uint8List plaintext,
-    final Uint8List nonce,
-    final Uint8List adata,
-  ) {
-    _aeadCipher
-      ..reset()
-      ..init(
-        true,
-        AEADParameters(
-          KeyParameter(_key),
-          _aeadCipher.macSize,
-          nonce,
-          adata,
-        ),
-      );
-    return _aeadCipher.process(plaintext);
-  }
+  Gcm(this._key, this._symmetric);
 
   @override
   Uint8List encrypt(
@@ -46,18 +22,40 @@ class Gcm implements Base {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    _aeadCipher
-      ..reset()
-      ..init(
-          false,
-          AEADParameters(
-          KeyParameter(_key),
-          _aeadCipher.macSize,
-            nonce,
-            adata,
-        ),
-      );
-    return _aeadCipher.process(ciphertext);
+    final cipher = GCMBlockCipher(
+      _symmetric.cipherEngine,
+    );
+    cipher.init(
+      false,
+      AEADParameters(
+        KeyParameter(_key),
+        cipher.blockSize * 8,
+        nonce,
+        adata,
+      ),
+    );
+    return cipher.process(ciphertext);
+  }
+
+  @override
+  Uint8List decrypt(
+    final Uint8List plaintext,
+    final Uint8List nonce,
+    final Uint8List adata,
+  ) {
+    final cipher = GCMBlockCipher(
+      _symmetric.cipherEngine,
+    );
+    cipher.init(
+      true,
+      AEADParameters(
+        KeyParameter(_key),
+        cipher.blockSize * 8,
+        nonce,
+        adata,
+      ),
+    );
+    return cipher.process(plaintext);
   }
 
   @override

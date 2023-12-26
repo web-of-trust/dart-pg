@@ -13,14 +13,9 @@ import 'base.dart';
 /// OCB Authenticated-Encryption class
 class Ocb implements Base {
   final Uint8List _key;
+  final SymmetricAlgorithm _symmetric;
 
-  final OCBCipher _aeadCipher;
-
-  Ocb(this._key, final SymmetricAlgorithm symmetric)
-      : _aeadCipher = OCBCipher(
-          symmetric.cipherEngine,
-          symmetric.cipherEngine,
-        );
+  Ocb(this._key, this._symmetric);
 
   @override
   Uint8List encrypt(
@@ -28,19 +23,21 @@ class Ocb implements Base {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    _aeadCipher
-      ..reset()
-      ..init(
-        true,
-        AEADParameters(
-          KeyParameter(_key),
-          _aeadCipher.macSize,
-          nonce,
-          adata,
-        ),
-      );
+    final cipher = OCBCipher(
+      _symmetric.cipherEngine,
+      _symmetric.cipherEngine,
+    );
+    cipher.init(
+      true,
+      AEADParameters(
+        KeyParameter(_key),
+        cipher.blockSize * 8,
+        nonce,
+        adata,
+      ),
+    );
 
-    return _aeadCipher.process(plaintext);
+    return cipher.process(plaintext);
   }
 
   @override
@@ -49,19 +46,21 @@ class Ocb implements Base {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    _aeadCipher
-      ..reset()
-      ..init(
-        false,
-        AEADParameters(
-          KeyParameter(_key),
-          _aeadCipher.macSize,
-          nonce,
-          adata,
-        ),
-      );
+    final cipher = OCBCipher(
+      _symmetric.cipherEngine,
+      _symmetric.cipherEngine,
+    );
+    cipher.init(
+      false,
+      AEADParameters(
+        KeyParameter(_key),
+        cipher.blockSize * 8,
+        nonce,
+        adata,
+      ),
+    );
 
-    return _aeadCipher.process(ciphertext);
+    return cipher.process(ciphertext);
   }
 
   @override
