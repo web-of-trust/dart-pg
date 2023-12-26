@@ -11,12 +11,12 @@ import 'base_cipher.dart';
 
 /// GCM Authenticated-Encryption class
 class Gcm implements BaseCipher {
-  final Uint8List key;
+  final Uint8List _key;
 
-  final GCMBlockCipher gcmCipher;
+  final GCMBlockCipher _aeadCipher;
 
-  Gcm(this.key, final SymmetricAlgorithm symmetric)
-      : gcmCipher = GCMBlockCipher(
+  Gcm(this._key, final SymmetricAlgorithm symmetric)
+      : _aeadCipher = GCMBlockCipher(
           symmetric.cipherEngine,
         );
 
@@ -26,13 +26,18 @@ class Gcm implements BaseCipher {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    gcmCipher
+    _aeadCipher
       ..reset()
       ..init(
         true,
-        AEADParameters(KeyParameter(key), gcmCipher.macSize, nonce, adata),
+        AEADParameters(
+          KeyParameter(_key),
+          _aeadCipher.macSize,
+          nonce,
+          adata,
+        ),
       );
-    return gcmCipher.process(plaintext);
+    return _aeadCipher.process(plaintext);
   }
 
   @override
@@ -41,17 +46,18 @@ class Gcm implements BaseCipher {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    gcmCipher
+    _aeadCipher
       ..reset()
       ..init(
           false,
           AEADParameters(
-            KeyParameter(key),
-            gcmCipher.macSize,
+          KeyParameter(_key),
+          _aeadCipher.macSize,
             nonce,
             adata,
-          ));
-    return gcmCipher.process(ciphertext);
+        ),
+      );
+    return _aeadCipher.process(ciphertext);
   }
 
   @override

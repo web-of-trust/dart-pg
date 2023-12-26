@@ -4,19 +4,23 @@
 
 import 'dart:typed_data';
 
+import 'package:pointycastle/api.dart';
+
+import '../../enum/symmetric_algorithm.dart';
+import '../modes/ocb_cipher.dart';
 import 'base_cipher.dart';
 
 /// OCB Authenticated-Encryption class
 class Ocb implements BaseCipher {
-  @override
-  Uint8List decrypt(
-    final Uint8List ciphertext,
-    final Uint8List nonce,
-    final Uint8List adata,
-  ) {
-    // TODO: implement decrypt
-    throw UnimplementedError();
-  }
+  final Uint8List _key;
+
+  final OCBCipher _aeadCipher;
+
+  Ocb(this._key, final SymmetricAlgorithm symmetric)
+      : _aeadCipher = OCBCipher(
+          symmetric.cipherEngine,
+          symmetric.cipherEngine,
+        );
 
   @override
   Uint8List encrypt(
@@ -24,8 +28,40 @@ class Ocb implements BaseCipher {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    // TODO: implement encrypt
-    throw UnimplementedError();
+    _aeadCipher
+      ..reset()
+      ..init(
+        true,
+        AEADParameters(
+          KeyParameter(_key),
+          _aeadCipher.macSize,
+          nonce,
+          adata,
+        ),
+      );
+
+    return _aeadCipher.process(plaintext);
+  }
+
+  @override
+  Uint8List decrypt(
+    final Uint8List ciphertext,
+    final Uint8List nonce,
+    final Uint8List adata,
+  ) {
+    _aeadCipher
+      ..reset()
+      ..init(
+        false,
+        AEADParameters(
+          KeyParameter(_key),
+          _aeadCipher.macSize,
+          nonce,
+          adata,
+        ),
+      );
+
+    return _aeadCipher.process(ciphertext);
   }
 
   @override

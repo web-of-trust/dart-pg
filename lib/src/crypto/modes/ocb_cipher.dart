@@ -9,7 +9,7 @@ import 'package:pointycastle/api.dart';
 
 /// An implementation of RFC 7253 on The OCB Authenticated-Encryption Algorithm.
 /// See https://tools.ietf.org/html/rfc7253
-class OCBBlockCipher implements AEADCipher {
+class OCBCipher implements AEADCipher {
   static const _blockSize = 16;
 
   final BlockCipher _hashCipher;
@@ -22,40 +22,46 @@ class OCBBlockCipher implements AEADCipher {
 
   /// Key dependent
   /// Elements are lazily calculated
-  late List<Uint8List> _lSub;
-  late Uint8List _lAsterisk;
+  final List<Uint8List> _lSub = List.empty(growable: true);
+  final Uint8List _lAsterisk = Uint8List(_blockSize);
   late Uint8List _lDollar;
 
   /// Nonce dependent
-  late Uint8List _ktopInput;
+  Uint8List _ktopInput = Uint8List(0);
   final Uint8List _stretch = Uint8List.fromList(List.filled(24, 0));
-  final Uint8List _offsetMain_0 = Uint8List(16);
+  final Uint8List _offsetMain_0 = Uint8List(_blockSize);
 
   /// Per encryption/decryption
-  late Uint8List _hashBlock;
+  final Uint8List _hashBlock = Uint8List(_blockSize);
   late Uint8List _mainBlock;
   late int _hashBlockPos;
   late int _mainBlockPos;
   late int _hashBlockCount;
   late int _mainBlockCount;
-  late Uint8List _offsetHash;
-  final Uint8List _offsetMain = Uint8List(16);
-  late Uint8List _sum;
-  late Uint8List _checksum;
+  final Uint8List _offsetHash = Uint8List(_blockSize);
+  final Uint8List _offsetMain = Uint8List(_blockSize);
+  final Uint8List _sum = Uint8List(_blockSize);
+  final Uint8List _checksum = Uint8List(_blockSize);
 
   /// NOTE: The MAC value is preserved after doFinal
   late Uint8List _macBlock;
 
-  OCBBlockCipher(this._hashCipher, this._mainCipher) {
+  OCBCipher(this._hashCipher, this._mainCipher) {
     if (_hashCipher.blockSize != _blockSize) {
-      throw ArgumentError('Hash cipher must have a block size of $_blockSize');
+      throw ArgumentError(
+        'Hash cipher must have a block size of $_blockSize',
+      );
     }
     if (_mainCipher.blockSize != _blockSize) {
-      throw ArgumentError('Main cipher must have a block size of $_blockSize');
+      throw ArgumentError(
+        'Main cipher must have a block size of $_blockSize',
+      );
     }
 
     if (_hashCipher.algorithmName != _mainCipher.algorithmName) {
-      throw ArgumentError('Hash cipher and main cipher must be the same algorithm');
+      throw ArgumentError(
+        'Hash cipher and main cipher must be the same algorithm',
+      );
     }
   }
 
@@ -71,13 +77,17 @@ class OCBBlockCipher implements AEADCipher {
   @override
   Uint8List get mac => _getMac();
 
+  /// The block size
   int get blockSize => _blockSize;
 
   /// The underlying cipher
   BlockCipher get underlyingCipher => _mainCipher;
 
   @override
-  void init(bool forEncryption, CipherParameters? params) {
+  void init(
+    final bool forEncryption,
+    final CipherParameters params,
+  ) {
     _forEncryption = forEncryption;
 
     final KeyParameter keyParam;
@@ -100,14 +110,15 @@ class OCBBlockCipher implements AEADCipher {
       var param = params;
       newNonce = param.iv;
       _initialAssociatedText = Uint8List(0);
-      _macSize = 16;
+      _macSize = _blockSize;
       keyParam = param.parameters as KeyParameter;
     } else {
       throw ArgumentError('invalid parameters passed to AEADBlockCipher');
     }
 
-    _hashBlock = Uint8List(16);
-    _mainBlock = Uint8List(_forEncryption ? _blockSize : (_blockSize + _macSize));
+    _mainBlock = Uint8List(
+      _forEncryption ? _blockSize : (_blockSize + _macSize),
+    );
 
     if (newNonce.isEmpty) {
       throw ArgumentError('IV must be no more than 15 bytes');
@@ -116,13 +127,10 @@ class OCBBlockCipher implements AEADCipher {
     /// Key dependent initialisation
     _hashCipher.init(true, keyParam);
     _mainCipher.init(_forEncryption, keyParam);
-    _ktopInput = Uint8List(0);
 
-    _lAsterisk = Uint8List(16);
     _hashCipher.processBlock(_lAsterisk, 0, _lAsterisk, 0);
     _lDollar = _double(_lAsterisk);
 
-    _lSub = List.empty(growable: true);
     _lSub.add(_double(_lDollar));
 
     /// Nonce dependent and per encryption/decryption initialisation
@@ -145,18 +153,19 @@ class OCBBlockCipher implements AEADCipher {
     _hashBlockCount = 0;
     _mainBlockCount = 0;
 
-    _offsetHash = Uint8List(16);
-    _sum = Uint8List(16);
     _offsetMain.setAll(0, _offsetMain_0.sublist(0));
-    _checksum = Uint8List(16);
 
     if (_initialAssociatedText.isNotEmpty) {
-      processAADBytes(_initialAssociatedText, 0, _initialAssociatedText.length);
+      processAADBytes(
+        _initialAssociatedText,
+        0,
+        _initialAssociatedText.length,
+      );
     }
   }
 
   @override
-  int doFinal(Uint8List output, int outOff) {
+  int doFinal(final Uint8List output, final int outOff) {
     /// For decryption, get the tag from the end of the message
     Uint8List? tag;
     if (!_forEncryption) {
@@ -229,15 +238,14 @@ class OCBBlockCipher implements AEADCipher {
     return resultLen;
   }
 
-  Uint8List process(Uint8List data) {
-    final out = Uint8List(getOutputSize(data.length));
-    final len = processBytes(data, 0, data.length, out, 0);
-    final outLen = len + doFinal(out, len);
-    return Uint8List.view(out.buffer, 0, outLen);
-  }
-
   @override
-  int processBytes(Uint8List input, int inOff, int len, Uint8List output, int outOff) {
+  int processBytes(
+    final Uint8List input,
+    final int inOff,
+    final int len,
+    final Uint8List output,
+    final int outOff,
+  ) {
     if (input.length < (inOff + len)) {
       throw ArgumentError('Input buffer too short');
     }
@@ -274,7 +282,11 @@ class OCBBlockCipher implements AEADCipher {
   }
 
   @override
-  int processByte(int input, Uint8List output, int outOff) {
+  int processByte(
+    final int input,
+    final Uint8List output,
+    final int outOff,
+  ) {
     _mainBlock[_mainBlockPos] = input;
     if (++_mainBlockPos == _mainBlock.length) {
       _processMainBlock(output, outOff);
@@ -286,6 +298,13 @@ class OCBBlockCipher implements AEADCipher {
   @override
   void reset() {
     _reset(true);
+  }
+
+  Uint8List process(final Uint8List data) {
+    final out = Uint8List(getOutputSize(data.length));
+    final len = processBytes(data, 0, data.length, out, 0);
+    final outLen = len + doFinal(out, len);
+    return Uint8List.view(out.buffer, 0, outLen);
   }
 
   void _reset(final bool clearMac) {
@@ -311,14 +330,22 @@ class OCBBlockCipher implements AEADCipher {
     }
 
     if (_initialAssociatedText.isNotEmpty) {
-      processAADBytes(_initialAssociatedText, 0, _initialAssociatedText.length);
+      processAADBytes(
+        _initialAssociatedText,
+        0,
+        _initialAssociatedText.length,
+      );
     }
   }
 
   @override
-  void processAADBytes(Uint8List input, int off, int len) {
+  void processAADBytes(
+    final Uint8List input,
+    final int offset,
+    final int len,
+  ) {
     for (var i = 0; i < len; ++i) {
-      _hashBlock[_hashBlockPos] = input[off + i];
+      _hashBlock[_hashBlockPos] = input[offset + i];
       if (++_hashBlockPos == _hashBlock.length) {
         _processHashBlock();
       }
@@ -326,7 +353,7 @@ class OCBBlockCipher implements AEADCipher {
   }
 
   @override
-  int getOutputSize(int len) {
+  int getOutputSize(final int len) {
     final totalData = len + _mainBlockPos;
     if (_forEncryption) {
       return totalData + _macSize;
@@ -341,11 +368,11 @@ class OCBBlockCipher implements AEADCipher {
     return _macBlock.sublist(0);
   }
 
-  void _clear(Uint8List input) {
+  void _clear(final Uint8List input) {
     input.fillRange(0, input.length, 0);
   }
 
-  Uint8List _getLSub(int n) {
+  Uint8List _getLSub(final int n) {
     while (n >= _lSub.length) {
       _lSub.add(_double(_lSub.last));
     }
@@ -358,7 +385,7 @@ class OCBBlockCipher implements AEADCipher {
     _hashBlockPos = 0;
   }
 
-  void _processMainBlock(Uint8List output, int outOff) {
+  void _processMainBlock(final Uint8List output, final int outOff) {
     if (output.length < (outOff + _blockSize)) {
       throw ArgumentError('Output buffer too short');
     }
@@ -384,7 +411,7 @@ class OCBBlockCipher implements AEADCipher {
     }
   }
 
-  int _processNonce(Uint8List n) {
+  int _processNonce(final Uint8List n) {
     final nonce = Uint8List(16);
     nonce.setAll(nonce.length - n.length, n.sublist(0, n.length));
     nonce[0] = (macSize << 4) & 0xff;
@@ -406,21 +433,21 @@ class OCBBlockCipher implements AEADCipher {
     return bottom;
   }
 
-  void _updateHash(Uint8List lSub) {
+  void _updateHash(final Uint8List lSub) {
     _xor(_offsetHash, lSub);
     _xor(_hashBlock, _offsetHash);
     _hashCipher.processBlock(_hashBlock, 0, _hashBlock, 0);
     _xor(_sum, _hashBlock);
   }
 
-  static Uint8List _double(Uint8List block) {
+  static Uint8List _double(final Uint8List block) {
     final result = Uint8List.fromList(List.filled(16, 9));
     final carry = _shiftLeft(block, result);
     result[15] ^= (0x87 >>> ((1 - carry) << 3));
     return result;
   }
 
-  static void _extend(Uint8List block, int pos) {
+  static void _extend(final Uint8List block, int pos) {
     block[pos] = 0x80;
     while (++pos < 16) {
       block[pos] = 0;
@@ -439,7 +466,7 @@ class OCBBlockCipher implements AEADCipher {
     return ntz;
   }
 
-  static int _shiftLeft(Uint8List block, Uint8List output) {
+  static int _shiftLeft(final block, final Uint8List output) {
     var i = 16;
     var bit = 0;
     while (--i >= 0) {
@@ -450,7 +477,7 @@ class OCBBlockCipher implements AEADCipher {
     return bit;
   }
 
-  static void _xor(Uint8List block, Uint8List val) {
+  static void _xor(final Uint8List block, final Uint8List val) {
     for (var i = 15; i >= 0; --i) {
       block[i] ^= val[i];
     }

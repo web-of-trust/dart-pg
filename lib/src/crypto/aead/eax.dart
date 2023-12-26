@@ -11,12 +11,12 @@ import 'base_cipher.dart';
 
 /// EAX Authenticated-Encryption class
 class Eax implements BaseCipher {
-  final Uint8List key;
+  final Uint8List _key;
 
-  final EAX eaxCipher;
+  final EAX _aeadCipher;
 
-  Eax(this.key, final SymmetricAlgorithm symmetric)
-      : eaxCipher = EAX(
+  Eax(this._key, final SymmetricAlgorithm symmetric)
+      : _aeadCipher = EAX(
           symmetric.cipherEngine,
         );
 
@@ -26,11 +26,16 @@ class Eax implements BaseCipher {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    eaxCipher
+    _aeadCipher
       ..reset()
       ..init(
         true,
-        AEADParameters(KeyParameter(key), eaxCipher.macSize, nonce, adata),
+        AEADParameters(
+          KeyParameter(_key),
+          _aeadCipher.macSize,
+          nonce,
+          adata,
+        ),
       );
 
     return _process(plaintext);
@@ -42,11 +47,16 @@ class Eax implements BaseCipher {
     final Uint8List nonce,
     final Uint8List adata,
   ) {
-    eaxCipher
+    _aeadCipher
       ..reset()
       ..init(
         false,
-        AEADParameters(KeyParameter(key), eaxCipher.macSize, nonce, adata),
+        AEADParameters(
+          KeyParameter(_key),
+          _aeadCipher.macSize,
+          nonce,
+          adata,
+        ),
       );
 
     return _process(ciphertext);
@@ -67,9 +77,17 @@ class Eax implements BaseCipher {
   }
 
   Uint8List _process(final Uint8List input) {
-    final output = Uint8List(eaxCipher.getOutputSize(input.length));
-    final len = eaxCipher.processBytes(input, 0, input.length, output, 0);
-    final outLen = len + eaxCipher.doFinal(output, len);
+    final output = Uint8List(
+      _aeadCipher.getOutputSize(input.length),
+    );
+    final len = _aeadCipher.processBytes(
+      input,
+      0,
+      input.length,
+      output,
+      0,
+    );
+    final outLen = len + _aeadCipher.doFinal(output, len);
     return Uint8List.view(output.buffer, 0, outLen);
   }
 }
