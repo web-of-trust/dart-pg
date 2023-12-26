@@ -26,16 +26,15 @@ class Ocb implements Base {
     final cipher = OCBCipher(
       _symmetric.cipherEngine,
       _symmetric.cipherEngine,
-    );
-    cipher.init(
-      true,
-      AEADParameters(
-        KeyParameter(_key),
-        cipher.blockSize * 8,
-        nonce,
-        adata,
-      ),
-    );
+    )..init(
+        true,
+        AEADParameters(
+          KeyParameter(_key),
+          _symmetric.blockSize * 8,
+          nonce,
+          adata,
+        ),
+      );
 
     return cipher.process(plaintext);
   }
@@ -49,16 +48,15 @@ class Ocb implements Base {
     final cipher = OCBCipher(
       _symmetric.cipherEngine,
       _symmetric.cipherEngine,
-    );
-    cipher.init(
-      false,
-      AEADParameters(
-        KeyParameter(_key),
-        cipher.blockSize * 8,
-        nonce,
-        adata,
-      ),
-    );
+    )..init(
+        false,
+        AEADParameters(
+          KeyParameter(_key),
+          _symmetric.blockSize * 8,
+          nonce,
+          adata,
+        ),
+      );
 
     return cipher.process(ciphertext);
   }

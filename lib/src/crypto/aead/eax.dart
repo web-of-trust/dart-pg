@@ -24,16 +24,15 @@ class Eax implements Base {
   ) {
     final cipher = EAX(
       _symmetric.cipherEngine,
-    );
-    cipher.init(
-      true,
-      AEADParameters(
-        KeyParameter(_key),
-        cipher.macSize * 8,
-        nonce,
-        adata,
-      ),
-    );
+    )..init(
+        true,
+        AEADParameters(
+          KeyParameter(_key),
+          _symmetric.blockSize * 8,
+          nonce,
+          adata,
+        ),
+      );
 
     return _process(cipher, plaintext);
   }
@@ -46,16 +45,15 @@ class Eax implements Base {
   ) {
     final cipher = EAX(
       _symmetric.cipherEngine,
-    );
-    cipher.init(
-      false,
-      AEADParameters(
-        KeyParameter(_key),
-        cipher.macSize * 8,
-        nonce,
-        adata,
-      ),
-    );
+    )..init(
+        false,
+        AEADParameters(
+          KeyParameter(_key),
+          _symmetric.blockSize * 8,
+          nonce,
+          adata,
+        ),
+      );
 
     return _process(cipher, ciphertext);
   }

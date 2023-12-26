@@ -24,16 +24,15 @@ class Gcm implements Base {
   ) {
     final cipher = GCMBlockCipher(
       _symmetric.cipherEngine,
-    );
-    cipher.init(
-      true,
-      AEADParameters(
-        KeyParameter(_key),
-        cipher.blockSize * 8,
-        nonce,
-        adata,
-      ),
-    );
+    )..init(
+        true,
+        AEADParameters(
+          KeyParameter(_key),
+          _symmetric.blockSize * 8,
+          nonce,
+          adata,
+        ),
+      );
     return cipher.process(ciphertext);
   }
 
@@ -45,16 +44,15 @@ class Gcm implements Base {
   ) {
     final cipher = GCMBlockCipher(
       _symmetric.cipherEngine,
-    );
-    cipher.init(
-      false,
-      AEADParameters(
-        KeyParameter(_key),
-        cipher.blockSize * 8,
-        nonce,
-        adata,
-      ),
-    );
+    )..init(
+        false,
+        AEADParameters(
+          KeyParameter(_key),
+          _symmetric.blockSize * 8,
+          nonce,
+          adata,
+        ),
+      );
     return cipher.process(plaintext);
   }
 
