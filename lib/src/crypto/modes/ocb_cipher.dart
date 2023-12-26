@@ -307,6 +307,29 @@ class OCBCipher implements AEADCipher {
     return Uint8List.view(out.buffer, 0, outLen);
   }
 
+  @override
+  void processAADBytes(
+    final Uint8List input,
+    final int offset,
+    final int len,
+  ) {
+    for (var i = 0; i < len; ++i) {
+      _hashBlock[_hashBlockPos] = input[offset + i];
+      if (++_hashBlockPos == _hashBlock.length) {
+        _processHashBlock();
+      }
+    }
+  }
+
+  @override
+  int getOutputSize(final int len) {
+    final totalData = len + _mainBlockPos;
+    if (_forEncryption) {
+      return totalData + _macSize;
+    }
+    return totalData < _macSize ? 0 : totalData - _macSize;
+  }
+
   void _reset(final bool clearMac) {
     _hashCipher.reset();
     _mainCipher.reset();
@@ -336,29 +359,6 @@ class OCBCipher implements AEADCipher {
         _initialAssociatedText.length,
       );
     }
-  }
-
-  @override
-  void processAADBytes(
-    final Uint8List input,
-    final int offset,
-    final int len,
-  ) {
-    for (var i = 0; i < len; ++i) {
-      _hashBlock[_hashBlockPos] = input[offset + i];
-      if (++_hashBlockPos == _hashBlock.length) {
-        _processHashBlock();
-      }
-    }
-  }
-
-  @override
-  int getOutputSize(final int len) {
-    final totalData = len + _mainBlockPos;
-    if (_forEncryption) {
-      return totalData + _macSize;
-    }
-    return totalData < _macSize ? 0 : totalData - _macSize;
   }
 
   Uint8List _getMac() {
