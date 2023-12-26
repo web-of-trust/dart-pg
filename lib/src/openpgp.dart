@@ -4,18 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'enum/compression_algorithm.dart';
-import 'enum/curve_info.dart';
-import 'enum/dh_key_size.dart';
-import 'enum/key_generation_type.dart';
-import 'enum/rsa_key_size.dart';
-import 'enum/symmetric_algorithm.dart';
-import 'type/cleartext_message.dart';
-import 'type/message.dart';
-import 'type/private_key.dart';
-import 'type/public_key.dart';
-import 'type/signature.dart';
-import 'type/signed_message.dart';
+import 'package:dart_pg/src/openpgp_sync.dart';
 
 export 'enum/compression_algorithm.dart';
 export 'enum/curve_info.dart';
@@ -47,7 +36,7 @@ class OpenPGP {
     final String? subkeyPassphrase,
     final DateTime? date,
   }) async =>
-      PrivateKey.generate(
+      OpenPGPSync.generateKey(
         userIDs,
         passphrase,
         type: type,
@@ -65,7 +54,8 @@ class OpenPGP {
     final String passphrase, [
     final Iterable<String> subkeyPassphrases = const [],
   ]) async =>
-      PrivateKey.fromArmored(armoredPrivateKey).decrypt(
+      OpenPGPSync.decryptPrivateKey(
+        armoredPrivateKey,
         passphrase,
         subkeyPassphrases,
       );
@@ -74,13 +64,13 @@ class OpenPGP {
   static Future<PrivateKey> readPrivateKey(
     final String armoredPrivateKey,
   ) async =>
-      PrivateKey.fromArmored(armoredPrivateKey);
+      OpenPGPSync.readPrivateKey(armoredPrivateKey);
 
   /// Read an armored OpenPGP public key and returns a PublicKey object
   static Future<PublicKey> readPublicKey(
     final String armoredPublicKey,
   ) async =>
-      PublicKey.fromArmored(armoredPublicKey);
+      OpenPGPSync.readPublicKey(armoredPublicKey);
 
   /// Sign a cleartext message.
   static Future<SignedMessage> sign(
@@ -88,7 +78,7 @@ class OpenPGP {
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
   }) async =>
-      SignedMessage.signCleartext(cleartext, signingKeys, date: date);
+      OpenPGPSync.sign(cleartext, signingKeys, date: date);
 
   /// Sign a cleartext message & return detached signature
   static Future<Signature> signDetached(
@@ -96,11 +86,7 @@ class OpenPGP {
     final Iterable<PrivateKey> signingKeys, {
     final DateTime? date,
   }) async =>
-      SignedMessage.signCleartext(
-        cleartext,
-        signingKeys,
-        date: date,
-      ).signature;
+      OpenPGPSync.signDetached(cleartext, signingKeys, date: date);
 
   /// Verify signatures of cleartext signed message
   /// Return signed message with verifications
@@ -109,10 +95,7 @@ class OpenPGP {
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async =>
-      SignedMessage.fromArmored(armoredSignedMessage).verify(
-        verificationKeys,
-        date: date,
-      );
+      OpenPGPSync.verify(armoredSignedMessage, verificationKeys, date: date);
 
   /// Verify detached signatures of cleartext message
   /// Returns cleartext message with verifications
@@ -122,8 +105,9 @@ class OpenPGP {
     final Iterable<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async =>
-      CleartextMessage(cleartext).verifySignature(
-        Signature.fromArmored(armoredSignature),
+      OpenPGPSync.verifyDetached(
+        cleartext,
+        armoredSignature,
         verificationKeys,
         date: date,
       );
@@ -132,26 +116,26 @@ class OpenPGP {
   static Future<Signature> readSignature(
     final String armoredSignature,
   ) async =>
-      Signature.fromArmored(armoredSignature);
+      OpenPGPSync.readSignature(armoredSignature);
 
   /// Read an armored OpenPGP signed message and returns a SignedMessage object
   static Future<SignedMessage> readSignedMessage(
     final String armoredSignedMessage,
   ) async =>
-      SignedMessage.fromArmored(armoredSignedMessage);
+      OpenPGPSync.readSignedMessage(armoredSignedMessage);
 
   /// Read an armored OpenPGP message and returns a Message object
   static Future<Message> readMessage(
     final String armoredMessage,
   ) async =>
-      Message.fromArmored(armoredMessage);
+      OpenPGPSync.readMessage(armoredMessage);
 
   /// Create new message object from cleartext
   static Future<Message> createTextMessage(
     final String cleartext, {
     final DateTime? time,
   }) async =>
-      Message.createTextMessage(cleartext, time: time);
+      OpenPGPSync.createTextMessage(cleartext, time: time);
 
   /// Create new message object from binary data.
   static Future<Message> createBinaryMessage(
@@ -159,7 +143,7 @@ class OpenPGP {
     final String filename = '',
     final DateTime? time,
   }) async =>
-      Message.createBinaryMessage(data, filename: filename, time: time);
+      OpenPGPSync.createBinaryMessage(data, filename: filename, time: time);
 
   /// Encrypt a message using public keys, passwords or both at once.
   /// At least one of `encryptionKeys`, `passwords`must be specified.
@@ -174,19 +158,14 @@ class OpenPGP {
     final CompressionAlgorithm compression = CompressionAlgorithm.uncompressed,
     final DateTime? date,
   }) async =>
-      (signingKeys.isNotEmpty)
-          ? message.sign(signingKeys, date: date).compress(compression).encrypt(
-                encryptionKeys: encryptionKeys,
-                passwords: passwords,
-                sessionKeySymmetric: sessionKeySymmetric,
-                encryptionKeySymmetric: encryptionKeySymmetric,
-              )
-          : message.compress(compression).encrypt(
-                encryptionKeys: encryptionKeys,
-                passwords: passwords,
-                sessionKeySymmetric: sessionKeySymmetric,
-                encryptionKeySymmetric: encryptionKeySymmetric,
-              );
+      OpenPGPSync.encrypt(message,
+          encryptionKeys: encryptionKeys,
+          signingKeys: signingKeys,
+          passwords: passwords,
+          sessionKeySymmetric: sessionKeySymmetric,
+          encryptionKeySymmetric: encryptionKeySymmetric,
+          compression: compression,
+          date: date);
 
   /// Decrypt a message with the user's private key, or a password.
   /// One of `decryptionKeys` or `passwords` must be specified
@@ -199,17 +178,10 @@ class OpenPGP {
     final bool allowUnauthenticatedMessages = false,
     final DateTime? date,
   }) async =>
-      (verificationKeys.isNotEmpty)
-          ? message
-              .decrypt(
-                decryptionKeys: decryptionKeys,
-                passwords: passwords,
-                allowUnauthenticatedMessages: allowUnauthenticatedMessages,
-              )
-              .verify(verificationKeys, date: date)
-          : message.decrypt(
-              decryptionKeys: decryptionKeys,
-              passwords: passwords,
-              allowUnauthenticatedMessages: allowUnauthenticatedMessages,
-            );
+      OpenPGPSync.decrypt(message,
+          decryptionKeys: decryptionKeys,
+          verificationKeys: verificationKeys,
+          passwords: passwords,
+          allowUnauthenticatedMessages: allowUnauthenticatedMessages,
+          date: date);
 }
