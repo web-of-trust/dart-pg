@@ -3,7 +3,6 @@
 // file that was distributed with this source code.
 
 import '../enum/key_algorithm.dart';
-import '../enum/key_flag.dart';
 import '../enum/packet_tag.dart';
 import '../enum/signature_type.dart';
 import '../packet/key/key_id.dart';
@@ -80,8 +79,7 @@ abstract class Key {
     if (keyPacket.isSigningKey) {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
-          if (signature.keyFlags != null &&
-              (signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
+          if (signature.keyFlags != null && !signature.keyFlags!.isSignData) {
             return false;
           }
         }
@@ -94,15 +92,24 @@ abstract class Key {
     if (keyPacket.isEncryptionKey) {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
-          if (signature.keyFlags != null &&
-              (signature.keyFlags!.flags & KeyFlag.signData.value) ==
-                  KeyFlag.signData.value) {
+          if (signature.keyFlags != null && signature.keyFlags!.isSignData) {
             return false;
           }
         }
       }
     }
     return keyPacket.isEncryptionKey;
+  }
+
+  bool get aeadSupported {
+    for (final user in users) {
+      for (var signature in user.selfCertifications) {
+        if (signature.features != null && signature.features!.supportAeadEncryptedData) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /// Returns ASCII armored text of key
@@ -174,8 +181,7 @@ abstract class Key {
   }) async {
     if (revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null ||
-            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verify(
             keyPacket,
             keyPacket.writeForSign(),
@@ -231,9 +237,7 @@ abstract class Key {
         ...revocationSignatures,
         ...directSignatures,
         ...users.map((user) => user.toPacketList()).expand((packet) => packet),
-        ...subkeys
-            .map((subkey) => subkey.toPacketList())
-            .expand((packet) => packet),
+        ...subkeys.map((subkey) => subkey.toPacketList()).expand((packet) => packet),
       ]);
 
   static Map<String, dynamic> readPacketList(final PacketList packetList) {

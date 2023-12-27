@@ -270,8 +270,14 @@ class Message {
         ),
       ),
     );
+    bool aeadSupported = true;
+    for (final key in encryptionKeys) {
+      if (!key.aeadSupported) {
+        aeadSupported = false;
+      }
+    }
     final ContainedPacket encrypted;
-    if (aeadProtect) {
+    if (aeadProtect && aeadSupported) {
       encrypted = await AeadEncryptedData.encryptPackets(
         sessionKey.key,
         packetList,
