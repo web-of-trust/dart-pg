@@ -93,11 +93,11 @@ void main() {
     ];
     for (var map in testVectors) {
       test(map['name'], () {
-        final msg = (map['msg'] as String).hexToBytes();
-        final key = (map['key'] as String).hexToBytes();
-        final nonce = (map['nonce'] as String).hexToBytes();
-        final header = (map['header'] as String).hexToBytes();
-        final cipher = (map['cipher'] as String).hexToBytes();
+        final msg = map['msg']!.hexToBytes();
+        final key = map['key']!.hexToBytes();
+        final nonce = map['nonce']!.hexToBytes();
+        final header = map['header']!.hexToBytes();
+        final cipher = map['cipher']!.hexToBytes();
 
         final eax = Eax(key, SymmetricAlgorithm.aes128);
 
@@ -242,10 +242,10 @@ void main() {
     ];
     for (var map in testVectors) {
       test(map['name'], () {
-        final msg = (map['P'] as String).hexToBytes();
-        final nonce = (map['N'] as String).hexToBytes();
-        final header = (map['A'] as String).hexToBytes();
-        final cipher = (map['C'] as String).hexToBytes();
+        final msg = map['P']!.hexToBytes();
+        final nonce = map['N']!.hexToBytes();
+        final header = map['A']!.hexToBytes();
+        final cipher = map['C']!.hexToBytes();
 
         final ocb = Ocb(key, SymmetricAlgorithm.aes128);
 
@@ -464,12 +464,12 @@ void main() {
     ];
 
     for (var map in testVectors) {
-      final key = (map['key'] as String).hexToBytes();
-      final iv = (map['iv'] as String).hexToBytes();
-      final aad = (map['aad'] as String).hexToBytes();
-      final input = (map['input'] as String).hexToBytes();
-      final output = (map['output'] as String).hexToBytes();
-      final mac = (map['output'] as String).hexToBytes();
+      final key = map['key']!.hexToBytes();
+      final iv = map['iv']!.hexToBytes();
+      final aad = map['aad']!.hexToBytes();
+      final input = map['input']!.hexToBytes();
+      final output = map['output']!.hexToBytes();
+      final mac = map['mac']!.hexToBytes();
 
       final gcm = Gcm(
         key,
