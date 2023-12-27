@@ -139,7 +139,7 @@ class OCBCipher implements AEADCipher {
     final bits = bottom % 8;
     var bytes = bottom ~/ 8;
     if (bits == 0) {
-      _offsetMain_0.setAll(0, _stretch.sublist(bytes));
+      _offsetMain_0.setAll(0, _stretch.sublist(bytes, bytes + 16));
     } else {
       for (var i = 0; i < 16; ++i) {
         final b1 = _stretch[bytes];
@@ -175,7 +175,7 @@ class OCBCipher implements AEADCipher {
       }
       _mainBlockPos -= _macSize;
       tag = Uint8List(_macSize);
-      tag.setAll(0, _mainBlock.sublist(_mainBlockPos, _macSize));
+      tag.setAll(0, _mainBlock.sublist(_mainBlockPos, _mainBlockPos + _macSize));
     }
 
     /// HASH: Process any final partial block; compute final hash value
@@ -229,7 +229,7 @@ class OCBCipher implements AEADCipher {
       resultLen += _macSize;
     } else {
       /// Compare the tag from the message with the calculated one
-      if (_macBlock.equals(tag ?? Uint8List(0))) {
+      if (!_macBlock.equals(tag ?? Uint8List(0))) {
         throw InvalidCipherTextException('Mac check in OCB failed');
       }
     }
@@ -403,11 +403,11 @@ class OCBCipher implements AEADCipher {
     _mainCipher.processBlock(_mainBlock, 0, _mainBlock, 0);
     _xor(_mainBlock, _offsetMain);
 
-    output.setAll(outOff, _mainBlock.sublist(0));
+    output.setAll(outOff, _mainBlock.sublist(0, 16));
 
     if (!_forEncryption) {
       _xor(_checksum, _mainBlock);
-      _mainBlock.setAll(0, _mainBlock.sublist(_blockSize, _macSize));
+      _mainBlock.setAll(0, _mainBlock.sublist(_blockSize, _blockSize + _macSize));
       _mainBlockPos = _macSize;
     }
   }
