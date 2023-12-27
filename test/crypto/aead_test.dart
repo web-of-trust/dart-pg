@@ -464,36 +464,38 @@ void main() {
     ];
 
     for (var map in testVectors) {
-      final key = map['key']!.hexToBytes();
-      final iv = map['iv']!.hexToBytes();
-      final aad = map['aad']!.hexToBytes();
-      final input = map['input']!.hexToBytes();
-      final output = map['output']!.hexToBytes();
-      final mac = map['mac']!.hexToBytes();
+      test(map['name'], () {
+        final key = map['key']!.hexToBytes();
+        final iv = map['iv']!.hexToBytes();
+        final aad = map['aad']!.hexToBytes();
+        final input = map['input']!.hexToBytes();
+        final output = map['output']!.hexToBytes();
+        final mac = map['mac']!.hexToBytes();
 
-      final gcm = Gcm(
-        key,
-        SymmetricAlgorithm.aes128,
-      );
+        final gcm = Gcm(
+          key,
+          SymmetricAlgorithm.aes128,
+        );
 
-      /// encryption test
-      var ct = gcm.encrypt(input, iv, aad);
-      expect(ct, equals(Uint8List.fromList([...output, ...mac])),
-          reason: 'encryption test $map["name"] did not match output');
+        /// encryption test
+        var ct = gcm.encrypt(input, iv, aad);
+        expect(ct, equals(Uint8List.fromList([...output, ...mac])),
+            reason: 'encryption test $map["name"] did not match output');
 
-      /// decryption test with verification
-      var pt = gcm.decrypt(Uint8List.fromList([...output, ...mac]), iv, aad);
-      expect(pt, equals(input), reason: 'decryption test $map["name"] did not match output');
+        /// decryption test with verification
+        var pt = gcm.decrypt(Uint8List.fromList([...output, ...mac]), iv, aad);
+        expect(pt, equals(input), reason: 'decryption test $map["name"] did not match output');
 
-      /// testing without additional data
-      ct = gcm.encrypt(input, iv, Uint8List(0));
-      pt = gcm.decrypt(ct, iv, Uint8List(0));
-      expect(pt, equals(input), reason: 'test $map["name"] did not match output');
+        /// testing without additional data
+        ct = gcm.encrypt(input, iv, Uint8List(0));
+        pt = gcm.decrypt(ct, iv, Uint8List(0));
+        expect(pt, equals(input), reason: 'test $map["name"] did not match output');
 
-      /// testing with multiple additional data
-      ct = gcm.encrypt(input, iv, Uint8List.fromList([...aad, ...aad, ...aad]));
-      pt = gcm.decrypt(ct, iv, Uint8List.fromList([...aad, ...aad, ...aad]));
-      expect(pt, equals(input), reason: 'test $map["name"] did not match output');
+        /// testing with multiple additional data
+        ct = gcm.encrypt(input, iv, Uint8List.fromList([...aad, ...aad, ...aad]));
+        pt = gcm.decrypt(ct, iv, Uint8List.fromList([...aad, ...aad, ...aad]));
+        expect(pt, equals(input), reason: 'test $map["name"] did not match output');
+      });
     }
   });
 }
