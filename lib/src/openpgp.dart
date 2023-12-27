@@ -174,6 +174,7 @@ class OpenPGP {
     final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes128,
     final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes128,
     final CompressionAlgorithm compression = CompressionAlgorithm.uncompressed,
+    final bool aeadProtect = false,
     final DateTime? date,
   }) async =>
       (signingKeys.isNotEmpty)
@@ -188,6 +189,7 @@ class OpenPGP {
                   passwords: passwords,
                   sessionKeySymmetric: sessionKeySymmetric,
                   encryptionKeySymmetric: encryptionKeySymmetric,
+                  aeadProtect: aeadProtect,
                 ),
               )
           : message.compress(compression).then((message) => message.encrypt(
@@ -195,6 +197,7 @@ class OpenPGP {
                 passwords: passwords,
                 sessionKeySymmetric: sessionKeySymmetric,
                 encryptionKeySymmetric: encryptionKeySymmetric,
+                aeadProtect: aeadProtect,
               ));
 
   /// Decrypt a message with the user's private key, or a password.

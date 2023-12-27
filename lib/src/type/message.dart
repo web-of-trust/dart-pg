@@ -12,7 +12,9 @@ import '../enum/literal_format.dart';
 import '../enum/packet_tag.dart';
 import '../enum/signature_type.dart';
 import '../enum/symmetric_algorithm.dart';
+import '../packet/aead_encrypted_data.dart';
 import '../packet/compressed_data.dart';
+import '../packet/contained_packet.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/session_key.dart';
 import '../packet/literal_data.dart';
@@ -89,8 +91,7 @@ class Message {
       ]));
 
   LiteralDataPacket? get literalData {
-    final packets =
-        unwrapCompressed().packetList.whereType<LiteralDataPacket>();
+    final packets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     return packets.isNotEmpty ? packets.elementAt(0) : null;
   }
 
@@ -107,13 +108,10 @@ class Message {
   }
 
   /// Gets the key IDs of the keys to which the session key is encrypted
-  Iterable<KeyID> get encryptionKeyIDs => unwrapCompressed()
-      .packetList
-      .whereType<PublicKeyEncryptedSessionKeyPacket>()
-      .map((packet) => packet.publicKeyID);
+  Iterable<KeyID> get encryptionKeyIDs =>
+      unwrapCompressed().packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().map((packet) => packet.publicKeyID);
 
-  Iterable<SignaturePacket> get signaturePackets =>
-      unwrapCompressed().packetList.whereType<SignaturePacket>();
+  Iterable<SignaturePacket> get signaturePackets => unwrapCompressed().packetList.whereType<SignaturePacket>();
 
   /// Returns ASCII armored text of message
   String armor() => Armor.encode(ArmorType.message, packetList.encode());
@@ -226,8 +224,7 @@ class Message {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async {
-    final literalDataPackets =
-        unwrapCompressed().packetList.whereType<LiteralDataPacket>();
+    final literalDataPackets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
@@ -249,6 +246,7 @@ class Message {
     final Iterable<String> passwords = const [],
     final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes128,
     final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes128,
+    final bool aeadProtect = false,
   }) async {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No encryption keys or passwords provided');
@@ -272,16 +270,25 @@ class Message {
         ),
       ),
     );
-    final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
-      sessionKey.key,
-      packetList,
-      symmetric: sessionKeySymmetric,
-    );
+    final ContainedPacket encrypted;
+    if (aeadProtect) {
+      encrypted = await AeadEncryptedData.encryptPackets(
+        sessionKey.key,
+        packetList,
+        symmetric: sessionKeySymmetric,
+      );
+    } else {
+      encrypted = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+        sessionKey.key,
+        packetList,
+        symmetric: sessionKeySymmetric,
+      );
+    }
 
     return Message(PacketList([
       ...pkeskPackets,
       ...skeskPackets,
-      seip,
+      encrypted,
     ]));
   }
 
@@ -299,6 +306,7 @@ class Message {
     final encryptedPackets = packetList.filterByTags([
       PacketTag.symEncryptedData,
       PacketTag.symEncryptedIntegrityProtectedData,
+      PacketTag.aeadEncryptedData,
     ]);
     if (encryptedPackets.isEmpty) {
       throw StateError('No encrypted data found');
@@ -310,6 +318,19 @@ class Message {
     );
     final encryptedPacket = encryptedPackets[0];
     if (encryptedPacket is SymEncryptedIntegrityProtectedDataPacket) {
+      for (var sessionKey in sessionKeys) {
+        try {
+          final packets = await encryptedPacket
+              .decrypt(sessionKey.key, symmetric: sessionKey.symmetric)
+              .then((packet) => packet.packets);
+          if (packets != null) {
+            return Message(packets);
+          }
+        } on Error catch (e) {
+          log(e.toString(), error: e, stackTrace: e.stackTrace);
+        }
+      }
+    } else if (encryptedPacket is AeadEncryptedData) {
       for (var sessionKey in sessionKeys) {
         try {
           final packets = await encryptedPacket
@@ -374,8 +395,7 @@ class Message {
   }) async {
     final sessionKeys = <SessionKey>[];
     if (decryptionKeys.isNotEmpty) {
-      final pkeskPackets =
-          packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
+      final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
       for (final pkesk in pkeskPackets) {
         for (final key in decryptionKeys) {
           final keyPacket = await key.getDecryptionKeyPacket();
