@@ -17,10 +17,10 @@ class SessionKey {
   /// Encryption key
   final Uint8List key;
 
-  SessionKey(this.key, [this.symmetric = SymmetricAlgorithm.aes256]);
+  SessionKey(this.key, [this.symmetric = SymmetricAlgorithm.aes128]);
 
   factory SessionKey.produceKey([
-    SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   ]) {
     return SessionKey(Helper.generateEncryptionKey(symmetric), symmetric);
   }

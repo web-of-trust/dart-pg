@@ -36,7 +36,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
   static Future<SymEncryptedDataPacket> encryptPackets(
     final Uint8List key,
     final PacketList packets, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) async {
     final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
@@ -69,7 +69,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
   /// Encrypt the symmetrically-encrypted packet data
   Future<SymEncryptedDataPacket> encrypt(
     final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) async {
     if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedDataPacket.encryptPackets(
@@ -84,7 +84,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
   /// Decrypt the symmetrically-encrypted packet data
   Future<SymEncryptedDataPacket> decrypt(
     final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final bool allowUnauthenticatedMessages = false,
   }) async {
     if (!allowUnauthenticatedMessages) {

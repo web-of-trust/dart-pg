@@ -247,8 +247,8 @@ class Message {
   Future<Message> encrypt({
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
-    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes128,
   }) async {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No encryption keys or passwords provided');

@@ -301,6 +301,7 @@ class SignaturePacket extends ContainedPacket {
         ])),
         Features(Uint8List.fromList([
           SupportFeature.modificationDetection.value,
+          SupportFeature.aeadEncryptedData.value,
         ])),
       ],
       preferredHash: preferredHash,

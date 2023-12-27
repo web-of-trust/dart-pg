@@ -45,7 +45,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   SymEncryptedSessionKeyPacket(
     this.s2k,
     this.encrypted, {
-    this.symmetric = SymmetricAlgorithm.aes256,
+    this.symmetric = SymmetricAlgorithm.aes128,
     this.sessionKey,
   }) : super(PacketTag.symEncryptedSessionKey);
 
@@ -79,7 +79,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
   static Future<SymEncryptedSessionKeyPacket> encryptSessionKey(
     final String password,
     final SessionKey sessionKey, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final HashAlgorithm hash = HashAlgorithm.sha256,
     final S2kType type = S2kType.iterated,
   }) async {

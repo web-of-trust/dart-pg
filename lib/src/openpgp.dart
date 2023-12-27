@@ -171,8 +171,8 @@ class OpenPGP {
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<PrivateKey> signingKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
-    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes128,
     final CompressionAlgorithm compression = CompressionAlgorithm.uncompressed,
     final DateTime? date,
   }) async =>

@@ -72,7 +72,7 @@ class Helper {
   static pc.SecureRandom secureRandom() => _secureRandom;
 
   static Uint8List generatePrefix([
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   ]) {
     final prefix = _secureRandom.nextBytes(symmetric.blockSize);
     final repeat = [prefix[prefix.length - 2], prefix[prefix.length - 1]];
@@ -80,7 +80,7 @@ class Helper {
   }
 
   static Uint8List generateEncryptionKey([
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   ]) =>
       _secureRandom.nextBytes((symmetric.keySize + 7) >> 3);
 
