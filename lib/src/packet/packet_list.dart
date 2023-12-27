@@ -6,6 +6,7 @@ import 'dart:collection';
 import 'dart:typed_data';
 
 import '../enum/packet_tag.dart';
+import 'aead_encrypted_data.dart';
 import 'compressed_data.dart';
 import 'contained_packet.dart';
 import 'literal_data.dart';
@@ -98,6 +99,11 @@ class PacketList extends ListBase<ContainedPacket> {
         case PacketTag.modificationDetectionCode:
           packets.add(
             ModificationDetectionCodePacket.fromByteData(reader.data),
+          );
+          break;
+        case PacketTag.aeadEncryptedData:
+          packets.add(
+            AeadEncryptedData.fromByteData(reader.data),
           );
           break;
       }

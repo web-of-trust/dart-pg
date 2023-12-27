@@ -4,6 +4,10 @@
 
 import 'dart:typed_data';
 
+export 'eax.dart';
+export 'ocb.dart';
+export 'gcm.dart';
+
 /// AEAD Authenticated-Encryption base class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class Base {
