@@ -110,7 +110,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final bool aeadProtect = false,
   }) async {
-    final version = aeadProtect ? 5 : 4;
+    final version = aeadProtect && sessionKey != null ? 5 : 4;
     final s2k = S2K(
       Helper.secureRandom().nextBytes(S2K.saltLength),
       hash: HashAlgorithm.sha256,
