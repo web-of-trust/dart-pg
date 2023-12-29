@@ -5,7 +5,6 @@
 import 'dart:typed_data';
 
 import '../enum/key_algorithm.dart';
-import '../enum/key_flag.dart';
 import '../enum/revocation_reason_tag.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/key_params.dart';
@@ -55,8 +54,7 @@ class Subkey {
   bool get isSigningKey {
     if (keyPacket.isSigningKey) {
       for (final signature in bindingSignatures) {
-        if (signature.keyFlags != null &&
-            (signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
+        if (signature.keyFlags != null && !signature.keyFlags!.isSignData) {
           return false;
         }
       }
@@ -67,9 +65,7 @@ class Subkey {
   bool get isEncryptionKey {
     if (keyPacket.isEncryptionKey) {
       for (final signature in bindingSignatures) {
-        if (signature.keyFlags != null &&
-            (signature.keyFlags!.flags & KeyFlag.signData.value) ==
-                KeyFlag.signData.value) {
+        if (signature.keyFlags != null && signature.keyFlags!.isSignData) {
           return false;
         }
       }
@@ -106,8 +102,7 @@ class Subkey {
   }) async {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null ||
-            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verify(
             mainKey!.keyPacket,
             Uint8List.fromList([
