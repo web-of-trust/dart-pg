@@ -175,20 +175,32 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
 
       final SessionKey sessionKey;
       if (encrypted.isNotEmpty) {
-        final cipher = BufferedCipher(
-          symmetric.cfbCipherEngine,
-        )..init(
-            false,
-            ParametersWithIV(
-              KeyParameter(key),
-              Uint8List(symmetric.blockSize),
-            ),
+        if (version == 5) {
+          final adata = Uint8List.fromList([
+            0xC0 | tag.value,
+            version,
+            symmetric.value,
+            aead.value,
+          ]);
+          final cipher = aead.cipherEngine(key, symmetric);
+          final decrypted = cipher.decrypt(encrypted, iv, adata);
+          sessionKey = SessionKey(decrypted, symmetric);
+        } else {
+          final cipher = BufferedCipher(
+            symmetric.cfbCipherEngine,
+          )..init(
+              false,
+              ParametersWithIV(
+                KeyParameter(key),
+                Uint8List(symmetric.blockSize),
+              ),
+            );
+          final decrypted = cipher.process(encrypted);
+          final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
+            (algo) => algo.value == decrypted[0],
           );
-        final decrypted = cipher.process(encrypted);
-        final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
-          (algo) => algo.value == decrypted[0],
-        );
-        sessionKey = SessionKey(decrypted.sublist(1), sessionKeySymmetric);
+          sessionKey = SessionKey(decrypted.sublist(1), sessionKeySymmetric);
+        }
       } else {
         sessionKey = SessionKey(key, symmetric);
       }
