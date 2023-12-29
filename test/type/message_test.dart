@@ -273,5 +273,19 @@ void main() {
         );
       }
     });
+
+    test('decrypt aead message test', () async {
+      const encryptedMessageData = '''
+-----BEGIN PGP MESSAGE-----
+
+jD0FBwIDCBt851vLHmcX/6vdNoPTtUfAzChVu81xM5XTozdap+0i087ojXBfNnI+
+E8PyCSTHDlgN4vWJzBS+1E0BBwIQCicPh3seliAmtmPxL4M/qEj7bIX0kgtygRa3
+g68tHRXcVN6USJbvuTWuIwy8eaCwrRdG3pF3b5BADyHl3nsINR9KysPKuM1AaQ==
+=STC7
+-----END PGP MESSAGE-----
+''';
+      final decryptedMessage = await Message.fromArmored(encryptedMessageData).decrypt(passwords: ['password']);
+      expect(decryptedMessage.literalData!.text, "Hello Dart PG\n");
+    });
   });
 }

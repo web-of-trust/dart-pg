@@ -46,7 +46,7 @@ void main() {
     });
 
     test('password protected session key test', () async {
-      final skesk = await SymEncryptedSessionKeyPacket.encryptSessionKey(kek, SessionKey.produceKey());
+      final skesk = await SymEncryptedSessionKeyPacket.encryptSessionKey(kek, sessionKey: SessionKey.produceKey());
       final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         skesk.sessionKey!.key,
         packets,

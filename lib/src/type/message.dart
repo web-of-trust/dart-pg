@@ -265,8 +265,9 @@ class Message {
       passwords.map(
         (password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
           password,
-          sessionKey,
+          sessionKey: sessionKey,
           symmetric: encryptionKeySymmetric,
+          aeadProtect: aeadProtect,
         ),
       ),
     );
