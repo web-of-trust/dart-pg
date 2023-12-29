@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dart_pg/src/enum/compression_algorithm.dart';
 import 'package:dart_pg/src/packet/compressed_data.dart';
 import 'package:dart_pg/src/packet/public_key_encrypted_session_key.dart';
@@ -285,7 +287,7 @@ g68tHRXcVN6USJbvuTWuIwy8eaCwrRdG3pF3b5BADyHl3nsINR9KysPKuM1AaQ==
 -----END PGP MESSAGE-----
 ''';
       final decryptedMessage = await Message.fromArmored(encryptedMessageData).decrypt(passwords: ['password']);
-      expect(decryptedMessage.literalData!.text, "Hello Dart PG\n");
+      expect(utf8.decode(decryptedMessage.literalData!.data), "Hello Dart PG\n");
     });
   });
 }
