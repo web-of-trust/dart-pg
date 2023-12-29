@@ -79,7 +79,8 @@ abstract class Key {
     if (keyPacket.isSigningKey) {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
-          if (signature.keyFlags != null && !signature.keyFlags!.isSignData) {
+          if (signature.keyFlags != null &&
+              !(signature.keyFlags!.isEncryptStorage || signature.keyFlags!.isEncryptCommunication)) {
             return false;
           }
         }

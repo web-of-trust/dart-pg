@@ -54,7 +54,8 @@ class Subkey {
   bool get isSigningKey {
     if (keyPacket.isSigningKey) {
       for (final signature in bindingSignatures) {
-        if (signature.keyFlags != null && !signature.keyFlags!.isSignData) {
+        if (signature.keyFlags != null &&
+            !(signature.keyFlags!.isEncryptStorage || signature.keyFlags!.isEncryptCommunication)) {
           return false;
         }
       }
