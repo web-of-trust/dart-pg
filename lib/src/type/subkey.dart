@@ -51,8 +51,8 @@ class Subkey {
     ]);
   }
 
-  bool get isSigningKey {
-    if (keyPacket.isSigningKey) {
+  bool get isEncryptionKey {
+    if (keyPacket.isEncryptionKey) {
       for (final signature in bindingSignatures) {
         if (signature.keyFlags != null &&
             !(signature.keyFlags!.isEncryptStorage || signature.keyFlags!.isEncryptCommunication)) {
@@ -60,18 +60,18 @@ class Subkey {
         }
       }
     }
-    return keyPacket.isSigningKey;
+    return keyPacket.isEncryptionKey;
   }
 
-  bool get isEncryptionKey {
-    if (keyPacket.isEncryptionKey) {
+  bool get isSigningKey {
+    if (keyPacket.isSigningKey) {
       for (final signature in bindingSignatures) {
-        if (signature.keyFlags != null && signature.keyFlags!.isSignData) {
+        if (signature.keyFlags != null && !signature.keyFlags!.isSignData) {
           return false;
         }
       }
     }
-    return keyPacket.isEncryptionKey;
+    return keyPacket.isSigningKey;
   }
 
   Future<bool> verify({

@@ -75,8 +75,8 @@ abstract class Key {
 
   PublicKey get toPublic;
 
-  bool get isSigningKey {
-    if (keyPacket.isSigningKey) {
+  bool get isEncryptionKey {
+    if (keyPacket.isEncryptionKey) {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
           if (signature.keyFlags != null &&
@@ -86,20 +86,20 @@ abstract class Key {
         }
       }
     }
-    return keyPacket.isSigningKey;
+    return keyPacket.isEncryptionKey;
   }
 
-  bool get isEncryptionKey {
-    if (keyPacket.isEncryptionKey) {
+  bool get isSigningKey {
+    if (keyPacket.isSigningKey) {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
-          if (signature.keyFlags != null && signature.keyFlags!.isSignData) {
+          if (signature.keyFlags != null && !signature.keyFlags!.isSignData) {
             return false;
           }
         }
       }
     }
-    return keyPacket.isEncryptionKey;
+    return keyPacket.isSigningKey;
   }
 
   bool get aeadSupported {
