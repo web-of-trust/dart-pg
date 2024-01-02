@@ -8,7 +8,8 @@ import '../../enum/key_flag.dart';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
-/// Packet holding the key flag values.
+/// This subpacket contains a list of binary flags that hold information about a key.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.21
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class KeyFlags extends SignatureSubpacket {
   KeyFlags(

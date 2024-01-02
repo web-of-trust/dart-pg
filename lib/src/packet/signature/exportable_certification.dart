@@ -7,6 +7,9 @@ import 'dart:typed_data';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
+/// This subpacket denotes whether a certification signature is
+/// "exportable", to be used by other users than the signature's issuer.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.11
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class ExportableCertification extends SignatureSubpacket {
   ExportableCertification(

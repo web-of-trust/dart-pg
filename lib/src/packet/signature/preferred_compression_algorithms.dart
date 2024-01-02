@@ -8,6 +8,9 @@ import '../../enum/compression_algorithm.dart';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
+/// Compression algorithm numbers that indicate which algorithms the key
+/// holder prefers to use.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.9
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PreferredCompressionAlgorithms extends SignatureSubpacket {
   PreferredCompressionAlgorithms(

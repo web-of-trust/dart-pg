@@ -8,6 +8,9 @@ import '../../enum/signature_subpacket_type.dart';
 import '../../enum/support_feature.dart';
 import '../signature_subpacket.dart';
 
+/// The Features subpacket denotes which advanced OpenPGP features a
+/// user's implementation supports.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.24
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Features extends SignatureSubpacket {
   Features(

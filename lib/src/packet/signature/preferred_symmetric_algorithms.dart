@@ -8,6 +8,9 @@ import '../../enum/signature_subpacket_type.dart';
 import '../../enum/symmetric_algorithm.dart';
 import '../signature_subpacket.dart';
 
+/// Symmetric algorithm numbers that indicate which algorithms the key
+/// holder prefers to use.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.7
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PreferredSymmetricAlgorithms extends SignatureSubpacket {
   PreferredSymmetricAlgorithms(

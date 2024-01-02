@@ -3,6 +3,7 @@
 // file that was distributed with this source code.
 
 /// Compression algorithm enum
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-9.3
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum CompressionAlgorithm {
   uncompressed(0),

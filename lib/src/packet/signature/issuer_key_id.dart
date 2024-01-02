@@ -9,7 +9,8 @@ import '../../enum/signature_subpacket_type.dart';
 import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
-/// Packet giving the issuer key ID.
+/// The OpenPGP Key ID of the key issuing the signature.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.5
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class IssuerKeyID extends SignatureSubpacket {
   IssuerKeyID(final Uint8List data, {super.critical, super.isLong})

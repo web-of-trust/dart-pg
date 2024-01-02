@@ -9,7 +9,8 @@ import '../../enum/key_algorithm.dart';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
-/// RFC 4880, Section 5.2.3.25 - Signature Target subpacket.
+/// This subpacket identifies a specific target signature to which a signature refers.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.25
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SignatureTarget extends SignatureSubpacket {
   SignatureTarget(final Uint8List data, {super.critical, super.isLong})

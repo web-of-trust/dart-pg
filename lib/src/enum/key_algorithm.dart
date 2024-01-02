@@ -3,6 +3,7 @@
 // file that was distributed with this source code.
 
 /// Public-Key Algorithms
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-9.1
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum KeyAlgorithm {
   /// RSA (Encrypt or Sign) [HAC]

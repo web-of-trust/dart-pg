@@ -9,7 +9,9 @@ import '../../enum/revocation_reason_tag.dart';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
-/// Represents revocation reason OpenPGP signature sub packet.
+/// This subpacket is used only in key revocation and certification
+/// revocation signatures.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.23
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class RevocationReason extends SignatureSubpacket {
   RevocationReason(final Uint8List data, {super.critical, super.isLong})

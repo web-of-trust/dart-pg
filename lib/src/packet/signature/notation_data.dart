@@ -9,7 +9,9 @@ import 'dart:typed_data';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
-/// Class provided a NotationData object according to RFC2440, Chapter 5.2.3.15. Notation Data
+/// This subpacket describes a "notation" on the signature that the issuer wishes to make.
+/// The notation has a name and a value, each of which are strings of octets.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.16
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class NotationData extends SignatureSubpacket {
   static const headerFlagLength = 4;

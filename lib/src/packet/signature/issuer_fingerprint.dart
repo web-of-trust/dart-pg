@@ -11,7 +11,8 @@ import '../../enum/signature_subpacket_type.dart';
 import '../key_packet.dart';
 import '../signature_subpacket.dart';
 
-/// Packet giving the issuer key fingerprint.
+/// The OpenPGP Key fingerprint of the key issuing the signature.
+/// See https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis#section-5.2.3.28
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class IssuerFingerprint extends SignatureSubpacket {
   IssuerFingerprint(final Uint8List data, {super.critical, super.isLong})

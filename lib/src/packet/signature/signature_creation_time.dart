@@ -9,6 +9,9 @@ import '../../enum/signature_subpacket_type.dart';
 import '../../helpers.dart';
 import '../signature_subpacket.dart';
 
+/// The time the signature was made.
+/// MUST be present in the hashed area.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.4
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SignatureCreationTime extends SignatureSubpacket {
   SignatureCreationTime(

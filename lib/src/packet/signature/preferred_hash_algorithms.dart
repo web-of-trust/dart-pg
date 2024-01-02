@@ -8,6 +8,9 @@ import '../../enum/hash_algorithm.dart';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
+/// Message digest algorithm numbers that indicate which algorithms the
+/// key holder prefers to receive.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.8
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PreferredHashAlgorithms extends SignatureSubpacket {
   PreferredHashAlgorithms(

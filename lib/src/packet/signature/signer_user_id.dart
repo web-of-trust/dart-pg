@@ -8,7 +8,9 @@ import 'dart:typed_data';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
-/// Packet giving the User ID of the signer.
+/// This subpacket allows a keyholder to state which User ID is
+/// responsible for the signing.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.22
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SignerUserID extends SignatureSubpacket {
   SignerUserID(final Uint8List data, {super.critical, super.isLong})

@@ -7,7 +7,9 @@ import 'dart:typed_data';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
-/// Packet giving whether or not the signature is signed using the primary user ID for the key.
+/// This is a flag in a User ID's self-signature that states whether this
+/// User ID is the main User ID for this key.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.19
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PrimaryUserID extends SignatureSubpacket {
   PrimaryUserID(final Uint8List data, {super.critical, super.isLong})

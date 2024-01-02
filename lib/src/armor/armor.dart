@@ -10,9 +10,13 @@ import '../enum/armor_type.dart';
 import '../helpers.dart';
 
 /// ASCII Armor class
+/// OpenPGP's Radix-64 encoding.
+/// It is composed of two parts: a base64
+/// encoding of the binary data and a checksum.
+/// See https://www.rfc-editor.org/rfc/rfc4880#section-6
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Armor {
-  static const version = 'Dart PG v1.0.0';
+  static const version = 'Dart PG v1.2.0';
   static const comment = 'Dart Privacy Guard';
 
   static const messageBegin = '-----BEGIN PGP MESSAGE';
