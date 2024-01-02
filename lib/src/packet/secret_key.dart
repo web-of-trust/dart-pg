@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -27,6 +27,7 @@ import 'key_packet.dart';
 
 /// SecretKey represents a possibly encrypted private key.
 /// See RFC 4880, section 5.5.3.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SecretKeyPacket extends ContainedPacket implements KeyPacket {
   final PublicKeyPacket _publicKey;
 
@@ -208,7 +209,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final iv = random.nextBytes(symmetric.blockSize);
 
       final key = await s2k.produceKey(passphrase, symmetric.keySizeInByte);
-      final cipher = BufferedCipher(symmetric.cipherEngine)
+      final cipher = BufferedCipher(symmetric.cfbCipherEngine)
         ..init(
           true,
           ParametersWithIV(KeyParameter(key), iv),
@@ -241,7 +242,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         final key =
             await s2k?.produceKey(passphrase, symmetric.keySizeInByte) ??
                 Uint8List(symmetric.keySizeInByte);
-        final cipher = BufferedCipher(symmetric.cipherEngine)
+        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
           ..init(
             false,
             ParametersWithIV(

@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -18,6 +18,7 @@ import '../../enum/rsa_key_size.dart';
 import '../../helpers.dart';
 import 'key_params.dart';
 
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class KeyPairParams {
   /// The number of Miller-Rabin primality tests
   static const mrTests = 64;
@@ -225,7 +226,8 @@ class KeyPairParams {
   }
 
   static KeyPairParams _generateCurve25519KeyPair() {
-    final secretKey = Helper.secureRandom().nextBytes(TweetNaCl.secretKeyLength);
+    final secretKey =
+        Helper.secureRandom().nextBytes(TweetNaCl.secretKeyLength);
     secretKey[0] = (secretKey[0] & 127) | 64;
     secretKey[TweetNaCl.secretKeyLength - 1] &= 248;
     final privateKey = nacl.PrivateKey(

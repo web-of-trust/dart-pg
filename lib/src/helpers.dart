@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -13,6 +13,7 @@ import 'crypto/math/int_ext.dart';
 import 'enum/hash_algorithm.dart';
 import 'enum/symmetric_algorithm.dart';
 
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 extension StringHelper on String {
   List<String> chunk(final int chunkSize) {
     assert(chunkSize > 0);
@@ -72,7 +73,7 @@ class Helper {
   static pc.SecureRandom secureRandom() => _secureRandom;
 
   static Uint8List generatePrefix([
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   ]) {
     final prefix = _secureRandom.nextBytes(symmetric.blockSize);
     final repeat = [prefix[prefix.length - 2], prefix[prefix.length - 1]];
@@ -80,7 +81,7 @@ class Helper {
   }
 
   static Uint8List generateEncryptionKey([
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   ]) =>
       _secureRandom.nextBytes((symmetric.keySize + 7) >> 3);
 

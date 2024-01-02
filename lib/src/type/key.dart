@@ -1,9 +1,8 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
 import '../enum/key_algorithm.dart';
-import '../enum/key_flag.dart';
 import '../enum/packet_tag.dart';
 import '../enum/signature_type.dart';
 import '../packet/key/key_id.dart';
@@ -22,6 +21,7 @@ export 'private_key.dart';
 
 /// Abstract class that represents an OpenPGP key. Must contain a primary key.
 /// Can contain additional subkeys, signatures, user ids, user attributes.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class Key {
   final KeyPacket keyPacket;
 
@@ -76,12 +76,25 @@ abstract class Key {
 
   PublicKey get toPublic;
 
+  bool get isEncryptionKey {
+    if (keyPacket.isEncryptionKey) {
+      for (final user in users) {
+        for (var signature in user.selfCertifications) {
+          if (signature.keyFlags != null &&
+              !(signature.keyFlags!.isEncryptStorage || signature.keyFlags!.isEncryptCommunication)) {
+            return false;
+          }
+        }
+      }
+    }
+    return keyPacket.isEncryptionKey;
+  }
+
   bool get isSigningKey {
     if (keyPacket.isSigningKey) {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
-          if (signature.keyFlags != null &&
-              (signature.keyFlags!.flags & KeyFlag.signData.value) == 0) {
+          if (signature.keyFlags != null && !signature.keyFlags!.isSignData) {
             return false;
           }
         }
@@ -90,19 +103,15 @@ abstract class Key {
     return keyPacket.isSigningKey;
   }
 
-  bool get isEncryptionKey {
-    if (keyPacket.isEncryptionKey) {
-      for (final user in users) {
-        for (var signature in user.selfCertifications) {
-          if (signature.keyFlags != null &&
-              (signature.keyFlags!.flags & KeyFlag.signData.value) ==
-                  KeyFlag.signData.value) {
-            return false;
-          }
+  bool get aeadSupported {
+    for (final user in users) {
+      for (var signature in user.selfCertifications) {
+        if (signature.features != null && signature.features!.supportAeadEncryptedData) {
+          return true;
         }
       }
     }
-    return keyPacket.isEncryptionKey;
+    return false;
   }
 
   /// Returns ASCII armored text of key
@@ -174,8 +183,7 @@ abstract class Key {
   }) async {
     if (revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null ||
-            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verify(
             keyPacket,
             keyPacket.writeForSign(),
@@ -231,9 +239,7 @@ abstract class Key {
         ...revocationSignatures,
         ...directSignatures,
         ...users.map((user) => user.toPacketList()).expand((packet) => packet),
-        ...subkeys
-            .map((subkey) => subkey.toPacketList())
-            .expand((packet) => packet),
+        ...subkeys.map((subkey) => subkey.toPacketList()).expand((packet) => packet),
       ]);
 
   static Map<String, dynamic> readPacketList(final PacketList packetList) {

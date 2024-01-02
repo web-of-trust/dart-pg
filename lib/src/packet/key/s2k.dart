@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -14,6 +14,7 @@ import '../../helpers.dart';
 /// String-to-key (S2K) specifiers are used to convert passphrase strings into symmetric-key encryption/decryption keys.
 /// They are used in two places, currently: to encrypt the secret part of private keys in the private keyring,
 /// and to convert passphrases to encryption keys for symmetrically encrypted messages.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class S2K {
   /// Default salt length
   static const saltLength = 8;

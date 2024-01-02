@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dart_pg/src/enum/compression_algorithm.dart';
+import 'package:dart_pg/src/packet/aead_encrypted_data.dart';
 import 'package:dart_pg/src/packet/compressed_data.dart';
 import 'package:dart_pg/src/packet/public_key_encrypted_session_key.dart';
 import 'package:dart_pg/src/packet/sym_encrypted_integrity_protected_data.dart';
@@ -272,6 +275,58 @@ void main() {
           equals(verification.signature.packets.elementAt(0).signatureData),
         );
       }
+    });
+
+    test('aead decrypt message test', () async {
+      const encryptedMessageData = '''
+-----BEGIN PGP MESSAGE-----
+
+jD0FBwIDCBt851vLHmcX/6vdNoPTtUfAzChVu81xM5XTozdap+0i087ojXBfNnI+
+E8PyCSTHDlgN4vWJzBS+1E0BBwIQCicPh3seliAmtmPxL4M/qEj7bIX0kgtygRa3
+g68tHRXcVN6USJbvuTWuIwy8eaCwrRdG3pF3b5BADyHl3nsINR9KysPKuM1AaQ==
+=STC7
+-----END PGP MESSAGE-----
+''';
+      final decryptedMessage = await Message.fromArmored(encryptedMessageData).decrypt(passwords: ['password']);
+      expect(utf8.decode(decryptedMessage.literalData!.data), "Hello Dart PG\n");
+    });
+
+    test('aead encrypt message test', () async {
+      final createTextMessage = Message.createTextMessage(text);
+      final signedMessage = await createTextMessage.sign([signingKey]);
+      final encryptedMessage = await signedMessage.encrypt(
+        encryptionKeys: encryptionKeys,
+        passwords: [password],
+        aeadProtect: true,
+      );
+
+      expect(encryptedMessage.literalData, isNull);
+      expect(encryptedMessage.packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().length, encryptionKeys.length);
+      expect(encryptedMessage.packetList.whereType<SymEncryptedSessionKeyPacket>().length, 1);
+      expect(encryptedMessage.packetList.whereType<AeadEncryptedData>(), isNotEmpty);
+
+      var decryptedMessage = await encryptedMessage.decrypt(passwords: [password]);
+      expect(utf8.decode(decryptedMessage.literalData!.data), text);
+
+      var decryptionKey = await PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
+      decryptedMessage = await encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      expect(decryptedMessage.literalData, isNotNull);
+      expect(decryptedMessage.literalData!.text, text);
+
+      decryptionKey = await PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
+      decryptedMessage = await encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      expect(decryptedMessage.literalData, isNotNull);
+      expect(decryptedMessage.literalData!.text, text);
+
+      decryptionKey = await PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
+      decryptedMessage = await encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      expect(decryptedMessage.literalData, isNotNull);
+      expect(decryptedMessage.literalData!.text, text);
+
+      decryptionKey = await PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
+      decryptedMessage = await encryptedMessage.decrypt(decryptionKeys: [decryptionKey]);
+      expect(decryptedMessage.literalData, isNotNull);
+      expect(decryptedMessage.literalData!.text, text);
     });
   });
 }

@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -20,6 +20,7 @@ import 'packet_list.dart';
 /// The Symmetrically Encrypted Data packet contains data encrypted with a symmetric-key algorithm.
 /// When it has been decrypted, it contains other packets (usually a literal data packet or compressed data packet,
 /// but in theory other Symmetrically Encrypted Data packets or sequences of packets that form whole OpenPGP messages).
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SymEncryptedDataPacket extends ContainedPacket {
   /// Encrypted secret-key data
   final Uint8List encrypted;
@@ -36,9 +37,9 @@ class SymEncryptedDataPacket extends ContainedPacket {
   static Future<SymEncryptedDataPacket> encryptPackets(
     final Uint8List key,
     final PacketList packets, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) async {
-    final cipher = BufferedCipher(symmetric.cipherEngine)
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         true,
         ParametersWithIV(
@@ -69,7 +70,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
   /// Encrypt the symmetrically-encrypted packet data
   Future<SymEncryptedDataPacket> encrypt(
     final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) async {
     if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedDataPacket.encryptPackets(
@@ -84,14 +85,14 @@ class SymEncryptedDataPacket extends ContainedPacket {
   /// Decrypt the symmetrically-encrypted packet data
   Future<SymEncryptedDataPacket> decrypt(
     final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final bool allowUnauthenticatedMessages = false,
   }) async {
     if (!allowUnauthenticatedMessages) {
       throw StateError('Message is not authenticated.');
     }
     final blockSize = symmetric.blockSize;
-    final cipher = BufferedCipher(symmetric.cipherEngine)
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         false,
         ParametersWithIV(

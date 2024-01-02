@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -12,7 +12,9 @@ import '../enum/literal_format.dart';
 import '../enum/packet_tag.dart';
 import '../enum/signature_type.dart';
 import '../enum/symmetric_algorithm.dart';
+import '../packet/aead_encrypted_data.dart';
 import '../packet/compressed_data.dart';
+import '../packet/contained_packet.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/session_key.dart';
 import '../packet/literal_data.dart';
@@ -31,6 +33,7 @@ import 'verification.dart';
 /// Class that represents an OpenPGP message.
 /// Can be an encrypted message, signed message, compressed message or literal message
 /// See {@link https://tools.ietf.org/html/rfc4880#section-11.3}
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Message {
   /// The packets that form this message
   final PacketList packetList;
@@ -89,8 +92,7 @@ class Message {
       ]));
 
   LiteralDataPacket? get literalData {
-    final packets =
-        unwrapCompressed().packetList.whereType<LiteralDataPacket>();
+    final packets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     return packets.isNotEmpty ? packets.elementAt(0) : null;
   }
 
@@ -107,13 +109,10 @@ class Message {
   }
 
   /// Gets the key IDs of the keys to which the session key is encrypted
-  Iterable<KeyID> get encryptionKeyIDs => unwrapCompressed()
-      .packetList
-      .whereType<PublicKeyEncryptedSessionKeyPacket>()
-      .map((packet) => packet.publicKeyID);
+  Iterable<KeyID> get encryptionKeyIDs =>
+      unwrapCompressed().packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().map((packet) => packet.publicKeyID);
 
-  Iterable<SignaturePacket> get signaturePackets =>
-      unwrapCompressed().packetList.whereType<SignaturePacket>();
+  Iterable<SignaturePacket> get signaturePackets => unwrapCompressed().packetList.whereType<SignaturePacket>();
 
   /// Returns ASCII armored text of message
   String armor() => Armor.encode(ArmorType.message, packetList.encode());
@@ -226,8 +225,7 @@ class Message {
     final List<PublicKey> verificationKeys, {
     final DateTime? date,
   }) async {
-    final literalDataPackets =
-        unwrapCompressed().packetList.whereType<LiteralDataPacket>();
+    final literalDataPackets = unwrapCompressed().packetList.whereType<LiteralDataPacket>();
     if (literalDataPackets.isEmpty) {
       throw StateError('No literal data packet to verify.');
     }
@@ -247,8 +245,9 @@ class Message {
   Future<Message> encrypt({
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
-    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes128,
+    final bool aeadProtect = false,
   }) async {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No encryption keys or passwords provided');
@@ -267,21 +266,37 @@ class Message {
       passwords.map(
         (password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
           password,
-          sessionKey,
+          sessionKey: sessionKey,
           symmetric: encryptionKeySymmetric,
+          aeadProtect: aeadProtect,
         ),
       ),
     );
-    final seip = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
-      sessionKey.key,
-      packetList,
-      symmetric: sessionKeySymmetric,
-    );
+    bool aeadSupported = true;
+    for (final key in encryptionKeys) {
+      if (!key.aeadSupported) {
+        aeadSupported = false;
+      }
+    }
+    final ContainedPacket encrypted;
+    if (aeadProtect && aeadSupported) {
+      encrypted = await AeadEncryptedData.encryptPackets(
+        sessionKey.key,
+        packetList,
+        symmetric: sessionKeySymmetric,
+      );
+    } else {
+      encrypted = await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+        sessionKey.key,
+        packetList,
+        symmetric: sessionKeySymmetric,
+      );
+    }
 
     return Message(PacketList([
       ...pkeskPackets,
       ...skeskPackets,
-      seip,
+      encrypted,
     ]));
   }
 
@@ -299,6 +314,7 @@ class Message {
     final encryptedPackets = packetList.filterByTags([
       PacketTag.symEncryptedData,
       PacketTag.symEncryptedIntegrityProtectedData,
+      PacketTag.aeadEncryptedData,
     ]);
     if (encryptedPackets.isEmpty) {
       throw StateError('No encrypted data found');
@@ -310,6 +326,19 @@ class Message {
     );
     final encryptedPacket = encryptedPackets[0];
     if (encryptedPacket is SymEncryptedIntegrityProtectedDataPacket) {
+      for (var sessionKey in sessionKeys) {
+        try {
+          final packets = await encryptedPacket
+              .decrypt(sessionKey.key, symmetric: sessionKey.symmetric)
+              .then((packet) => packet.packets);
+          if (packets != null) {
+            return Message(packets);
+          }
+        } on Error catch (e) {
+          log(e.toString(), error: e, stackTrace: e.stackTrace);
+        }
+      }
+    } else if (encryptedPacket is AeadEncryptedData) {
       for (var sessionKey in sessionKeys) {
         try {
           final packets = await encryptedPacket
@@ -374,8 +403,7 @@ class Message {
   }) async {
     final sessionKeys = <SessionKey>[];
     if (decryptionKeys.isNotEmpty) {
-      final pkeskPackets =
-          packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
+      final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
       for (final pkesk in pkeskPackets) {
         for (final key in decryptionKeys) {
           final keyPacket = await key.getDecryptionKeyPacket();

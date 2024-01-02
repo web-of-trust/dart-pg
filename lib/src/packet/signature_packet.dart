@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -29,6 +29,7 @@ import 'user_id.dart';
 
 /// Signature represents a signature.
 /// See RFC 4880, section 5.2.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SignaturePacket extends ContainedPacket {
   final int version;
 
@@ -300,6 +301,7 @@ class SignaturePacket extends ContainedPacket {
         ])),
         Features(Uint8List.fromList([
           SupportFeature.modificationDetection.value,
+          SupportFeature.aeadEncryptedData.value,
         ])),
       ],
       preferredHash: preferredHash,

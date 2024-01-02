@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -8,6 +8,7 @@ import '../crypto/symmetric/base_cipher.dart';
 
 /// Symmetric-Key Algorithms
 /// See https://tools.ietf.org/html/rfc4880#section-9.2
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum SymmetricAlgorithm {
   plaintext(0),
   idea(1),
@@ -55,11 +56,11 @@ enum SymmetricAlgorithm {
     switch (this) {
       case plaintext:
         return 0;
+      case blowfish:
       case cast5:
       case idea:
       case tripledes:
         return 8;
-      case blowfish:
       case aes128:
       case aes192:
       case aes256:
@@ -71,7 +72,7 @@ enum SymmetricAlgorithm {
     }
   }
 
-  BlockCipher get cipherEngine {
+  BlockCipher get cfbCipherEngine {
     switch (this) {
       case aes128:
       case aes192:
@@ -91,6 +92,31 @@ enum SymmetricAlgorithm {
         return BlockCipher('DESede/CFB-${blockSize * 8}');
       case twofish:
         return CFBBlockCipher(TwofishEngine(), blockSize);
+      default:
+        throw UnsupportedError('Unsupported symmetric algorithm encountered');
+    }
+  }
+
+  BlockCipher get cipherEngine {
+    switch (this) {
+      case aes128:
+      case aes192:
+      case aes256:
+        return AESEngine();
+      case blowfish:
+        return BlowfishEngine();
+      case camellia128:
+      case camellia192:
+      case camellia256:
+        return CamelliaEngine();
+      case cast5:
+        return CAST5Engine();
+      case idea:
+        return IDEAEngine();
+      case tripledes:
+        return DESedeEngine();
+      case twofish:
+        return TwofishEngine();
       default:
         throw UnsupportedError('Unsupported symmetric algorithm encountered');
     }

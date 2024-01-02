@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -17,6 +17,7 @@ import 'contained_packet.dart';
 /// to allow the receiver to begin calculating any hashes needed to verify the signature.
 /// It allows the Signature packet to be placed at the end of the message,
 /// so that the signer can compute the entire signed message in one pass.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class OnePassSignaturePacket extends ContainedPacket {
   static const version = 3;
 
