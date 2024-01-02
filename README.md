@@ -13,7 +13,7 @@ parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-r
   [ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm),
   [EdDSA](https://en.wikipedia.org/wiki/EdDSA)
   and [ECDH](https://en.wikipedia.org/wiki/Elliptic-curve_Diffie%E2%80%93Hellman).
-* Support symmetric ciphers: 3DES, IDEA (for backward compatibility), CAST5, Blowfish, Twofish,
+* Support symmetric ciphers: 3DES, IDEA, CAST5, Blowfish, Twofish,
   [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard),
   [Camellia](https://en.wikipedia.org/wiki/Camellia_(cipher)).
 * Support AEAD algorithms: [EAX](https://www.cs.ucdavis.edu/~rogaway/papers/eax.pdf), [OCB](https://tools.ietf.org/html/rfc7253), [GCM](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf).
