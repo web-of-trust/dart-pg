@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -33,6 +33,7 @@ export 'type/signature.dart';
 export 'type/signed_message.dart';
 
 /// Export high level API for Dart developers.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class OpenPGP {
   /// Generate a new OpenPGP key pair. Supports RSA and ECC keys.
   /// By default, primary and subkeys will be of same type.

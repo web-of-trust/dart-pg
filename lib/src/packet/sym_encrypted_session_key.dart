@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -28,6 +28,7 @@ import 'key/session_key.dart';
 /// The message is encrypted with a session key, and the session key is
 /// itself encrypted and stored in the Encrypted Session Key packet or
 /// the Symmetric-Key Encrypted Session Key packet.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SymEncryptedSessionKeyPacket extends ContainedPacket {
   final int version;
 

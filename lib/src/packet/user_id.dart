@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -15,6 +15,7 @@ import 'contained_packet.dart';
 /// A User ID packet consists of UTF-8 text that is intended to represent the name and email address of the key holder.
 /// By convention, it includes an RFC2822 mail name-addr, but there are no restrictions on its content.
 /// The packet length in the header specifies the length of the User ID.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class UserIDPacket extends ContainedPacket {
   final String userID;
 

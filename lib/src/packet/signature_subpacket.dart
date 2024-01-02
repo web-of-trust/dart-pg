@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -31,6 +31,7 @@ export 'signature/preferred_key_server.dart';
 export 'signature/regular_expression.dart';
 export 'signature/key_server_preferences.dart';
 
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SignatureSubpacket {
   final SignatureSubpacketType type;
 

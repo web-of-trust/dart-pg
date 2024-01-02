@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -14,6 +14,7 @@ import 'base_cipher.dart';
 /// All the algorithms herein are from Applied Cryptography
 /// and implement a simplified cryptography interface.
 /// Ported from Bouncy Castle project
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class BlowfishEngine extends BaseCipher {
   static const _kp = [
     0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344, // 0 - 3

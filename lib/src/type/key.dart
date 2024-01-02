@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -21,6 +21,7 @@ export 'private_key.dart';
 
 /// Abstract class that represents an OpenPGP key. Must contain a primary key.
 /// Can contain additional subkeys, signatures, user ids, user attributes.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class Key {
   final KeyPacket keyPacket;
 
