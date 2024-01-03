@@ -151,7 +151,8 @@ void main() {
       _blockCipherVectorTest(
         3,
         CBCBlockCipher(TwofishEngine()),
-        _kpWithIV('0123456789abcdef1234567890abcdef', '1234567890abcdef0123456789abcdef'),
+        _kpWithIV('0123456789abcdef1234567890abcdef',
+            '1234567890abcdef0123456789abcdef'),
         input,
         'd6bfdbb2090562e960273783127e2658',
       );
@@ -319,14 +320,17 @@ ParametersWithIV<KeyParameter> _kpWithIV(String key, String iv) {
   return ParametersWithIV(_kp(key), iv.hexToBytes());
 }
 
-void _blockCipherVectorTest(int id, BlockCipher engine, CipherParameters params, String input, String output) {
+void _blockCipherVectorTest(int id, BlockCipher engine, CipherParameters params,
+    String input, String output) {
   final inBytes = input.hexToBytes();
   final outBytes = output.hexToBytes();
 
   final cipher = BufferedCipher(engine);
   cipher.init(true, params);
-  expect(outBytes, equals(cipher.process(inBytes)), reason: '${cipher.algorithmName} test $id did not match output');
+  expect(outBytes, equals(cipher.process(inBytes)),
+      reason: '${cipher.algorithmName} test $id did not match output');
 
   cipher.init(false, params);
-  expect(inBytes, equals(cipher.process(outBytes)), reason: '${cipher.algorithmName} test $id did not match input');
+  expect(inBytes, equals(cipher.process(outBytes)),
+      reason: '${cipher.algorithmName} test $id did not match input');
 }

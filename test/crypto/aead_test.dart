@@ -64,7 +64,8 @@ void main() {
         'key': '7c77d6e813bed5ac98baa417477a2e7d',
         'nonce': '1a8c98dcd73d38393b2bf1569deefc19',
         'header': '65d2017990d62528',
-        'cipher': '02083e3979da014812f59f11d52630da30137327d10649b0aa6e1c181db617d7f2',
+        'cipher':
+            '02083e3979da014812f59f11d52630da30137327d10649b0aa6e1c181db617d7f2',
       },
       {
         'name': 'Test Case 8',
@@ -72,7 +73,8 @@ void main() {
         'key': '5fff20cafab119ca2fc73549e20f5b0d',
         'nonce': 'dde59b97d722156d4d9aff2bc7559826',
         'header': '54b9f04e6a09189a',
-        'cipher': '2ec47b2c4954a489afc7ba4897edcdae8cc33b60450599bd02c96382902aef7f832a',
+        'cipher':
+            '2ec47b2c4954a489afc7ba4897edcdae8cc33b60450599bd02c96382902aef7f832a',
       },
       {
         'name': 'Test Case 9',
@@ -80,7 +82,8 @@ void main() {
         'key': 'a4a4782bcffd3ec5e7ef6d8c34a56123',
         'nonce': 'b781fcf2f75fa5a8de97a9ca48e522ec',
         'header': '899a175897561d7e',
-        'cipher': '0de18fd0fdd91e7af19f1d8ee8733938b1e8e7f6d2231618102fdb7fe55ff1991700',
+        'cipher':
+            '0de18fd0fdd91e7af19f1d8ee8733938b1e8e7f6d2231618102fdb7fe55ff1991700',
       },
       {
         'name': 'Test Case 10',
@@ -88,7 +91,8 @@ void main() {
         'key': '8395fcf1e95bebd697bd010bc766aac3',
         'nonce': '22e7add93cfc6393c57ec0b3c17d6b44',
         'header': '126735fcc320d25a',
-        'cipher': 'cb8920f87a6c75cff39627b56e3ed197c552d295a7cfc46afc253b4652b1af3795b124ab6e',
+        'cipher':
+            'cb8920f87a6c75cff39627b56e3ed197c552d295a7cfc46afc253b4652b1af3795b124ab6e',
       },
     ];
     for (var map in testVectors) {
@@ -103,21 +107,27 @@ void main() {
 
         /// encryption test
         var ct = eax.encrypt(msg, nonce, header);
-        expect(ct, equals(cipher), reason: 'encryption test $map["name"] did not match output');
+        expect(ct, equals(cipher),
+            reason: 'encryption test $map["name"] did not match output');
 
         /// decryption test with verification
         var pt = eax.decrypt(cipher, nonce, header);
-        expect(pt, equals(msg), reason: 'decryption test $map["name"] did not match output');
+        expect(pt, equals(msg),
+            reason: 'decryption test $map["name"] did not match output');
 
         /// testing without additional data
         ct = eax.encrypt(msg, nonce, Uint8List(0));
         pt = eax.decrypt(ct, nonce, Uint8List(0));
-        expect(pt, equals(msg), reason: 'test $map["name"] did not match output');
+        expect(pt, equals(msg),
+            reason: 'test $map["name"] did not match output');
 
         /// testing with multiple additional data
-        ct = eax.encrypt(msg, nonce, Uint8List.fromList([...header, ...header, ...header]));
-        pt = eax.decrypt(ct, nonce, Uint8List.fromList([...header, ...header, ...header]));
-        expect(pt, equals(msg), reason: 'test $map["name"] did not match output');
+        ct = eax.encrypt(
+            msg, nonce, Uint8List.fromList([...header, ...header, ...header]));
+        pt = eax.decrypt(
+            ct, nonce, Uint8List.fromList([...header, ...header, ...header]));
+        expect(pt, equals(msg),
+            reason: 'test $map["name"] did not match output');
       });
     }
   });
@@ -179,7 +189,8 @@ void main() {
         'N': 'bbaa99887766554433221107',
         'A': '000102030405060708090a0b0c0d0e0f1011121314151617',
         'P': '000102030405060708090a0b0c0d0e0f1011121314151617',
-        'C': '1ca2207308c87c010756104d8840ce1952f09673a448a122c92c62241051f57356d7f3c90bb0e07f',
+        'C':
+            '1ca2207308c87c010756104d8840ce1952f09673a448a122c92c62241051f57356d7f3c90bb0e07f',
       },
       {
         'name': 'Test Case 9',
@@ -193,14 +204,16 @@ void main() {
         'N': 'bbaa99887766554433221109',
         'A': '',
         'P': '000102030405060708090a0b0c0d0e0f1011121314151617',
-        'C': '221bd0de7fa6fe993eccd769460a0af2d6cded0c395b1c3ce725f32494b9f914d85c0b1eb38357ff',
+        'C':
+            '221bd0de7fa6fe993eccd769460a0af2d6cded0c395b1c3ce725f32494b9f914d85c0b1eb38357ff',
       },
       {
         'name': 'Test Case 11',
         'N': 'bbaa9988776655443322110a',
         'A': '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',
         'P': '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',
-        'C': 'bd6f6c496201c69296c11efd138a467abd3c707924b964deaffc40319af5a48540fbba186c5553c68ad9f592a79a4240',
+        'C':
+            'bd6f6c496201c69296c11efd138a467abd3c707924b964deaffc40319af5a48540fbba186c5553c68ad9f592a79a4240',
       },
       {
         'name': 'Test Case 12',
@@ -214,20 +227,24 @@ void main() {
         'N': 'bbaa9988776655443322110c',
         'A': '',
         'P': '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',
-        'C': '2942bfc773bda23cabc6acfd9bfd5835bd300f0973792ef46040c53f1432bcdfb5e1dde3bc18a5f840b52e653444d5df',
+        'C':
+            '2942bfc773bda23cabc6acfd9bfd5835bd300f0973792ef46040c53f1432bcdfb5e1dde3bc18a5f840b52e653444d5df',
       },
       {
         'name': 'Test Case 14',
         'N': 'bbaa9988776655443322110d',
-        'A': '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324252627',
-        'P': '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324252627',
+        'A':
+            '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324252627',
+        'P':
+            '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324252627',
         'C':
             'd5ca91748410c1751ff8a2f618255b68a0a12e093ff454606e59f9c1d0ddc54b65e8628e568bad7aed07ba06a4a69483a7035490c5769e60',
       },
       {
         'name': 'Test Case 15',
         'N': 'bbaa9988776655443322110e',
-        'A': '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324252627',
+        'A':
+            '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324252627',
         'P': '',
         'C': 'c5cd9d1850c141e358649994ee701b68',
       },
@@ -235,7 +252,8 @@ void main() {
         'name': 'Test Case 16',
         'N': 'bbaa9988776655443322110f',
         'A': '',
-        'P': '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324252627',
+        'P':
+            '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324252627',
         'C':
             '4412923493c57d5de0d700f753cce0d1d2d95060122e9f15a5ddbfc5787e50b5cc55ee507bcb084e479ad363ac366b95a98ca5f3000b1479',
       },
@@ -251,21 +269,27 @@ void main() {
 
         /// encryption test
         var ct = ocb.encrypt(msg, nonce, header);
-        expect(ct, equals(cipher), reason: 'encryption test $map["name"] did not match output');
+        expect(ct, equals(cipher),
+            reason: 'encryption test $map["name"] did not match output');
 
         /// decryption test with verification
         var pt = ocb.decrypt(cipher, nonce, header);
-        expect(pt, equals(msg), reason: 'decryption test $map["name"] did not match output');
+        expect(pt, equals(msg),
+            reason: 'decryption test $map["name"] did not match output');
 
         /// testing without additional data
         ct = ocb.encrypt(msg, nonce, Uint8List(0));
         pt = ocb.decrypt(ct, nonce, Uint8List(0));
-        expect(pt, equals(msg), reason: 'test $map["name"] did not match output');
+        expect(pt, equals(msg),
+            reason: 'test $map["name"] did not match output');
 
         /// testing with multiple additional data
-        ct = ocb.encrypt(msg, nonce, Uint8List.fromList([...header, ...header, ...header]));
-        pt = ocb.decrypt(ct, nonce, Uint8List.fromList([...header, ...header, ...header]));
-        expect(pt, equals(msg), reason: 'test $map["name"] did not match output');
+        ct = ocb.encrypt(
+            msg, nonce, Uint8List.fromList([...header, ...header, ...header]));
+        pt = ocb.decrypt(
+            ct, nonce, Uint8List.fromList([...header, ...header, ...header]));
+        expect(pt, equals(msg),
+            reason: 'test $map["name"] did not match output');
       });
     }
   });
@@ -400,7 +424,8 @@ void main() {
       },
       {
         'name': 'Test Case 13',
-        'key': '0000000000000000000000000000000000000000000000000000000000000000',
+        'key':
+            '0000000000000000000000000000000000000000000000000000000000000000',
         'iv': '000000000000000000000000',
         'aad': '',
         'input': '',
@@ -409,7 +434,8 @@ void main() {
       },
       {
         'name': 'Test Case 14',
-        'key': '0000000000000000000000000000000000000000000000000000000000000000',
+        'key':
+            '0000000000000000000000000000000000000000000000000000000000000000',
         'iv': '000000000000000000000000',
         'aad': '',
         'input': '00000000000000000000000000000000',
@@ -418,7 +444,8 @@ void main() {
       },
       {
         'name': 'Test Case 15',
-        'key': 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
+        'key':
+            'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
         'iv': 'cafebabefacedbaddecaf888',
         'aad': '',
         'input':
@@ -429,7 +456,8 @@ void main() {
       },
       {
         'name': 'Test Case 16',
-        'key': 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
+        'key':
+            'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
         'iv': 'cafebabefacedbaddecaf888',
         'aad': 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
         'input':
@@ -440,7 +468,8 @@ void main() {
       },
       {
         'name': 'Test Case 17',
-        'key': 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
+        'key':
+            'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
         'iv': 'cafebabefacedbad',
         'aad': 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
         'input':
@@ -451,7 +480,8 @@ void main() {
       },
       {
         'name': 'Test Case 18',
-        'key': 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
+        'key':
+            'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
         'iv':
             '9313225df88406e555909c5aff5269aa6a7a9538534f7da1e4c303d2a318a728c3c0c95156809539fcf0e2429a6b525416aedbf5a0de6a57a637b39b',
         'aad': 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
@@ -484,17 +514,21 @@ void main() {
 
         /// decryption test with verification
         var pt = gcm.decrypt(Uint8List.fromList([...output, ...mac]), iv, aad);
-        expect(pt, equals(input), reason: 'decryption test $map["name"] did not match output');
+        expect(pt, equals(input),
+            reason: 'decryption test $map["name"] did not match output');
 
         /// testing without additional data
         ct = gcm.encrypt(input, iv, Uint8List(0));
         pt = gcm.decrypt(ct, iv, Uint8List(0));
-        expect(pt, equals(input), reason: 'test $map["name"] did not match output');
+        expect(pt, equals(input),
+            reason: 'test $map["name"] did not match output');
 
         /// testing with multiple additional data
-        ct = gcm.encrypt(input, iv, Uint8List.fromList([...aad, ...aad, ...aad]));
+        ct = gcm.encrypt(
+            input, iv, Uint8List.fromList([...aad, ...aad, ...aad]));
         pt = gcm.decrypt(ct, iv, Uint8List.fromList([...aad, ...aad, ...aad]));
-        expect(pt, equals(input), reason: 'test $map["name"] did not match output');
+        expect(pt, equals(input),
+            reason: 'test $map["name"] did not match output');
       });
     }
   });

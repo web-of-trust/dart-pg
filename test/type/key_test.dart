@@ -81,8 +81,10 @@ void main() {
 
   group('Read private key', () {
     test('rsa test', () async {
-      final privateKey = await PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
-      expect(privateKey.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
+      final privateKey =
+          await PrivateKey.fromArmored(rsaPrivateKey).decrypt(passphrase);
+      expect(
+          privateKey.fingerprint, '44ebf9e6dc6647d61c556de27a686b5a10709559');
       expect(privateKey.algorithm, KeyAlgorithm.rsaEncryptSign);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyPacket.isDecrypted, isTrue);
@@ -100,8 +102,10 @@ void main() {
     });
 
     test('dsa elgamal test', () async {
-      final privateKey = await PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
-      expect(privateKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
+      final privateKey =
+          await PrivateKey.fromArmored(dsaPrivateKey).decrypt(passphrase);
+      expect(
+          privateKey.fingerprint, 'd7143f20460ecd568e1ed6cd76c0caec8769a8a7');
       expect(privateKey.algorithm, KeyAlgorithm.dsa);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyPacket.isDecrypted, isTrue);
@@ -119,8 +123,10 @@ void main() {
     });
 
     test('ecc test', () async {
-      final privateKey = await PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
-      expect(privateKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
+      final privateKey =
+          await PrivateKey.fromArmored(eccPrivateKey).decrypt(passphrase);
+      expect(
+          privateKey.fingerprint, '2d84ae177c1bed087cb9903cdeefcc766e22aedf');
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyPacket.isDecrypted, isTrue);
@@ -138,8 +144,10 @@ void main() {
     });
 
     test('curve25519 test', () async {
-      final privateKey = await PrivateKey.fromArmored(curve25519PrivateKey).decrypt(passphrase);
-      expect(privateKey.fingerprint, '67287cc6376746e683fd24675654e554d72fcf47');
+      final privateKey = await PrivateKey.fromArmored(curve25519PrivateKey)
+          .decrypt(passphrase);
+      expect(
+          privateKey.fingerprint, '67287cc6376746e683fd24675654e554d72fcf47');
       expect(privateKey.algorithm, KeyAlgorithm.eddsa);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyPacket.isDecrypted, isTrue);
@@ -221,7 +229,9 @@ void main() {
       expect(bindingSignature.keyFlags!.isEncryptCommunication, isTrue);
       expect(bindingSignature.keyFlags!.isEncryptStorage, isTrue);
 
-      privateKey.addSubkey(passphrase, subkeyAlgorithm: KeyAlgorithm.elgamal).then((privateKey) async {
+      privateKey
+          .addSubkey(passphrase, subkeyAlgorithm: KeyAlgorithm.elgamal)
+          .then((privateKey) async {
         final subkey = privateKey.subkeys[1];
         expect(subkey.algorithm, KeyAlgorithm.elgamal);
         expect(await subkey.verify(), isTrue);
@@ -235,7 +245,8 @@ void main() {
         type: KeyGenerationType.ecdsa,
         curve: CurveInfo.prime256v1,
       );
-      final publicParams = privateKey.keyPacket.publicParams as ECDSAPublicParams;
+      final publicParams =
+          privateKey.keyPacket.publicParams as ECDSAPublicParams;
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyStrength, 256);
@@ -253,10 +264,12 @@ void main() {
       expect(await subkey.verify(), isTrue);
       expect(subkey.keyStrength, 256);
 
-      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      final subkeyPublicParams =
+          subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.curve, CurveInfo.prime256v1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.prime256v1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.prime256v1.symmetricAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric,
+          CurveInfo.prime256v1.symmetricAlgorithm);
     });
 
     test('secp256k1 curve', () async {
@@ -266,7 +279,8 @@ void main() {
         type: KeyGenerationType.ecdsa,
         curve: CurveInfo.secp256k1,
       );
-      final publicParams = privateKey.keyPacket.publicParams as ECDSAPublicParams;
+      final publicParams =
+          privateKey.keyPacket.publicParams as ECDSAPublicParams;
       expect(privateKey.algorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyStrength, 256);
@@ -284,10 +298,12 @@ void main() {
       expect(await subkey.verify(), isTrue);
       expect(subkey.keyStrength, 256);
 
-      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      final subkeyPublicParams =
+          subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.curve, CurveInfo.secp256k1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.secp256k1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.secp256k1.symmetricAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric,
+          CurveInfo.secp256k1.symmetricAlgorithm);
     });
 
     test('secp384r1 curve', () async {
@@ -315,10 +331,12 @@ void main() {
       expect(await subkey.verify(), isTrue);
       expect(subkey.keyStrength, 384);
 
-      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      final subkeyPublicParams =
+          subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.curve, CurveInfo.secp384r1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.secp384r1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.secp384r1.symmetricAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric,
+          CurveInfo.secp384r1.symmetricAlgorithm);
     });
 
     test('secp521r1 curve', () async {
@@ -346,10 +364,12 @@ void main() {
       expect(await subkey.verify(), isTrue);
       expect(subkey.keyStrength, 521);
 
-      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      final subkeyPublicParams =
+          subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.curve, CurveInfo.secp521r1);
       expect(subkeyPublicParams.kdfHash, CurveInfo.secp521r1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.secp521r1.symmetricAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric,
+          CurveInfo.secp521r1.symmetricAlgorithm);
     });
 
     test('brainpoolp256r1 curve', () async {
@@ -377,10 +397,13 @@ void main() {
       expect(await subkey.verify(), isTrue);
       expect(subkey.keyStrength, 256);
 
-      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      final subkeyPublicParams =
+          subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.curve, CurveInfo.brainpoolP256r1);
-      expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolP256r1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolP256r1.symmetricAlgorithm);
+      expect(
+          subkeyPublicParams.kdfHash, CurveInfo.brainpoolP256r1.hashAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric,
+          CurveInfo.brainpoolP256r1.symmetricAlgorithm);
     });
 
     test('brainpoolp384r1 curve', () async {
@@ -408,10 +431,13 @@ void main() {
       expect(await subkey.verify(), isTrue);
       expect(subkey.keyStrength, 384);
 
-      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      final subkeyPublicParams =
+          subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.curve, CurveInfo.brainpoolP384r1);
-      expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolP384r1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolP384r1.symmetricAlgorithm);
+      expect(
+          subkeyPublicParams.kdfHash, CurveInfo.brainpoolP384r1.hashAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric,
+          CurveInfo.brainpoolP384r1.symmetricAlgorithm);
     });
 
     test('brainpoolp512r1 curve', () async {
@@ -439,13 +465,17 @@ void main() {
       expect(await subkey.verify(), isTrue);
       expect(subkey.keyStrength, 512);
 
-      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      final subkeyPublicParams =
+          subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.curve, CurveInfo.brainpoolP512r1);
-      expect(subkeyPublicParams.kdfHash, CurveInfo.brainpoolP512r1.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.brainpoolP512r1.symmetricAlgorithm);
+      expect(
+          subkeyPublicParams.kdfHash, CurveInfo.brainpoolP512r1.hashAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric,
+          CurveInfo.brainpoolP512r1.symmetricAlgorithm);
 
       privateKey
-          .addSubkey(passphrase, subkeyAlgorithm: KeyAlgorithm.ecdh, curve: CurveInfo.secp521r1)
+          .addSubkey(passphrase,
+              subkeyAlgorithm: KeyAlgorithm.ecdh, curve: CurveInfo.secp521r1)
           .then((privateKey) async {
         final subkey = privateKey.subkeys[1];
         expect(subkey.algorithm, KeyAlgorithm.ecdh);
@@ -462,7 +492,8 @@ void main() {
         passphrase,
         type: KeyGenerationType.eddsa,
       );
-      final publicParams = privateKey.keyPacket.publicParams as EdDSAPublicParams;
+      final publicParams =
+          privateKey.keyPacket.publicParams as EdDSAPublicParams;
       expect(privateKey.algorithm, KeyAlgorithm.eddsa);
       expect(privateKey.isPrivate, isTrue);
       expect(privateKey.keyStrength, 255);
@@ -480,13 +511,16 @@ void main() {
       expect(await subkey.verify(), isTrue);
       expect(subkey.keyStrength, 255);
 
-      final subkeyPublicParams = subkey.keyPacket.publicParams as ECDHPublicParams;
+      final subkeyPublicParams =
+          subkey.keyPacket.publicParams as ECDHPublicParams;
       expect(subkeyPublicParams.curve, CurveInfo.curve25519);
       expect(subkeyPublicParams.kdfHash, CurveInfo.curve25519.hashAlgorithm);
-      expect(subkeyPublicParams.kdfSymmetric, CurveInfo.curve25519.symmetricAlgorithm);
+      expect(subkeyPublicParams.kdfSymmetric,
+          CurveInfo.curve25519.symmetricAlgorithm);
 
       privateKey
-          .addSubkey(passphrase, subkeyAlgorithm: KeyAlgorithm.ecdh, curve: CurveInfo.curve25519)
+          .addSubkey(passphrase,
+              subkeyAlgorithm: KeyAlgorithm.ecdh, curve: CurveInfo.curve25519)
           .then((privateKey) async {
         final subkey = privateKey.subkeys[1];
         expect(subkey.algorithm, KeyAlgorithm.ecdh);
