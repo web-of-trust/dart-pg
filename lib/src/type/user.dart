@@ -39,10 +39,9 @@ class User {
   }) async {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null ||
-            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verifyUserCertification(
-            mainKey!.keyPacket,
+            await mainKey!.toPublic.getVerificationKeyPacket(),
             userID: userID,
             userAttribute: userAttribute,
             date: date,
@@ -64,7 +63,7 @@ class User {
     if (mainKey != null) {
       for (final signature in selfCertifications) {
         if (!await signature.verifyUserCertification(
-          mainKey!.keyPacket,
+          await mainKey!.toPublic.getVerificationKeyPacket(),
           userID: userID,
           userAttribute: userAttribute,
           date: date,
