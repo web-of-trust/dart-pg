@@ -74,11 +74,16 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
     pos++;
 
-    /// A one-octet number describing the aead algorithm used.
-    final aead = AeadAlgorithm.values.firstWhere(
-      (algo) => algo.value == bytes[pos],
-    );
-    pos++;
+    final AeadAlgorithm aead;
+    if (version == 5) {
+      /// A one-octet number describing the aead algorithm used.
+      aead = AeadAlgorithm.values.firstWhere(
+        (algo) => algo.value == bytes[pos],
+      );
+      pos++;
+    } else {
+      aead = AeadAlgorithm.ocb;
+    }
 
     /// A string-to-key (S2K) specifier, length as defined above.
     final s2k = S2K.fromByteData(bytes.sublist(pos));
