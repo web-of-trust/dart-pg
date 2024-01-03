@@ -56,7 +56,8 @@ class Subkey {
     if (keyPacket.isEncryptionKey) {
       for (final signature in bindingSignatures) {
         if (signature.keyFlags != null &&
-            !(signature.keyFlags!.isEncryptStorage || signature.keyFlags!.isEncryptCommunication)) {
+            !(signature.keyFlags!.isEncryptStorage ||
+                signature.keyFlags!.isEncryptCommunication)) {
           return false;
         }
       }
@@ -104,7 +105,8 @@ class Subkey {
   }) async {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
       for (var revocation in revocationSignatures) {
-        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+        if (signature == null ||
+            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verify(
             mainKey!.keyPacket,
             Uint8List.fromList([

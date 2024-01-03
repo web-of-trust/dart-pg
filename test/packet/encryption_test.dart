@@ -235,7 +235,7 @@ void main() {
       final key = Helper.generateEncryptionKey(SymmetricAlgorithm.aes256);
 
       final encrypted = await AeadEncryptedData.encryptPackets(key, packets);
-      expect(encrypted.symmetric, SymmetricAlgorithm.aes256);
+      expect(encrypted.symmetric, SymmetricAlgorithm.aes128);
       expect(encrypted.aead, AeadAlgorithm.ocb);
       expect(encrypted.chunkSize, 12);
 

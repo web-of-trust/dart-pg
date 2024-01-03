@@ -175,7 +175,13 @@ class OCBCipher implements AEADCipher {
       }
       _mainBlockPos -= _macSize;
       tag = Uint8List(_macSize);
-      tag.setAll(0, _mainBlock.sublist(_mainBlockPos, _mainBlockPos + _macSize));
+      tag.setAll(
+        0,
+        _mainBlock.sublist(
+          _mainBlockPos,
+          _mainBlockPos + _macSize,
+        ),
+      );
     }
 
     /// HASH: Process any final partial block; compute final hash value
@@ -407,7 +413,13 @@ class OCBCipher implements AEADCipher {
 
     if (!_forEncryption) {
       _xor(_checksum, _mainBlock);
-      _mainBlock.setAll(0, _mainBlock.sublist(_blockSize, _blockSize + _macSize));
+      _mainBlock.setAll(
+        0,
+        _mainBlock.sublist(
+          _blockSize,
+          _blockSize + _macSize,
+        ),
+      );
       _mainBlockPos = _macSize;
     }
   }
