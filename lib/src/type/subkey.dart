@@ -84,7 +84,7 @@ class Subkey {
     if (mainKey != null) {
       for (final signature in bindingSignatures) {
         if (!await signature.verify(
-          await mainKey!.toPublic.getVerificationKeyPacket(),
+          mainKey!.keyPacket,
           Uint8List.fromList([
             ...mainKey!.keyPacket.writeForSign(),
             ...keyPacket.writeForSign(),
@@ -106,7 +106,7 @@ class Subkey {
       for (var revocation in revocationSignatures) {
         if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verify(
-            await mainKey!.toPublic.getVerificationKeyPacket(),
+            mainKey!.keyPacket,
             Uint8List.fromList([
               ...mainKey!.keyPacket.writeForSign(),
               ...keyPacket.writeForSign(),

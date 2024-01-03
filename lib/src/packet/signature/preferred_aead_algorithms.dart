@@ -14,7 +14,7 @@ class PreferredAeadAlgorithms extends SignatureSubpacket {
     super.critical,
     super.isLong,
   }) : super(
-          SignatureSubpacketType.preferredCompressionAlgorithms,
+          SignatureSubpacketType.preferredAeadAlgorithms,
           data,
         );
 
