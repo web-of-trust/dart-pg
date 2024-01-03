@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -18,6 +18,7 @@ import 'user_attribute_subpacket.dart';
 /// Like the User ID packet, a User Attribute packet may be certified by the key
 /// owner ("self-signed") or any other key owner who cares to certify it.
 /// Except as noted, a User Attribute packet may be used anywhere that a User ID packet may be used.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class UserAttributePacket extends ContainedPacket {
   final List<UserAttributeSubpacket> attributes;
 

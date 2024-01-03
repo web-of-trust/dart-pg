@@ -37,3 +37,6 @@
 ## 1.1.5 (2023-06-09)
 - Change homepage url
 - Fix lower 3 bits of the secret key are not cleared of curve25519 key generation
+
+## 1.2.0 (2024-01-03)
+- Support AEAD algorithms: EAX, OCB, GCM

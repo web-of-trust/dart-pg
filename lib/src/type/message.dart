@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -12,7 +12,9 @@ import '../enum/literal_format.dart';
 import '../enum/packet_tag.dart';
 import '../enum/signature_type.dart';
 import '../enum/symmetric_algorithm.dart';
+import '../packet/aead_encrypted_data.dart';
 import '../packet/compressed_data.dart';
+import '../packet/contained_packet.dart';
 import '../packet/key/key_id.dart';
 import '../packet/key/session_key.dart';
 import '../packet/literal_data.dart';
@@ -31,6 +33,7 @@ import 'verification.dart';
 /// Class that represents an OpenPGP message.
 /// Can be an encrypted message, signed message, compressed message or literal message
 /// See {@link https://tools.ietf.org/html/rfc4880#section-11.3}
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Message {
   /// The packets that form this message
   final PacketList packetList;
@@ -247,8 +250,9 @@ class Message {
   Message encrypt({
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
-    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes128,
+    final bool aeadProtect = false,
   }) {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No encryption keys or passwords provided');
@@ -264,20 +268,36 @@ class Message {
     final skeskPackets = passwords.map(
       (password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
         password,
-        sessionKey,
+        sessionKey: sessionKey,
         symmetric: encryptionKeySymmetric,
+        aeadProtect: aeadProtect,
       ),
     );
-    final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
-      sessionKey.key,
-      packetList,
-      symmetric: sessionKeySymmetric,
-    );
+    bool aeadSupported = true;
+    for (final key in encryptionKeys) {
+      if (!key.aeadSupported) {
+        aeadSupported = false;
+      }
+    }
+    final ContainedPacket encrypted;
+    if (aeadProtect && aeadSupported) {
+      encrypted = AeadEncryptedData.encryptPackets(
+        sessionKey.key,
+        packetList,
+        symmetric: sessionKeySymmetric,
+      );
+    } else {
+      encrypted = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+        sessionKey.key,
+        packetList,
+        symmetric: sessionKeySymmetric,
+      );
+    }
 
     return Message(PacketList([
       ...pkeskPackets,
       ...skeskPackets,
-      seip,
+      encrypted,
     ]));
   }
 
@@ -295,6 +315,7 @@ class Message {
     final encryptedPackets = packetList.filterByTags([
       PacketTag.symEncryptedData,
       PacketTag.symEncryptedIntegrityProtectedData,
+      PacketTag.aeadEncryptedData,
     ]);
     if (encryptedPackets.isEmpty) {
       throw StateError('No encrypted data found');
@@ -306,6 +327,19 @@ class Message {
     );
     final encryptedPacket = encryptedPackets[0];
     if (encryptedPacket is SymEncryptedIntegrityProtectedDataPacket) {
+      for (var sessionKey in sessionKeys) {
+        try {
+          final packets = encryptedPacket
+              .decrypt(sessionKey.key, symmetric: sessionKey.symmetric)
+              .packets;
+          if (packets != null) {
+            return Message(packets);
+          }
+        } on Error catch (e) {
+          log(e.toString(), error: e, stackTrace: e.stackTrace);
+        }
+      }
+    } else if (encryptedPacket is AeadEncryptedData) {
       for (var sessionKey in sessionKeys) {
         try {
           final packets = encryptedPacket

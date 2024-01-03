@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -21,6 +21,7 @@ import 'packet_list.dart';
 /// The Symmetrically Encrypted Integrity Protected Data packet is a variant of the Symmetrically Encrypted Data packet.
 /// It is a new feature created for OpenPGP that addresses the problem of detecting a modification to encrypted data.
 /// It is used in combination with a Modification Detection Code packet.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   static const version = 1;
 
@@ -51,7 +52,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   static SymEncryptedIntegrityProtectedDataPacket encryptPackets(
     final Uint8List key,
     final PacketList packets, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) {
     final toHash = Uint8List.fromList([
       ...Helper.generatePrefix(symmetric),
@@ -86,7 +87,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   /// Encrypt the payload in the packet.
   SymEncryptedIntegrityProtectedDataPacket encrypt(
     final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) {
     if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
@@ -101,8 +102,8 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
   /// Decrypts the encrypted data contained in the packet.
   SymEncryptedIntegrityProtectedDataPacket decrypt(
     final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
-  })  {
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+  }) {
     final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         false,

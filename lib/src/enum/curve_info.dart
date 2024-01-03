@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -7,6 +7,8 @@ import 'package:pointycastle/asn1.dart';
 import 'hash_algorithm.dart';
 import 'symmetric_algorithm.dart';
 
+/// Curve information enum
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum CurveInfo {
   prime256v1([1, 2, 840, 10045, 3, 1, 7], '1.2.840.10045.3.1.7'),
   secp256k1([1, 3, 132, 0, 10], '1.3.132.0.10'),

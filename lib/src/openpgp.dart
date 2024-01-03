@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -20,6 +20,7 @@ export 'type/signature.dart';
 export 'type/signed_message.dart';
 
 /// Export high level API for Dart developers.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class OpenPGP {
   /// Generate a new OpenPGP key pair. Supports RSA and ECC keys.
   /// By default, primary and subkeys will be of same type.
@@ -153,18 +154,19 @@ class OpenPGP {
     final Iterable<PublicKey> encryptionKeys = const [],
     final Iterable<PrivateKey> signingKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes256,
-    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes256,
+    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes128,
     final CompressionAlgorithm compression = CompressionAlgorithm.uncompressed,
+    final bool aeadProtect = false,
     final DateTime? date,
   }) async =>
       OpenPGPSync.encrypt(message,
           encryptionKeys: encryptionKeys,
           signingKeys: signingKeys,
-          passwords: passwords,
           sessionKeySymmetric: sessionKeySymmetric,
           encryptionKeySymmetric: encryptionKeySymmetric,
           compression: compression,
+          aeadProtect: aeadProtect,
           date: date);
 
   /// Decrypt a message with the user's private key, or a password.

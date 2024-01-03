@@ -7,7 +7,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('Compression', () {
-    final literalData = LiteralDataPacket.fromText(faker.randomGenerator.string(1000));
+    final literalData =
+        LiteralDataPacket.fromText(faker.randomGenerator.string(1000));
 
     test('zip test', () {
       final compressedPacket = CompressedDataPacket.fromPacketList(
@@ -16,11 +17,14 @@ void main() {
       );
 
       final compressedData = compressedPacket.toByteData();
-      final decompressedPacket = CompressedDataPacket.fromByteData(compressedData);
+      final decompressedPacket =
+          CompressedDataPacket.fromByteData(compressedData);
 
       expect(compressedPacket.algorithm, equals(decompressedPacket.algorithm));
-      expect(compressedPacket.compressed, equals(decompressedPacket.compressed));
-      expect(compressedPacket.packets[0].toByteData(), equals(literalData.toByteData()));
+      expect(
+          compressedPacket.compressed, equals(decompressedPacket.compressed));
+      expect(compressedPacket.packets[0].toByteData(),
+          equals(literalData.toByteData()));
     });
 
     test('zlib test', () {
@@ -30,11 +34,14 @@ void main() {
       );
 
       final compressedData = compressedPacket.toByteData();
-      final decompressedPacket = CompressedDataPacket.fromByteData(compressedData);
+      final decompressedPacket =
+          CompressedDataPacket.fromByteData(compressedData);
 
       expect(compressedPacket.algorithm, equals(decompressedPacket.algorithm));
-      expect(compressedPacket.compressed, equals(decompressedPacket.compressed));
-      expect(compressedPacket.packets[0].toByteData(), equals(literalData.toByteData()));
+      expect(
+          compressedPacket.compressed, equals(decompressedPacket.compressed));
+      expect(compressedPacket.packets[0].toByteData(),
+          equals(literalData.toByteData()));
     });
 
     test('bzip2 test', () {

@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -27,6 +27,7 @@ import 'key_packet.dart';
 /// Session Key packet for each OpenPGP key to which the message is encrypted.
 /// The recipient of the message finds a session key that is encrypted to their public key,
 /// decrypts the session key, and then uses the session key to decrypt the message.
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
   static const version = 3;
 

@@ -1,4 +1,4 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
+// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
@@ -17,6 +17,7 @@ import 'base_cipher.dart';
 ///
 /// and implement a simplified cryptography interface.
 /// Ported from Bouncy Castle project
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class CAST5Engine extends BaseCipher {
   static const _sBox1 = [
     0x30fb40d4, 0x9fa0ff0b, 0x6beccd2f, 0x3f258c7a, 0x1e213f2f, 0x9c004dd3,
