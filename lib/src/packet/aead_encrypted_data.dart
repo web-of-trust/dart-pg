@@ -77,13 +77,13 @@ class AeadEncryptedData extends ContainedPacket {
     );
   }
 
-  static Future<AeadEncryptedData> encryptPackets(
+  static AeadEncryptedData encryptPackets(
     final Uint8List key,
     final PacketList packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final int chunkSize = 12,
-  }) async {
+  }) {
     final iv = Helper.secureRandom().nextBytes(aead.ivLength);
     final encryptor = AeadEncryptedData(
       symmetric,
@@ -115,12 +115,12 @@ class AeadEncryptedData extends ContainedPacket {
   }
 
   /// Encrypt the payload in the packet.
-  Future<AeadEncryptedData> encrypt(
+  AeadEncryptedData encrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final int chunkSize = 12,
-  }) async {
+  }) {
     if (packets != null && packets!.isNotEmpty) {
       return AeadEncryptedData.encryptPackets(
         key,
@@ -132,10 +132,10 @@ class AeadEncryptedData extends ContainedPacket {
   }
 
   /// Decrypts the encrypted data contained in the packet.
-  Future<AeadEncryptedData> decrypt(
+  AeadEncryptedData decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) async {
+  }) {
     final length = encrypted.length;
     final data = encrypted.sublist(0, length - aead.tagLength);
     final authTag = encrypted.sublist(length - aead.tagLength);
