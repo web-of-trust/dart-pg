@@ -85,6 +85,11 @@ class OpenPGP {
   ) async =>
       PublicKey.fromArmored(armoredPublicKey);
 
+  /// Read an armored OpenPGP public key list.
+  static List<PublicKey> readPublicKeys(final String armoredPublicKeys) {
+    return PublicKey.readPublicKeys(armoredPublicKeys);
+  }
+
   /// Sign a cleartext message.
   static Future<SignedMessage> sign(
     final String cleartext,

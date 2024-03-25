@@ -56,8 +56,7 @@ class Subkey {
     if (keyPacket.isEncryptionKey) {
       for (final signature in bindingSignatures) {
         if (signature.keyFlags != null &&
-            !(signature.keyFlags!.isEncryptStorage ||
-                signature.keyFlags!.isEncryptCommunication)) {
+            !(signature.keyFlags!.isEncryptStorage || signature.keyFlags!.isEncryptCommunication)) {
           return false;
         }
       }
@@ -104,9 +103,9 @@ class Subkey {
     final DateTime? date,
   }) async {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
-      for (var revocation in revocationSignatures) {
-        if (signature == null ||
-            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+      final revocationKeyIDs = <String>[];
+      for (final revocation in revocationSignatures) {
+        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verify(
             mainKey!.keyPacket,
             Uint8List.fromList([
@@ -118,7 +117,9 @@ class Subkey {
             return true;
           }
         }
+        revocationKeyIDs.add(revocation.issuerKeyID.id);
       }
+      return revocationKeyIDs.isNotEmpty;
     }
     return false;
   }

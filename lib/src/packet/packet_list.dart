@@ -113,10 +113,7 @@ class PacketList extends ListBase<ContainedPacket> {
   }
 
   Uint8List encode() => Uint8List.fromList(
-        packets
-            .map((packet) => packet.encode())
-            .expand((byte) => byte)
-            .toList(growable: false),
+        packets.map((packet) => packet.encode()).expand((byte) => byte).toList(growable: false),
       );
 
   PacketList filterByTags([final List<PacketTag> tags = const []]) {
@@ -124,6 +121,18 @@ class PacketList extends ListBase<ContainedPacket> {
       return PacketList(packets.where((packet) => tags.contains(packet.tag)));
     }
     return this;
+  }
+
+  List<int> indexOfTags([final List<PacketTag> tags = const []]) {
+    final indexes = <int>[];
+    for (var i = 0; i < packets.length; i++) {
+      final packet = packets[i];
+      if (tags.contains(packet.tag)) {
+        indexes.add(i);
+      }
+    }
+
+    return indexes;
   }
 
   @override

@@ -3,6 +3,7 @@
 // file that was distributed with this source code.
 
 import '../armor/armor.dart';
+import '../enum/packet_tag.dart';
 import '../enum/armor_type.dart';
 import '../packet/packet_list.dart';
 import '../packet/key_packet.dart';
@@ -41,6 +42,28 @@ class PublicKey extends Key {
     );
   }
 
+  static List<PublicKey> readPublicKeys(String armored) {
+    final armor = Armor.decode(armored);
+    if (armor.type != ArmorType.publicKey) {
+      throw ArgumentError('Armored text not of public key type');
+    }
+    final publicKeys = <PublicKey>[];
+    final packetList = PacketList.packetDecode(armor.data);
+    final indexes = packetList.indexOfTags([PacketTag.publicKey]);
+    for (var i = 0; i < indexes.length; i++) {
+      if (indexes.asMap().containsKey(i + 1)) {
+        publicKeys.add(
+          PublicKey.fromPacketList(
+            PacketList(
+              packetList.packets.sublist(indexes[i], indexes[i + 1]),
+            ),
+          ),
+        );
+      }
+    }
+    return publicKeys;
+  }
+
   @override
   PublicKeyPacket get keyPacket => super.keyPacket as PublicKeyPacket;
 
@@ -67,8 +90,7 @@ class PublicKey extends Key {
         }
       }
     }
-    if (isSigningKey ||
-        (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+    if (isSigningKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
       throw StateError('Could not find valid encryption key packet.');
     }
     return keyPacket.publicKey;
@@ -91,8 +113,7 @@ class PublicKey extends Key {
         }
       }
     }
-    if (isEncryptionKey ||
-        (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
+    if (isEncryptionKey || (keyID.isNotEmpty && keyID != keyPacket.keyID.toString())) {
       throw StateError('Could not find valid verification key packet.');
     }
     return keyPacket;

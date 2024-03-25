@@ -38,9 +38,9 @@ class User {
     final DateTime? date,
   }) async {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
+      final revocationKeyIDs = <String>[];
       for (var revocation in revocationSignatures) {
-        if (signature == null ||
-            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verifyUserCertification(
             mainKey!.keyPacket,
             userID: userID,
@@ -50,7 +50,9 @@ class User {
             return true;
           }
         }
+        revocationKeyIDs.add(revocation.issuerKeyID.id);
       }
+      return revocationKeyIDs.isNotEmpty;
     }
     return false;
   }

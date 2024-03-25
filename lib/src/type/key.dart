@@ -81,8 +81,7 @@ abstract class Key {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
           if (signature.keyFlags != null &&
-              !(signature.keyFlags!.isEncryptStorage ||
-                  signature.keyFlags!.isEncryptCommunication)) {
+              !(signature.keyFlags!.isEncryptStorage || signature.keyFlags!.isEncryptCommunication)) {
             return false;
           }
         }
@@ -107,8 +106,7 @@ abstract class Key {
   bool get aeadSupported {
     for (final user in users) {
       for (var signature in user.selfCertifications) {
-        if (signature.features != null &&
-            signature.features!.supportAeadEncryptedData) {
+        if (signature.features != null && signature.features!.supportAeadEncryptedData) {
           return true;
         }
       }
@@ -184,9 +182,9 @@ abstract class Key {
     final DateTime? date,
   }) async {
     if (revocationSignatures.isNotEmpty) {
-      for (var revocation in revocationSignatures) {
-        if (signature == null ||
-            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+      final revocationKeyIDs = <String>[];
+      for (final revocation in revocationSignatures) {
+        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (await revocation.verify(
             keyPacket,
             keyPacket.writeForSign(),
@@ -195,7 +193,9 @@ abstract class Key {
             return true;
           }
         }
+        revocationKeyIDs.add(revocation.issuerKeyID.id);
       }
+      return revocationKeyIDs.isNotEmpty;
     }
     return false;
   }
@@ -242,9 +242,7 @@ abstract class Key {
         ...revocationSignatures,
         ...directSignatures,
         ...users.map((user) => user.toPacketList()).expand((packet) => packet),
-        ...subkeys
-            .map((subkey) => subkey.toPacketList())
-            .expand((packet) => packet),
+        ...subkeys.map((subkey) => subkey.toPacketList()).expand((packet) => packet),
       ]);
 
   static Map<String, dynamic> readPacketList(final PacketList packetList) {
