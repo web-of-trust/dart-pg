@@ -37,6 +37,7 @@ class KeyPairParams {
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
+    required Uint8List seed,
   }) async {
     switch (algorithm) {
       case KeyAlgorithm.rsaEncryptSign:
@@ -44,7 +45,7 @@ class KeyPairParams {
       case KeyAlgorithm.rsaSign:
         return _generateRSAKeyPair(rsaKeySize);
       case KeyAlgorithm.ecdsa:
-        final keyPair = _generateECKeyPair(curve);
+        final keyPair = _generateECKeyPairWithSeed(seed, curve);
         final q = keyPair.publicKey.Q!;
         return KeyPairParams(
           ECDSAPublicParams(
@@ -57,7 +58,7 @@ class KeyPairParams {
         if (curve == CurveInfo.curve25519) {
           return _generateCurve25519KeyPair();
         } else {
-          final keyPair = _generateECKeyPair(curve);
+          final keyPair = _generateECKeyPairWithSeed(seed, curve);
           final q = keyPair.publicKey.Q!;
           return KeyPairParams(
             ECDHPublicParams(
@@ -70,7 +71,7 @@ class KeyPairParams {
           );
         }
       case KeyAlgorithm.eddsa:
-        return _generateEd25519KeyPair();
+        return _generateEd25519KeyPair(seed);
       case KeyAlgorithm.dsa:
         return _generateDSAKeyPair(dhKeySize);
       case KeyAlgorithm.elgamal:
@@ -211,8 +212,36 @@ class KeyPairParams {
     }
   }
 
-  static KeyPairParams _generateEd25519KeyPair() {
-    final seed = Helper.secureRandom().nextBytes(TweetNaCl.seedSize);
+  static AsymmetricKeyPair<ECPublicKey, ECPrivateKey> _generateECKeyPairWithSeed(final Uint8List seed,
+      [
+        final CurveInfo curve = CurveInfo.secp521r1,
+      ]) {
+    switch (curve) {
+      case CurveInfo.curve25519:
+      case CurveInfo.ed25519:
+        throw UnsupportedError(
+          'Curve ${curve.name} is unsupported for key generation.',
+        );
+      default:
+        final keyGen = KeyGenerator('EC')
+          ..init(
+            ParametersWithRandom(
+              ECKeyGeneratorParameters(
+                ECDomainParameters(curve.name.toLowerCase()),
+              ),
+              Helper.secureWithSeed(seed),
+            ),
+          );
+        final keyPair = keyGen.generateKeyPair();
+        return AsymmetricKeyPair<ECPublicKey, ECPrivateKey>(
+          keyPair.publicKey as ECPublicKey,
+          keyPair.privateKey as ECPrivateKey,
+        );
+    }
+  }
+
+  static KeyPairParams _generateEd25519KeyPair(final Uint8List feedSeed) {
+    final seed = Helper.secureWithSeed(feedSeed).nextBytes(TweetNaCl.seedSize);
     return KeyPairParams(
       EdDSAPublicParams(
         CurveInfo.ed25519.asn1Oid,

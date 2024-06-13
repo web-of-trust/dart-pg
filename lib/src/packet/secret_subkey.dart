@@ -44,12 +44,14 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
     final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
     final DateTime? date,
+    required Uint8List seed
   }) async {
     final keyPair = await KeyPairParams.generate(
       algorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
       curve: curve,
+      seed: seed
     );
 
     return SecretSubkeyPacket(
