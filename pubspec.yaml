@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   fixnum: ^1.1.0
-  pinenacl: ^0.5.1
+  pinenacl: ^0.6.0
   pointycastle: ^3.7.3
 
 dev_dependencies:
