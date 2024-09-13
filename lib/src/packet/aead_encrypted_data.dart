@@ -166,21 +166,13 @@ class AeadEncryptedData extends ContainedPacket {
     final tagLength = forEncryption ? 0 : aead.tagLength;
     final chunkSize = (1 << (this.chunkSize + 6)) + tagLength;
 
-    final zeroBuffer = Uint8List(21);
-    final adataBuffer = zeroBuffer.sublist(0, 13);
-    final adataTagBuffer = Uint8List(21);
+    final adataBuffer = Uint8List(13);
 
-    final aaData = _getAAData();
-    adataBuffer.setAll(0, aaData);
-    adataTagBuffer.setAll(0, aaData);
-    adataTagBuffer.setAll(
-      13 + 4,
-      (dataLength - tagLength * (dataLength / chunkSize).ceil()).pack32(),
-    );
+    adataBuffer.setAll(0, _getAAData());
 
     final List<Uint8List> crypted = List.empty(growable: true);
     for (var chunkIndex = 0; chunkIndex == 0 || data.isNotEmpty;) {
-      final chunkIndexData = adataTagBuffer.sublist(5, 13);
+      final chunkIndexData = adataBuffer.sublist(5, 13);
       final size = chunkSize < data.length ? chunkSize : data.length;
       crypted.add(
         forEncryption
@@ -198,13 +190,19 @@ class AeadEncryptedData extends ContainedPacket {
 
       /// We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
       data = data.sublist(size);
-      adataTagBuffer.setAll(5 + 4, (++chunkIndex).pack32());
+      adataBuffer.setAll(9, (++chunkIndex).pack32());
     }
 
     /// After the final chunk, we either encrypt a final, empty data
     /// chunk to get the final authentication tag or validate that final
     /// authentication tag.
-    final chunkIndexData = adataTagBuffer.sublist(5, 13);
+    final chunkIndexData = adataBuffer.sublist(5, 13);
+    final adataTagBuffer = Uint8List(21);
+    adataTagBuffer.setAll(0, adataBuffer);
+    adataTagBuffer.setAll(
+      17,
+      (dataLength - tagLength * (dataLength / chunkSize).ceil()).pack32(),
+    );
     crypted.add(
       forEncryption
           ? cipher.encrypt(
@@ -226,7 +224,7 @@ class AeadEncryptedData extends ContainedPacket {
 
   Uint8List _getAAData() {
     return Uint8List.fromList([
-      0xC0 | tag.value,
+      0xc0 | tag.value,
       version,
       symmetric.value,
       aead.value,
