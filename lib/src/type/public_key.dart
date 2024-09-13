@@ -4,8 +4,8 @@
 
 import '../armor/armor.dart';
 import '../enum/armor_type.dart';
-import '../packet/packet_list.dart';
 import '../packet/key_packet.dart';
+import '../packet/packet_list.dart';
 import 'key.dart';
 
 /// Class that represents an OpenPGP Public Key
@@ -50,11 +50,11 @@ class PublicKey extends Key {
   @override
   String armor() => Armor.encode(ArmorType.publicKey, toPacketList().encode());
 
-  Future<PublicKeyPacket> getEncryptionKeyPacket({
+  PublicKeyPacket getEncryptionKeyPacket({
     final String keyID = '',
     final DateTime? date,
-  }) async {
-    if (!await verifyPrimaryKey(date: date)) {
+  }) {
+    if (!verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
     subkeys.sort(
@@ -62,7 +62,7 @@ class PublicKey extends Key {
     );
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (subkey.isEncryptionKey && await subkey.verify(date: date)) {
+        if (subkey.isEncryptionKey && subkey.verify(date: date)) {
           return subkey.keyPacket.publicKey;
         }
       }
@@ -74,11 +74,11 @@ class PublicKey extends Key {
     return keyPacket.publicKey;
   }
 
-  Future<PublicKeyPacket> getVerificationKeyPacket({
+  PublicKeyPacket getVerificationKeyPacket({
     final String keyID = '',
     final DateTime? date,
-  }) async {
-    if (!await verifyPrimaryKey(date: date)) {
+  }) {
+    if (!verifyPrimaryKey(date: date)) {
       throw StateError('Primary key is invalid');
     }
     subkeys.sort(
@@ -86,7 +86,7 @@ class PublicKey extends Key {
     );
     for (final subkey in subkeys) {
       if (keyID.isEmpty || keyID == subkey.keyID.toString()) {
-        if (!subkey.isEncryptionKey && await subkey.verify(date: date)) {
+        if (!subkey.isEncryptionKey && subkey.verify(date: date)) {
           return subkey.keyPacket as PublicKeyPacket;
         }
       }
