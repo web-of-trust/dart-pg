@@ -144,8 +144,8 @@ class DSASigner implements Signer {
 
   Uint8List _hashMessageIfNeeded(Uint8List message) {
     if (_digest != null) {
-      _digest!.reset();
-      return _digest!.process(message);
+      _digest.reset();
+      return _digest.process(message);
     } else {
       return message;
     }

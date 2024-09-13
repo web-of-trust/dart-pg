@@ -2,7 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
-import 'dart:typed_data';
+import 'package:pinenacl/api.dart';
 
 import '../crypto/math/byte_ext.dart';
 import '../enum/packet_tag.dart';
@@ -34,6 +34,7 @@ class PacketReader {
     final tagByte = oldFormat ? (headerByte & 0x3f) >> 2 : headerByte & 0x3f;
     final tag = PacketTag.values.firstWhere((tag) => tag.value == tagByte);
 
+    final Uint8List packetData;
     var packetLength = bytes.length - pos;
     if (oldFormat) {
       final lengthType = headerByte & 0x03;
@@ -42,54 +43,75 @@ class PacketReader {
           packetLength = bytes[pos++];
           break;
         case 1:
-          packetLength = (bytes[pos++] << 8) | bytes[pos++];
+          packetLength = bytes.sublist(pos, pos + 2).toIn16();
+          pos += 2;
           break;
         case 2:
           packetLength = bytes.sublist(pos, pos + 4).toInt32();
           pos += 4;
           break;
       }
+      packetData = bytes.sublist(pos, pos + packetLength);
     } else {
-      if (bytes[pos] < 192) {
-        packetLength = bytes[pos++];
-      } else if (bytes[pos] > 191 && bytes[pos] < 224) {
-        packetLength = ((bytes[pos++] - 192) << 8) + (bytes[pos++]) + 192;
-      } else if (bytes[pos] > 223 && bytes[pos] < 255) {
-        var partialPos = pos + 1 << (bytes[pos++] & 0x1f);
+      final length = bytes[pos++];
+      if (length < 192) {
+        packetLength = length;
+        packetData = bytes.sublist(pos, pos + packetLength);
+      } else if (length < 224) {
+        packetLength = ((length - 192) << 8) + (bytes[pos++]) + 192;
+        packetData = bytes.sublist(pos, pos + packetLength);
+      } else if (length < 255) {
+        var partialLength = 1 << (length & 0x1f);
+        final List<Uint8List> partialData = List.empty(growable: true);
+        partialData.add(bytes.sublist(pos, pos + partialLength));
+        var partialPos = pos + partialLength;
         while (true) {
-          if (bytes[pos] < 192) {
-            partialPos += bytes[partialPos++];
+          partialLength = bytes[partialPos++];
+          if (partialLength < 192) {
+            partialData
+                .add(bytes.sublist(partialPos, partialPos + partialLength));
+            partialPos += partialLength;
             break;
-          } else if (bytes[partialPos] > 191 && bytes[partialPos] < 224) {
-            partialPos += ((bytes[partialPos++] - 192) << 8) +
-                (bytes[partialPos++]) +
-                192;
+          } else if (partialLength < 224) {
+            partialLength =
+                ((partialLength - 192) << 8) + (bytes[partialPos++]) + 192;
+            partialData
+                .add(bytes.sublist(partialPos, partialPos + partialLength));
+            partialPos += partialLength;
             break;
-          } else if (bytes[partialPos] > 223 && bytes[partialPos] < 255) {
-            partialPos += 1 << (bytes[partialPos++] & 0x1f);
-            break;
+          } else if (partialLength < 255) {
+            partialLength = 1 << (partialLength & 0x1f);
+            partialData
+                .add(bytes.sublist(partialPos, partialPos + partialLength));
+            partialPos += partialLength;
           } else {
-            partialPos++;
-            partialPos += bytes
-                    .sublist(
-                      partialPos,
-                      partialPos + 4,
-                    )
-                    .toInt32() +
-                4;
+            partialLength = bytes
+                .sublist(
+                  partialPos,
+                  partialPos + 4,
+                )
+                .toInt32();
+            partialPos += 4;
+            partialData
+                .add(bytes.sublist(partialPos, partialPos + partialLength));
+            partialPos += partialLength;
+            break;
           }
         }
+        packetData = Uint8List.fromList([
+          ...partialData.expand((element) => element),
+        ]);
         packetLength = partialPos - pos;
       } else {
-        pos++;
         packetLength = bytes.sublist(pos, pos + 4).toInt32();
         pos += 4;
+        packetData = bytes.sublist(pos, pos + packetLength);
       }
     }
 
     return PacketReader(
       tag,
-      bytes.sublist(pos, pos + packetLength),
+      packetData,
       pos + packetLength,
     );
   }

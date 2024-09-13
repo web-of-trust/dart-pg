@@ -40,3 +40,10 @@
 
 ## 1.2.0 (2024-01-03)
 - Support AEAD algorithms: EAX, OCB, GCM
+
+## 1.3.0 (2024-09-13)
+- Require version 3.2.0 sdk
+- Update pinenacl to version 0.6.0
+- Update pointycastle to version 3.9.1
+- Fix packet reader
+- Fix AEAD crypt
