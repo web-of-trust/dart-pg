@@ -19,7 +19,9 @@ class PacketReader {
   PacketReader(this.tag, this.data, this.offset);
 
   factory PacketReader.read(final Uint8List bytes, [final int offset = 0]) {
-    if (bytes.length <= offset || bytes.sublist(offset).length < 2 || (bytes[offset] & 0x80) == 0) {
+    if (bytes.length <= offset ||
+        bytes.sublist(offset).length < 2 ||
+        (bytes[offset] & 0x80) == 0) {
       throw StateError(
         'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
       );
@@ -66,17 +68,21 @@ class PacketReader {
         while (true) {
           partialLength = bytes[partialPos++];
           if (partialLength < 192) {
-            partialData.add(bytes.sublist(partialPos, partialPos + partialLength));
+            partialData
+                .add(bytes.sublist(partialPos, partialPos + partialLength));
             partialPos += partialLength;
             break;
           } else if (partialLength < 224) {
-            partialLength = ((partialLength - 192) << 8) + (bytes[partialPos++]) + 192;
-            partialData.add(bytes.sublist(partialPos, partialPos + partialLength));
+            partialLength =
+                ((partialLength - 192) << 8) + (bytes[partialPos++]) + 192;
+            partialData
+                .add(bytes.sublist(partialPos, partialPos + partialLength));
             partialPos += partialLength;
             break;
           } else if (partialLength < 255) {
             partialLength = 1 << (partialLength & 0x1f);
-            partialData.add(bytes.sublist(partialPos, partialPos + partialLength));
+            partialData
+                .add(bytes.sublist(partialPos, partialPos + partialLength));
             partialPos += partialLength;
           } else {
             partialLength = bytes
@@ -86,7 +92,8 @@ class PacketReader {
                 )
                 .toInt32();
             partialPos += 4;
-            partialData.add(bytes.sublist(partialPos, partialPos + partialLength));
+            partialData
+                .add(bytes.sublist(partialPos, partialPos + partialLength));
             partialPos += partialLength;
             break;
           }
