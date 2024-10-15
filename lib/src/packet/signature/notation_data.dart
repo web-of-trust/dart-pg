@@ -21,7 +21,8 @@ class NotationData extends SignatureSubpacket {
   static const headerNameLength = 2;
   static const headerValueLength = 2;
 
-  NotationData(final Uint8List data, {super.critical, super.isLong}) : super(SignatureSubpacketType.notationData, data);
+  NotationData(final Uint8List data, {super.critical, super.isLong})
+      : super(SignatureSubpacketType.notationData, data);
 
   factory NotationData.fromNotation(
     final bool humanReadable,
@@ -58,16 +59,20 @@ class NotationData extends SignatureSubpacket {
   bool get isHumanReadable => data[0] == 0x80;
 
   String get notationName {
-    final nameLength = (((data[headerFlagLength] & 0xff) << 8) + (data[headerFlagLength + 1] & 0xff));
+    final nameLength = (((data[headerFlagLength] & 0xff) << 8) +
+        (data[headerFlagLength + 1] & 0xff));
     final nameOffset = headerFlagLength + headerNameLength + headerValueLength;
     return utf8.decode(data.sublist(nameOffset, nameOffset + nameLength));
   }
 
   String get notationValue {
-    final nameLength = (((data[headerFlagLength] & 0xff) << 8) + (data[headerFlagLength + 1] & 0xff));
-    final valueLength = (((data[headerFlagLength + headerNameLength] & 0xff) << 8) +
-        (data[headerFlagLength + headerNameLength + 1] & 0xff));
-    final valueOffset = headerFlagLength + headerNameLength + headerValueLength + nameLength;
+    final nameLength = (((data[headerFlagLength] & 0xff) << 8) +
+        (data[headerFlagLength + 1] & 0xff));
+    final valueLength =
+        (((data[headerFlagLength + headerNameLength] & 0xff) << 8) +
+            (data[headerFlagLength + headerNameLength + 1] & 0xff));
+    final valueOffset =
+        headerFlagLength + headerNameLength + headerValueLength + nameLength;
     return utf8.decode(data.sublist(valueOffset, valueOffset + valueLength));
   }
 
