@@ -56,4 +56,20 @@ enum HashAlgorithm {
         return 28;
     }
   }
+
+  int get saltSize {
+    switch (this) {
+      case md5:
+      case sha1:
+      case ripemd160:
+        return 8;
+      case sha224:
+      case sha256:
+        return 16;
+      case sha384:
+        return 24;
+      case sha512:
+        return 32;
+    }
+  }
 }

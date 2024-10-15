@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 void main() {
   group('Compression', () {
     final literalData =
-        LiteralDataPacket.fromText(faker.randomGenerator.string(1000));
+        LiteralDataPacket.fromText(faker.randomGenerator.string(10000));
 
     test('zip test', () {
       final compressedPacket = CompressedDataPacket.fromPacketList(

@@ -20,7 +20,7 @@ import '../data/key_data.dart';
 void main() {
   group('symmetrically', () {
     final literalData =
-        LiteralDataPacket.fromText(faker.randomGenerator.string(1000));
+        LiteralDataPacket.fromText(faker.randomGenerator.string(10000));
     final packets = PacketList([literalData]);
     final key = Helper.generateEncryptionKey(); // encryption key
     final kek = faker.randomGenerator.string(10); // key encryption key
@@ -277,7 +277,7 @@ void main() {
 
     test('test encrypt', () async {
       final literalData =
-          LiteralDataPacket.fromText(faker.randomGenerator.string(1000));
+          LiteralDataPacket.fromText(faker.randomGenerator.string(10000));
       final packets = PacketList([literalData]);
       final key = Helper.generateEncryptionKey(SymmetricAlgorithm.aes256);
 
