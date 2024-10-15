@@ -47,3 +47,7 @@
 - Update pointycastle to version 3.9.1
 - Fix packet reader
 - Fix AEAD crypt
+
+## 1.4.0 (2024-09-15)
+- Support partial body length
+- Support signature salt notation
