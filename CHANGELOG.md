@@ -48,6 +48,6 @@
 - Fix packet reader
 - Fix AEAD crypt
 
-## 1.4.0 (2024-09-15)
+## 1.4.0 (2024-10-15)
 - Support partial body length
 - Support signature salt notation
