@@ -2,6 +2,7 @@
 // For the full copyright and license information, please view the LICENSE
 // file that was distributed with this source code.
 
+import 'dart:convert';
 import 'dart:typed_data';
 
 import '../crypto/math/byte_ext.dart';
@@ -31,6 +32,8 @@ import 'user_id.dart';
 /// See RFC 4880, section 5.2.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SignaturePacket extends ContainedPacket {
+  static const saltNotation = "salt@notations.dart-pg.org";
+
   final int version;
 
   final SignatureType signatureType;
@@ -230,6 +233,13 @@ class SignaturePacket extends ContainedPacket {
       SignatureCreationTime.fromTime(date ?? DateTime.now()),
       IssuerFingerprint.fromKey(signKey),
       IssuerKeyID(signKey.keyID.bytes),
+      NotationData.fromNotation(
+        false,
+        saltNotation,
+        utf8.decode(
+          Helper.secureRandom().nextBytes(hashAlgorithm.saltSize),
+        ),
+      ),
       ...subpackets,
     ];
     if (keyExpirationTime > 0) {
