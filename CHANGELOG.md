@@ -51,3 +51,7 @@
 ## 1.4.0 (2024-10-15)
 - Support partial body length
 - Support signature salt notation
+
+## 1.5.0 (2024-10-17)
+- Add checksum to un-encrypted secret key packet 
+- Remove fixnum package

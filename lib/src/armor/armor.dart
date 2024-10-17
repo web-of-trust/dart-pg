@@ -16,8 +16,8 @@ import '../helpers.dart';
 /// See https://www.rfc-editor.org/rfc/rfc4880#section-6
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Armor {
-  static const version = 'Dart PG v1.2.0';
-  static const comment = 'Dart Privacy Guard';
+  static const version = 'Dart PG v1.5';
+  static const comment = 'https://github.com/web-of-trust/dart-pg';
 
   static const messageBegin = '-----BEGIN PGP MESSAGE';
   static const signedMessageBegin = '-----BEGIN PGP SIGNED MESSAGE';
