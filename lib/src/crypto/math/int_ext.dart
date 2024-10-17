@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'package:fixnum/fixnum.dart';
+const _mask32 = 0xffffffff;
 
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 extension IntExt on int {
@@ -43,20 +43,20 @@ extension IntExt on int {
   }
 
   int shiftLeft32(final int n) {
-    return (Int64(toUnsigned(32)) << n).toInt();
+    return (this & _mask32) << n;
   }
 
   int shiftRight32(final int n) {
-    return (Int64(toUnsigned(32)) >> n).toInt();
+    return (this & _mask32) >> n;
   }
 
   int rotateLeft32(final int n) {
-    final num = Int64(toUnsigned(32));
-    return ((num << n) + (num >> (32 - n))).toInt();
+    final num = this & _mask32;
+    return (num << n) | (num >> 32 - n);
   }
 
   int rotateRight32(final int n) {
-    final num = Int64(toUnsigned(32));
-    return ((num >> n) + (num << (32 - n))).toInt();
+    final num = this & _mask32;
+    return (num >> n) | (num << 32 - n);
   }
 }

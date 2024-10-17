@@ -7,7 +7,6 @@ environment:
   sdk: ^3.2.0
 
 dependencies:
-  fixnum: ^1.1.0
   pinenacl: ^0.6.0
   pointycastle: ^3.9.1
 
