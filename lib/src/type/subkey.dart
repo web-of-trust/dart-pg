@@ -104,7 +104,8 @@ class Subkey {
     final DateTime? date,
   }) {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
-      for (var revocation in revocationSignatures) {
+      final revocationKeyIDs = <String>[];
+      for (final revocation in revocationSignatures) {
         if (signature == null ||
             revocation.issuerKeyID.id == signature.issuerKeyID.id) {
           if (revocation.verify(
@@ -118,7 +119,9 @@ class Subkey {
             return true;
           }
         }
+        revocationKeyIDs.add(revocation.issuerKeyID.id);
       }
+      return revocationKeyIDs.isNotEmpty;
     }
     return false;
   }

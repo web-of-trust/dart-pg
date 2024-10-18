@@ -38,6 +38,7 @@ class User {
     final DateTime? date,
   }) {
     if (mainKey != null && revocationSignatures.isNotEmpty) {
+      final revocationKeyIDs = <String>[];
       for (var revocation in revocationSignatures) {
         if (signature == null ||
             revocation.issuerKeyID.id == signature.issuerKeyID.id) {
@@ -50,7 +51,9 @@ class User {
             return true;
           }
         }
+        revocationKeyIDs.add(revocation.issuerKeyID.id);
       }
+      return revocationKeyIDs.isNotEmpty;
     }
     return false;
   }

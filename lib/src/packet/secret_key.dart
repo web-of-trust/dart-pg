@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 
 import '../crypto/math/byte_ext.dart';
-import '../crypto/symmetric/base_cipher.dart';
+import '../crypto/math/int_ext.dart';
 import '../enum/curve_info.dart';
 import '../enum/dh_key_size.dart';
 import '../enum/hash_algorithm.dart';
@@ -88,16 +88,22 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
 
     KeyParams? secretParams;
+    var keyData = bytes.sublist(pos);
     if (s2kUsage == S2kUsage.none) {
+      final checksum = keyData.sublist(keyData.length - 2);
+      keyData = keyData.sublist(0, keyData.length - 2);
+      if (!checksum.equals(_computeChecksum(keyData))) {
+        throw StateError('Key checksum mismatch!');
+      }
       secretParams = _parseSecretParams(
-        bytes.sublist(pos),
+        keyData,
         publicKey.algorithm,
       );
     }
 
     return SecretKeyPacket(
       publicKey,
-      bytes.sublist(pos),
+      keyData,
       s2kUsage: s2kUsage,
       symmetric: symmetric,
       s2k: s2k,
@@ -209,11 +215,17 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final iv = random.nextBytes(symmetric.blockSize);
 
       final key = s2k.produceKey(passphrase, symmetric.keySizeInByte);
-      final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-        ..init(
-          true,
+      final cipher = PaddedBlockCipherImpl(
+        PKCS7Padding(),
+        symmetric.cfbCipherEngine,
+      );
+      cipher.init(
+        true,
+        PaddedBlockCipherParameters(
           ParametersWithIV(KeyParameter(key), iv),
-        );
+          null,
+        ),
+      );
 
       final clearText = secretParams!.encode();
       final cipherText = cipher.process(Uint8List.fromList([
@@ -239,17 +251,25 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key =
-             s2k?.produceKey(passphrase, symmetric.keySizeInByte) ??
-                Uint8List(symmetric.keySizeInByte);
-        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-          ..init(
-            false,
+        final key = s2k?.produceKey(
+              passphrase,
+              symmetric.keySizeInByte,
+            ) ??
+            Uint8List(symmetric.keySizeInByte);
+        final cipher = PaddedBlockCipherImpl(
+          PKCS7Padding(),
+          symmetric.cfbCipherEngine,
+        );
+        cipher.init(
+          false,
+          PaddedBlockCipherParameters(
             ParametersWithIV(
               KeyParameter(key),
               iv ?? Uint8List(symmetric.blockSize),
             ),
-          );
+            null,
+          ),
+        );
 
         final clearTextWithHash = cipher.process(keyData);
         clearText = clearTextWithHash.sublist(
@@ -328,6 +348,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
         ...publicKey.toByteData(),
         S2kUsage.none.value,
         ...keyData,
+        ..._computeChecksum(keyData),
       ]);
     }
   }
@@ -355,5 +376,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
           'Public key algorithm ${algorithm.name} is unsupported.',
         );
     }
+  }
+
+  static Uint8List _computeChecksum(Uint8List keyData) {
+    var sum = 0;
+    for (var i = 0; i < keyData.length; i++) {
+      sum = (sum + keyData[i]) & 0xffff;
+    }
+    return sum.pack16();
   }
 }
