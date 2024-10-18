@@ -8,7 +8,6 @@ import 'package:pointycastle/export.dart';
 
 import '../crypto/math/byte_ext.dart';
 import '../crypto/math/int_ext.dart';
-import '../crypto/symmetric/base_cipher.dart';
 import '../enum/curve_info.dart';
 import '../enum/dh_key_size.dart';
 import '../enum/hash_algorithm.dart';
@@ -81,8 +80,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
 
     Uint8List? iv;
-    if (!(s2k != null && s2k.type == S2kType.gnu) &&
-        s2kUsage != S2kUsage.none) {
+    if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
       final blockSize = symmetric.blockSize;
       iv = bytes.sublist(pos, pos + blockSize);
       pos += blockSize;
@@ -216,11 +214,17 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final iv = random.nextBytes(symmetric.blockSize);
 
       final key = await s2k.produceKey(passphrase, symmetric.keySizeInByte);
-      final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-        ..init(
-          true,
+      final cipher = PaddedBlockCipherImpl(
+        PKCS7Padding(),
+        symmetric.cfbCipherEngine,
+      );
+      cipher.init(
+        true,
+        PaddedBlockCipherParameters(
           ParametersWithIV(KeyParameter(key), iv),
-        );
+          null,
+        ),
+      );
 
       final clearText = secretParams!.encode();
       final cipherText = cipher.process(Uint8List.fromList([
@@ -246,17 +250,25 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key =
-            await s2k?.produceKey(passphrase, symmetric.keySizeInByte) ??
-                Uint8List(symmetric.keySizeInByte);
-        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-          ..init(
-            false,
+        final key = await s2k?.produceKey(
+              passphrase,
+              symmetric.keySizeInByte,
+            ) ??
+            Uint8List(symmetric.keySizeInByte);
+        final cipher = PaddedBlockCipherImpl(
+          PKCS7Padding(),
+          symmetric.cfbCipherEngine,
+        );
+        cipher.init(
+          false,
+          PaddedBlockCipherParameters(
             ParametersWithIV(
               KeyParameter(key),
               iv ?? Uint8List(symmetric.blockSize),
             ),
-          );
+            null,
+          ),
+        );
 
         final clearTextWithHash = cipher.process(keyData);
         clearText = clearTextWithHash.sublist(
@@ -302,8 +314,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       return keyParams.validatePublicParams(publicParams as DSAPublicParams);
     }
     if (keyParams is ElGamalSecretParams) {
-      return keyParams
-          .validatePublicParams(publicParams as ElGamalPublicParams);
+      return keyParams.validatePublicParams(publicParams as ElGamalPublicParams);
     }
     if (keyParams is ECSecretParams) {
       return keyParams.validatePublicParams(publicParams as ECPublicParams);

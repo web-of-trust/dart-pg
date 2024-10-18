@@ -4,9 +4,8 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/api.dart';
+import 'package:pointycastle/export.dart';
 
-import '../crypto/symmetric/base_cipher.dart';
 import '../enum/packet_tag.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
@@ -28,30 +27,40 @@ class SymEncryptedDataPacket extends ContainedPacket {
   /// Decrypted packets contained within.
   final PacketList? packets;
 
-  SymEncryptedDataPacket(this.encrypted, {this.packets})
-      : super(PacketTag.symEncryptedData);
+  SymEncryptedDataPacket(this.encrypted, {this.packets}) : super(PacketTag.symEncryptedData);
 
-  factory SymEncryptedDataPacket.fromByteData(final Uint8List bytes) =>
-      SymEncryptedDataPacket(bytes);
+  factory SymEncryptedDataPacket.fromByteData(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
 
   static Future<SymEncryptedDataPacket> encryptPackets(
     final Uint8List key,
     final PacketList packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) async {
-    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-      ..init(
-        true,
+    final cipher = PaddedBlockCipherImpl(
+      PKCS7Padding(),
+      symmetric.cfbCipherEngine,
+    );
+    cipher.init(
+      true,
+      PaddedBlockCipherParameters(
         ParametersWithIV(
           KeyParameter(key),
           Uint8List(symmetric.blockSize),
         ),
-      );
+        null,
+      ),
+    );
     final prefix = cipher.process(Helper.generatePrefix(symmetric));
 
     cipher.init(
       true,
-      ParametersWithIV(KeyParameter(key), prefix.sublist(2)),
+      PaddedBlockCipherParameters(
+        ParametersWithIV(
+          KeyParameter(key),
+          prefix.sublist(2),
+        ),
+        null,
+      ),
     );
     return SymEncryptedDataPacket(
       Uint8List.fromList([
@@ -92,14 +101,20 @@ class SymEncryptedDataPacket extends ContainedPacket {
       throw StateError('Message is not authenticated.');
     }
     final blockSize = symmetric.blockSize;
-    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-      ..init(
-        false,
+    final cipher = PaddedBlockCipherImpl(
+      PKCS7Padding(),
+      symmetric.cfbCipherEngine,
+    );
+    cipher.init(
+      true,
+      PaddedBlockCipherParameters(
         ParametersWithIV(
           KeyParameter(key),
           encrypted.sublist(2, blockSize + 2),
         ),
-      );
+        null,
+      ),
+    );
     return SymEncryptedDataPacket(
       encrypted,
       packets: PacketList.packetDecode(

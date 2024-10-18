@@ -4,9 +4,8 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/api.dart';
+import 'package:pointycastle/export.dart';
 
-import '../crypto/symmetric/base_cipher.dart';
 import '../enum/aead_algorithm.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/packet_tag.dart';
@@ -142,15 +141,20 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
         final cipher = aead.cipherEngine(key, symmetric);
         encrypted = cipher.encrypt(sessionKey.key, iv, adata);
       } else {
-        final cipher = BufferedCipher(
+        final cipher = PaddedBlockCipherImpl(
+          PKCS7Padding(),
           symmetric.cfbCipherEngine,
-        )..init(
-            true,
+        );
+        cipher.init(
+          true,
+          PaddedBlockCipherParameters(
             ParametersWithIV(
               KeyParameter(key),
               Uint8List(symmetric.blockSize),
             ),
-          );
+            null,
+          ),
+        );
         iv = Uint8List(0);
         encrypted = cipher.process(sessionKey.encode());
       }
@@ -192,15 +196,20 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
           final decrypted = cipher.decrypt(encrypted, iv, adata);
           sessionKey = SessionKey(decrypted, symmetric);
         } else {
-          final cipher = BufferedCipher(
+          final cipher = PaddedBlockCipherImpl(
+            PKCS7Padding(),
             symmetric.cfbCipherEngine,
-          )..init(
-              false,
+          );
+          cipher.init(
+            false,
+            PaddedBlockCipherParameters(
               ParametersWithIV(
                 KeyParameter(key),
                 Uint8List(symmetric.blockSize),
               ),
-            );
+              null,
+            ),
+          );
           final decrypted = cipher.process(encrypted);
           final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
             (algo) => algo.value == decrypted[0],
