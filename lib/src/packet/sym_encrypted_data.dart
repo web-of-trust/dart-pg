@@ -65,7 +65,12 @@ class SymEncryptedDataPacket extends ContainedPacket {
     return SymEncryptedDataPacket(
       Uint8List.fromList([
         ...prefix,
-        ...cipher.process(packets.encode()),
+        ...cipher.process(
+          Helper.pad(
+            packets.encode(),
+            symmetric.blockSize,
+          ),
+        ),
       ]),
       packets: packets,
     );
@@ -101,9 +106,8 @@ class SymEncryptedDataPacket extends ContainedPacket {
       throw StateError('Message is not authenticated.');
     }
     final blockSize = symmetric.blockSize;
-    final padding = Padding('PKCS7');
     final cipher = PaddedBlockCipherImpl(
-      padding,
+      Padding('PKCS7'),
       symmetric.cfbCipherEngine,
     );
     cipher.init(
@@ -117,15 +121,15 @@ class SymEncryptedDataPacket extends ContainedPacket {
       ),
     );
 
-    final data = encrypted.sublist(blockSize + 2);
-    final padLength = blockSize - (data.length % blockSize);
-    final padded = Uint8List(data.length + padLength)..setAll(0, data);
-    padding.addPadding(padded, data.length);
-
     return SymEncryptedDataPacket(
       encrypted,
       packets: PacketList.packetDecode(
-        cipher.process(padded),
+        cipher.process(
+          Helper.pad(
+            encrypted.sublist(blockSize + 2),
+            blockSize,
+          ),
+        ),
       ),
     );
   }

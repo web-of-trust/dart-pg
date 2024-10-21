@@ -7,6 +7,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:pointycastle/api.dart' as pc;
+import 'package:pointycastle/api.dart';
 
 import 'crypto/math/byte_ext.dart';
 import 'crypto/math/int_ext.dart';
@@ -103,5 +104,14 @@ class Helper {
       k = random.nextBigInteger(max.bitLength);
     } while (k.compareTo(min) <= 0 || k.compareTo(max) >= 0);
     return k;
+  }
+
+  static Uint8List pad(Uint8List bytes, int blockSize) {
+    final padLength = blockSize - (bytes.length % blockSize);
+
+    final padded = Uint8List(bytes.length + padLength)..setAll(0, bytes);
+    Padding('PKCS7').addPadding(padded, bytes.length);
+
+    return padded;
   }
 }

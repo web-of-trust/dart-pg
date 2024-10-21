@@ -227,10 +227,15 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       );
 
       final clearText = secretParams!.encode();
-      final cipherText = cipher.process(Uint8List.fromList([
-        ...clearText,
-        ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
-      ]));
+      final cipherText = cipher.process(
+        Helper.pad(
+          Uint8List.fromList([
+            ...clearText,
+            ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
+          ]),
+          symmetric.blockSize,
+        ),
+      );
 
       return SecretKeyPacket(
         publicKey,
@@ -255,10 +260,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
               symmetric.keySizeInByte,
             ) ??
             Uint8List(symmetric.keySizeInByte);
-        final blockSize = symmetric.blockSize;
-        final padding = Padding('PKCS7');
         final cipher = PaddedBlockCipherImpl(
-          padding,
+          Padding('PKCS7'),
           symmetric.cfbCipherEngine,
         );
         cipher.init(
@@ -266,17 +269,15 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
           PaddedBlockCipherParameters(
             ParametersWithIV(
               KeyParameter(key),
-              iv ?? Uint8List(blockSize),
+              iv ?? Uint8List(symmetric.blockSize),
             ),
             null,
           ),
         );
 
-        final padLength = blockSize - (keyData.length % blockSize);
-        final padded = Uint8List(keyData.length + padLength)..setAll(0, keyData);
-        padding.addPadding(padded, keyData.length);
-
-        final clearTextWithHash = cipher.process(padded);
+        final clearTextWithHash = cipher.process(
+          Helper.pad(keyData, symmetric.blockSize),
+        );
         clearText = clearTextWithHash.sublist(
           0,
           clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
