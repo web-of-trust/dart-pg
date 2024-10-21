@@ -65,7 +65,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     ]);
 
     final cipher = PaddedBlockCipherImpl(
-      PKCS7Padding(),
+      Padding('PKCS7'),
       symmetric.cfbCipherEngine,
     );
     cipher.init(
@@ -110,8 +110,10 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) async {
+    final blockSize = symmetric.blockSize;
+    final padding = Padding('PKCS7');
     final cipher = PaddedBlockCipherImpl(
-      PKCS7Padding(),
+      padding,
       symmetric.cfbCipherEngine,
     );
     cipher.init(
@@ -119,13 +121,17 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
       PaddedBlockCipherParameters(
         ParametersWithIV(
           KeyParameter(key),
-          Uint8List(symmetric.blockSize),
+          Uint8List(blockSize),
         ),
         null,
       ),
     );
 
-    final decrypted = cipher.process(encrypted);
+    final padLength = blockSize - (encrypted.length % blockSize);
+    final padded = Uint8List(encrypted.length + padLength)..setAll(0, encrypted);
+    padding.addPadding(padded, encrypted.length);
+
+    final decrypted = cipher.process(padded);
     final realHash = decrypted.sublist(
       decrypted.length - HashAlgorithm.sha1.digestSize,
     );

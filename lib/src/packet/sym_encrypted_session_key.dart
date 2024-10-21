@@ -132,7 +132,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     if (sessionKey != null) {
       if (version == 5) {
         final adata = Uint8List.fromList([
-          0xC0 | PacketTag.aeadEncryptedData.value,
+          0xc0 | PacketTag.symEncryptedSessionKey.value,
           version,
           symmetric.value,
           aead.value,
@@ -142,7 +142,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
         encrypted = cipher.encrypt(sessionKey.key, iv, adata);
       } else {
         final cipher = PaddedBlockCipherImpl(
-          PKCS7Padding(),
+          Padding('PKCS7'),
           symmetric.cfbCipherEngine,
         );
         cipher.init(
@@ -196,8 +196,10 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
           final decrypted = cipher.decrypt(encrypted, iv, adata);
           sessionKey = SessionKey(decrypted, symmetric);
         } else {
+          final blockSize = symmetric.blockSize;
+          final padding = Padding('PKCS7');
           final cipher = PaddedBlockCipherImpl(
-            PKCS7Padding(),
+            padding,
             symmetric.cfbCipherEngine,
           );
           cipher.init(
@@ -205,12 +207,17 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
             PaddedBlockCipherParameters(
               ParametersWithIV(
                 KeyParameter(key),
-                Uint8List(symmetric.blockSize),
+                Uint8List(blockSize),
               ),
               null,
             ),
           );
-          final decrypted = cipher.process(encrypted);
+
+          final padLength = blockSize - (encrypted.length % blockSize);
+          final padded = Uint8List(encrypted.length + padLength)..setAll(0, encrypted);
+          padding.addPadding(padded, encrypted.length);
+
+          final decrypted = cipher.process(padded);
           final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
             (algo) => algo.value == decrypted[0],
           );

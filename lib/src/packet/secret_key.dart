@@ -215,7 +215,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
       final key = await s2k.produceKey(passphrase, symmetric.keySizeInByte);
       final cipher = PaddedBlockCipherImpl(
-        PKCS7Padding(),
+        Padding('PKCS7'),
         symmetric.cfbCipherEngine,
       );
       cipher.init(
@@ -255,8 +255,10 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
               symmetric.keySizeInByte,
             ) ??
             Uint8List(symmetric.keySizeInByte);
+        final blockSize = symmetric.blockSize;
+        final padding = Padding('PKCS7');
         final cipher = PaddedBlockCipherImpl(
-          PKCS7Padding(),
+          padding,
           symmetric.cfbCipherEngine,
         );
         cipher.init(
@@ -264,13 +266,17 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
           PaddedBlockCipherParameters(
             ParametersWithIV(
               KeyParameter(key),
-              iv ?? Uint8List(symmetric.blockSize),
+              iv ?? Uint8List(blockSize),
             ),
             null,
           ),
         );
 
-        final clearTextWithHash = cipher.process(keyData);
+        final padLength = blockSize - (keyData.length % blockSize);
+        final padded = Uint8List(keyData.length + padLength)..setAll(0, keyData);
+        padding.addPadding(padded, keyData.length);
+
+        final clearTextWithHash = cipher.process(padded);
         clearText = clearTextWithHash.sublist(
           0,
           clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
