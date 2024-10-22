@@ -4,8 +4,9 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/export.dart';
+import 'package:pointycastle/api.dart';
 
+import '../crypto/symmetric/base_cipher.dart';
 import '../enum/packet_tag.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
@@ -36,41 +37,24 @@ class SymEncryptedDataPacket extends ContainedPacket {
     final PacketList packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) async {
-    final cipher = PaddedBlockCipherImpl(
-      Padding('PKCS7'),
-      symmetric.cfbCipherEngine,
-    );
-    cipher.init(
-      true,
-      PaddedBlockCipherParameters(
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+      ..init(
+        true,
         ParametersWithIV(
           KeyParameter(key),
           Uint8List(symmetric.blockSize),
         ),
-        null,
-      ),
-    );
+      );
     final prefix = cipher.process(Helper.generatePrefix(symmetric));
 
     cipher.init(
       true,
-      PaddedBlockCipherParameters(
-        ParametersWithIV(
-          KeyParameter(key),
-          prefix.sublist(2),
-        ),
-        null,
-      ),
+      ParametersWithIV(KeyParameter(key), prefix.sublist(2)),
     );
     return SymEncryptedDataPacket(
       Uint8List.fromList([
         ...prefix,
-        ...cipher.process(
-          Helper.pad(
-            packets.encode(),
-            symmetric.blockSize,
-          ),
-        ),
+        ...cipher.process(packets.encode()),
       ]),
       packets: packets,
     );
@@ -106,30 +90,18 @@ class SymEncryptedDataPacket extends ContainedPacket {
       throw StateError('Message is not authenticated.');
     }
     final blockSize = symmetric.blockSize;
-    final cipher = PaddedBlockCipherImpl(
-      Padding('PKCS7'),
-      symmetric.cfbCipherEngine,
-    );
-    cipher.init(
-      true,
-      PaddedBlockCipherParameters(
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+      ..init(
+        false,
         ParametersWithIV(
           KeyParameter(key),
           encrypted.sublist(2, blockSize + 2),
         ),
-        null,
-      ),
-    );
-
+      );
     return SymEncryptedDataPacket(
       encrypted,
       packets: PacketList.packetDecode(
-        cipher.process(
-          Helper.pad(
-            encrypted.sublist(blockSize + 2),
-            blockSize,
-          ),
-        ),
+        cipher.process(encrypted.sublist(blockSize + 2)),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:pointycastle/export.dart';
 
 import '../crypto/math/byte_ext.dart';
 import '../crypto/math/int_ext.dart';
+import '../crypto/symmetric/base_cipher.dart';
 import '../enum/curve_info.dart';
 import '../enum/dh_key_size.dart';
 import '../enum/hash_algorithm.dart';
@@ -214,28 +215,17 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       final iv = random.nextBytes(symmetric.blockSize);
 
       final key = await s2k.produceKey(passphrase, symmetric.keySizeInByte);
-      final cipher = PaddedBlockCipherImpl(
-        Padding('PKCS7'),
-        symmetric.cfbCipherEngine,
-      );
-      cipher.init(
-        true,
-        PaddedBlockCipherParameters(
+      final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+        ..init(
+          true,
           ParametersWithIV(KeyParameter(key), iv),
-          null,
-        ),
-      );
+        );
 
       final clearText = secretParams!.encode();
-      final cipherText = cipher.process(
-        Helper.pad(
-          Uint8List.fromList([
-            ...clearText,
-            ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
-          ]),
-          symmetric.blockSize,
-        ),
-      );
+      final cipherText = cipher.process(Uint8List.fromList([
+        ...clearText,
+        ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
+      ]));
 
       return SecretKeyPacket(
         publicKey,
@@ -255,29 +245,17 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key = await s2k?.produceKey(
-              passphrase,
-              symmetric.keySizeInByte,
-            ) ??
-            Uint8List(symmetric.keySizeInByte);
-        final cipher = PaddedBlockCipherImpl(
-          Padding('PKCS7'),
-          symmetric.cfbCipherEngine,
-        );
-        cipher.init(
-          false,
-          PaddedBlockCipherParameters(
+        final key = await s2k?.produceKey(passphrase, symmetric.keySizeInByte) ?? Uint8List(symmetric.keySizeInByte);
+        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+          ..init(
+            false,
             ParametersWithIV(
               KeyParameter(key),
               iv ?? Uint8List(symmetric.blockSize),
             ),
-            null,
-          ),
-        );
+          );
 
-        final clearTextWithHash = cipher.process(
-          Helper.pad(keyData, symmetric.blockSize),
-        );
+        final clearTextWithHash = cipher.process(keyData);
         clearText = clearTextWithHash.sublist(
           0,
           clearTextWithHash.length - HashAlgorithm.sha1.digestSize,

@@ -4,8 +4,9 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/export.dart';
+import 'package:pointycastle/api.dart';
 
+import '../crypto/symmetric/base_cipher.dart';
 import '../enum/aead_algorithm.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/packet_tag.dart';
@@ -132,7 +133,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     if (sessionKey != null) {
       if (version == 5) {
         final adata = Uint8List.fromList([
-          0xc0 | PacketTag.symEncryptedSessionKey.value,
+          0xC0 | PacketTag.aeadEncryptedData.value,
           version,
           symmetric.value,
           aead.value,
@@ -141,24 +142,17 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
         final cipher = aead.cipherEngine(key, symmetric);
         encrypted = cipher.encrypt(sessionKey.key, iv, adata);
       } else {
-        final cipher = PaddedBlockCipherImpl(
-          Padding('PKCS7'),
+        final cipher = BufferedCipher(
           symmetric.cfbCipherEngine,
-        );
-        cipher.init(
-          true,
-          PaddedBlockCipherParameters(
+        )..init(
+            true,
             ParametersWithIV(
               KeyParameter(key),
               Uint8List(symmetric.blockSize),
             ),
-            null,
-          ),
-        );
+          );
         iv = Uint8List(0);
-        encrypted = cipher.process(
-          Helper.pad(sessionKey.encode(), symmetric.blockSize),
-        );
+        encrypted = cipher.process(sessionKey.encode());
       }
     } else {
       iv = Uint8List(0);
@@ -198,24 +192,16 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
           final decrypted = cipher.decrypt(encrypted, iv, adata);
           sessionKey = SessionKey(decrypted, symmetric);
         } else {
-          final cipher = PaddedBlockCipherImpl(
-            Padding('PKCS7'),
+          final cipher = BufferedCipher(
             symmetric.cfbCipherEngine,
-          );
-          cipher.init(
-            false,
-            PaddedBlockCipherParameters(
+          )..init(
+              false,
               ParametersWithIV(
                 KeyParameter(key),
                 Uint8List(symmetric.blockSize),
               ),
-              null,
-            ),
-          );
-
-          final decrypted = cipher.process(
-            Helper.pad(encrypted, symmetric.blockSize),
-          );
+            );
+          final decrypted = cipher.process(encrypted);
           final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
             (algo) => algo.value == decrypted[0],
           );
