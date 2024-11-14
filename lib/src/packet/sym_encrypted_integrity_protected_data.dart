@@ -4,9 +4,10 @@
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/export.dart';
+import 'package:pointycastle/api.dart';
 
 import '../crypto/math/byte_ext.dart';
+import '../crypto/symmetric/base_cipher.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/packet_tag.dart';
 import '../enum/symmetric_algorithm.dart';
@@ -64,21 +65,14 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
       ...Helper.hashDigest(toHash, HashAlgorithm.sha1),
     ]);
 
-    final cipher = PaddedBlockCipherImpl(
-      PKCS7Padding(),
-      symmetric.cfbCipherEngine,
-    );
-    cipher.init(
-      true,
-      PaddedBlockCipherParameters(
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+      ..init(
+        true,
         ParametersWithIV(
           KeyParameter(key),
           Uint8List(symmetric.blockSize),
         ),
-        null,
-      ),
-    );
-
+      );
     return SymEncryptedIntegrityProtectedDataPacket(
       cipher.process(plainText),
       packets: packets,
@@ -110,21 +104,14 @@ class SymEncryptedIntegrityProtectedDataPacket extends ContainedPacket {
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) {
-    final cipher = PaddedBlockCipherImpl(
-      PKCS7Padding(),
-      symmetric.cfbCipherEngine,
-    );
-    cipher.init(
-      false,
-      PaddedBlockCipherParameters(
+    final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+      ..init(
+        false,
         ParametersWithIV(
           KeyParameter(key),
           Uint8List(symmetric.blockSize),
         ),
-        null,
-      ),
-    );
-
+      );
     final decrypted = cipher.process(encrypted);
     final realHash = decrypted.sublist(
       decrypted.length - HashAlgorithm.sha1.digestSize,

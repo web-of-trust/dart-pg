@@ -55,3 +55,6 @@
 ## 1.5.0 (2024-10-17)
 - Add checksum to un-encrypted secret key packet 
 - Remove fixnum package
+
+## 1.5.1 (2024-11-14)
+- Fix aead adata encrypted session key
