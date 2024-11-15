@@ -58,3 +58,6 @@
 
 ## 1.5.1 (2024-11-14)
 - Fix aead adata encrypted session key
+
+## 1.5.2 (2024-11-15)
+- Fix encode SKESK packet to bytes
