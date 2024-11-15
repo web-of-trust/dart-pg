@@ -26,12 +26,11 @@ void main() {
     final kek = faker.randomGenerator.string(10); // key encryption key
 
     test('encrypted data test', () async {
-      final encrypted =
-          await SymEncryptedDataPacket.encryptPackets(key, packets);
+      final encrypted = SymEncryptedDataPacket.encryptPackets(key, packets);
       final encrypt =
           SymEncryptedDataPacket.fromByteData(encrypted.toByteData());
       final decrypted =
-          await encrypt.decrypt(key, allowUnauthenticatedMessages: true);
+          encrypt.decrypt(key, allowUnauthenticatedMessages: true);
       final ldPacket = decrypted.packets![0];
       expect(ldPacket.toByteData(), equals(literalData.toByteData()));
 
@@ -43,21 +42,18 @@ void main() {
 
     test('encrypted integrity protected test', () async {
       final encrypted =
-          await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
-              key, packets);
-      final decrypted =
-          await SymEncryptedIntegrityProtectedDataPacket.fromByteData(
-                  encrypted.toByteData())
-              .decrypt(key);
+          SymEncryptedIntegrityProtectedDataPacket.encryptPackets(key, packets);
+      final decrypted = SymEncryptedIntegrityProtectedDataPacket.fromByteData(
+              encrypted.toByteData())
+          .decrypt(key);
       final ldPacket = decrypted.packets![0];
       expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
 
     test('password protected session key test', () async {
-      final skesk = await SymEncryptedSessionKeyPacket.encryptSessionKey(kek,
+      final skesk = SymEncryptedSessionKeyPacket.encryptSessionKey(kek,
           sessionKey: SessionKey.produceKey());
-      final seip =
-          await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+      final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         skesk.sessionKey!.key,
         packets,
         symmetric: skesk.sessionKey!.symmetric,
@@ -66,7 +62,7 @@ void main() {
       final encryptedList = PacketList([skesk, seip]);
       final packetList = PacketList.packetDecode(encryptedList.encode());
 
-      final decryptedSkesk = await packetList
+      final decryptedSkesk = packetList
           .whereType<SymEncryptedSessionKeyPacket>()
           .elementAt(0)
           .decrypt(kek);
@@ -74,7 +70,7 @@ void main() {
           equals(decryptedSkesk.sessionKey!.symmetric));
       expect(skesk.sessionKey!.key, equals(decryptedSkesk.sessionKey!.key));
 
-      final decryptedSeip = await packetList
+      final decryptedSeip = packetList
           .whereType<SymEncryptedIntegrityProtectedDataPacket>()
           .elementAt(0)
           .decrypt(
@@ -92,15 +88,14 @@ void main() {
     final packets = PacketList([literalData]);
 
     test('rsa test', () async {
-      final secretKey = await SecretSubkeyPacket.fromByteData(
+      final secretKey = SecretSubkeyPacket.fromByteData(
         base64.decode(rsaSecretKeyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
 
-      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final pkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
           secretKey.publicKey, SessionKey.produceKey());
-      final seip =
-          await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+      final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         pkesk.sessionKey!.key,
         packets,
         symmetric: pkesk.sessionKey!.symmetric,
@@ -109,7 +104,7 @@ void main() {
       final encryptedList = PacketList([pkesk, seip]);
       final packetList = PacketList.packetDecode(encryptedList.encode());
 
-      final decryptedPkesk = await packetList
+      final decryptedPkesk = packetList
           .whereType<PublicKeyEncryptedSessionKeyPacket>()
           .elementAt(0)
           .decrypt(secretKey);
@@ -117,7 +112,7 @@ void main() {
           equals(decryptedPkesk.sessionKey!.symmetric));
       expect(pkesk.sessionKey!.key, equals(decryptedPkesk.sessionKey!.key));
 
-      final decryptedSeip = await packetList
+      final decryptedSeip = packetList
           .whereType<SymEncryptedIntegrityProtectedDataPacket>()
           .elementAt(0)
           .decrypt(
@@ -129,15 +124,14 @@ void main() {
     });
 
     test('elgamal test', () async {
-      final secretKey = await SecretSubkeyPacket.fromByteData(
+      final secretKey = SecretSubkeyPacket.fromByteData(
         base64.decode(elgamalSecretKeyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
 
-      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final pkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
           secretKey.publicKey, SessionKey.produceKey());
-      final seip =
-          await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+      final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         pkesk.sessionKey!.key,
         packets,
         symmetric: pkesk.sessionKey!.symmetric,
@@ -146,7 +140,7 @@ void main() {
       final encryptedList = PacketList([pkesk, seip]);
       final packetList = PacketList.packetDecode(encryptedList.encode());
 
-      final decryptedPkesk = await packetList
+      final decryptedPkesk = packetList
           .whereType<PublicKeyEncryptedSessionKeyPacket>()
           .elementAt(0)
           .decrypt(secretKey);
@@ -154,7 +148,7 @@ void main() {
           equals(decryptedPkesk.sessionKey!.symmetric));
       expect(pkesk.sessionKey!.key, equals(decryptedPkesk.sessionKey!.key));
 
-      final decryptedSeip = await packetList
+      final decryptedSeip = packetList
           .whereType<SymEncryptedIntegrityProtectedDataPacket>()
           .elementAt(0)
           .decrypt(
@@ -166,7 +160,7 @@ void main() {
     });
 
     test('ecdh test', () async {
-      final secretKey = await SecretSubkeyPacket.fromByteData(
+      final secretKey = SecretSubkeyPacket.fromByteData(
         base64.decode(ecdhSecretKeyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
@@ -175,10 +169,9 @@ void main() {
             RegExp(r'\r?\n', multiLine: true), '')),
       );
 
-      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final pkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
           publicKey, SessionKey.produceKey());
-      final seip =
-          await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+      final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         pkesk.sessionKey!.key,
         packets,
         symmetric: pkesk.sessionKey!.symmetric,
@@ -187,7 +180,7 @@ void main() {
       final encryptedList = PacketList([pkesk, seip]);
       final packetList = PacketList.packetDecode(encryptedList.encode());
 
-      final decryptedPkesk = await packetList
+      final decryptedPkesk = packetList
           .whereType<PublicKeyEncryptedSessionKeyPacket>()
           .elementAt(0)
           .decrypt(secretKey);
@@ -195,7 +188,7 @@ void main() {
           equals(decryptedPkesk.sessionKey!.symmetric));
       expect(pkesk.sessionKey!.key, equals(decryptedPkesk.sessionKey!.key));
 
-      final decryptedSeip = await packetList
+      final decryptedSeip = packetList
           .whereType<SymEncryptedIntegrityProtectedDataPacket>()
           .elementAt(0)
           .decrypt(
@@ -207,7 +200,7 @@ void main() {
     });
 
     test('curve25519 test', () async {
-      final secretKey = await SecretSubkeyPacket.fromByteData(
+      final secretKey = SecretSubkeyPacket.fromByteData(
         base64.decode(curve25519SecretSubkeyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true), '')),
       ).decrypt(passphrase);
@@ -216,10 +209,9 @@ void main() {
             RegExp(r'\r?\n', multiLine: true), '')),
       );
 
-      final pkesk = await PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final pkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
           publicKey, SessionKey.produceKey());
-      final seip =
-          await SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+      final seip = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         pkesk.sessionKey!.key,
         packets,
         symmetric: pkesk.sessionKey!.symmetric,
@@ -228,7 +220,7 @@ void main() {
       final encryptedList = PacketList([pkesk, seip]);
       final packetList = PacketList.packetDecode(encryptedList.encode());
 
-      final decryptedPkesk = await packetList
+      final decryptedPkesk = packetList
           .whereType<PublicKeyEncryptedSessionKeyPacket>()
           .elementAt(0)
           .decrypt(secretKey);
@@ -236,7 +228,7 @@ void main() {
           equals(decryptedPkesk.sessionKey!.symmetric));
       expect(pkesk.sessionKey!.key, equals(decryptedPkesk.sessionKey!.key));
 
-      final decryptedSeip = await packetList
+      final decryptedSeip = packetList
           .whereType<SymEncryptedIntegrityProtectedDataPacket>()
           .elementAt(0)
           .decrypt(
@@ -256,7 +248,7 @@ void main() {
           '0107010eb732379f73c4928de25facfe6517ec105dc11a81dc0cb8a2f6f3d90016384a56fc821ae11ae8dbcb49862655dea88d06a81486801b0ff387bd2eab013de1259586906eab2476'
               .hexToBytes();
 
-      final eax = await AeadEncryptedData.fromByteData(bytes).decrypt(key);
+      final eax = AeadEncryptedData.fromByteData(bytes).decrypt(key);
       expect(eax.symmetric, SymmetricAlgorithm.aes128);
       expect(eax.aead, AeadAlgorithm.eax);
       expect(eax.chunkSize, 14);
@@ -273,7 +265,7 @@ void main() {
           '0107020e5ed2bc1e470abe8f1d644c7a6c8a567b0f7701196611a154ba9c2574cd056284a8ef68035c623d93cc708a43211bb6eaf2b27f7c18d571bcd83b20add3a08b73af15b9a098'
               .hexToBytes();
 
-      final ocb = await AeadEncryptedData.fromByteData(bytes).decrypt(key);
+      final ocb = AeadEncryptedData.fromByteData(bytes).decrypt(key);
       expect(ocb.symmetric, SymmetricAlgorithm.aes128);
       expect(ocb.aead, AeadAlgorithm.ocb);
       expect(ocb.chunkSize, 14);
@@ -289,14 +281,13 @@ void main() {
       final packets = PacketList([literalData]);
       final key = Helper.generateEncryptionKey(SymmetricAlgorithm.aes256);
 
-      final encrypted = await AeadEncryptedData.encryptPackets(key, packets);
+      final encrypted = AeadEncryptedData.encryptPackets(key, packets);
       expect(encrypted.symmetric, SymmetricAlgorithm.aes128);
       expect(encrypted.aead, AeadAlgorithm.ocb);
       expect(encrypted.chunkSize, 12);
 
       final decrypted =
-          await AeadEncryptedData.fromByteData(encrypted.toByteData())
-              .decrypt(key);
+          AeadEncryptedData.fromByteData(encrypted.toByteData()).decrypt(key);
       final ldPacket = decrypted.packets![0];
       expect(ldPacket.toByteData(), equals(literalData.toByteData()));
     });
