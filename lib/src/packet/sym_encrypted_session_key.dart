@@ -34,7 +34,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
 
   final SymmetricAlgorithm symmetric;
 
-  final AeadAlgorithm aead;
+  final AeadAlgorithm? aead;
 
   final S2K s2k;
 
@@ -53,7 +53,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     this.iv,
     this.encrypted, {
     this.symmetric = SymmetricAlgorithm.aes128,
-    this.aead = AeadAlgorithm.ocb,
+    this.aead,
     this.sessionKey,
   }) : super(PacketTag.symEncryptedSessionKey);
 
@@ -74,29 +74,27 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
     pos++;
 
-    final AeadAlgorithm aead;
+    final int ivLength;
+    final AeadAlgorithm? aead;
     if (version == 5) {
       /// A one-octet number describing the aead algorithm used.
       aead = AeadAlgorithm.values.firstWhere(
         (algo) => algo.value == bytes[pos],
       );
+      ivLength = aead.ivLength;
       pos++;
     } else {
-      aead = AeadAlgorithm.ocb;
+      ivLength = 0;
+      aead = null;
     }
 
     /// A string-to-key (S2K) specifier, length as defined above.
     final s2k = S2K.fromByteData(bytes.sublist(pos));
     pos += s2k.length;
 
-    final Uint8List iv;
-    if (version == 5) {
-      /// A starting initialization vector of size specified by the AEAD algorithm.
-      iv = bytes.sublist(pos, pos + aead.ivLength);
-      pos += aead.ivLength;
-    } else {
-      iv = Uint8List(0);
-    }
+    /// A starting initialization vector of size specified by the AEAD algorithm.
+    final iv = bytes.sublist(pos, pos + ivLength);
+    pos += ivLength;
     final encrypted = bytes.sublist(pos);
 
     return SymEncryptedSessionKeyPacket(
@@ -133,7 +131,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     if (sessionKey != null) {
       if (version == 5) {
         final adata = Uint8List.fromList([
-          0xC0 | PacketTag.aeadEncryptedData.value,
+          0xC0 | PacketTag.symEncryptedSessionKey.value,
           version,
           symmetric.value,
           aead.value,
@@ -186,9 +184,9 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
             0xC0 | tag.value,
             version,
             symmetric.value,
-            aead.value,
+            aead!.value,
           ]);
-          final cipher = aead.cipherEngine(key, symmetric);
+          final cipher = aead!.cipherEngine(key, symmetric);
           final decrypted = cipher.decrypt(encrypted, iv, adata);
           sessionKey = SessionKey(decrypted, symmetric);
         } else {
@@ -227,7 +225,9 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     return Uint8List.fromList([
       version,
       symmetric.value,
+      ...aead != null ? [aead!.value] : [],
       ...s2k.encode(),
+      ...iv,
       ...encrypted,
     ]);
   }

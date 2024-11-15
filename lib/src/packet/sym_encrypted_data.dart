@@ -28,11 +28,9 @@ class SymEncryptedDataPacket extends ContainedPacket {
   /// Decrypted packets contained within.
   final PacketList? packets;
 
-  SymEncryptedDataPacket(this.encrypted, {this.packets})
-      : super(PacketTag.symEncryptedData);
+  SymEncryptedDataPacket(this.encrypted, {this.packets}) : super(PacketTag.symEncryptedData);
 
-  factory SymEncryptedDataPacket.fromByteData(final Uint8List bytes) =>
-      SymEncryptedDataPacket(bytes);
+  factory SymEncryptedDataPacket.fromByteData(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
 
   static Future<SymEncryptedDataPacket> encryptPackets(
     final Uint8List key,

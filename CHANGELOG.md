@@ -47,3 +47,17 @@
 - Update pointycastle to version 3.9.1
 - Fix packet reader
 - Fix AEAD crypt
+
+## 1.4.0 (2024-10-15)
+- Support partial body length
+- Support signature salt notation
+
+## 1.5.0 (2024-10-17)
+- Add checksum to un-encrypted secret key packet 
+- Remove fixnum package
+
+## 1.5.1 (2024-11-14)
+- Fix aead adata encrypted session key
+
+## 1.5.2 (2024-11-14)
+- Fix encode SKESK packet to bytes

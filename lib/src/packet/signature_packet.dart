@@ -230,6 +230,7 @@ class SignaturePacket extends ContainedPacket {
       SignatureCreationTime.fromTime(date ?? DateTime.now()),
       IssuerFingerprint.fromKey(signKey),
       IssuerKeyID(signKey.keyID.bytes),
+      NotationData.saltNotation(hashAlgorithm.saltSize),
       ...subpackets,
     ];
     if (keyExpirationTime > 0) {
