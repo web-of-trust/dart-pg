@@ -129,7 +129,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     final Uint8List iv;
     final Uint8List encrypted;
     if (sessionKey != null) {
-      if (version == 5) {
+      if (aeadProtect) {
         final adata = Uint8List.fromList([
           0xC0 | PacketTag.symEncryptedSessionKey.value,
           version,
@@ -163,7 +163,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
       iv,
       encrypted,
       symmetric: symmetric,
-      aead: aead,
+      aead: aeadProtect ? aead : null,
       sessionKey: sessionKey ?? SessionKey(key, symmetric),
     );
   }
