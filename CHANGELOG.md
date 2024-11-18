@@ -61,3 +61,6 @@
 
 ## 1.5.2 (2024-11-15)
 - Fix encode SKESK packet to bytes
+
+## 1.5.3 (2024-11-18)
+- Refactor AEAD crypt
