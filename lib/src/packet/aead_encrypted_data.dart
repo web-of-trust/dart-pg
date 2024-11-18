@@ -189,8 +189,12 @@ class AeadEncryptedData extends ContainedPacket {
     );
 
     final processed = dataLength - tagLength * (dataLength / chunkSize).ceil();
-    final crypted = Uint8List(processed + (forEncryption ? aead.tagLength : 0));
+    final crypted = Uint8List(
+      processed + (forEncryption ? aead.tagLength : 0),
+    );
     for (var chunkIndex = 0; chunkIndex == 0 || data.isNotEmpty;) {
+      /// We take a chunk of data, en/decrypt it,
+      /// and shift `data` to the next chunk.
       final chunkIndexData = adataBuffer.sublist(5, 13);
       final size = chunkSize < data.length ? chunkSize : data.length;
       crypted.setAll(
@@ -208,7 +212,6 @@ class AeadEncryptedData extends ContainedPacket {
               ),
       );
 
-      /// We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
       data = data.sublist(size);
       adataBuffer.setAll(9, (++chunkIndex).pack32());
     }
