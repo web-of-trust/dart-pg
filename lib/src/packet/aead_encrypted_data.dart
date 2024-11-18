@@ -85,19 +85,20 @@ class AeadEncryptedData extends ContainedPacket {
     final int chunkSize = 12,
   }) async {
     final iv = Helper.secureRandom().nextBytes(aead.ivLength);
-    final encryptor = AeadEncryptedData(
-      symmetric,
-      aead,
-      chunkSize,
-      iv,
-      Uint8List(0),
-    );
     return AeadEncryptedData(
       symmetric,
       aead,
       chunkSize,
       iv,
-      encryptor._crypt(true, key, packets.encode()),
+      _crypt(
+        true,
+        key,
+        packets.encode(),
+        symmetric: symmetric,
+        aead: aead,
+        chunkSizeByte: chunkSize,
+        iv: iv,
+      ),
       packets: packets,
     );
   }
@@ -150,40 +151,64 @@ class AeadEncryptedData extends ContainedPacket {
         key,
         data,
         finalChunk: authTag,
+        symmetric: symmetric,
+        aead: aead,
+        chunkSizeByte: chunkSize,
+        iv: iv,
       )),
     );
   }
 
   /// En/decrypt the payload.
-  Uint8List _crypt(
+  static Uint8List _crypt(
     bool forEncryption,
     Uint8List key,
     Uint8List data, {
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    AeadAlgorithm aead = AeadAlgorithm.gcm,
+    final chunkSizeByte = 0,
+    final Uint8List? iv,
     Uint8List? finalChunk,
   }) {
     final cipher = aead.cipherEngine(key, symmetric);
     final dataLength = data.length;
     final tagLength = forEncryption ? 0 : aead.tagLength;
-    final chunkSize = (1 << (this.chunkSize + 6)) + tagLength;
+    final chunkSize = (1 << (chunkSizeByte + 6)) + tagLength;
 
     final adataBuffer = Uint8List(13);
 
-    adataBuffer.setAll(0, _getAAData());
+    adataBuffer.setAll(
+        0,
+        Uint8List.fromList([
+          0xc0 | PacketTag.aeadEncryptedData.value,
+          version,
+          symmetric.value,
+          aead.value,
+          chunkSize,
+        ]));
 
-    final List<Uint8List> crypted = List.empty(growable: true);
+    final processed = dataLength - tagLength * (dataLength / chunkSize).ceil();
+    final crypted = Uint8List(processed);
     for (var chunkIndex = 0; chunkIndex == 0 || data.isNotEmpty;) {
       final chunkIndexData = adataBuffer.sublist(5, 13);
       final size = chunkSize < data.length ? chunkSize : data.length;
-      crypted.add(
+      crypted.setAll(
+        chunkIndex * size,
         forEncryption
             ? cipher.encrypt(
                 data.sublist(0, size),
-                cipher.getNonce(iv, chunkIndexData),
+                cipher.getNonce(
+                  iv ?? Uint8List(aead.ivLength),
+                  chunkIndexData,
+                ),
                 adataBuffer,
               )
             : cipher.decrypt(
                 data.sublist(0, size),
-                cipher.getNonce(iv, chunkIndexData),
+                cipher.getNonce(
+                  iv ?? Uint8List(aead.ivLength),
+                  chunkIndexData,
+                ),
                 adataBuffer,
               ),
       );
@@ -199,36 +224,28 @@ class AeadEncryptedData extends ContainedPacket {
     final chunkIndexData = adataBuffer.sublist(5, 13);
     final adataTagBuffer = Uint8List(21);
     adataTagBuffer.setAll(0, adataBuffer);
-    adataTagBuffer.setAll(
-      17,
-      (dataLength - tagLength * (dataLength / chunkSize).ceil()).pack32(),
-    );
-    crypted.add(
-      forEncryption
-          ? cipher.encrypt(
-              finalChunk ?? Uint8List(0),
-              cipher.getNonce(iv, chunkIndexData),
-              adataTagBuffer,
-            )
-          : cipher.decrypt(
-              finalChunk ?? Uint8List(0),
-              cipher.getNonce(iv, chunkIndexData),
-              adataTagBuffer,
+    adataTagBuffer.setAll(17, processed.pack32());
+    final finalCrypted = forEncryption
+        ? cipher.encrypt(
+            finalChunk ?? Uint8List(0),
+            cipher.getNonce(
+              iv ?? Uint8List(aead.ivLength),
+              chunkIndexData,
             ),
-    );
+            adataTagBuffer,
+          )
+        : cipher.decrypt(
+            finalChunk ?? Uint8List(0),
+            cipher.getNonce(
+              iv ?? Uint8List(aead.ivLength),
+              chunkIndexData,
+            ),
+            adataTagBuffer,
+          );
 
     return Uint8List.fromList([
-      ...crypted.expand((element) => element),
-    ]);
-  }
-
-  Uint8List _getAAData() {
-    return Uint8List.fromList([
-      0xc0 | tag.value,
-      version,
-      symmetric.value,
-      aead.value,
-      chunkSize,
+      ...crypted,
+      ...finalCrypted,
     ]);
   }
 }
