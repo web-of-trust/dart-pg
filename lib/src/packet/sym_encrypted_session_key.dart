@@ -58,7 +58,7 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
       Helper.assertSymmetric(symmetric);
     }
     if (aead != null && version < 5) {
-      throw StateError(
+      throw ArgumentError(
         'Using AEAD with version $version SKESK packet is not allowed.',
       );
     }

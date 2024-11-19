@@ -49,7 +49,7 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
       );
     }
     if (version == 6 && keyAlgorithm == KeyAlgorithm.elgamal) {
-      throw UnsupportedError(
+      throw ArgumentError(
         'Key algorithm ${keyAlgorithm.name} cannot be used with version {$version} PKESK packet.',
       );
     }

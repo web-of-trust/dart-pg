@@ -58,14 +58,21 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket {
       Helper.assertSymmetric(symmetric!);
     }
 
-    if (aead != null && version != 2) {
-      throw StateError(
-        'Using AEAD with version $version SEIPD packet is not allowed.',
-      );
+    if (aead != null) {
+      if (version != 2) {
+        throw ArgumentError(
+          'Using AEAD with version $version SEIPD packet is not allowed.',
+        );
+      }
+      if (chunkSize <= 0) {
+        throw ArgumentError(
+          'Chunk size must be greater than zero.',
+        );
+      }
     }
 
     if (salt != null && salt!.length != saltSize) {
-      throw StateError(
+      throw ArgumentError(
         'Salt size must be $saltSize bytes.',
       );
     }
@@ -127,7 +134,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket {
   }) {
     Helper.assertSymmetric(symmetric);
 
-    final version = aeadProtect ? 2 : 1;
+    final version = aeadProtect || Config.useV6Key ? 2 : 1;
     final salt = aeadProtect ? Helper.secureRandom().nextBytes(saltSize) : null;
     final chunkSize = aeadProtect ? Config.aeadChunkSize : 0;
 
@@ -166,8 +173,8 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket {
       version,
       encrypted,
       packets: packets,
-      symmetric: symmetric,
-      aead: aead,
+      symmetric: version == 2 ? symmetric : null,
+      aead: aeadProtect ? aead : null,
       chunkSize: chunkSize,
       salt: salt,
     );

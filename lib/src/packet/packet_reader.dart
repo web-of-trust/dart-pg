@@ -22,7 +22,7 @@ final class PacketReader {
 
   factory PacketReader.read(final Uint8List bytes, [final int offset = 0]) {
     if (bytes.length <= offset || bytes.sublist(offset).length < 2 || (bytes[offset] & 0x80) == 0) {
-      throw StateError(
+      throw ArgumentError(
         'Error during parsing. This data probably does not conform to a valid OpenPGP format.',
       );
     }
