@@ -15,6 +15,7 @@ import '../enum/packet_type.dart';
 import '../enum/signature_type.dart';
 import '../type/signature_packet.dart';
 import '../type/subpacket.dart';
+import '../type/verification_key_material.dart';
 import 'base.dart';
 import 'public_key.dart';
 import 'signature_subpacket.dart';
@@ -143,8 +144,50 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     final Uint8List dataToVerify, [
     final DateTime? time,
   ]) {
-    // TODO: implement verify
-    throw UnimplementedError();
+    if (issuerKeyID != verifyKey.keyID) {
+      throw ArgumentError('Signature was not issued by the given public key.');
+    }
+    if (keyAlgorithm != verifyKey.keyAlgorithm) {
+      throw ArgumentError(
+        'Public key algorithm used to sign signature does not match issuer key algorithm.',
+      );
+    }
+    if (isExpired(time)) {
+      throw StateError('Signature is expired.');
+    }
+
+    final message = Uint8List.fromList([
+      ...dataToVerify,
+      ...signatureData,
+      ..._calculateTrailer(
+        version,
+        signatureData.length,
+      )
+    ]);
+    final hash = Helper.hashDigest(message, hashAlgorithm);
+    if (signedHashValue[0] != hash[0] || signedHashValue[1] != hash[1]) {
+      throw StateError('Signed digest did not match!');
+    }
+
+    final keyMaterial = verifyKey.keyMaterial;
+    if (keyMaterial is VerificationKeyMaterial) {
+      return keyMaterial.verify(message, hashAlgorithm, signature);
+    } else {
+      throw UnsupportedError(
+        'Unsupported public key algorithm for verification.',
+      );
+    }
+  }
+
+  static Uint8List _calculateTrailer(
+    final int version,
+    final int dataLength,
+  ) {
+    return Uint8List.fromList([
+      version,
+      0xff,
+      ...dataLength.pack32(),
+    ]);
   }
 
   /// Encode subpacket to bytes
