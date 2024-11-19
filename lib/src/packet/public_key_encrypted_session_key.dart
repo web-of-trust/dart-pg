@@ -16,6 +16,7 @@ import '../type/session_key_cryptor.dart';
 import 'base.dart';
 import 'key/public_material.dart';
 import 'key/session_key_cryptor.dart';
+import 'public_key.dart';
 
 /// Implementation of the Public-Key Encrypted Session Key (PKESK) Packet (Type 1)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -67,12 +68,14 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
       keyVersion = bytes[pos++];
       keyFingerprint = bytes.sublist(pos, pos + length - 1);
       pos += length - 1;
-      keyID = keyVersion == 6 ? keyFingerprint.sublist(0, 8) : keyFingerprint.sublist(12, 20);
+      keyID = keyVersion == 6
+          ? keyFingerprint.sublist(0, PublicKeyPacket.keyIDSize)
+          : keyFingerprint.sublist(12, 12 + PublicKeyPacket.keyIDSize);
     } else {
       keyVersion = 0;
       keyFingerprint = Uint8List(0);
-      keyID = bytes.sublist(pos, pos + 8);
-      pos += 8;
+      keyID = bytes.sublist(pos, pos + PublicKeyPacket.keyIDSize);
+      pos += PublicKeyPacket.keyIDSize;
     }
     final keyAlgorithm = KeyAlgorithm.values.firstWhere(
       (algo) => algo.value == bytes[pos],

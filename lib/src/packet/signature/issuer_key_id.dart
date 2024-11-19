@@ -14,7 +14,11 @@ import '../signature_subpacket.dart';
 /// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.5
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class IssuerKeyID extends SignatureSubpacket {
-  IssuerKeyID(final Uint8List data, {super.critical, super.isLong}) : super(SignatureSubpacketType.issuerKeyID, data);
+  IssuerKeyID(
+    final Uint8List data, {
+    super.critical,
+    super.isLong,
+  }) : super(SignatureSubpacketType.issuerKeyID, data);
 
   factory IssuerKeyID.fromString(
     final String id, {
@@ -22,9 +26,5 @@ class IssuerKeyID extends SignatureSubpacket {
   }) =>
       IssuerKeyID(id.hexToBytes(), critical: critical);
 
-  factory IssuerKeyID.wildcard() => IssuerKeyID(
-        Uint8List.fromList(List.filled(8, 0, growable: false)),
-      );
-
-  String get id => data.toHexadecimal();
+  Uint8List get keyID => data;
 }

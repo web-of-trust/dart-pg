@@ -37,12 +37,11 @@ enum HashAlgorithm {
 
   int get digestSize => switch (this) {
         md5 => 16,
-        sha1 => 20,
-        ripemd160 => 20,
+        sha1 || ripemd160 => 20,
+        sha224 => 28,
         sha256 || sha3_256 => 32,
         sha384 => 48,
         sha512 || sha3_512 => 64,
-        sha224 => 28,
       };
 
   int get saltSize => switch (this) {

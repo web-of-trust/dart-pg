@@ -22,6 +22,8 @@ import 'key/public_material.dart';
 /// Implementation of the Public Key Packet (Type 6)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
+  static const keyIDSize = 8;
+
   @override
   final int keyVersion;
 
@@ -117,12 +119,12 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
       _fingerprint = Uint8List.fromList(
         Helper.hashDigest(signBytes, HashAlgorithm.sha256),
       );
-      _keyID = _fingerprint.sublist(0, 12);
+      _keyID = _fingerprint.sublist(0, keyIDSize);
     } else {
       _fingerprint = Uint8List.fromList(
         Helper.hashDigest(signBytes, HashAlgorithm.sha1),
       );
-      _keyID = _fingerprint.sublist(12, 20);
+      _keyID = _fingerprint.sublist(12, 12 + keyIDSize);
     }
   }
 

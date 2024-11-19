@@ -87,7 +87,7 @@ enum SignatureType {
   /// about the key, such as the Revocation Key subpacket.
   /// It is also appropriate for statements that non-self certifiers want to make
   /// about the key itself, rather than the binding between a key and a name.
-  key(31),
+  directKey(31),
 
   /// Key revocation signature
   ///
