@@ -13,8 +13,7 @@ import 'symmetric_algorithm.dart';
 /// See https://www.rfc-editor.org/rfc/rfc9580#section-9.2
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum Ecc {
-  prime256v1([1, 2, 840, 10045, 3, 1, 7], '1.2.840.10045.3.1.7'),
-  secp256k1([1, 3, 132, 0, 10], '1.3.132.0.10'),
+  secp256r1([1, 2, 840, 10045, 3, 1, 7], '1.2.840.10045.3.1.7'),
   secp384r1([1, 3, 132, 0, 34], '1.3.132.0.34'),
   secp521r1([1, 3, 132, 0, 35], '1.3.132.0.35'),
   brainpoolP256r1([1, 3, 36, 3, 3, 2, 8, 1, 1, 7], '1.3.36.3.3.2.8.1.1.7'),
@@ -32,13 +31,13 @@ enum Ecc {
   ASN1ObjectIdentifier get asn1Oid => ASN1ObjectIdentifier(identifier);
 
   HashAlgorithm get hashAlgorithm => switch (this) {
-        brainpoolP256r1 || curve25519 || prime256v1 || secp256k1 => HashAlgorithm.sha256,
+        brainpoolP256r1 || curve25519 || secp256r1 => HashAlgorithm.sha256,
         brainpoolP384r1 || secp384r1 => HashAlgorithm.sha384,
         brainpoolP512r1 || ed25519 || secp521r1 => HashAlgorithm.sha512,
       };
 
   SymmetricAlgorithm get symmetricAlgorithm => switch (this) {
-        brainpoolP256r1 || curve25519 || ed25519 || prime256v1 || secp256k1 => SymmetricAlgorithm.aes128,
+        brainpoolP256r1 || curve25519 || ed25519 || secp256r1 => SymmetricAlgorithm.aes128,
         brainpoolP384r1 || secp384r1 => SymmetricAlgorithm.aes192,
         brainpoolP512r1 || secp521r1 => SymmetricAlgorithm.aes256,
       };
