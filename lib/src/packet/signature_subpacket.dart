@@ -8,17 +8,21 @@ import 'dart:typed_data';
 
 import '../common/extensions.dart';
 import '../enum/signature_subpacket_type.dart';
+import '../type/subpacket.dart';
 
 /// Signature subpacket class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SignatureSubpacket {
+class SignatureSubpacket implements SubpacketInterface {
+  @override
   final SignatureSubpacketType type;
 
-  final bool critical;
-
+  @override
   final bool isLong;
 
+  @override
   final Uint8List data;
+
+  final bool critical;
 
   SignatureSubpacket(
     this.type,
@@ -27,6 +31,7 @@ class SignatureSubpacket {
     this.isLong = false,
   });
 
+  @override
   Uint8List encode() {
     final List<int> header;
     final bodyLen = data.length + 1;

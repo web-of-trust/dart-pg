@@ -6,11 +6,13 @@ library;
 
 import 'dart:typed_data';
 
+import '../enum/signature_subpacket_type.dart';
+
 /// Subpacket interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class Subpacket {
+abstract class SubpacketInterface {
   /// Get sub-packet type
-  int get type;
+  SignatureSubpacketType get type;
 
   /// Get sub-packet data
   Uint8List get data;
