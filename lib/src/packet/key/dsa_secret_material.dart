@@ -43,7 +43,7 @@ class DSASecretMaterial implements SigningKeyMaterialInterface {
   int get keyLength => publicMaterial.keyLength;
 
   @override
-  Uint8List sign(Uint8List message, HashAlgorithm hash) {
+  Uint8List sign(final Uint8List message, final HashAlgorithm hash) {
     final signer = DSASigner(Digest(hash.digestName))
       ..init(
         true,

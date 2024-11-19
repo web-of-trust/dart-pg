@@ -124,7 +124,7 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  Uint8List decrypt(SecretKeyMaterialInterface key) {
+  Uint8List decrypt(final SecretKeyMaterialInterface key) {
     if (key is ECDHSecretMaterial) {
       final Uint8List sharedKey;
       switch (key.publicMaterial.curve) {

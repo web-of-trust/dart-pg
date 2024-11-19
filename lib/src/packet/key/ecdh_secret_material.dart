@@ -32,7 +32,7 @@ class ECDHSecretMaterial extends ECSecretMaterial implements SecretKeyMaterialIn
         publicMaterial,
       );
 
-  factory ECDHSecretMaterial.generate(Ecc curve) {
+  factory ECDHSecretMaterial.generate(final Ecc curve) {
     switch (curve) {
       case Ecc.curve25519:
         final secret = Helper.secureRandom().nextBytes(

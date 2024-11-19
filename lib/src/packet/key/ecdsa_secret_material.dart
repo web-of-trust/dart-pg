@@ -31,7 +31,7 @@ class ECDSASecretMaterial extends ECSecretMaterial implements SigningKeyMaterial
         publicMaterial,
       );
 
-  factory ECDSASecretMaterial.generate(Ecc curve) {
+  factory ECDSASecretMaterial.generate(final Ecc curve) {
     switch (curve) {
       case Ecc.curve25519:
       case Ecc.ed25519:

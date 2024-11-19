@@ -42,9 +42,9 @@ class RSASecretMaterial implements SigningKeyMaterialInterface {
     this.exponent,
     this.primeP,
     this.primeQ,
-    this.publicMaterial, {
-    BigInt? coefficient,
-  })  : coefficient = coefficient ?? primeP.modInverse(primeQ),
+    this.publicMaterial, [
+    final BigInt? coefficient,
+  ])  : coefficient = coefficient ?? primeP.modInverse(primeQ),
         privateKey = RSAPrivateKey(
           primeP * primeQ,
           exponent,
@@ -73,7 +73,7 @@ class RSASecretMaterial implements SigningKeyMaterialInterface {
       primeP,
       primeQ,
       publicMaterial,
-      coefficient: coefficient,
+      coefficient,
     );
   }
 

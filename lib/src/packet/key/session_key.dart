@@ -56,7 +56,7 @@ class SessionKey implements SessionKeyInterface {
   }
 
   @override
-  void checksum(Uint8List checksum) {
+  void checksum(final Uint8List checksum) {
     final computedChecksum = computeChecksum();
     if (!((computedChecksum[0] == checksum[0]) && (computedChecksum[1] == checksum[1]))) {
       throw StateError('Session key checksum mismatch!');
