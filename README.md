@@ -1,29 +1,33 @@
 Dart PG (Dart Privacy Guard) - The OpenPGP library in Dart language
 ===================================================================
 Dart PG is an implementation of the OpenPGP standard in Dart language.
-It implements [RFC4880](https://www.rfc-editor.org/rfc/rfc4880), [RFC5581](https://www.rfc-editor.org/rfc/rfc5581), [RFC6637](https://www.rfc-editor.org/rfc/rfc6637),
-parts of [RFC4880bis](https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis).
+It implements [RFC 9580](https://www.rfc-editor.org/rfc/rfc9580) and
+provides encryption with public key or symmetric cryptographic algorithms,
+digital signatures, compression, and key management.
 
 ## Features
 * Support data signing & encryption.
 * Support key management: key generation, key reading, key decryption.
-* Support public-key algorithms: [RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)),
-  [DSA](https://en.wikipedia.org/wiki/Digital_Signature_Algorithm),
-  [ElGamal](https://en.wikipedia.org/wiki/ElGamal_encryption),
-  [ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm),
-  [EdDSA](https://en.wikipedia.org/wiki/EdDSA)
+* Support public-key algorithms: [RSA](https://www.rfc-editor.org/rfc/rfc3447),
+  [ECDSA](https://www.rfc-editor.org/rfc/rfc6979),
+  [EdDSA](https://www.rfc-editor.org/rfc/rfc8032)
   and [ECDH](https://en.wikipedia.org/wiki/Elliptic-curve_Diffie%E2%80%93Hellman).
-* Support symmetric ciphers: 3DES, IDEA, CAST5, Blowfish, Twofish,
-  [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard),
-  [Camellia](https://en.wikipedia.org/wiki/Camellia_(cipher)).
-* Support AEAD algorithms: [EAX](https://www.cs.ucdavis.edu/~rogaway/papers/eax.pdf), [OCB](https://tools.ietf.org/html/rfc7253), [GCM](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf).
-* Support hash algorithms: MD5, SHA-1, RIPEMD-160, SHA-256, SHA-384, SHA-512, SHA-224.
-* Support compression algorithms: ZIP, ZLIB.
+* Support symmetric ciphers: Blowfish, Twofish,
+  [AES](https://www.rfc-editor.org/rfc/rfc3394),
+  [Camellia](https://www.rfc-editor.org/rfc/rfc3713).
+* Support AEAD ciphers: [EAX](https://seclab.cs.ucdavis.edu/papers/eax.pdf),
+  [OCB](https://tools.ietf.org/html/rfc7253),
+  [GCM](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-38d.pdf).
+* Support hash algorithms: SHA-256, SHA-384, SHA-512, SHA-224, SHA3-256, SHA3-512.
+* Support compression algorithms: Zip, Zlib, BZip2.
 * Support [ECC](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) curves:
-  [secP256k1, secP384r1, secP521r1](https://www.rfc-editor.org/rfc/rfc6090),
+  [secp256r1, secp384r1, secp521r1](https://www.rfc-editor.org/rfc/rfc6090),
   [brainpoolP256r1, brainpoolP384r1, brainpoolP512r1](https://www.rfc-editor.org/rfc/rfc5639),
-  [curve25519](https://www.rfc-editor.org/rfc/rfc7748), [ed25519](https://www.rfc-editor.org/rfc/rfc8032),
-  [prime256v1](https://www.secg.org/sec2-v2.pdf).
+  [Curve25519, Curve448](https://www.rfc-editor.org/rfc/rfc7748),
+  [Ed25519, Ed448](https://www.rfc-editor.org/rfc/rfc8032).
+* Support public-key algorithms, symmetric ciphers & hash algorithms
+  for signature verification & message decryption (backward compatibility):
+  DSA, ElGamal, TripleDES, IDEA, CAST5, MD5, SHA-1, RIPEMD-160.
 
 ## Getting started
 In `Dart` or `Flutter` project add the dependency:
