@@ -109,14 +109,12 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   bool get isSubkeyRevocation => signatureType == SignatureType.subkeyRevocation;
 
   @override
-  Uint8List get issuerFingerprint {
-    final subpacket = getSubpacket<IssuerFingerprint>() ?? getSubpacket<IssuerFingerprint>();
-    return subpacket?.fingerprint ?? Uint8List(version == 6 ? 32 : 20);
-  }
+  Uint8List get issuerFingerprint =>
+      getSubpacket<IssuerFingerprint>()?.fingerprint ?? Uint8List(version == 6 ? 32 : 20);
 
   @override
   Uint8List get issuerKeyID {
-    final subpacket = getSubpacket<IssuerKeyID>() ?? getSubpacket<IssuerKeyID>();
+    final subpacket = getSubpacket<IssuerKeyID>();
     if (subpacket != null) {
       return subpacket.keyID;
     } else {
