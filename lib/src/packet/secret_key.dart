@@ -1,36 +1,45 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
-import 'package:pointycastle/export.dart';
+import 'package:pointycastle/api.dart';
 
-import '../crypto/math/byte_ext.dart';
-import '../crypto/math/int_ext.dart';
-import '../crypto/symmetric/base_cipher.dart';
-import '../enum/curve_info.dart';
-import '../enum/dh_key_size.dart';
-import '../enum/hash_algorithm.dart';
-import '../enum/key_algorithm.dart';
-import '../enum/packet_tag.dart';
+import 'key/public_material.dart';
+import 'key/secret_material.dart';
+
+import '../common/argon2_s2k.dart';
+import '../common/generic_s2k.dart';
+import '../common/helpers.dart';
+import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/rsa_key_size.dart';
+import '../enum/aead_algorithm.dart';
+import '../enum/ecc.dart';
+import '../enum/eddsa_curve.dart';
+import '../enum/montgomery_curve.dart';
+import '../enum/hash_algorithm.dart';
+import '../enum/key_version.dart';
+import '../enum/key_algorithm.dart';
+import '../enum/packet_type.dart';
 import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
-import '../helpers.dart';
-import 'key/key_id.dart';
-import 'key/key_pair_params.dart';
-import 'key/key_params.dart';
-import 'key/s2k.dart';
-import 'contained_packet.dart';
-import 'key_packet.dart';
+import '../type/key_material.dart';
+import '../type/s2k.dart';
+import '../type/secret_key_material.dart';
+import '../type/secret_key_packet.dart';
+import '../type/subkey_packet.dart';
+import 'base.dart';
+import 'public_key.dart';
 
-/// SecretKey represents a possibly encrypted private key.
-/// See RFC 4880, section 5.5.3.
+/// Implementation of the Secret Key Packet (Type 5)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SecretKeyPacket extends ContainedPacket implements KeyPacket {
-  final PublicKeyPacket _publicKey;
+class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
+  @override
+  final PublicKeyPacket publicKey;
 
   final Uint8List keyData;
 
@@ -38,56 +47,96 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
 
   final SymmetricAlgorithm symmetric;
 
-  final S2K? s2k;
+  @override
+  final AeadAlgorithm? aead;
+
+  final S2kInterface? s2k;
 
   final Uint8List? iv;
 
-  final KeyParams? secretParams;
+  @override
+  final SecretKeyMaterialInterface? secretKeyMaterial;
 
   SecretKeyPacket(
-    this._publicKey,
+    this.publicKey,
     this.keyData, {
-    this.s2kUsage = S2kUsage.sha1,
+    this.s2kUsage = S2kUsage.cfb,
     this.symmetric = SymmetricAlgorithm.aes128,
+    this.aead,
     this.s2k,
     this.iv,
-    this.secretParams,
-  }) : super(PacketTag.secretKey);
+    this.secretKeyMaterial,
+  }) : super(PacketType.secretKey);
 
-  factory SecretKeyPacket.fromByteData(final Uint8List bytes) {
-    final publicKey = PublicKeyPacket.fromByteData(bytes);
+  factory SecretKeyPacket.fromBytes(final Uint8List bytes) {
+    final publicKey = PublicKeyPacket.fromBytes(bytes);
+    final isV6 = publicKey.keyVersion == KeyVersion.v6.value;
 
-    var pos = publicKey.toByteData().length;
+    var pos = publicKey.data.length;
     final s2kUsage = S2kUsage.values.firstWhere(
       (usage) => usage.value == bytes[pos],
     );
 
-    pos++;
-    final S2K? s2k;
+    // Only for a version 6 packet where the secret key material encrypted
+    if (isV6 && s2kUsage != S2kUsage.none) {
+      pos++;
+    }
+
+    final S2kInterface? s2k;
+    final AeadAlgorithm? aead;
     final SymmetricAlgorithm symmetric;
     switch (s2kUsage) {
-      case S2kUsage.checksum:
-      case S2kUsage.sha1:
+      case S2kUsage.malleableCfb:
+      case S2kUsage.cfb:
+      case S2kUsage.aeadProtect:
         symmetric = SymmetricAlgorithm.values.firstWhere(
           (usage) => usage.value == bytes[pos],
         );
         pos++;
-        s2k = S2K.fromByteData(bytes.sublist(pos));
+
+        // If s2k usage octet was 253, a one-octet AEAD algorithm.
+        if (s2kUsage == S2kUsage.aeadProtect) {
+          aead = AeadAlgorithm.values.firstWhere(
+            (usage) => usage.value == bytes[pos],
+          );
+          pos++;
+        } else {
+          aead = null;
+        }
+
+        // Only for a version 6 packet, and if string-to-key usage
+        // octet was 253 or 254, an one-octet count of the following field.
+        if (isV6 && (s2kUsage == S2kUsage.aeadProtect || s2kUsage == S2kUsage.cfb)) {
+          pos++;
+        }
+
+        final s2kType = S2kType.values.firstWhere(
+          (usage) => usage.value == bytes[pos],
+        );
+
+        if (s2kType == S2kType.argon2) {
+          s2k = Argon2S2k.fromBytes(bytes.sublist(pos));
+        } else {
+          s2k = GenericS2k.fromBytes(bytes.sublist(pos));
+        }
         pos += s2k.length;
         break;
       default:
         symmetric = SymmetricAlgorithm.plaintext;
         s2k = null;
+        aead = null;
     }
 
     Uint8List? iv;
-    if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
-      final blockSize = symmetric.blockSize;
-      iv = bytes.sublist(pos, pos + blockSize);
-      pos += blockSize;
+    if (aead != null) {
+      iv = bytes.sublist(pos, pos + aead.blockLength);
+      pos += aead.blockLength;
+    } else if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
+      iv = bytes.sublist(pos, pos + symmetric.blockSize);
+      pos += symmetric.blockSize;
     }
 
-    KeyParams? secretParams;
+    SecretKeyMaterialInterface? secretKeyMaterial;
     var keyData = bytes.sublist(pos);
     if (s2kUsage == S2kUsage.none) {
       final checksum = keyData.sublist(keyData.length - 2);
@@ -95,270 +144,325 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       if (!checksum.equals(_computeChecksum(keyData))) {
         throw StateError('Key checksum mismatch!');
       }
-      secretParams = _parseSecretParams(
+      secretKeyMaterial = _readKeyMaterial(
         keyData,
-        publicKey.algorithm,
+        publicKey,
       );
     }
-
     return SecretKeyPacket(
       publicKey,
       keyData,
       s2kUsage: s2kUsage,
       symmetric: symmetric,
+      aead: aead,
       s2k: s2k,
       iv: iv,
-      secretParams: secretParams,
+      secretKeyMaterial: secretKeyMaterial,
     );
   }
 
-  static Future<SecretKeyPacket> generate(
+  /// Generate secret key packet
+  factory SecretKeyPacket.generate(
     final KeyAlgorithm algorithm, {
-    final RSAKeySize rsaKeySize = RSAKeySize.s4096,
-    final DHKeySize dhKeySize = DHKeySize.l2048n224,
-    final CurveInfo curve = CurveInfo.secp521r1,
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
+    final Ecc curve = Ecc.secp521r1,
     final DateTime? date,
-  }) async {
-    final keyPair = await KeyPairParams.generate(
-      algorithm,
-      rsaKeySize: rsaKeySize,
-      dhKeySize: dhKeySize,
-      curve: curve,
-    );
+  }) {
+    final keyMaterial = switch (algorithm) {
+      KeyAlgorithm.rsaEncryptSign ||
+      KeyAlgorithm.rsaSign ||
+      KeyAlgorithm.rsaEncrypt =>
+        RSASecretMaterial.generate(rsaKeySize),
+      KeyAlgorithm.ecdsa => ECDSASecretMaterial.generate(curve),
+      KeyAlgorithm.ecdh => ECDHSecretMaterial.generate(curve),
+      KeyAlgorithm.eddsaLegacy => EdDSALegacySecretMaterial.generate(),
+      KeyAlgorithm.x25519 => MontgomerySecretMaterial.generate(MontgomeryCurve.x25519),
+      KeyAlgorithm.x448 => MontgomerySecretMaterial.generate(MontgomeryCurve.x448),
+      KeyAlgorithm.ed25519 => EdDSASecretMaterial.generate(EdDSACurve.ed25519),
+      KeyAlgorithm.ed448 => EdDSASecretMaterial.generate(EdDSACurve.ed448),
+      _ => throw UnsupportedError("Key algorithm ${algorithm.name} is unsupported."),
+    };
 
     return SecretKeyPacket(
       PublicKeyPacket(
+        algorithm.keyVersion,
         date ?? DateTime.now(),
-        keyPair.publicParams,
-        algorithm: algorithm,
+        keyMaterial.publicMaterial,
+        keyAlgorithm: algorithm,
       ),
-      keyPair.secretParams.encode(),
-      secretParams: keyPair.secretParams,
+      keyMaterial.toBytes,
+      secretKeyMaterial: keyMaterial,
     );
   }
 
   @override
-  PublicKeyPacket get publicKey => _publicKey;
-
-  @override
-  bool get isEncrypted => s2kUsage != S2kUsage.none;
-
-  @override
-  bool get isDecrypted => secretParams != null;
-
-  @override
-  bool get isSigningKey {
-    return KeyPacket.isSigningAlgorithm(algorithm);
-  }
-
-  @override
-  bool get isEncryptionKey {
-    return KeyPacket.isEncryptionAlgorithm(algorithm);
-  }
-
-  bool get isDummy => s2k != null && s2k!.type == S2kType.gnu;
-
-  @override
-  KeyAlgorithm get algorithm => _publicKey.algorithm;
-
-  @override
-  DateTime get creationTime => _publicKey.creationTime;
-
-  @override
-  KeyParams get publicParams => _publicKey.publicParams;
-
-  @override
-  String get fingerprint => _publicKey.fingerprint;
-
-  @override
-  KeyID get keyID => _publicKey.keyID;
-
-  @override
-  int get version => _publicKey.version;
-
-  @override
-  int get keyStrength => _publicKey.keyStrength;
-
-  HashAlgorithm get preferredHash {
-    final keyParams = publicParams;
-    if ((keyParams is ECPublicParams)) {
-      final curve = CurveInfo.values.firstWhere(
-        (info) => info.asn1Oid == keyParams.oid,
-        orElse: () => CurveInfo.secp521r1,
-      );
-      return curve.hashAlgorithm;
-    } else {
-      return HashAlgorithm.sha256;
-    }
-  }
-
-  Future<SecretKeyPacket> encrypt(
-    final String passphrase, {
-    final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final HashAlgorithm hash = HashAlgorithm.sha1,
-    final S2kType type = S2kType.iterated,
-  }) async {
-    if (secretParams != null) {
+  encrypt(
+    final String passphrase,
+    final SymmetricAlgorithm symmetric,
+    final AeadAlgorithm? aead,
+  ) {
+    if (secretKeyMaterial != null) {
       if (passphrase.isEmpty) {
         throw ArgumentError('passphrase are required for key encryption');
       }
       assert(s2kUsage != S2kUsage.none);
-      assert(symmetric != SymmetricAlgorithm.plaintext);
-
+      Helper.assertSymmetric(symmetric);
+      final aeadProtect = aead != null;
+      if (aeadProtect && keyVersion != KeyVersion.v6.value) {
+        throw ArgumentError('Using AEAD with version $keyVersion of the key packet is not allowed.');
+      }
+      final s2k = aeadProtect ? Helper.stringToKey(S2kType.argon2) : Helper.stringToKey(S2kType.iterated);
       final random = Helper.secureRandom();
-      final s2k = S2K(
-        random.nextBytes(S2K.saltLength),
-        hash: hash,
-        type: type,
-      );
       final iv = random.nextBytes(symmetric.blockSize);
+      final kek = _produceEncryptionKey(
+        passphrase,
+        symmetric,
+        type,
+        s2k: s2k,
+        aead: aead,
+      );
+      final clearText = secretKeyMaterial!.toBytes;
+      final Uint8List cipherText;
+      if (aeadProtect) {
+        final cipher = aead.cipherEngine(kek, symmetric);
+        cipherText = cipher.encrypt(
+            clearText,
+            iv,
+            Uint8List.fromList([
+              type.value | 0xc0,
+              ...publicKey.data,
+            ]));
+      } else {
+        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+          ..init(
+            true,
+            ParametersWithIV(KeyParameter(kek), iv),
+          );
 
-      final key = await s2k.produceKey(passphrase, symmetric.keySizeInByte);
-      final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-        ..init(
-          true,
-          ParametersWithIV(KeyParameter(key), iv),
-        );
-
-      final clearText = secretParams!.encode();
-      final cipherText = cipher.process(Uint8List.fromList([
-        ...clearText,
-        ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
-      ]));
-
+        cipherText = cipher.process(Uint8List.fromList([
+          ...clearText,
+          ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
+        ]));
+      }
       return SecretKeyPacket(
         publicKey,
         cipherText,
         s2kUsage: s2kUsage,
         symmetric: symmetric,
+        aead: aead,
         s2k: s2k,
         iv: iv,
-        secretParams: secretParams,
+        secretKeyMaterial: secretKeyMaterial,
       );
     } else {
       return this;
     }
   }
 
-  Future<SecretKeyPacket> decrypt(final String passphrase) async {
-    if (secretParams == null) {
+  @override
+  decrypt(final String passphrase) {
+    if (secretKeyMaterial == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key = await s2k?.produceKey(passphrase, symmetric.keySizeInByte) ?? Uint8List(symmetric.keySizeInByte);
-        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-          ..init(
-            false,
-            ParametersWithIV(
-              KeyParameter(key),
-              iv ?? Uint8List(symmetric.blockSize),
-            ),
-          );
+        final kek = _produceEncryptionKey(
+          passphrase,
+          symmetric,
+          type,
+          s2k: s2k,
+          aead: aead,
+        );
+        if (aead != null) {
+          final cipher = aead!.cipherEngine(kek, symmetric);
+          clearText = cipher.decrypt(
+              keyData,
+              iv!,
+              Uint8List.fromList([
+                type.value | 0xc0,
+                ...publicKey.data,
+              ]));
+        } else {
+          final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+            ..init(
+              false,
+              ParametersWithIV(
+                KeyParameter(kek),
+                iv ?? Uint8List(symmetric.blockSize),
+              ),
+            );
 
-        final clearTextWithHash = cipher.process(keyData);
-        clearText = clearTextWithHash.sublist(
-          0,
-          clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
-        );
-        final hashText = clearTextWithHash.sublist(
-          clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
-        );
-        final hashed = Helper.hashDigest(clearText, HashAlgorithm.sha1);
-        if (!hashed.equals(hashText)) {
-          throw ArgumentError('Incorrect key passphrase');
+          final clearTextWithHash = cipher.process(keyData);
+          clearText = clearTextWithHash.sublist(
+            0,
+            clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
+          );
+          final hashText = clearTextWithHash.sublist(
+            clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
+          );
+          final hashed = Helper.hashDigest(clearText, HashAlgorithm.sha1);
+          if (!hashed.equals(hashText)) {
+            throw ArgumentError('Incorrect key passphrase');
+          }
         }
       } else {
         clearText = keyData;
       }
-
       return SecretKeyPacket(
         publicKey,
         keyData,
         s2kUsage: s2kUsage,
         symmetric: symmetric,
+        aead: aead,
         s2k: s2k,
         iv: iv,
-        secretParams: _parseSecretParams(clearText, publicKey.algorithm),
+        secretKeyMaterial: _readKeyMaterial(clearText, publicKey),
       );
     } else {
       return this;
     }
   }
 
-  /// Check whether the private and public primary key parameters correspond
-  /// Together with verification of binding signatures, this guarantees key integrity
-  bool validate() {
-    if (secretParams == null) {
-      return false;
-    }
-    final keyParams = secretParams;
-    if (keyParams is RSASecretParams) {
-      return keyParams.validatePublicParams(publicParams as RSAPublicParams);
-    }
-    if (keyParams is DSASecretParams) {
-      return keyParams.validatePublicParams(publicParams as DSAPublicParams);
-    }
-    if (keyParams is ElGamalSecretParams) {
-      return keyParams.validatePublicParams(publicParams as ElGamalPublicParams);
-    }
-    if (keyParams is ECSecretParams) {
-      return keyParams.validatePublicParams(publicParams as ECPublicParams);
-    }
-    if (keyParams is EdSecretParams) {
-      return keyParams.validatePublicParams(publicParams as EdDSAPublicParams);
-    }
-    return false;
-  }
-
   @override
-  Uint8List writeForSign() {
-    return publicKey.writeForSign();
-  }
-
-  @override
-  Uint8List toByteData() {
-    if (s2kUsage != S2kUsage.none && s2k != null) {
-      return Uint8List.fromList([
-        ...publicKey.toByteData(),
-        s2kUsage.value,
+  Uint8List get data {
+    final isV6 = publicKey.keyVersion == KeyVersion.v6.value;
+    if (isEncrypted) {
+      final optBytes = Uint8List.fromList([
         symmetric.value,
-        ...s2k!.encode(),
+        ...aead != null ? [aead!.value] : [],
+        ...isV6 ? [s2k!.length] : [],
+        ...s2k!.toBytes,
         ...iv ?? [],
+      ]);
+      return Uint8List.fromList([
+        ...publicKey.data,
+        s2kUsage.value,
+        ...isV6 ? [optBytes.length] : [],
+        ...optBytes,
         ...keyData,
       ]);
     } else {
       return Uint8List.fromList([
-        ...publicKey.toByteData(),
+        ...publicKey.data,
         S2kUsage.none.value,
         ...keyData,
-        ..._computeChecksum(keyData),
+        ...isV6 ? [] : _computeChecksum(keyData),
       ]);
     }
   }
 
-  static KeyParams _parseSecretParams(
-    final Uint8List packetData,
-    final KeyAlgorithm algorithm,
-  ) {
-    switch (algorithm) {
-      case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaEncrypt:
-      case KeyAlgorithm.rsaSign:
-        return RSASecretParams.fromByteData(packetData);
-      case KeyAlgorithm.dsa:
-        return DSASecretParams.fromByteData(packetData);
-      case KeyAlgorithm.elgamal:
-        return ElGamalSecretParams.fromByteData(packetData);
-      case KeyAlgorithm.ecdsa:
-      case KeyAlgorithm.ecdh:
-        return ECSecretParams.fromByteData(packetData);
-      case KeyAlgorithm.eddsa:
-        return EdSecretParams.fromByteData(packetData);
-      default:
-        throw UnsupportedError(
-          'Public key algorithm ${algorithm.name} is unsupported.',
-        );
+  @override
+  Uint8List get signBytes => publicKey.signBytes;
+
+  @override
+  DateTime get creationTime => publicKey.creationTime;
+
+  @override
+  Uint8List get fingerprint => publicKey.fingerprint;
+
+  @override
+  bool get isDecrypted => secretKeyMaterial != null;
+
+  @override
+  bool get isEncrypted => s2kUsage != S2kUsage.none;
+
+  @override
+  bool get isEncryptionKey => publicKey.isEncryptionKey;
+
+  @override
+  bool get isSigningKey => publicKey.isSigningKey;
+
+  @override
+  bool get isSubkey => this is SubkeyPacketInterface;
+
+  @override
+  KeyAlgorithm get keyAlgorithm => publicKey.keyAlgorithm;
+
+  @override
+  Uint8List get keyID => publicKey.keyID;
+
+  @override
+  KeyMaterialInterface get keyMaterial => publicKey.keyMaterial;
+
+  @override
+  int get keyStrength => publicKey.keyStrength;
+
+  @override
+  int get keyVersion => publicKey.keyVersion;
+
+  static Uint8List _produceEncryptionKey(
+    final String passphrase,
+    final SymmetricAlgorithm symmetric,
+    final PacketType type, {
+    final S2kInterface? s2k,
+    final AeadAlgorithm? aead,
+  }) {
+    final derivedKey = s2k != null
+        ? s2k.produceKey(
+            passphrase,
+            symmetric.keySizeInByte,
+          )
+        : Uint8List(symmetric.keySizeInByte);
+    if (aead != null) {
+      return Helper.hkdf(
+        derivedKey,
+        symmetric.keySizeInByte,
+        info: Uint8List.fromList([
+          type.value | 0xc0,
+          KeyVersion.v6.value,
+          symmetric.value,
+          aead.value,
+        ]),
+      );
     }
+    return derivedKey;
+  }
+
+  static SecretKeyMaterialInterface _readKeyMaterial(
+    final Uint8List keyData,
+    final PublicKeyPacket publicKey,
+  ) {
+    final keyMaterial = switch (publicKey.keyAlgorithm) {
+      KeyAlgorithm.rsaEncryptSign || KeyAlgorithm.rsaSign || KeyAlgorithm.rsaEncrypt => RSASecretMaterial.fromBytes(
+          keyData,
+          publicKey.keyMaterial as RSAPublicMaterial,
+        ),
+      KeyAlgorithm.dsa => DSASecretMaterial.fromBytes(
+          keyData,
+          publicKey.keyMaterial as DSAPublicMaterial,
+        ),
+      KeyAlgorithm.elgamal => ElGamalSecretMaterial.fromBytes(
+          keyData,
+          publicKey.keyMaterial as ElGamalPublicMaterial,
+        ),
+      KeyAlgorithm.ecdsa => ECDSASecretMaterial.fromBytes(
+          keyData,
+          publicKey.keyMaterial as ECDSAPublicMaterial,
+        ),
+      KeyAlgorithm.ecdh => ECDHSecretMaterial.fromBytes(
+          keyData,
+          publicKey.keyMaterial as ECDHPublicMaterial,
+        ),
+      KeyAlgorithm.eddsaLegacy => EdDSALegacySecretMaterial.fromBytes(
+          keyData,
+          publicKey.keyMaterial as EdDSALegacyPublicMaterial,
+        ),
+      KeyAlgorithm.x25519 || KeyAlgorithm.x448 => MontgomerySecretMaterial.fromBytes(
+          keyData,
+          publicKey.keyMaterial as MontgomeryPublicMaterial,
+        ),
+      KeyAlgorithm.ed25519 || KeyAlgorithm.ed448 => EdDSASecretMaterial.fromBytes(
+          keyData,
+          publicKey.keyMaterial as EdDSAPublicMaterial,
+        ),
+      _ => throw UnsupportedError(
+          'Public key algorithm ${publicKey.keyAlgorithm.name} is unsupported.',
+        ),
+    };
+
+    if (!keyMaterial.isValid) {
+      throw StateError('Key material is not consistent.');
+    }
+
+    return keyMaterial;
   }
 
   static Uint8List _computeChecksum(Uint8List keyData) {

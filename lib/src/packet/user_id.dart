@@ -1,22 +1,20 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../crypto/math/int_ext.dart';
-import '../enum/packet_tag.dart';
-import '../helpers.dart';
-import 'contained_packet.dart';
+import '../common/helpers.dart';
+import '../enum/packet_type.dart';
+import '../type/user_id_packet.dart';
+import 'base.dart';
 
 /// Implementation of the User ID Packet (Tag 13)
-///
-/// A User ID packet consists of UTF-8 text that is intended to represent the name and email address of the key holder.
-/// By convention, it includes an RFC2822 mail name-addr, but there are no restrictions on its content.
-/// The packet length in the header specifies the length of the User ID.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class UserIDPacket extends ContainedPacket {
+class UserIDPacket extends BasePacket implements UserIDPacketInterface {
   final String userID;
 
   final String name;
@@ -29,25 +27,22 @@ class UserIDPacket extends ContainedPacket {
       : name = _extractName(userID),
         email = _extractEmail(userID),
         comment = _extractComment(userID),
-        super(PacketTag.userID);
+        super(PacketType.userID);
 
-  factory UserIDPacket.fromByteData(final Uint8List bytes) {
-    return UserIDPacket(utf8.decode(bytes));
-  }
+  factory UserIDPacket.fromBytes(
+    final Uint8List bytes,
+  ) =>
+      UserIDPacket(utf8.decode(bytes));
 
   @override
-  Uint8List toByteData() {
-    return userID.stringToBytes();
-  }
+  Uint8List get data => userID.toBytes();
 
-  Uint8List writeForSign() {
-    final bytes = toByteData();
-    return Uint8List.fromList([
-      0xb4,
-      ...bytes.lengthInBytes.pack32(),
-      ...bytes,
-    ]);
-  }
+  @override
+  Uint8List get signBytes => Uint8List.fromList([
+        0xb4,
+        ...data.lengthInBytes.pack32(),
+        ...data,
+      ]);
 
   static String _extractName(final String userID) {
     final name = <String>[];

@@ -1,115 +1,104 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
-import '../enum/curve_info.dart';
-import '../enum/dh_key_size.dart';
-import '../enum/hash_algorithm.dart';
+import '../enum/aead_algorithm.dart';
+import '../enum/ecc.dart';
 import '../enum/key_algorithm.dart';
-import '../enum/packet_tag.dart';
+import '../enum/packet_type.dart';
 import '../enum/rsa_key_size.dart';
-import '../enum/s2k_type.dart';
-import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
-import 'key/key_pair_params.dart';
+import '../type/subkey_packet.dart';
 import 'public_subkey.dart';
 import 'secret_key.dart';
-import 'subkey_packet.dart';
 
+/// Implementation of the Secret Subkey Packet (Type 7)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacket {
+class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterface {
   @override
-  PacketTag get tag => PacketTag.secretSubkey;
+  PacketType get type => PacketType.secretSubkey;
 
   SecretSubkeyPacket(
-    final PublicSubkeyPacket publicKey,
-    final Uint8List keyData, {
+    PublicSubkeyPacket super.publicKey,
+    super.keyData, {
     super.s2kUsage,
     super.symmetric,
+    super.aead,
     super.s2k,
     super.iv,
-    super.secretParams,
-  }) : super(publicKey, keyData);
+    super.secretKeyMaterial,
+  });
 
-  factory SecretSubkeyPacket.fromByteData(final Uint8List bytes) {
-    final secretKey = SecretKeyPacket.fromByteData(bytes);
-    return _fromSecretKey(secretKey);
-  }
+  factory SecretSubkeyPacket.fromBytes(
+    final Uint8List bytes,
+  ) =>
+      _fromSecretKey(
+        SecretKeyPacket.fromBytes(bytes),
+      );
 
-  static Future<SecretSubkeyPacket> generate(
+  /// Generate secret subkey packet
+  factory SecretSubkeyPacket.generate(
     final KeyAlgorithm algorithm, {
-    final RSAKeySize rsaKeySize = RSAKeySize.s4096,
-    final DHKeySize dhKeySize = DHKeySize.l2048n224,
-    final CurveInfo curve = CurveInfo.secp521r1,
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
+    final Ecc curve = Ecc.secp521r1,
     final DateTime? date,
-  }) async {
-    final keyPair = await KeyPairParams.generate(
-      algorithm,
-      rsaKeySize: rsaKeySize,
-      dhKeySize: dhKeySize,
-      curve: curve,
-    );
-
-    return SecretSubkeyPacket(
-      PublicSubkeyPacket(
-        date ?? DateTime.now(),
-        keyPair.publicParams,
-        algorithm: algorithm,
-      ),
-      keyPair.secretParams.encode(),
-      secretParams: keyPair.secretParams,
-    );
-  }
+  }) =>
+      _fromSecretKey(
+        SecretKeyPacket.generate(
+          algorithm,
+          rsaKeySize: rsaKeySize,
+          curve: curve,
+          date: date,
+        ),
+      );
 
   @override
-  PublicSubkeyPacket get publicKey => super.publicKey as PublicSubkeyPacket;
-
-  @override
-  Future<SecretSubkeyPacket> encrypt(
-    final String passphrase, {
-    final S2kUsage s2kUsage = S2kUsage.sha1,
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final HashAlgorithm hash = HashAlgorithm.sha1,
-    final S2kType type = S2kType.iterated,
-  }) async {
-    if (secretParams != null) {
-      return _fromSecretKey(await super.encrypt(
+  encrypt(
+    final String passphrase,
+    final SymmetricAlgorithm symmetric,
+    final AeadAlgorithm? aead,
+  ) {
+    if (secretKeyMaterial != null) {
+      return _fromSecretKey(super.encrypt(
         passphrase,
-        s2kUsage: s2kUsage,
-        symmetric: symmetric,
-        hash: hash,
-        type: type,
-      ));
+        symmetric,
+        aead,
+      ) as SecretKeyPacket);
     } else {
       return this;
     }
   }
 
   @override
-  Future<SecretSubkeyPacket> decrypt(final String passphrase) async {
-    if (secretParams == null) {
-      return _fromSecretKey(await super.decrypt(passphrase));
+  decrypt(final String passphrase) {
+    if (secretKeyMaterial == null) {
+      return _fromSecretKey(super.decrypt(passphrase) as SecretKeyPacket);
     } else {
       return this;
     }
   }
 
-  static SecretSubkeyPacket _fromSecretKey(final SecretKeyPacket secretKey) {
+  static SecretSubkeyPacket _fromSecretKey(
+    final SecretKeyPacket secretKey,
+  ) {
     final publicKey = secretKey.publicKey;
     return SecretSubkeyPacket(
       PublicSubkeyPacket(
+        publicKey.keyVersion,
         publicKey.creationTime,
-        publicKey.publicParams,
-        algorithm: publicKey.algorithm,
+        publicKey.keyMaterial,
+        keyAlgorithm: publicKey.keyAlgorithm,
       ),
       secretKey.keyData,
       s2kUsage: secretKey.s2kUsage,
       symmetric: secretKey.symmetric,
       s2k: secretKey.s2k,
       iv: secretKey.iv,
-      secretParams: secretKey.secretParams,
+      secretKeyMaterial: secretKey.secretKeyMaterial,
     );
   }
 }

@@ -4,10 +4,14 @@
 
 import 'package:pointycastle/export.dart';
 
-import '../crypto/symmetric/base_cipher.dart';
+import '../cryptor/symmetric/blowfish.dart';
+import '../cryptor/symmetric/camellia.dart';
+import '../cryptor/symmetric/cast5.dart';
+import '../cryptor/symmetric/idea.dart';
+import '../cryptor/symmetric/twofish.dart';
 
-/// Symmetric-Key Algorithms
-/// See https://tools.ietf.org/html/rfc4880#section-9.2
+/// Symmetric Key Algorithms enum
+/// See https://www.rfc-editor.org/rfc/rfc9580#section-9.3
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum SymmetricAlgorithm {
   plaintext(0),
@@ -27,98 +31,40 @@ enum SymmetricAlgorithm {
 
   const SymmetricAlgorithm(this.value);
 
-  int get keySize {
-    switch (this) {
-      case plaintext:
-        return 0;
-      case idea:
-      case cast5:
-      case blowfish:
-      case aes128:
-      case camellia128:
-        return 128;
-      case tripledes:
-      case aes192:
-      case camellia192:
-        return 192;
-      case aes256:
-      case twofish:
-      case camellia256:
-        return 256;
-    }
-  }
+  int get keySize => switch (this) {
+        plaintext => 0,
+        idea || cast5 || blowfish || aes128 || camellia128 => 128,
+        tripledes || aes192 || camellia192 => 192,
+        aes256 || twofish || camellia256 => 256,
+      };
 
-  int get keySizeInByte {
-    return (keySize + 7) >> 3;
-  }
+  int get keySizeInByte => (keySize + 7) >> 3;
 
-  int get blockSize {
-    switch (this) {
-      case plaintext:
-        return 0;
-      case blowfish:
-      case cast5:
-      case idea:
-      case tripledes:
-        return 8;
-      case aes128:
-      case aes192:
-      case aes256:
-      case camellia128:
-      case camellia192:
-      case camellia256:
-      case twofish:
-        return 16;
-    }
-  }
+  int get blockSize => switch (this) {
+        plaintext => 0,
+        blowfish || cast5 || idea || tripledes => 8,
+        aes128 || aes192 || aes256 || camellia128 || camellia192 || camellia256 || twofish => 16,
+      };
 
-  BlockCipher get cfbCipherEngine {
-    switch (this) {
-      case aes128:
-      case aes192:
-      case aes256:
-        return BlockCipher('AES/CFB-${blockSize * 8}');
-      case blowfish:
-        return CFBBlockCipher(BlowfishEngine(), blockSize);
-      case camellia128:
-      case camellia192:
-      case camellia256:
-        return CFBBlockCipher(CamelliaEngine(), blockSize);
-      case cast5:
-        return CFBBlockCipher(CAST5Engine(), blockSize);
-      case idea:
-        return CFBBlockCipher(IDEAEngine(), blockSize);
-      case tripledes:
-        return BlockCipher('DESede/CFB-${blockSize * 8}');
-      case twofish:
-        return CFBBlockCipher(TwofishEngine(), blockSize);
-      default:
-        throw UnsupportedError('Unsupported symmetric algorithm encountered');
-    }
-  }
+  BlockCipher get cfbCipherEngine => switch (this) {
+        aes128 || aes192 || aes256 => BlockCipher('AES/CFB-${blockSize * 8}'),
+        blowfish => CFBBlockCipher(BlowfishEngine(), blockSize),
+        camellia128 || camellia192 || camellia256 => CFBBlockCipher(CamelliaEngine(), blockSize),
+        cast5 => CFBBlockCipher(CAST5Engine(), blockSize),
+        idea => CFBBlockCipher(IDEAEngine(), blockSize),
+        tripledes => BlockCipher('DESede/CFB-${blockSize * 8}'),
+        twofish => CFBBlockCipher(TwofishEngine(), blockSize),
+        _ => throw UnsupportedError('Unsupported symmetric algorithm encountered'),
+      };
 
-  BlockCipher get cipherEngine {
-    switch (this) {
-      case aes128:
-      case aes192:
-      case aes256:
-        return AESEngine();
-      case blowfish:
-        return BlowfishEngine();
-      case camellia128:
-      case camellia192:
-      case camellia256:
-        return CamelliaEngine();
-      case cast5:
-        return CAST5Engine();
-      case idea:
-        return IDEAEngine();
-      case tripledes:
-        return DESedeEngine();
-      case twofish:
-        return TwofishEngine();
-      default:
-        throw UnsupportedError('Unsupported symmetric algorithm encountered');
-    }
-  }
+  BlockCipher get cipherEngine => switch (this) {
+        aes128 || aes192 || aes256 => AESEngine(),
+        blowfish => BlowfishEngine(),
+        camellia128 || camellia192 || camellia256 => CamelliaEngine(),
+        cast5 => CAST5Engine(),
+        idea => IDEAEngine(),
+        tripledes => DESedeEngine(),
+        twofish => TwofishEngine(),
+        _ => throw UnsupportedError('Unsupported symmetric algorithm encountered'),
+      };
 }

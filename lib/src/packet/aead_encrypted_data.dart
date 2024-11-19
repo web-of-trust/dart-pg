@@ -1,22 +1,23 @@
-// Copyright 2022-present by Nguyen Van Nguyen <nguyennv1981@gmail.com>. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
-import '../crypto/math/int_ext.dart';
+import '../common/helpers.dart';
 import '../enum/aead_algorithm.dart';
-import '../enum/packet_tag.dart';
+import '../enum/packet_type.dart';
 import '../enum/symmetric_algorithm.dart';
-import '../helpers.dart';
-import 'contained_packet.dart';
+import '../type/packet_list.dart';
+import 'base.dart';
 import 'packet_list.dart';
 
 /// Implementation of the Symmetrically Encrypted Authenticated Encryption with
 /// Additional Data (AEAD) Protected Data Packet(Tag 20)
-/// See https://datatracker.ietf.org/doc/html/draft-ietf-openpgp-rfc4880bis#name-aead-encrypted-data-packet-
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class AeadEncryptedData extends ContainedPacket {
+class AeadEncryptedDataPacket extends BasePacket {
   static const version = 1;
 
   final SymmetricAlgorithm symmetric;
@@ -28,18 +29,18 @@ class AeadEncryptedData extends ContainedPacket {
   final Uint8List encrypted;
 
   /// Decrypted packets contained within.
-  final PacketList? packets;
+  final PacketListInterface? packets;
 
-  AeadEncryptedData(
+  AeadEncryptedDataPacket(
     this.symmetric,
     this.aead,
     this.chunkSize,
     this.iv,
     this.encrypted, {
     this.packets,
-  }) : super(PacketTag.aeadEncryptedData);
+  }) : super(PacketType.aeadEncryptedData);
 
-  factory AeadEncryptedData.fromByteData(
+  factory AeadEncryptedDataPacket.fromBytes(
     final Uint8List bytes,
   ) {
     var pos = 0;
@@ -68,7 +69,7 @@ class AeadEncryptedData extends ContainedPacket {
     final iv = bytes.sublist(pos, pos + aead.ivLength);
     pos += aead.ivLength;
 
-    return AeadEncryptedData(
+    return AeadEncryptedDataPacket(
       symmetric,
       aead,
       chunkSize,
@@ -77,15 +78,15 @@ class AeadEncryptedData extends ContainedPacket {
     );
   }
 
-  static Future<AeadEncryptedData> encryptPackets(
+  factory AeadEncryptedDataPacket.encryptPackets(
     final Uint8List key,
-    final PacketList packets, {
+    final PacketListInterface packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final int chunkSize = 12,
-  }) async {
+  }) {
     final iv = Helper.secureRandom().nextBytes(aead.ivLength);
-    return AeadEncryptedData(
+    return AeadEncryptedDataPacket(
       symmetric,
       aead,
       chunkSize,
@@ -104,26 +105,24 @@ class AeadEncryptedData extends ContainedPacket {
   }
 
   @override
-  Uint8List toByteData() {
-    return Uint8List.fromList([
-      version,
-      symmetric.value,
-      aead.value,
-      chunkSize,
-      ...iv,
-      ...encrypted,
-    ]);
-  }
+  Uint8List get data => Uint8List.fromList([
+        version,
+        symmetric.value,
+        aead.value,
+        chunkSize,
+        ...iv,
+        ...encrypted,
+      ]);
 
   /// Encrypt the payload in the packet.
-  Future<AeadEncryptedData> encrypt(
+  AeadEncryptedDataPacket encrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final int chunkSize = 12,
-  }) async {
+  }) {
     if (packets != null && packets!.isNotEmpty) {
-      return AeadEncryptedData.encryptPackets(
+      return AeadEncryptedDataPacket.encryptPackets(
         key,
         packets!,
         symmetric: symmetric,
@@ -133,20 +132,20 @@ class AeadEncryptedData extends ContainedPacket {
   }
 
   /// Decrypts the encrypted data contained in the packet.
-  Future<AeadEncryptedData> decrypt(
+  AeadEncryptedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) async {
+  }) {
     final length = encrypted.length;
     final data = encrypted.sublist(0, length - aead.tagLength);
     final authTag = encrypted.sublist(length - aead.tagLength);
-    return AeadEncryptedData(
+    return AeadEncryptedDataPacket(
       symmetric,
       aead,
       chunkSize,
       iv,
       encrypted,
-      packets: PacketList.packetDecode(_crypt(
+      packets: PacketList.decode(_crypt(
         false,
         key,
         data,
@@ -164,11 +163,11 @@ class AeadEncryptedData extends ContainedPacket {
     bool forEncryption,
     Uint8List key,
     Uint8List data, {
+    Uint8List? finalChunk,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     AeadAlgorithm aead = AeadAlgorithm.gcm,
     final chunkSizeByte = 0,
     final Uint8List? iv,
-    Uint8List? finalChunk,
   }) {
     final cipher = aead.cipherEngine(key, symmetric);
     final dataLength = data.length;
@@ -178,18 +177,23 @@ class AeadEncryptedData extends ContainedPacket {
     final adataBuffer = Uint8List(13);
 
     adataBuffer.setAll(
-        0,
-        Uint8List.fromList([
-          0xc0 | PacketTag.aeadEncryptedData.value,
-          version,
-          symmetric.value,
-          aead.value,
-          chunkSize,
-        ]));
+      0,
+      Uint8List.fromList([
+        0xc0 | PacketType.aeadEncryptedData.value,
+        version,
+        symmetric.value,
+        aead.value,
+        chunkSizeByte,
+      ]),
+    );
 
     final processed = dataLength - tagLength * (dataLength / chunkSize).ceil();
-    final crypted = Uint8List(processed);
+    final crypted = Uint8List(
+      processed + (forEncryption ? aead.tagLength : 0),
+    );
     for (var chunkIndex = 0; chunkIndex == 0 || data.isNotEmpty;) {
+      /// We take a chunk of data, en/decrypt it,
+      /// and shift `data` to the next chunk.
       final chunkIndexData = adataBuffer.sublist(5, 13);
       final size = chunkSize < data.length ? chunkSize : data.length;
       crypted.setAll(
@@ -197,23 +201,16 @@ class AeadEncryptedData extends ContainedPacket {
         forEncryption
             ? cipher.encrypt(
                 data.sublist(0, size),
-                cipher.getNonce(
-                  iv ?? Uint8List(aead.ivLength),
-                  chunkIndexData,
-                ),
+                cipher.getNonce(iv ?? Uint8List(aead.ivLength), chunkIndexData),
                 adataBuffer,
               )
             : cipher.decrypt(
                 data.sublist(0, size),
-                cipher.getNonce(
-                  iv ?? Uint8List(aead.ivLength),
-                  chunkIndexData,
-                ),
+                cipher.getNonce(iv ?? Uint8List(aead.ivLength), chunkIndexData),
                 adataBuffer,
               ),
       );
 
-      /// We take a chunk of data, en/decrypt it, and shift `data` to the next chunk.
       data = data.sublist(size);
       adataBuffer.setAll(9, (++chunkIndex).pack32());
     }
@@ -224,7 +221,10 @@ class AeadEncryptedData extends ContainedPacket {
     final chunkIndexData = adataBuffer.sublist(5, 13);
     final adataTagBuffer = Uint8List(21);
     adataTagBuffer.setAll(0, adataBuffer);
-    adataTagBuffer.setAll(17, processed.pack32());
+    adataTagBuffer.setAll(
+      17,
+      processed.pack32(),
+    );
     final finalCrypted = forEncryption
         ? cipher.encrypt(
             finalChunk ?? Uint8List(0),
@@ -243,9 +243,6 @@ class AeadEncryptedData extends ContainedPacket {
             adataTagBuffer,
           );
 
-    return Uint8List.fromList([
-      ...crypted,
-      ...finalCrypted,
-    ]);
+    return Uint8List.fromList([...crypted, ...finalCrypted]);
   }
 }

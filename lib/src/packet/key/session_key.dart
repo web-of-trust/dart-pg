@@ -1,51 +1,65 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/crypto/math/int_ext.dart';
-
-import '../../crypto/math/byte_ext.dart';
+import '../../type/session_key.dart';
+import '../../common/helpers.dart';
 import '../../enum/symmetric_algorithm.dart';
-import '../../helpers.dart';
 
+/// Session key class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SessionKey {
-  /// Algorithm to encrypt the message with
+class SessionKey implements SessionKeyInterface {
+  @override
   final SymmetricAlgorithm symmetric;
 
-  /// Encryption key
-  final Uint8List key;
+  @override
+  final Uint8List encryptionKey;
 
-  SessionKey(this.key, [this.symmetric = SymmetricAlgorithm.aes128]);
+  SessionKey(this.encryptionKey, [this.symmetric = SymmetricAlgorithm.aes128]);
 
   factory SessionKey.produceKey([
-    SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  ]) {
-    return SessionKey(Helper.generateEncryptionKey(symmetric), symmetric);
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+  ]) =>
+      SessionKey(
+        Helper.generateEncryptionKey(symmetric),
+        symmetric,
+      );
+
+  factory SessionKey.decode(final Uint8List data) {
+    final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
+      (algo) => algo.value == data[0],
+    );
+    final sessionKey = SessionKey(
+      data.sublist(1, data.length - 2),
+      sessionKeySymmetric,
+    );
+    sessionKey.checksum(data.sublist(data.length - 2));
+    return sessionKey;
   }
 
-  /// Serializes session key to bytes
-  Uint8List encode() => Uint8List.fromList([symmetric.value, ...key]);
+  @override
+  Uint8List encode() => Uint8List.fromList(
+        [symmetric.value, ...encryptionKey],
+      );
 
-  /// Compute checksum
+  @override
   Uint8List computeChecksum() {
     var sum = 0;
-    for (var i = 0; i < key.lengthInBytes; i++) {
-      sum = (sum + key[i]) & 0xffff;
+    for (var i = 0; i < encryptionKey.length; i++) {
+      sum = (sum + encryptionKey[i]) & 0xffff;
     }
     return sum.pack16();
   }
 
   @override
-  bool operator ==(other) {
-    if (other is! SessionKey) return false;
-    return (other.symmetric == symmetric) && (other.key.equals(key));
-  }
-
-  @override
-  int get hashCode {
-    return symmetric.hashCode + key.hashCode;
+  void checksum(Uint8List checksum) {
+    final computedChecksum = computeChecksum();
+    if (!((computedChecksum[0] == checksum[0]) && (computedChecksum[1] == checksum[1]))) {
+      throw StateError('Session key checksum mismatch!');
+    }
   }
 }

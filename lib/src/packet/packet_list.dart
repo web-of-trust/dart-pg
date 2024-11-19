@@ -1,133 +1,51 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:collection';
 import 'dart:typed_data';
 
-import '../enum/packet_tag.dart';
-import 'aead_encrypted_data.dart';
-import 'compressed_data.dart';
-import 'contained_packet.dart';
-import 'literal_data.dart';
-import 'marker_packet.dart';
-import 'modification_detection_code.dart';
-import 'one_pass_signature.dart';
-import 'packet_reader.dart';
-import 'public_key.dart';
-import 'public_key_encrypted_session_key.dart';
-import 'public_subkey.dart';
-import 'secret_key.dart';
-import 'secret_subkey.dart';
-import 'signature_packet.dart';
-import 'sym_encrypted_integrity_protected_data.dart';
-import 'sym_encrypted_session_key.dart';
-import 'sym_encrypted_data.dart';
-import 'trust_packet.dart';
-import 'user_attribute.dart';
-import 'user_id.dart';
+import 'package:dart_pg/src/enum/packet_type.dart';
 
-/// This class represents a list of openpgp packets.
+import '../type/packet.dart';
+import '../type/packet_list.dart';
+
+/// This class represents a list of OpenPGP packets.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PacketList extends ListBase<ContainedPacket> {
-  final List<ContainedPacket> packets;
+class PacketList extends ListBase<PacketInterface> implements PacketListInterface {
+  @override
+  final List<PacketInterface> packets;
 
-  PacketList(final Iterable<ContainedPacket> packets)
+  PacketList(final Iterable<PacketInterface> packets)
       : packets = packets.toList(
           growable: false,
         );
 
-  factory PacketList.packetDecode(final Uint8List bytes) {
-    final packets = <ContainedPacket>[];
-    var offset = 0;
-    while (offset < bytes.length) {
-      final reader = PacketReader.read(bytes, offset);
-      offset = reader.offset;
-
-      switch (reader.tag) {
-        case PacketTag.publicKeyEncryptedSessionKey:
-          packets.add(
-            PublicKeyEncryptedSessionKeyPacket.fromByteData(reader.data),
-          );
-          break;
-        case PacketTag.signature:
-          packets.add(SignaturePacket.fromByteData(reader.data));
-          break;
-        case PacketTag.symEncryptedSessionKey:
-          packets.add(SymEncryptedSessionKeyPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.onePassSignature:
-          packets.add(OnePassSignaturePacket.fromByteData(reader.data));
-          break;
-        case PacketTag.secretKey:
-          packets.add(SecretKeyPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.publicKey:
-          packets.add(PublicKeyPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.secretSubkey:
-          packets.add(SecretSubkeyPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.compressedData:
-          packets.add(CompressedDataPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.symEncryptedData:
-          packets.add(SymEncryptedDataPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.marker:
-          packets.add(MarkerPacket());
-          break;
-        case PacketTag.literalData:
-          packets.add(LiteralDataPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.trust:
-          packets.add(TrustPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.userID:
-          packets.add(UserIDPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.publicSubkey:
-          packets.add(PublicSubkeyPacket.fromByteData(reader.data));
-          break;
-        case PacketTag.userAttribute:
-          packets.add(UserAttributePacket.fromByteData(reader.data));
-          break;
-        case PacketTag.symEncryptedIntegrityProtectedData:
-          packets.add(
-            SymEncryptedIntegrityProtectedDataPacket.fromByteData(reader.data),
-          );
-          break;
-        case PacketTag.modificationDetectionCode:
-          packets.add(
-            ModificationDetectionCodePacket.fromByteData(reader.data),
-          );
-          break;
-        case PacketTag.aeadEncryptedData:
-          packets.add(
-            AeadEncryptedData.fromByteData(reader.data),
-          );
-          break;
-      }
-    }
+  /// Decode packets from bytes
+  factory PacketList.decode(Uint8List bytes) {
+    final packets = <PacketInterface>[];
     return PacketList(packets);
   }
 
+  @override
   Uint8List encode() => Uint8List.fromList(
         packets.map((packet) => packet.encode()).expand((byte) => byte).toList(growable: false),
       );
 
-  PacketList filterByTags([final List<PacketTag> tags = const []]) {
+  PacketList filterByTypes([final List<PacketType> tags = const []]) {
     if (tags.isNotEmpty) {
-      return PacketList(packets.where((packet) => tags.contains(packet.tag)));
+      return PacketList(packets.where((packet) => tags.contains(packet.type)));
     }
     return this;
   }
 
-  List<int> indexOfTags([final List<PacketTag> tags = const []]) {
+  List<int> indexOfTypes([final List<PacketType> tags = const []]) {
     final indexes = <int>[];
     for (var i = 0; i < packets.length; i++) {
       final packet = packets[i];
-      if (tags.contains(packet.tag)) {
+      if (tags.contains(packet.type)) {
         indexes.add(i);
       }
     }
@@ -139,10 +57,10 @@ class PacketList extends ListBase<ContainedPacket> {
   int get length => packets.length;
 
   @override
-  ContainedPacket operator [](int index) => packets[index];
+  PacketInterface operator [](int index) => packets[index];
 
   @override
-  void operator []=(int index, ContainedPacket packet) {
+  void operator []=(int index, PacketInterface packet) {
     packets[index] = packet;
   }
 

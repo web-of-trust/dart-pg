@@ -1,9 +1,14 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
+
+import '../common/config.dart';
+import 'key_version.dart';
 
 /// Public-Key Algorithms
-/// See https://www.rfc-editor.org/rfc/rfc4880#section-9.1
+/// See https://www.rfc-editor.org/rfc/rfc9580#section-9.1
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum KeyAlgorithm {
   /// RSA (Encrypt or Sign) [HAC]
@@ -29,16 +34,43 @@ enum KeyAlgorithm {
   elgamalEncryptSign(20),
   diffieHellman(21),
 
-  /// EdDSA (Sign only)
-  eddsa(22),
+  /// EdDSA Legacy (Sign only)
+  eddsaLegacy(22),
 
   /// Reserved for AEDH
   aedh(23),
 
   /// Reserved for AEDSA
-  aedsa(24);
+  aedsa(24),
+
+  /// X25519 (Encrypt only)
+  x25519(25),
+
+  /// X448 (Encrypt only)
+  x448(26),
+
+  /// Ed25519 (Sign only)
+  ed25519(27),
+
+  /// Ed448 (Sign only)
+  ed448(28);
 
   final int value;
 
   const KeyAlgorithm(this.value);
+
+  bool get forSigning => switch (this) {
+        rsaEncrypt || elgamal || ecdh || aedh || x25519 || x448 => false,
+        _ => true,
+      };
+
+  bool get forEncryption => switch (this) {
+        rsaSign || dsa || eddsaLegacy || aedsa || ed25519 || ed448 => false,
+        _ => true,
+      };
+
+  int get keyVersion => switch (this) {
+        x25519 || x448 || ed25519 || ed448 => KeyVersion.v6.value,
+        _ => Config.useV6Key ? KeyVersion.v6.value : KeyVersion.v4.value,
+      };
 }

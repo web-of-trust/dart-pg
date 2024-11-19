@@ -1,14 +1,16 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
-import '../crypto/math/byte_ext.dart';
+import '../common/extensions.dart';
 
-/// Generic Sub Packet Data Reader function
+/// Sub Packet Data Reader
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SubpacketReader {
+final class SubpacketReader {
   final int type;
 
   final Uint8List data;
@@ -44,7 +46,7 @@ class SubpacketReader {
         pos + length,
       );
     } else if (header == 255) {
-      final length = bytes.sublist(pos, pos + 4).toUint32();
+      final length = bytes.sublist(pos, pos + 4).unpack32();
       pos += 4;
       return SubpacketReader(
         bytes[pos],

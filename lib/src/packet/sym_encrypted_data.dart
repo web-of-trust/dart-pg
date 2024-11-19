@@ -1,42 +1,41 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
-
 import 'package:pointycastle/api.dart';
 
-import '../crypto/symmetric/base_cipher.dart';
-import '../enum/packet_tag.dart';
+import '../type/encrypted_data_packet.dart';
+import '../type/packet_list.dart';
+import '../common/config.dart';
+import '../common/helpers.dart';
+import '../cryptor/symmetric/buffered_cipher.dart';
+import '../enum/packet_type.dart';
 import '../enum/symmetric_algorithm.dart';
-import '../helpers.dart';
-import 'contained_packet.dart';
+import 'base.dart';
 import 'packet_list.dart';
 
-/// SymEncryptedData packet (tag 9) represents a Symmetrically Encrypted Data packet.
+/// Implementation of the Symmetrically Encrypted Data Packet (Tag 9))
 /// The encrypted contents will consist of more OpenPGP packets.
-///
-/// See RFC 4880, sections 5.7 and 5.13.
-/// The Symmetrically Encrypted Data packet contains data encrypted with a symmetric-key algorithm.
-/// When it has been decrypted, it contains other packets (usually a literal data packet or compressed data packet,
-/// but in theory other Symmetrically Encrypted Data packets or sequences of packets that form whole OpenPGP messages).
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SymEncryptedDataPacket extends ContainedPacket {
-  /// Encrypted secret-key data
+class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketInterface {
+  @override
   final Uint8List encrypted;
 
-  /// Decrypted packets contained within.
-  final PacketList? packets;
+  @override
+  final PacketListInterface? packetList;
 
-  SymEncryptedDataPacket(this.encrypted, {this.packets}) : super(PacketTag.symEncryptedData);
+  SymEncryptedDataPacket(this.encrypted, {this.packetList}) : super(PacketType.symEncryptedData);
 
-  factory SymEncryptedDataPacket.fromByteData(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
+  factory SymEncryptedDataPacket.fromBytes(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
 
-  static Future<SymEncryptedDataPacket> encryptPackets(
+  factory SymEncryptedDataPacket.encryptPackets(
     final Uint8List key,
-    final PacketList packets, {
+    final PacketListInterface packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) async {
+  }) {
     final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         true,
@@ -56,37 +55,34 @@ class SymEncryptedDataPacket extends ContainedPacket {
         ...prefix,
         ...cipher.process(packets.encode()),
       ]),
-      packets: packets,
+      packetList: packets,
     );
   }
 
   @override
-  Uint8List toByteData() {
-    return encrypted;
-  }
+  Uint8List get data => encrypted;
 
-  /// Encrypt the symmetrically-encrypted packet data
-  Future<SymEncryptedDataPacket> encrypt(
+  @override
+  SymEncryptedDataPacket encrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) async {
-    if (packets != null && packets!.isNotEmpty) {
+  }) {
+    if (packetList != null && packetList!.isNotEmpty) {
       return SymEncryptedDataPacket.encryptPackets(
         key,
-        packets!,
+        packetList!,
         symmetric: symmetric,
       );
     }
     return this;
   }
 
-  /// Decrypt the symmetrically-encrypted packet data
-  Future<SymEncryptedDataPacket> decrypt(
+  @override
+  SymEncryptedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final bool allowUnauthenticatedMessages = false,
-  }) async {
-    if (!allowUnauthenticatedMessages) {
+  }) {
+    if (!Config.allowUnauthenticated) {
       throw StateError('Message is not authenticated.');
     }
     final blockSize = symmetric.blockSize;
@@ -100,7 +96,7 @@ class SymEncryptedDataPacket extends ContainedPacket {
       );
     return SymEncryptedDataPacket(
       encrypted,
-      packets: PacketList.packetDecode(
+      packetList: PacketList.decode(
         cipher.process(encrypted.sublist(blockSize + 2)),
       ),
     );

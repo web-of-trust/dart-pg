@@ -1,63 +1,65 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
-import '../crypto/math/byte_ext.dart';
-import '../crypto/math/int_ext.dart';
-import '../enum/key_algorithm.dart';
+import '../common/helpers.dart';
+import '../enum/eddsa_curve.dart';
 import '../enum/hash_algorithm.dart';
-import '../enum/packet_tag.dart';
-import '../helpers.dart';
-import 'key/key_id.dart';
-import 'key/key_params.dart';
-import 'contained_packet.dart';
-import 'key_packet.dart';
+import '../enum/key_version.dart';
+import '../enum/montgomery_curve.dart';
+import '../enum/key_algorithm.dart';
+import '../enum/packet_type.dart';
+import '../type/key_material.dart';
+import '../type/key_packet.dart';
+import '../type/subkey_packet.dart';
+import 'base.dart';
+import 'key/public_material.dart';
 
-/// PublicKey represents an OpenPGP public key.
-/// See RFC 4880, section 5.5.2.
+/// Implementation of the Public Key Packet (Type 6)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PublicKeyPacket extends ContainedPacket implements KeyPacket {
-  static const keyVersion = 4;
-
+class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
   @override
-  final int version = keyVersion;
+  final int keyVersion;
 
   @override
   final DateTime creationTime;
 
   @override
-  final KeyAlgorithm algorithm;
+  final KeyAlgorithm keyAlgorithm;
 
   @override
-  final KeyParams publicParams;
+  final KeyMaterialInterface keyMaterial;
 
   late final Uint8List _fingerprint;
 
-  late final KeyID _keyID;
+  late final Uint8List _keyID;
 
   PublicKeyPacket(
+    this.keyVersion,
     this.creationTime,
-    this.publicParams, {
-    this.algorithm = KeyAlgorithm.rsaEncryptSign,
-  }) : super(PacketTag.publicKey) {
+    this.keyMaterial, {
+    this.keyAlgorithm = KeyAlgorithm.rsaEncryptSign,
+  }) : super(PacketType.publicKey) {
+    if (keyVersion != KeyVersion.v4.value || keyVersion != KeyVersion.v6.value) {
+      throw UnsupportedError(
+        'Version $keyVersion of the key packet is unsupported.',
+      );
+    }
     _calculateFingerprintAndKeyID();
   }
 
-  factory PublicKeyPacket.fromByteData(final Uint8List bytes) {
+  factory PublicKeyPacket.fromBytes(final Uint8List bytes) {
     var pos = 0;
 
-    /// A one-octet version number (3 or 4 or 5).
+    /// /// A one-octet version number (4 or 6).
     final version = bytes[pos++];
-    if (version != keyVersion) {
-      throw UnsupportedError(
-        'Version $version of the key packet is unsupported.',
-      );
-    }
 
     /// A four-octet number denoting the time that the key was created.
-    final creationTime = bytes.sublist(pos, pos + 4).toDateTime();
+    final creation = bytes.sublist(pos, pos + 4).toDateTime();
     pos += 4;
 
     /// A one-octet number denoting the public-key algorithm of this key.
@@ -66,109 +68,107 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     );
     pos++;
 
-    /// A series of values comprising the key material.
-    /// This is algorithm-specific and described in section XXXX.
-    final KeyParams publicParams;
-    switch (algorithm) {
-      case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaEncrypt:
-      case KeyAlgorithm.rsaSign:
-        publicParams = RSAPublicParams.fromByteData(bytes.sublist(pos));
-        break;
-      case KeyAlgorithm.dsa:
-        publicParams = DSAPublicParams.fromByteData(bytes.sublist(pos));
-        break;
-      case KeyAlgorithm.elgamal:
-        publicParams = ElGamalPublicParams.fromByteData(bytes.sublist(pos));
-        break;
-      case KeyAlgorithm.ecdsa:
-        publicParams = ECDSAPublicParams.fromByteData(bytes.sublist(pos));
-        break;
-      case KeyAlgorithm.ecdh:
-        publicParams = ECDHPublicParams.fromByteData(bytes.sublist(pos));
-        break;
-      case KeyAlgorithm.eddsa:
-        publicParams = EdDSAPublicParams.fromByteData(bytes.sublist(pos));
-        break;
-      default:
-        throw UnsupportedError(
-          'Unsupported PGP public key algorithm encountered',
-        );
-    }
     return PublicKeyPacket(
-      creationTime,
-      publicParams,
-      algorithm: algorithm,
+      version,
+      creation,
+      _readKeyMaterial(
+        bytes.sublist(pos),
+        algorithm,
+      ),
+      keyAlgorithm: algorithm,
     );
   }
 
-  /// Computes and set the fingerprint of the key
-  void _calculateFingerprintAndKeyID() {
-    _fingerprint = Uint8List.fromList(
-        Helper.hashDigest(writeForSign(), HashAlgorithm.sha1));
-    _keyID = KeyID(_fingerprint.sublist(12, 20));
-  }
+  @override
+  Uint8List get data => Uint8List.fromList([
+        keyVersion,
+        ...creationTime.toBytes(),
+        keyAlgorithm.value,
+        ...keyMaterial.toBytes,
+      ]);
 
   @override
-  String get fingerprint => _fingerprint.toHexadecimal();
+  Uint8List get fingerprint => _fingerprint;
 
   @override
-  KeyID get keyID => _keyID;
+  bool get isEncryptionKey => keyAlgorithm.forEncryption;
 
   @override
-  bool get isEncrypted => false;
+  bool get isSigningKey => keyAlgorithm.forSigning;
 
   @override
-  bool get isDecrypted => true;
+  bool get isSubkey => this is SubkeyPacketInterface;
 
   @override
-  bool get isSigningKey {
-    return KeyPacket.isSigningAlgorithm(algorithm);
-  }
+  Uint8List get keyID => _keyID;
 
   @override
-  bool get isEncryptionKey {
-    return KeyPacket.isEncryptionAlgorithm(algorithm);
-  }
+  int get keyStrength => keyMaterial.keyLength;
 
   @override
-  PublicKeyPacket get publicKey => this;
+  Uint8List get signBytes => Uint8List.fromList([
+        0x99,
+        ...data.length.pack16(),
+        ...data,
+      ]);
 
-  @override
-  int get keyStrength {
-    final keyParams = publicParams;
-    if (keyParams is RSAPublicParams) {
-      return keyParams.modulus.bitLength;
+  _calculateFingerprintAndKeyID() {
+    if (keyVersion == KeyVersion.v6.value) {
+      _fingerprint = Uint8List.fromList(
+        Helper.hashDigest(signBytes, HashAlgorithm.sha256),
+      );
+      _keyID = _fingerprint.sublist(0, 12);
+    } else {
+      _fingerprint = Uint8List.fromList(
+        Helper.hashDigest(signBytes, HashAlgorithm.sha1),
+      );
+      _keyID = _fingerprint.sublist(12, 20);
     }
-    if (keyParams is DSAPublicParams) {
-      return keyParams.prime.bitLength;
-    }
-    if (keyParams is ElGamalPublicParams) {
-      return keyParams.prime.bitLength;
-    }
-    if (keyParams is ECPublicParams) {
-      return keyParams.curve.fieldSize;
-    }
-    return -1;
   }
 
-  @override
-  Uint8List writeForSign() {
-    final bytes = toByteData();
-    return Uint8List.fromList([
-      0x99,
-      ...bytes.lengthInBytes.pack16(),
-      ...bytes,
-    ]);
-  }
-
-  @override
-  Uint8List toByteData() {
-    return Uint8List.fromList([
-      version,
-      ...creationTime.toBytes(),
-      algorithm.value,
-      ...publicParams.encode(),
-    ]);
+  static KeyMaterialInterface _readKeyMaterial(
+    final Uint8List keyData,
+    final KeyAlgorithm algorithm,
+  ) {
+    return switch (algorithm) {
+      KeyAlgorithm.rsaEncryptSign ||
+      KeyAlgorithm.rsaSign ||
+      KeyAlgorithm.rsaEncrypt =>
+        RSAPublicMaterial.fromBytes(keyData),
+      KeyAlgorithm.dsa => DSAPublicMaterial.fromBytes(
+          keyData,
+        ),
+      KeyAlgorithm.elgamal => ElGamalPublicMaterial.fromBytes(
+          keyData,
+        ),
+      KeyAlgorithm.ecdsa => ECDSAPublicMaterial.fromBytes(
+          keyData,
+        ),
+      KeyAlgorithm.ecdh => ECDHPublicMaterial.fromBytes(
+          keyData,
+        ),
+      KeyAlgorithm.eddsaLegacy => EdDSALegacyPublicMaterial.fromBytes(
+          keyData,
+        ),
+      KeyAlgorithm.x25519 => MontgomeryPublicMaterial.fromBytes(
+          keyData,
+          MontgomeryCurve.x25519,
+        ),
+      KeyAlgorithm.x448 => MontgomeryPublicMaterial.fromBytes(
+          keyData,
+          MontgomeryCurve.x448,
+        ),
+      KeyAlgorithm.ed25519 => EdDSAPublicMaterial.fromBytes(
+          keyData,
+          EdDSACurve.ed25519,
+        ),
+      KeyAlgorithm.ed448 => EdDSAPublicMaterial.fromBytes(
+          keyData,
+          EdDSACurve.ed448,
+        ),
+      _ => throw UnsupportedError(
+          'Unsupported public key algorithm encountered',
+        ),
+    };
   }
 }
