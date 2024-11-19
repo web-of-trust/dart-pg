@@ -75,14 +75,10 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   Uint8List get data => Uint8List.fromList([]);
 
   @override
-  DateTime? get creationTime => _getSubpacket<SignatureCreationTime>(
-        hashedSubpackets,
-      )?.creationTime;
+  DateTime? get creationTime => getSubpacket<SignatureCreationTime>()?.creationTime;
 
   @override
-  DateTime? get expirationTime => _getSubpacket<SignatureExpirationTime>(
-        hashedSubpackets,
-      )?.expirationTime;
+  DateTime? get expirationTime => getSubpacket<SignatureExpirationTime>()?.expirationTime;
 
   @override
   bool get isCertRevocation => signatureType == SignatureType.certRevocation;
@@ -104,11 +100,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   bool get isKeyRevocation => signatureType == SignatureType.keyRevocation;
 
   @override
-  bool get isPrimaryUserID =>
-      _getSubpacket<PrimaryUserID>(
-        hashedSubpackets,
-      )?.isPrimary ??
-      false;
+  bool get isPrimaryUserID => getSubpacket<PrimaryUserID>()?.isPrimary ?? false;
 
   @override
   bool get isSubkeyBinding => signatureType == SignatureType.subkeyBinding;
@@ -118,23 +110,13 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
 
   @override
   Uint8List get issuerFingerprint {
-    final subpacket = _getSubpacket<IssuerFingerprint>(
-          hashedSubpackets,
-        ) ??
-        _getSubpacket<IssuerFingerprint>(
-          unhashedSubpackets,
-        );
+    final subpacket = getSubpacket<IssuerFingerprint>() ?? getSubpacket<IssuerFingerprint>();
     return subpacket?.fingerprint ?? Uint8List(version == 6 ? 32 : 20);
   }
 
   @override
   Uint8List get issuerKeyID {
-    final subpacket = _getSubpacket<IssuerKeyID>(
-          hashedSubpackets,
-        ) ??
-        _getSubpacket<IssuerKeyID>(
-          unhashedSubpackets,
-        );
+    final subpacket = getSubpacket<IssuerKeyID>() ?? getSubpacket<IssuerKeyID>();
     if (subpacket != null) {
       return subpacket.keyID;
     } else {
@@ -142,6 +124,11 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
           ? issuerFingerprint.sublist(0, PublicKeyPacket.keyIDSize)
           : issuerFingerprint.sublist(12, 12 + PublicKeyPacket.keyIDSize);
     }
+  }
+
+  @override
+  T? getSubpacket<T extends SubpacketInterface>() {
+    return hashedSubpackets.whereType<T>().elementAtOrNull(0) ?? unhashedSubpackets.whereType<T>().elementAtOrNull(0);
   }
 
   @override
@@ -154,13 +141,6 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   bool verify(KeyPacketInterface verifyKey, Uint8List dataToVerify, [DateTime? time]) {
     // TODO: implement verify
     throw UnimplementedError();
-  }
-
-  static T? _getSubpacket<T extends SubpacketInterface>(
-    final Iterable<SubpacketInterface> subpackets,
-  ) {
-    final typedSubpackets = subpackets.whereType<T>();
-    return typedSubpackets.isNotEmpty ? typedSubpackets.first : null;
   }
 
   /// Encode subpacket to bytes

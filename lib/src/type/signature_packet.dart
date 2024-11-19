@@ -58,6 +58,8 @@ abstract class SignaturePacketInterface extends PacketInterface {
 
   bool get isSubkeyRevocation;
 
+  T? getSubpacket<T extends SubpacketInterface>();
+
   bool isExpired([DateTime? time]);
 
   bool verify(
