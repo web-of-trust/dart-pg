@@ -11,11 +11,11 @@ import 'package:pointycastle/export.dart';
 import '../../common/helpers.dart';
 import '../../cryptor/asymmetric/dsa.dart';
 import '../../enum/hash_algorithm.dart';
-import '../../type/public_key_material.dart';
+import '../../type/verification_key_material.dart';
 
 /// DSA public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class DSAPublicMaterial implements PublicKeyMaterialInterface {
+class DSAPublicMaterial implements VerificationKeyMaterial {
   /// DSA prime p
   final BigInt prime;
 

@@ -60,11 +60,11 @@ abstract class SignaturePacketInterface extends PacketInterface {
 
   T? getSubpacket<T extends SubpacketInterface>();
 
-  bool isExpired([DateTime? time]);
+  bool isExpired([final DateTime? time]);
 
   bool verify(
-    KeyPacketInterface verifyKey,
-    Uint8List dataToVerify, [
-    DateTime? time,
+    final KeyPacketInterface verifyKey,
+    final Uint8List dataToVerify, [
+    final DateTime? time,
   ]);
 }

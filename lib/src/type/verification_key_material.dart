@@ -5,12 +5,13 @@
 library;
 
 import 'dart:typed_data';
+
 import '../enum/hash_algorithm.dart';
 import 'key_material.dart';
 
-/// Public key material interface
+/// Verification key material interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class PublicKeyMaterialInterface extends KeyMaterialInterface {
+abstract class VerificationKeyMaterial extends KeyMaterialInterface {
   /// Verify a signature with message
   bool verify(
     final Uint8List message,

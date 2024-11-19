@@ -130,13 +130,19 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   }
 
   @override
-  bool isExpired([DateTime? time]) {
-    // TODO: implement isExpired
-    throw UnimplementedError();
+  bool isExpired([final DateTime? time]) {
+    final timestamp = time?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+    final creation = creationTime?.millisecondsSinceEpoch ?? 0;
+    final expiration = expirationTime?.millisecondsSinceEpoch ?? 0;
+    return !(creation < timestamp && timestamp < expiration);
   }
 
   @override
-  bool verify(KeyPacketInterface verifyKey, Uint8List dataToVerify, [DateTime? time]) {
+  bool verify(
+    final KeyPacketInterface verifyKey,
+    final Uint8List dataToVerify, [
+    final DateTime? time,
+  ]) {
     // TODO: implement verify
     throw UnimplementedError();
   }

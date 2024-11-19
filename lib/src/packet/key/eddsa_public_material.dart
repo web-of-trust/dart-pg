@@ -12,11 +12,11 @@ import 'package:sign_dart/sign_dart.dart';
 import '../../common/helpers.dart';
 import '../../enum/eddsa_curve.dart';
 import '../../enum/hash_algorithm.dart';
-import '../../type/public_key_material.dart';
+import '../../type/verification_key_material.dart';
 
 /// EdDSA public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class EdDSAPublicMaterial implements PublicKeyMaterialInterface {
+class EdDSAPublicMaterial implements VerificationKeyMaterial {
   final Uint8List publicKey;
 
   final EdDSACurve curve;

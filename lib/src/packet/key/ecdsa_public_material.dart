@@ -10,11 +10,11 @@ import 'package:pointycastle/pointycastle.dart';
 import '../../common/helpers.dart';
 import '../../enum/hash_algorithm.dart';
 import '../../packet/key/ec_public_material.dart';
-import '../../type/public_key_material.dart';
+import '../../type/verification_key_material.dart';
 
 /// ECDSA public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ECDSAPublicMaterial extends ECPublicMaterial implements PublicKeyMaterialInterface {
+class ECDSAPublicMaterial extends ECPublicMaterial implements VerificationKeyMaterial {
   ECDSAPublicMaterial(super.oid, super.q);
 
   factory ECDSAPublicMaterial.fromBytes(final Uint8List bytes) {

@@ -9,12 +9,12 @@ import 'package:pointycastle/asn1.dart';
 
 import '../../common/helpers.dart';
 import '../../enum/hash_algorithm.dart';
-import '../../type/public_key_material.dart';
+import '../../type/verification_key_material.dart';
 import 'ec_public_material.dart';
 
 /// EdDSA legacy public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class EdDSALegacyPublicMaterial extends ECPublicMaterial implements PublicKeyMaterialInterface {
+class EdDSALegacyPublicMaterial extends ECPublicMaterial implements VerificationKeyMaterial {
   EdDSALegacyPublicMaterial(super.oid, super.q);
 
   factory EdDSALegacyPublicMaterial.fromBytes(final Uint8List bytes) {
