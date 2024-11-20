@@ -171,7 +171,11 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     if (keyExpirationTime > 0) {
       hashedSubpackets.add(KeyExpirationTime.fromTime(keyExpirationTime));
     }
-    final salt = Helper.secureRandom().nextBytes(hashAlgorithm.saltSize);
+    final salt = version == 6
+        ? Helper.secureRandom().nextBytes(
+            hashAlgorithm.saltSize,
+          )
+        : Uint8List(0);
 
     final signatureData = Uint8List.fromList([
       version,
@@ -186,7 +190,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       ...signatureData,
       ..._calculateTrailer(
         version,
-        signatureData.lengthInBytes,
+        signatureData.length,
       )
     ]);
 

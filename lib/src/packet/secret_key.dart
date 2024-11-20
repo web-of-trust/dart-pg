@@ -5,13 +5,13 @@
 library;
 
 import 'dart:typed_data';
-
 import 'package:pointycastle/api.dart';
 
 import 'key/public_material.dart';
 import 'key/secret_material.dart';
 
 import '../common/argon2_s2k.dart';
+import '../common/config.dart';
 import '../common/generic_s2k.dart';
 import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
@@ -399,7 +399,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     } else if (keyMaterial is EdDSAPublicMaterial) {
       return (keyMaterial as EdDSAPublicMaterial).curve.hashAlgorithm;
     } else {
-      return HashAlgorithm.sha256;
+      return Config.preferredHash;
     }
   }
 
