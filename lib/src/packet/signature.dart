@@ -107,7 +107,19 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     pos++;
 
     /// read hashed subpackets
-    final hashedLength = isV6 ? bytes.sublist(pos, pos + 4).unpack32() : bytes.sublist(pos, pos + 2).unpack16();
+    final hashedLength = isV6
+        ? bytes
+            .sublist(
+              pos,
+              pos + 4,
+            )
+            .unpack32()
+        : bytes
+            .sublist(
+              pos,
+              pos + 2,
+            )
+            .unpack16();
     pos += isV6 ? 4 : 2;
     final hashedSubpackets = _readSubpackets(
       bytes.sublist(pos, pos + hashedLength),
@@ -115,7 +127,19 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     pos += hashedLength;
 
     /// read unhashed subpackets
-    final unhashedLength = isV6 ? bytes.sublist(pos, pos + 4).unpack32() : bytes.sublist(pos, pos + 2).unpack16();
+    final unhashedLength = isV6
+        ? bytes
+            .sublist(
+              pos,
+              pos + 4,
+            )
+            .unpack32()
+        : bytes
+            .sublist(
+              pos,
+              pos + 2,
+            )
+            .unpack16();
     pos += isV6 ? 4 : 2;
     final unhashedSubpackets = _readSubpackets(
       bytes.sublist(pos, pos + unhashedLength),
