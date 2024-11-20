@@ -6,24 +6,19 @@ library;
 
 import 'dart:typed_data';
 
-import '../../common/extensions.dart';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
-/// The OpenPGP Key ID of the key issuing the signature.
+/// The IntendedRecipientFingerprint sub-packet class
+/// Giving the intended recipient fingerprint.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class IssuerKeyID extends SignatureSubpacket {
-  IssuerKeyID(
+class PreferredAeadCiphers extends SignatureSubpacket {
+  PreferredAeadCiphers(
     final Uint8List data, {
     super.critical,
     super.isLong,
-  }) : super(SignatureSubpacketType.issuerKeyID, data);
-
-  factory IssuerKeyID.fromString(
-    final String id, {
-    final bool critical = false,
-  }) =>
-      IssuerKeyID(id.hexToBytes(), critical: critical);
-
-  Uint8List get keyID => data;
+  }) : super(
+          SignatureSubpacketType.preferredAeadCiphers,
+          data,
+        );
 }

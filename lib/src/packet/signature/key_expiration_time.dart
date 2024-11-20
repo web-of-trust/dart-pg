@@ -15,7 +15,6 @@ import '../signature_subpacket.dart';
 /// the key creation time that the key expires. If this is not present
 /// or has a value of zero, the key never expires. This is found only on
 /// a self-signature.
-/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.6
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class KeyExpirationTime extends SignatureSubpacket {
   KeyExpirationTime(

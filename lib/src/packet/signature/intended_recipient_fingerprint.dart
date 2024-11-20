@@ -11,22 +11,23 @@ import 'package:dart_pg/src/type/key_packet.dart';
 import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
-/// The OpenPGP Key fingerprint of the key issuing the signature.
+/// The IntendedRecipientFingerprint sub-packet class
+/// Giving the intended recipient fingerprint.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class IssuerFingerprint extends SignatureSubpacket {
-  IssuerFingerprint(
+class IntendedRecipientFingerprint extends SignatureSubpacket {
+  IntendedRecipientFingerprint(
     final Uint8List data, {
     super.critical,
     super.isLong,
   }) : super(
-          SignatureSubpacketType.issuerFingerprint,
+          SignatureSubpacketType.intendedRecipientFingerprint,
           data,
         );
 
-  factory IssuerFingerprint.fromKey(
+  factory IntendedRecipientFingerprint.fromKey(
     final KeyPacketInterface key,
   ) =>
-      IssuerFingerprint(
+      IntendedRecipientFingerprint(
         Uint8List.fromList([
           key.keyVersion,
           ...key.fingerprint,
