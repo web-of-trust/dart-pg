@@ -6,15 +6,16 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/type/key_packet.dart';
-
 import '../common/helpers.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/packet_type.dart';
 import '../enum/signature_subpacket_type.dart';
 import '../enum/signature_type.dart';
+import '../type/key_packet.dart';
+import '../type/secret_key_packet.dart';
 import '../type/signature_packet.dart';
+import '../type/signing_key_material.dart';
 import '../type/subpacket.dart';
 import '../type/verification_key_material.dart';
 import 'base.dart';
@@ -70,7 +71,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
           signatureType.value,
           keyAlgorithm.value,
           hashAlgorithm.value,
-          ..._encodeSubpackets(hashedSubpackets),
+          ..._encodeSubpackets(hashedSubpackets, version == 6),
         ]),
         super(PacketType.signature) {
     if (version != 4 || version != 6) {
@@ -80,7 +81,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     }
   }
 
-  factory SignaturePacket.fromByteData(final Uint8List bytes) {
+  factory SignaturePacket.fromBytes(final Uint8List bytes) {
     var pos = 0;
 
     /// A one-octet version number (4 or 6).
@@ -144,8 +145,72 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     );
   }
 
+  factory SignaturePacket.createSignature(
+    SecretKeyPacketInterface signKey,
+    SignatureType signatureType,
+    Uint8List dataToSign, {
+    final HashAlgorithm? preferredHash,
+    final Iterable<SubpacketInterface> subpackets = const [],
+    final int keyExpirationTime = 0,
+    final DateTime? date,
+  }) {
+    final version = signKey.keyVersion;
+    final keyAlgorithm = signKey.keyAlgorithm;
+    final hashAlgorithm = preferredHash ?? signKey.preferredHash;
+    Helper.assertHash(hashAlgorithm);
+
+    final hashedSubpackets = [
+      SignatureCreationTime.fromTime(date ?? DateTime.now()),
+      IssuerFingerprint.fromKey(signKey),
+      IssuerKeyID(signKey.keyID),
+      ...subpackets,
+    ];
+    if (version == 4) {
+      hashedSubpackets.add(NotationData.saltNotation(hashAlgorithm.saltSize));
+    }
+    if (keyExpirationTime > 0) {
+      hashedSubpackets.add(KeyExpirationTime.fromTime(keyExpirationTime));
+    }
+    final salt = Helper.secureRandom().nextBytes(hashAlgorithm.saltSize);
+
+    final signatureData = Uint8List.fromList([
+      version,
+      signatureType.value,
+      keyAlgorithm.value,
+      hashAlgorithm.value,
+      ..._encodeSubpackets(hashedSubpackets, version == 6),
+    ]);
+
+    final message = Uint8List.fromList([
+      ...dataToSign,
+      ...signatureData,
+      ..._calculateTrailer(
+        version,
+        signatureData.lengthInBytes,
+      )
+    ]);
+
+    return SignaturePacket(
+      version,
+      signatureType,
+      keyAlgorithm,
+      hashAlgorithm,
+      Helper.hashDigest(message, hashAlgorithm).sublist(0, 2),
+      salt,
+      _signMessage(signKey, hashAlgorithm, message),
+      hashedSubpackets: hashedSubpackets,
+    );
+  }
+
   @override
-  Uint8List get data => Uint8List.fromList([]);
+  Uint8List get data => Uint8List.fromList([
+        ...signatureData,
+        ..._encodeSubpackets(unhashedSubpackets, version == 6),
+        ...signedHashValue,
+        ...version == 6 ? [salt.length] : [],
+        ...version == 6 ? salt : [],
+        ...signature,
+      ]);
 
   @override
   DateTime? get creationTime => getSubpacket<SignatureCreationTime>()?.creationTime;
@@ -247,6 +312,21 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     } else {
       throw UnsupportedError(
         'Unsupported public key algorithm for verification.',
+      );
+    }
+  }
+
+  static Uint8List _signMessage(
+    final SecretKeyPacketInterface key,
+    final HashAlgorithm hash,
+    final Uint8List message,
+  ) {
+    final keyMaterial = key.secretKeyMaterial;
+    if (keyMaterial is SigningKeyMaterialInterface) {
+      return keyMaterial.sign(message, hash);
+    } else {
+      throw UnsupportedError(
+        'Unsupported public key algorithm for signing.',
       );
     }
   }
@@ -476,12 +556,16 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   /// Encode subpacket to bytes
   static Uint8List _encodeSubpackets(
     final Iterable<SubpacketInterface> subpackets,
+    bool isV6,
   ) {
     final bytes = subpackets
         .map(
           (subpacket) => subpacket.encode(),
         )
         .expand((byte) => byte);
-    return Uint8List.fromList([...bytes.length.pack16(), ...bytes]);
+    return Uint8List.fromList([
+      ...isV6 ? bytes.length.pack32() : bytes.length.pack16(),
+      ...bytes,
+    ]);
   }
 }

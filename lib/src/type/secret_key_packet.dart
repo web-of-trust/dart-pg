@@ -4,6 +4,7 @@
 
 library;
 
+import '../enum/hash_algorithm.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../enum/aead_algorithm.dart';
 import 'key_packet.dart';
@@ -26,6 +27,9 @@ abstract class SecretKeyPacketInterface extends KeyPacketInterface {
 
   /// Secret key packed is decrypted
   bool get isDecrypted;
+
+  /// Get preferred hash algorithm
+  HashAlgorithm get preferredHash;
 
   SecretKeyPacketInterface encrypt(
     String passphrase,

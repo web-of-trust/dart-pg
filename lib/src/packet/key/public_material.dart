@@ -5,6 +5,7 @@
 library;
 
 export 'dsa_public_material.dart';
+export 'ec_public_material.dart';
 export 'ecdh_public_material.dart';
 export 'ecdsa_public_material.dart';
 export 'eddsa_legacy_public_material.dart';

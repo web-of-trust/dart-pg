@@ -388,6 +388,21 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   @override
   int get keyVersion => publicKey.keyVersion;
 
+  @override
+  HashAlgorithm get preferredHash {
+    if ((keyMaterial is ECPublicMaterial)) {
+      final curve = Ecc.values.firstWhere(
+        (info) => info.asn1Oid == (keyMaterial as ECPublicMaterial).oid,
+        orElse: () => Ecc.secp521r1,
+      );
+      return curve.hashAlgorithm;
+    } else if (keyMaterial is EdDSAPublicMaterial) {
+      return (keyMaterial as EdDSAPublicMaterial).curve.hashAlgorithm;
+    } else {
+      return HashAlgorithm.sha256;
+    }
+  }
+
   static Uint8List _produceEncryptionKey(
     final String passphrase,
     final SymmetricAlgorithm symmetric,
