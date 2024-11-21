@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/common/argon2_s2k.dart';
 import 'package:dart_pg/src/common/extensions.dart';
 import 'package:dart_pg/src/common/generic_s2k.dart';
 import 'package:dart_pg/src/enum/hash_algorithm.dart';
@@ -21,6 +22,7 @@ void main() {
     const mode3Password9876 = 'jA0ECQMCuWfqllPbasgr';
     const mode3PasswordQwerty = 'jA0ECQMCeEXwW1X3tJ7x';
     const mode3TwofishPassword13Times0123456789 = 'jA0ECgMCUe38FUVAZazu';
+
     test('mode-0-password-1234 test', () async {
       const passphrase = '1234';
       final salt = Uint8List.fromList([]);
@@ -35,8 +37,8 @@ void main() {
 
       final s2k = GenericS2k(
         salt,
-        type: skesk.s2k.type,
-        hash: skeskS2k.hash,
+        skesk.s2k.type,
+        skeskS2k.hash,
       );
       final key = s2k.produceKey(
         passphrase,
@@ -64,8 +66,8 @@ void main() {
 
       final s2k = GenericS2k(
         salt,
-        type: skesk.s2k.type,
-        hash: skeskS2k.hash,
+        skesk.s2k.type,
+        skeskS2k.hash,
       );
       final key = s2k.produceKey(
         passphrase,
@@ -93,8 +95,8 @@ void main() {
 
       final s2k = GenericS2k(
         salt,
-        type: skesk.s2k.type,
-        hash: skeskS2k.hash,
+        skesk.s2k.type,
+        skeskS2k.hash,
       );
       final key = s2k.produceKey(
         passphrase,
@@ -124,9 +126,9 @@ void main() {
 
       final s2k = GenericS2k(
         salt,
-        type: skesk.s2k.type,
-        hash: skeskS2k.hash,
-        itCount: skeskS2k.itCount,
+        skesk.s2k.type,
+        skeskS2k.hash,
+        skeskS2k.itCount,
       );
       final key = s2k.produceKey(
         passphrase,
@@ -156,9 +158,9 @@ void main() {
 
       final s2k = GenericS2k(
         salt,
-        type: skesk.s2k.type,
-        hash: skeskS2k.hash,
-        itCount: skeskS2k.itCount,
+        skesk.s2k.type,
+        skeskS2k.hash,
+        skeskS2k.itCount,
       );
       final key = s2k.produceKey(
         passphrase,
@@ -188,9 +190,9 @@ void main() {
 
       final s2k = GenericS2k(
         salt,
-        type: skesk.s2k.type,
-        hash: skeskS2k.hash,
-        itCount: skeskS2k.itCount,
+        skesk.s2k.type,
+        skeskS2k.hash,
+        skeskS2k.itCount,
       );
       final key = s2k.produceKey(
         passphrase,
@@ -223,9 +225,9 @@ void main() {
 
       final s2k = GenericS2k(
         salt,
-        type: skesk.s2k.type,
-        hash: skeskS2k.hash,
-        itCount: skeskS2k.itCount,
+        skesk.s2k.type,
+        skeskS2k.hash,
+        skeskS2k.itCount,
       );
       final key = s2k.produceKey(
         passphrase,
@@ -258,9 +260,9 @@ void main() {
 
       final s2k = GenericS2k(
         salt,
-        type: skesk.s2k.type,
-        hash: skeskS2k.hash,
-        itCount: skeskS2k.itCount,
+        skesk.s2k.type,
+        skeskS2k.hash,
+        skeskS2k.itCount,
       );
       final key = s2k.produceKey(
         passphrase,
@@ -273,5 +275,55 @@ void main() {
     });
   });
 
-  group('Argon2 S2k', () {});
+  group('Argon2 S2k', () {
+    const passphrase = 'password';
+
+    test('4 iterations 1mb 16 key length', () {
+      const salt = "dH3Z8hGL7bBUyp1i";
+      const hash = "eaf0095c8412e432cb9ff172957fef91";
+
+      final s2k = Argon2S2k(salt.toBytes(), 4, 1, 10);
+      final key = s2k.produceKey(passphrase, 16);
+      expect(
+        key.toHexadecimal(),
+        hash,
+      );
+    });
+
+    test('4 iterations 64mb 16 key length', () {
+      const salt = "IeCBTBvkzbmxT87I";
+      const hash = "050ebb7bcb8c1165502af049a664f2db";
+
+      final s2k = Argon2S2k(salt.toBytes(), 4, 1, 16);
+      final key = s2k.produceKey(passphrase, 16);
+      expect(
+        key.toHexadecimal(),
+        hash,
+      );
+    });
+
+    test('4 iterations 10mb 32 keylength', () {
+      const salt = "KtPeAgudgN7xrgUK";
+      const hash = "66b3d1c15f544eae5810c29381ad477167d5a1d5360c9b97340bd5b8b06c589b";
+
+      final s2k = Argon2S2k(salt.toBytes(), 4, 1, 10);
+      final key = s2k.produceKey(passphrase, 32);
+      expect(
+        key.toHexadecimal(),
+        hash,
+      );
+    });
+
+    test('4 iterations 64 mb 32 key length', () {
+      const salt = "D85Euo8RwvlkUxb5";
+      const hash = "cb1f8f04ec5ecb681e4ffb2665af6e4ad6aed540b5e62f625f48c834e8b88fa6";
+
+      final s2k = Argon2S2k(salt.toBytes(), 4, 1, 16);
+      final key = s2k.produceKey(passphrase, 32);
+      expect(
+        key.toHexadecimal(),
+        hash,
+      );
+    });
+  });
 }

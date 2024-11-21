@@ -40,11 +40,11 @@ class GenericS2k implements S2kInterface {
   final S2kType type;
 
   GenericS2k(
-    this.salt, {
+    this.salt, [
     this.type = S2kType.iterated,
     this.hash = HashAlgorithm.sha256,
     this.itCount = _defaultItCount,
-  }) : count = (16 + (itCount & 15)) << ((itCount >> 4) + _expbias);
+  ]) : count = (16 + (itCount & 15)) << ((itCount >> 4) + _expbias);
 
   /// Parsing function for a string-to-key specifier
   factory GenericS2k.fromBytes(final Uint8List bytes) {
@@ -74,9 +74,9 @@ class GenericS2k implements S2kInterface {
     }
     return GenericS2k(
       salt,
-      type: type,
-      hash: hash,
-      itCount: itCount,
+      type,
+      hash,
+      itCount,
     );
   }
 

@@ -30,11 +30,11 @@ class Argon2S2k implements S2kInterface {
   final int memoryExponent;
 
   Argon2S2k(
-    this.salt, {
+    this.salt, [
     this.iteration = Argon2Parameters.DEFAULT_ITERATIONS,
     this.parallelism = Argon2Parameters.DEFAULT_LANES,
     this.memoryExponent = Argon2Parameters.DEFAULT_MEMORY_COST,
-  });
+  ]);
 
   /// Parsing function for a string-to-key specifier
   factory Argon2S2k.fromBytes(final Uint8List bytes) {
@@ -46,9 +46,9 @@ class Argon2S2k implements S2kInterface {
     final memoryExponent = bytes[pos++];
     return Argon2S2k(
       salt,
-      iteration: iteration,
-      parallelism: parallelism,
-      memoryExponent: memoryExponent,
+      iteration,
+      parallelism,
+      memoryExponent,
     );
   }
 
