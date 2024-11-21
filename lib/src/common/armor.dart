@@ -7,8 +7,8 @@ library;
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'helpers.dart';
 import '../enum/armor_type.dart';
+import 'helpers.dart';
 
 /// ASCII Armor class
 /// OpenPGP's Radix-64 encoding.

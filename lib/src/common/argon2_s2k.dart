@@ -7,9 +7,9 @@ library;
 import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 
-import 'helpers.dart';
 import '../enum/s2k_type.dart';
 import '../type/s2k.dart';
+import 'helpers.dart';
 
 /// Implementation of the Argon2 string-to-key specifier
 /// See https://www.rfc-editor.org/rfc/rfc9580#section-3.7

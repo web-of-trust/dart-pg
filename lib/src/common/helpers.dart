@@ -8,13 +8,13 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 
-import 'argon2_s2k.dart';
-import 'extensions.dart';
-import 'generic_s2k.dart';
 import '../type/s2k.dart';
 import '../enum/s2k_type.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/symmetric_algorithm.dart';
+import 'argon2_s2k.dart';
+import 'extensions.dart';
+import 'generic_s2k.dart';
 
 export 'extensions.dart';
 
