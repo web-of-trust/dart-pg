@@ -74,7 +74,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
           ..._encodeSubpackets(hashedSubpackets, version == 6),
         ]),
         super(PacketType.signature) {
-    if (version != 4 || version != 6) {
+    if (version != 4 && version != 6) {
       throw UnsupportedError(
         'Version $version of the signature packet is unsupported.',
       );

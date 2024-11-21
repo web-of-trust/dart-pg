@@ -46,7 +46,7 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
     this.keyMaterial, {
     this.keyAlgorithm = KeyAlgorithm.rsaEncryptSign,
   }) : super(PacketType.publicKey) {
-    if (keyVersion != KeyVersion.v4.value || keyVersion != KeyVersion.v6.value) {
+    if (keyVersion != KeyVersion.v4.value && keyVersion != KeyVersion.v6.value) {
       throw UnsupportedError(
         'Version $keyVersion of the key packet is unsupported.',
       );
