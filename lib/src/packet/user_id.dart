@@ -39,7 +39,7 @@ class UserIDPacket extends BasePacket implements UserIDPacketInterface {
   @override
   Uint8List get signBytes => Uint8List.fromList([
         0xb4,
-        ...data.lengthInBytes.pack32(),
+        ...data.length.pack32(),
         ...data,
       ]);
 
