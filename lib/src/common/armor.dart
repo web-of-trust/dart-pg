@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import '../enum/armor_type.dart';
+import 'config.dart';
 import 'helpers.dart';
 
 /// ASCII Armor class
@@ -60,10 +61,7 @@ class Armor {
 
   /// Dearmor an OpenPGP armored message;
   /// Verify the checksum and return the encoded bytes
-  factory Armor.decode(
-    final String armored, [
-    final bool checksumRequired = false,
-  ]) {
+  factory Armor.decode(final String armored) {
     var textDone = false;
     var checksum = '';
     ArmorType? type;
@@ -101,7 +99,7 @@ class Armor {
     final text = textLines.join('\r\n').trim();
     final data = base64.decode(dataLines.join().trim());
 
-    if ((checksum != _crc24Checksum(data)) && (checksum.isNotEmpty || checksumRequired)) {
+    if ((checksum != _crc24Checksum(data)) && (checksum.isNotEmpty || Config.checksumRequired)) {
       throw StateError('Ascii armor integrity check failed');
     }
 
