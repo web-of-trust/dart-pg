@@ -7,10 +7,10 @@ library;
 import 'dart:collection';
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/enum/packet_type.dart';
-
+import '../enum/packet_type.dart';
 import '../type/packet.dart';
 import '../type/packet_list.dart';
+import 'base.dart';
 
 /// This class represents a list of OpenPGP packets.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -26,12 +26,58 @@ class PacketList extends ListBase<PacketInterface> implements PacketListInterfac
   /// Decode packets from bytes
   factory PacketList.decode(Uint8List bytes) {
     final packets = <PacketInterface>[];
+    var offset = 0;
+    while (offset < bytes.length) {
+      final reader = PacketReader.read(bytes, offset);
+      offset = reader.offset;
+      final packet = switch (reader.type) {
+        PacketType.publicKeyEncryptedSessionKey => PublicKeyEncryptedSessionKeyPacket.fromBytes(
+            reader.data,
+          ),
+        PacketType.signature => SignaturePacket.fromBytes(reader.data),
+        PacketType.symEncryptedSessionKey => SymEncryptedSessionKeyPacket.fromBytes(
+            reader.data,
+          ),
+        PacketType.onePassSignature => OnePassSignaturePacket.fromBytes(
+            reader.data,
+          ),
+        PacketType.secretKey => SecretKeyPacket.fromBytes(reader.data),
+        PacketType.publicKey => PublicKeyPacket.fromBytes(reader.data),
+        PacketType.secretSubkey => SecretSubkeyPacket.fromBytes(reader.data),
+        PacketType.compressedData => CompressedDataPacket.fromBytes(
+            reader.data,
+          ),
+        PacketType.symEncryptedData => SymEncryptedDataPacket.fromBytes(
+            reader.data,
+          ),
+        PacketType.marker => MarkerPacket(),
+        PacketType.literalData => LiteralDataPacket.fromBytes(reader.data),
+        PacketType.trust => TrustPacket.fromBytes(reader.data),
+        PacketType.userID => UserIDPacket.fromBytes(reader.data),
+        PacketType.publicSubkey => PublicSubkeyPacket.fromBytes(reader.data),
+        PacketType.userAttribute => UserAttributePacket.fromBytes(
+            reader.data,
+          ),
+        PacketType.symEncryptedIntegrityProtectedData =>
+          SymEncryptedIntegrityProtectedDataPacket.fromBytes(reader.data),
+        PacketType.aeadEncryptedData => AeadEncryptedDataPacket.fromBytes(
+            reader.data,
+          ),
+        PacketType.padding => PaddingPacket(reader.data),
+      };
+      packets.add(packet);
+    }
     return PacketList(packets);
   }
 
   @override
   Uint8List encode() => Uint8List.fromList(
-        packets.map((packet) => packet.encode()).expand((byte) => byte).toList(growable: false),
+        packets
+            .map(
+              (packet) => packet.encode(),
+            )
+            .expand((byte) => byte)
+            .toList(growable: false),
       );
 
   PacketList filterByTypes([final List<PacketType> tags = const []]) {
