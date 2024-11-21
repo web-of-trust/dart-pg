@@ -83,7 +83,7 @@ abstract class BasePacket implements PacketInterface {
       ..._simpleLength(dataLengh),
       ...bodyData,
     ]);
-    return Uint8List.fromList([0xc0 | type.value, ...partialData]);
+    return Uint8List.fromList([type.value | 0xc0, ...partialData]);
   }
 
   Uint8List _simpleLength(int length) {
