@@ -8,7 +8,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import '../common/helpers.dart';
-import '../enum/packet_type.dart';
 import '../type/user_id_packet.dart';
 import 'base.dart';
 

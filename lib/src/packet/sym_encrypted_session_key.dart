@@ -13,7 +13,6 @@ import '../common/generic_s2k.dart';
 import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/aead_algorithm.dart';
-import '../enum/packet_type.dart';
 import '../enum/s2k_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/s2k.dart';

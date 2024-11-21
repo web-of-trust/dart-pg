@@ -6,8 +6,6 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/enum/packet_type.dart';
-
 import 'base.dart';
 
 /// Implementation of the Trust Packet (Tag 12)

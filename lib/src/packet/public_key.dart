@@ -12,7 +12,6 @@ import '../enum/hash_algorithm.dart';
 import '../enum/key_version.dart';
 import '../enum/montgomery_curve.dart';
 import '../enum/key_algorithm.dart';
-import '../enum/packet_type.dart';
 import '../type/key_material.dart';
 import '../type/key_packet.dart';
 import '../type/subkey_packet.dart';

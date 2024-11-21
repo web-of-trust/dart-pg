@@ -12,7 +12,6 @@ import '../type/packet_list.dart';
 import '../common/config.dart';
 import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
-import '../enum/packet_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import 'base.dart';
 import 'packet_list.dart';

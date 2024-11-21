@@ -7,7 +7,6 @@ library;
 import 'dart:typed_data';
 
 import '../common/helpers.dart';
-import '../enum/packet_type.dart';
 import 'base.dart';
 
 /// Implementation of the Padding Packet (Type 21)

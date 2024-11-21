@@ -7,7 +7,6 @@ library;
 import 'dart:collection';
 import 'dart:typed_data';
 
-import '../enum/packet_type.dart';
 import '../type/packet.dart';
 import '../type/packet_list.dart';
 import 'base.dart';

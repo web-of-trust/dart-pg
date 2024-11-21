@@ -8,7 +8,6 @@ import 'dart:typed_data';
 
 import '../type/user_id_packet.dart';
 import '../common/extensions.dart';
-import '../enum/packet_type.dart';
 import 'base.dart';
 import 'image_user_attribute.dart';
 import 'subpacket_reader.dart';

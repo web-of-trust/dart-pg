@@ -23,7 +23,6 @@ import '../enum/montgomery_curve.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_version.dart';
 import '../enum/key_algorithm.dart';
-import '../enum/packet_type.dart';
 import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
@@ -33,7 +32,6 @@ import '../type/secret_key_material.dart';
 import '../type/secret_key_packet.dart';
 import '../type/subkey_packet.dart';
 import 'base.dart';
-import 'public_key.dart';
 
 /// Implementation of the Secret Key Packet (Type 5)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

@@ -8,7 +8,6 @@ import 'dart:typed_data';
 
 import '../common/helpers.dart';
 import '../enum/aead_algorithm.dart';
-import '../enum/packet_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/packet_list.dart';
 import 'base.dart';

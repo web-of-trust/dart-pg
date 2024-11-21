@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import '../common/helpers.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
-import '../enum/packet_type.dart';
 import '../enum/signature_subpacket_type.dart';
 import '../enum/signature_type.dart';
 import '../type/key_packet.dart';
@@ -19,7 +18,6 @@ import '../type/signing_key_material.dart';
 import '../type/subpacket.dart';
 import '../type/verification_key_material.dart';
 import 'base.dart';
-import 'public_key.dart';
 import 'signature_subpacket.dart';
 import 'subpacket_reader.dart';
 

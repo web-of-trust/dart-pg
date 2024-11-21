@@ -13,7 +13,6 @@ import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/aead_algorithm.dart';
 import '../enum/hash_algorithm.dart';
-import '../enum/packet_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/packet_list.dart';
 import 'base.dart';

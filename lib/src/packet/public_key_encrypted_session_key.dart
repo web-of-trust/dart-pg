@@ -9,14 +9,12 @@ import 'dart:typed_data';
 import '../type/key_packet.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/montgomery_curve.dart';
-import '../enum/packet_type.dart';
 import '../type/secret_key_packet.dart';
 import '../type/session_key.dart';
 import '../type/session_key_cryptor.dart';
 import 'base.dart';
 import 'key/public_material.dart';
 import 'key/session_key_cryptor.dart';
-import 'public_key.dart';
 
 /// Implementation of the Public-Key Encrypted Session Key (PKESK) Packet (Type 1)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

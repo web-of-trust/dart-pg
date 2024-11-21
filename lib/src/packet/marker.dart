@@ -7,7 +7,6 @@ library;
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../enum/packet_type.dart';
 import 'base.dart';
 
 /// Implementation of the strange "Marker packet" (Tag 10)

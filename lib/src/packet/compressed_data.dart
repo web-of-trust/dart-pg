@@ -8,7 +8,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import '../enum/compression_algorithm.dart';
-import '../enum/packet_type.dart';
 import 'base.dart';
 import 'packet_list.dart';
 

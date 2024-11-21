@@ -11,6 +11,7 @@ import '../common/extensions.dart';
 import '../enum/packet_type.dart';
 import '../type/packet.dart';
 
+export '../enum/packet_type.dart';
 export 'aead_encrypted_data.dart';
 export 'compressed_data.dart';
 export 'literal_data.dart';
