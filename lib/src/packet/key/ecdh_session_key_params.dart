@@ -129,7 +129,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
   Uint8List encode() => Uint8List.fromList([
         ...ephemeralKey.bitLength.pack16(),
         ...ephemeralKey.toUnsignedBytes(),
-        wrappedKey.lengthInBytes,
+        wrappedKey.length,
         ...wrappedKey,
       ]);
 
@@ -220,7 +220,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
 
   /// Add pkcs5 padding to a message
   static Uint8List _pkcs5Encode(final Uint8List message) {
-    final c = 8 - (message.lengthInBytes % 8);
+    final c = 8 - (message.length % 8);
     return Uint8List.fromList(
       List.filled(message.length + c, c),
     )..setAll(0, message);

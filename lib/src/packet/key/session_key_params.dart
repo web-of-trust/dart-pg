@@ -41,16 +41,17 @@ abstract class SessionKeyParams {
     final Uint8List input,
   ) {
     final numBlocks = input.length ~/ engine.inputBlockSize +
-        ((input.lengthInBytes % engine.inputBlockSize != 0) ? 1 : 0);
+        ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
 
     final output = Uint8List(numBlocks * engine.outputBlockSize);
 
     var inpOff = 0;
     var outOff = 0;
     while (inpOff < input.length) {
-      final chunkSize = (inpOff + engine.inputBlockSize <= input.lengthInBytes)
+      final chunkSize =
+          (inpOff + engine.inputBlockSize <= input.length)
           ? engine.inputBlockSize
-          : input.lengthInBytes - inpOff;
+          : input.length - inpOff;
 
       outOff += engine.processBlock(
         input,

@@ -29,20 +29,20 @@ abstract class KeyWrap {
     final Uint8List kek,
     final Uint8List key,
   ) async {
-    if (kek.lengthInBytes != keySize) {
+    if (kek.length != keySize) {
       throw ArgumentError('Key encryption key size must be $keySize bytes.');
     }
-    if (key.lengthInBytes < 16) {
+    if (key.length < 16) {
       throw ArgumentError('Key length must be at least 16 octets.');
     }
-    if (key.lengthInBytes % 8 != 0) {
+    if (key.length % 8 != 0) {
       throw ArgumentError('Key length must be a multiple of 64 bits.');
     }
 
     cipher.init(true, KeyParameter(kek));
     final a = Uint8List.fromList(_iv);
     final r = Uint8List.fromList(key);
-    final n = key.lengthInBytes ~/ 8;
+    final n = key.length ~/ 8;
     for (var j = 0; j <= 5; j++) {
       for (var i = 1; i <= n; i++) {
         final buffer = Uint8List.fromList([
@@ -63,20 +63,20 @@ abstract class KeyWrap {
     final Uint8List kek,
     final Uint8List wrappedKey,
   ) async {
-    if (kek.lengthInBytes != keySize) {
+    if (kek.length != keySize) {
       throw ArgumentError('Key encryption key size must be $keySize bytes.');
     }
-    if (wrappedKey.lengthInBytes < 16) {
+    if (wrappedKey.length < 16) {
       throw ArgumentError('Wrapped key length must be at least 16 octets.');
     }
-    if (wrappedKey.lengthInBytes % 8 != 0) {
+    if (wrappedKey.length % 8 != 0) {
       throw ArgumentError('Wrapped key length must be a multiple of 64 bits.');
     }
 
     cipher.init(false, KeyParameter(kek));
     final a = wrappedKey.sublist(0, 8);
     final r = wrappedKey.sublist(8);
-    final n = (wrappedKey.lengthInBytes ~/ 8) - 1;
+    final n = (wrappedKey.length ~/ 8) - 1;
     for (var j = 5; j >= 0; j--) {
       for (var i = n; i >= 1; i--) {
         a[7] ^= (n * j + i) & 0xff;

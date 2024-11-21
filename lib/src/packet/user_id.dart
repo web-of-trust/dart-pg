@@ -44,7 +44,7 @@ class UserIDPacket extends ContainedPacket {
     final bytes = toByteData();
     return Uint8List.fromList([
       0xb4,
-      ...bytes.lengthInBytes.pack32(),
+      ...bytes.length.pack32(),
       ...bytes,
     ]);
   }
