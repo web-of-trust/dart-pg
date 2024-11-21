@@ -245,7 +245,13 @@ abstract class Key {
         ...subkeys.map((subkey) => subkey.toPacketList()).expand((packet) => packet),
       ]);
 
-  static Map<String, dynamic> readPacketList(final PacketList packetList) {
+  static ({
+    KeyPacket? keyPacket,
+    List<User> users,
+    List<SignaturePacket> revocationSignatures,
+    List<SignaturePacket> directSignatures,
+    List<Subkey> subkeys,
+  }) readPacketList(final PacketList packetList) {
     final revocationSignatures = <SignaturePacket>[];
     final directSignatures = <SignaturePacket>[];
     final users = <User>[];
@@ -351,12 +357,12 @@ abstract class Key {
       throw StateError('Key packet not found in packet list');
     }
 
-    return {
-      'keyPacket': keyPacket,
-      'users': users,
-      'revocationSignatures': revocationSignatures,
-      'directSignatures': directSignatures,
-      'subkeys': subkeys,
-    };
+    return (
+      keyPacket: keyPacket,
+      users: users,
+      revocationSignatures: revocationSignatures,
+      directSignatures: directSignatures,
+      subkeys: subkeys,
+    );
   }
 }
