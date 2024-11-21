@@ -62,7 +62,7 @@ class Armor {
   /// Verify the checksum and return the encoded bytes
   factory Armor.decode(
     final String armored, [
-    final bool checksumRequired = true,
+    final bool checksumRequired = false,
   ]) {
     var textDone = false;
     var checksum = '';
