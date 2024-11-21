@@ -63,7 +63,7 @@ abstract class BasePacket implements PacketInterface {
 
   /// Encode package to the openpgp partial body specifier
   Uint8List _partialEncode() {
-    final List<int> partialData = [];
+    final partialData = <int>[];
     var bodyData = data;
     var dataLengh = bodyData.length;
     while (dataLengh >= partialMinSize) {
@@ -86,13 +86,15 @@ abstract class BasePacket implements PacketInterface {
     return Uint8List.fromList([0xc0 | type.value, ...partialData]);
   }
 
-  List<int> _simpleLength(int length) {
+  Uint8List _simpleLength(int length) {
     if (length < 192) {
-      return [length];
+      return Uint8List.fromList([length]);
     } else if (length < 8384) {
-      return [(((length - 192) >> 8) & 0xff) + 192, length - 192];
+      return Uint8List.fromList(
+        [(((length - 192) >> 8) & 0xff) + 192, length - 192],
+      );
     } else {
-      return [0xff, ...length.pack32()];
+      return Uint8List.fromList([0xff, ...length.pack32()]);
     }
   }
 }
