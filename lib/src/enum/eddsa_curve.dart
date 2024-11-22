@@ -17,6 +17,11 @@ enum EdDSACurve {
         ed448 => 57,
       };
 
+  int get keyStrength => switch (this) {
+        ed25519 => 255,
+        ed448 => 448,
+      };
+
   HashAlgorithm get hashAlgorithm => switch (this) {
         ed25519 => HashAlgorithm.sha256,
         ed448 => HashAlgorithm.sha512,

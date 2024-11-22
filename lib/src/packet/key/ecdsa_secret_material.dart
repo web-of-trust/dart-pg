@@ -64,7 +64,7 @@ class ECDSASecretMaterial extends ECSecretMaterial implements SigningKeyMaterial
   }
 
   @override
-  int get keyLength => publicMaterial.keyLength;
+  int get keyStrength => publicMaterial.keyStrength;
 
   @override
   Uint8List sign(final Uint8List message, final HashAlgorithm hash) {

@@ -9,8 +9,8 @@ import 'dart:typed_data';
 /// Key material interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class KeyMaterialInterface {
-  /// Get key length
-  int get keyLength;
+  /// Get key strength
+  int get keyStrength;
 
   /// Serialize key material to bytes
   Uint8List get toBytes;

@@ -38,7 +38,7 @@ class RSAPublicMaterial implements VerificationKeyMaterial {
   }
 
   @override
-  int get keyLength => modulus.bitLength;
+  int get keyStrength => modulus.bitLength;
 
   @override
   Uint8List get toBytes => Uint8List.fromList([

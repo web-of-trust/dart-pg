@@ -22,6 +22,11 @@ enum MontgomeryCurve {
         x448 => 56,
       };
 
+  int get keyStrength => switch (this) {
+        x25519 => 255,
+        x448 => 448,
+      };
+
   HashAlgorithm get hkdfHash => switch (this) {
         x25519 => HashAlgorithm.sha256,
         x448 => HashAlgorithm.sha512,

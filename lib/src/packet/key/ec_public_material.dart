@@ -29,7 +29,7 @@ abstract class ECPublicMaterial implements KeyMaterialInterface {
         );
 
   @override
-  int get keyLength {
+  int get keyStrength {
     if (curve == Ecc.ed25519 || curve == Ecc.curve25519) {
       return 255;
     } else {

@@ -29,7 +29,7 @@ class MontgomeryPublicMaterial implements KeyMaterialInterface {
       );
 
   @override
-  int get keyLength => publicKey.toBigInt().bitLength;
+  int get keyStrength => publicKey.toBigInt().bitLength;
 
   @override
   Uint8List get toBytes => publicKey;

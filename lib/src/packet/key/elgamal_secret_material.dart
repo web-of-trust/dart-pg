@@ -38,7 +38,7 @@ class ElGamalSecretMaterial implements SecretKeyMaterialInterface {
       );
 
   @override
-  int get keyLength => publicMaterial.keyLength;
+  int get keyStrength => publicMaterial.keyStrength;
 
   @override
   bool get isValid {

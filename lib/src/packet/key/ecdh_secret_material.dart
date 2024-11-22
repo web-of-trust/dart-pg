@@ -86,7 +86,7 @@ class ECDHSecretMaterial extends ECSecretMaterial implements SecretKeyMaterialIn
   }
 
   @override
-  int get keyLength => publicMaterial.keyLength;
+  int get keyStrength => publicMaterial.keyStrength;
 
   @override
   bool get isValid {

@@ -81,12 +81,16 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
   }
 
   @override
-  Uint8List get data => Uint8List.fromList([
-        keyVersion,
-        ...creationTime.toBytes(),
-        keyAlgorithm.value,
-        ...keyMaterial.toBytes,
-      ]);
+  Uint8List get data {
+    final kmBytes = keyMaterial.toBytes;
+    return Uint8List.fromList([
+      keyVersion,
+      ...creationTime.toBytes(),
+      keyAlgorithm.value,
+      ...isV6Key ? kmBytes.length.pack32() : [],
+      ...kmBytes,
+    ]);
+  }
 
   @override
   Uint8List get fingerprint => _fingerprint;
@@ -104,17 +108,19 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
   Uint8List get keyID => _keyID;
 
   @override
-  int get keyStrength => keyMaterial.keyLength;
+  int get keyStrength => keyMaterial.keyStrength;
 
   @override
   Uint8List get signBytes => Uint8List.fromList([
-        0x99,
-        ...data.length.pack16(),
+        0x95 + keyVersion,
+        ...isV6Key ? data.length.pack32() : data.length.pack16(),
         ...data,
       ]);
 
+  bool get isV6Key => keyVersion == KeyVersion.v6.value;
+
   _calculateFingerprintAndKeyID() {
-    if (keyVersion == KeyVersion.v6.value) {
+    if (isV6Key) {
       _fingerprint = Uint8List.fromList(
         Helper.hashDigest(signBytes, HashAlgorithm.sha256),
       );

@@ -59,7 +59,7 @@ class EdDSALegacySecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  int get keyLength => publicMaterial.keyLength;
+  int get keyStrength => publicMaterial.keyStrength;
 
   @override
   Uint8List sign(Uint8List message, HashAlgorithm hash) {

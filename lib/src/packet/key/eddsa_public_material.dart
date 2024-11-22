@@ -36,7 +36,7 @@ class EdDSAPublicMaterial implements VerificationKeyMaterial {
       );
 
   @override
-  int get keyLength => publicKey.toBigInt().bitLength;
+  int get keyStrength => curve.keyStrength;
 
   @override
   Uint8List get toBytes => publicKey;

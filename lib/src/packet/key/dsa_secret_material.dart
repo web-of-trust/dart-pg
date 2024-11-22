@@ -40,7 +40,7 @@ class DSASecretMaterial implements SigningKeyMaterialInterface {
       DSASecretMaterial(Helper.readMPI(bytes), publicMaterial);
 
   @override
-  int get keyLength => publicMaterial.keyLength;
+  int get keyStrength => publicMaterial.keyStrength;
 
   @override
   Uint8List sign(final Uint8List message, final HashAlgorithm hash) {
