@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 void main() {
   group('Public key', () {
     test('RSA keys', () {
-      const publicKeyPacket = '''
+      const keyPacket = '''
 BGc/4FEBCACZXe5kmfKWChtAGdoYRxRkEcfm0Ne431ovB4QS3zIOoclfyA7jgyq1UAhKbsYhZmTK
 xx0FO5/HKOO2ojJU3AeKbLP+xhH8yVdEK5JiySvX/16Tz27d+r5WGLkjZMYZAxWW9hdfurajYp8v
 cdACvErKMXShXUR9npCKH5O0QBagxMg6vczfJfNG1qWJ9aeFO7yffUt9n+39ru3Cc67EAp7m29Wo
@@ -19,7 +19,7 @@ DEZzvY+Q7gr7/qiWCpSfmy3gvmReOvMzk8uI7+Nt6vdJia4vABEBAAE=
 ''';
       final publicKey = PublicKeyPacket.fromBytes(
         base64.decode(
-          publicKeyPacket.replaceAll(
+          keyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true),
             '',
           ),
@@ -33,7 +33,7 @@ DEZzvY+Q7gr7/qiWCpSfmy3gvmReOvMzk8uI7+Nt6vdJia4vABEBAAE=
       expect(publicKey.keyVersion, 4);
       expect(publicKey.keyStrength, 2048);
 
-      const publicSubkeyPacket = '''
+      const subkeyPacket = '''
 BGc/4FEBCACUrspJcjpxuAKKF/2gPWJogkTuk+Ya+BUDjgPI3Cph8APkFfVct+NNwSW1xD6Bg/lG
 SH0hedXUTDVyCIXd1PI8tWEjB41aRu2hVJ908UAo7KVmST3zNSRClNJPN0ff7KV67K6K3PcWi2Cz
 V58NZSBK2kZqQpzQRCFHq8NYo6NQnJ7yhYxH3dfW7F0hVwMzcgw8SitNRW0vNlJDJQdAbveHh8w3
@@ -42,7 +42,7 @@ R6Cx4/cEJ5qXuHTUESblPwkkPlW3wv2tDdRqQZKyGLOIKe0LABEBAAE=
 ''';
       final publicSubkey = PublicSubkeyPacket.fromBytes(
         base64.decode(
-          publicSubkeyPacket.replaceAll(
+          subkeyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true),
             '',
           ),
@@ -59,7 +59,7 @@ R6Cx4/cEJ5qXuHTUESblPwkkPlW3wv2tDdRqQZKyGLOIKe0LABEBAAE=
     });
 
     test('DSA & ElGamal keys', () {
-      const publicKeyPacket = '''
+      const keyPacket = '''
 BGc/4H8RCAD3gDG7FSfKWRy4/gNe0sgYYgZ4zAFZTLWneObcLYpY+kmwufUIrAG0iWt8kzLbiLon
 A1B7ss041yCqJgTHFcttH5nFG/q25MT+xq+V55TRZGzaD6Gy65E++CuS0m3gJmLH14bX6++5Evtc
 /bkOTGgIfRGfEH8pL1ePc9ev1EFtmOYgZkX0a7oM8TiNKVNnUKwhuBi7pbC6OEOuDL1HmbsAHIE4
@@ -78,7 +78,7 @@ LYR9lty0LinZ0v6+5HtwDA==
 ''';
       final publicKey = PublicKeyPacket.fromBytes(
         base64.decode(
-          publicKeyPacket.replaceAll(
+          keyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true),
             '',
           ),
@@ -92,7 +92,7 @@ LYR9lty0LinZ0v6+5HtwDA==
       expect(publicKey.keyVersion, 4);
       expect(publicKey.keyStrength, 2048);
 
-      const publicSubkeyPacket = '''
+      const subkeyPacket = '''
 BGc/4H8QCACv2nUuptC3DfhXtkI3H825wX+OwZzwOP8MG/JNUut/RoxFDXnld1S/GVz/dDBXs+cM
 QY4M9Fe2KfsGbNVeOId8eBENIFE7DBH6Qigh8WkBUueV6qPeFkWVj7u72TwRPjR3A6uAwLv/ZrMZ
 JWqD52tDr2YDv8e5LlS8uzVmTYo9nU8ohn3n6KyKNarEhpuXHqo3SHt4H7601Nr3TqdRU5ZWW1F6
@@ -106,7 +106,7 @@ llGb0KUH6SqD65H0
 ''';
       final publicSubkey = PublicSubkeyPacket.fromBytes(
         base64.decode(
-          publicSubkeyPacket.replaceAll(
+          subkeyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true),
             '',
           ),
@@ -123,13 +123,13 @@ llGb0KUH6SqD65H0
     });
 
     test('NIST P-384 keys', () {
-      const publicKeyPacket = '''
+      const keyPacket = '''
 BGc/+YkTBSuBBAAiAwMEd3FJXIrlQksBiwOLB+ksANWsTQzFNxqpxzjpglaDNKjgF/RXVXj9A6os
 ao0WJtqkKFKZvkASvOCgOaBn3GDUZmF8GJwuuLNOci0JC/N+g5nFd/BeXNJNyECMIbllcLt9
 ''';
       final publicKey = PublicKeyPacket.fromBytes(
         base64.decode(
-          publicKeyPacket.replaceAll(
+          keyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true),
             '',
           ),
@@ -145,14 +145,14 @@ ao0WJtqkKFKZvkASvOCgOaBn3GDUZmF8GJwuuLNOci0JC/N+g5nFd/BeXNJNyECMIbllcLt9
       expect(publicKey.keyStrength, 384);
       expect(keyMaterial.curve, Ecc.secp384r1);
 
-      const publicSubkeyPacket = '''
+      const subkeyPacket = '''
 BGc/+YkSBSuBBAAiAwME6+LPwcbdvoEdxPA2L002pKXp8Nt7PxIsjUegQRw2bTQXMlu5zplsUNpr
 WJZ1W/iqLhmEH8eLONxcuzVEQMb3dCImxBzmL3Y5HxGGti81EsU7JBIZxHKhl85RY78HdHgCAwEJ
 CQ==
 ''';
       final publicSubkey = PublicSubkeyPacket.fromBytes(
         base64.decode(
-          publicSubkeyPacket.replaceAll(
+          subkeyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true),
             '',
           ),
@@ -171,13 +171,13 @@ CQ==
     });
 
     test('Brainpool P-256 keys', () {
-      const publicKeyPacket = '''
+      const keyPacket = '''
 BGc/+dATCSskAwMCCAEBBwIDBJ15ari0PCq317awmdNNIwz+yOZ18yUCg8LOAmYEaRAqAh1HmAnS
 K5d4i1CX2M2/UKup7f/KD/o5Y6oid+VuTZQ=
 ''';
       final publicKey = PublicKeyPacket.fromBytes(
         base64.decode(
-          publicKeyPacket.replaceAll(
+          keyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true),
             '',
           ),
@@ -193,13 +193,13 @@ K5d4i1CX2M2/UKup7f/KD/o5Y6oid+VuTZQ=
       expect(publicKey.keyStrength, 256);
       expect(keyMaterial.curve, Ecc.brainpoolP256r1);
 
-      const publicSubkeyPacket = '''
+      const subkeyPacket = '''
 BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
 2JJsuQqI0Pne08Y7og4bhyv9S+D+wcU8sv0DAQgH
 ''';
       final publicSubkey = PublicSubkeyPacket.fromBytes(
         base64.decode(
-          publicSubkeyPacket.replaceAll(
+          subkeyPacket.replaceAll(
             RegExp(r'\r?\n', multiLine: true),
             '',
           ),
@@ -218,9 +218,9 @@ BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
     });
 
     test('Curve 25519 legacy keys', () {
-      const publicKeyPacket = 'BGc/+gYWCSsGAQQB2kcPAQEHQGUAHTxwcB6TD72goFQpLf3jAqdbm1cZwv1N2mjBffEg';
+      const keyPacket = 'BGc/+gYWCSsGAQQB2kcPAQEHQGUAHTxwcB6TD72goFQpLf3jAqdbm1cZwv1N2mjBffEg';
       final publicKey = PublicKeyPacket.fromBytes(
-        base64.decode(publicKeyPacket),
+        base64.decode(keyPacket),
       );
       final keyMaterial = publicKey.keyMaterial as ECPublicMaterial;
       expect(
@@ -232,9 +232,9 @@ BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
       expect(publicKey.keyStrength, 255);
       expect(keyMaterial.curve, Ecc.ed25519);
 
-      const publicSubkeyPacket = 'BGc/+gYSCisGAQQBl1UBBQEBB0AJwaWfEiJqlOIk/O9i2PMaDBmbRUOBHGQdFRPKbifpfwMBCAc=';
+      const subkeyPacket = 'BGc/+gYSCisGAQQBl1UBBQEBB0AJwaWfEiJqlOIk/O9i2PMaDBmbRUOBHGQdFRPKbifpfwMBCAc=';
       final publicSubkey = PublicSubkeyPacket.fromBytes(
-        base64.decode(publicSubkeyPacket),
+        base64.decode(subkeyPacket),
       );
       final subkeyMaterial = publicSubkey.keyMaterial as ECPublicMaterial;
       expect(
@@ -248,7 +248,32 @@ BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
       expect(subkeyMaterial.curve, Ecc.curve25519);
     });
 
-    test('Curve 25519 keys', () {});
+    test('Curve 25519 keys', () {
+      const keyPacket = 'BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj';
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(keyPacket),
+      );
+      expect(
+        publicKey.fingerprint.toHexadecimal(),
+        'cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9',
+      );
+      expect(publicKey.keyAlgorithm, KeyAlgorithm.ed25519);
+      expect(publicKey.keyVersion, 6);
+      expect(publicKey.keyStrength, 255);
+
+      const subkeyPacket = 'BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1';
+      final publicSubkey = PublicSubkeyPacket.fromBytes(
+        base64.decode(subkeyPacket),
+      );
+      expect(
+        publicSubkey.fingerprint.toHexadecimal(),
+        '12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885',
+      );
+      expect(publicSubkey.keyAlgorithm, KeyAlgorithm.x25519);
+      expect(publicSubkey.keyVersion, 6);
+      expect(publicSubkey.keyStrength, 255);
+      expect(publicSubkey.isSubkey, isTrue);
+    });
 
     test('Curve 448 keys', () {});
   });
@@ -554,8 +579,8 @@ gWiiTYzGt55CPH+6z9IdUnM/22Y2nOVfXg==
       expect(subkeyMaterial.curve, Ecc.curve25519);
     });
 
-    test('Curve25519 keys', () {});
+    test('Curve 25519 keys', () {});
 
-    test('Curve448 keys', () {});
+    test('Curve 448 keys', () {});
   });
 }

@@ -69,6 +69,11 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
     );
     pos++;
 
+    if (version == KeyVersion.v6.value) {
+      /// A four-octet scalar octet count for the following key material.
+      pos += 4;
+    }
+
     return PublicKeyPacket(
       version,
       creation,
