@@ -4,11 +4,11 @@
 
 library;
 
-import 'dart:typed_data';
-
-/// For signing interface
+/// Key types enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class ForSigningInterface {
-  /// Get bytes for sign
-  Uint8List get signBytes;
+enum KeyType {
+  rsa,
+  ecc,
+  curve25519,
+  curve448;
 }
