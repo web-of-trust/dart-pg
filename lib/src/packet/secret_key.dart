@@ -128,8 +128,8 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
 
     Uint8List? iv;
     if (aead != null) {
-      iv = bytes.sublist(pos, pos + aead.blockLength);
-      pos += aead.blockLength;
+      iv = bytes.sublist(pos, pos + aead.ivLength);
+      pos += aead.ivLength;
     } else if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
       iv = bytes.sublist(pos, pos + symmetric.blockSize);
       pos += symmetric.blockSize;

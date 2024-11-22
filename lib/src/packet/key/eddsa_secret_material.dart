@@ -39,9 +39,9 @@ class EdDSASecretMaterial implements SigningKeyMaterialInterface {
   factory EdDSASecretMaterial.generate(final EdDSACurve curve) {
     final secretKey = Helper.secureRandom().nextBytes(curve.payloadSize);
     final publicKey = switch (curve) {
-      EdDSACurve.ed25519 => nacl.SigningKey.fromValidBytes(
+      EdDSACurve.ed25519 => nacl.PrivateKey(
           secretKey,
-        ).verifyKey.asTypedList,
+        ).publicKey.asTypedList,
       EdDSACurve.ed448 => EdPrivateKey.fromBytes(
           secretKey,
           TwistedEdwardCurve.ed448(),
@@ -59,9 +59,9 @@ class EdDSASecretMaterial implements SigningKeyMaterialInterface {
   @override
   bool get isValid {
     final publicKey = switch (publicMaterial.curve) {
-      EdDSACurve.ed25519 => nacl.SigningKey.fromValidBytes(
+      EdDSACurve.ed25519 => nacl.PrivateKey(
           secretKey,
-        ).verifyKey.asTypedList,
+        ).publicKey.asTypedList,
       EdDSACurve.ed448 => EdPrivateKey.fromBytes(
           secretKey,
           TwistedEdwardCurve.ed448(),
@@ -79,11 +79,16 @@ class EdDSASecretMaterial implements SigningKeyMaterialInterface {
     final HashAlgorithm hash,
   ) =>
       switch (publicMaterial.curve) {
-        EdDSACurve.ed25519 => nacl.SigningKey.fromValidBytes(secretKey)
-            .sign(
-              Helper.hashDigest(message, hash),
-            )
-            .asTypedList,
+        EdDSACurve.ed25519 => nacl.SigningKey.fromValidBytes(
+            Uint8List.fromList([
+              ...secretKey,
+              ...publicMaterial.publicKey,
+            ]),
+          )
+              .sign(
+                Helper.hashDigest(message, hash),
+              )
+              .asTypedList,
         EdDSACurve.ed448 => EdPrivateKey.fromBytes(
             secretKey,
             TwistedEdwardCurve.ed448(),

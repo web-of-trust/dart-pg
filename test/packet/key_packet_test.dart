@@ -579,7 +579,53 @@ gWiiTYzGt55CPH+6z9IdUnM/22Y2nOVfXg==
       expect(subkeyMaterial.curve, Ecc.curve25519);
     });
 
-    test('Curve 25519 keys', () {});
+    test('Curve 25519 keys', () {
+      final passphrase = 'correct horse battery staple';
+      final keyPacket = '''
+BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj/SYJAhQEXW/XHJ4JbR62
+kXtubh7srgEEFbSoqSdPq+Yy+HWnBlkgIXglj6SE2Isn8iDj0t4CA8oPH+7La3dTgePi2bFIXCIz
+jKVR4JomPyLrSZLpZ3qAWA==
+''';
+      final secretKey = SecretKeyPacket.fromBytes(
+        base64.decode(
+          keyPacket.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      ).decrypt(passphrase);
+      expect(
+        secretKey.fingerprint.toHexadecimal(),
+        'cb186c4f0609a697e4d52dfa6c722b0c1f1e27c18a56708f6525ec27bad9acc9',
+      );
+      expect(secretKey.keyAlgorithm, KeyAlgorithm.ed25519);
+      expect(secretKey.keyVersion, 6);
+      expect(secretKey.keyStrength, 255);
+      expect(secretKey.isDecrypted, isTrue);
+
+      final subkeyPacket = '''
+BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1/SYJAhQEDmGEaCnahpq+
+DqYVRdwUzAEEFS4Typ/05yT7HC6x34YCCUGvktXKv+W6nfHFC8dcVKOMDaFpd+g3rFQZF0MQcjr6
+568qNVG/mgDGC7t4mlpc2A==
+''';
+      final secretSubkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          subkeyPacket.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      ).decrypt(passphrase);
+      expect(
+        secretSubkey.fingerprint.toHexadecimal(),
+        '12c83f1e706f6308fe151a417743a1f033790e93e9978488d1db378da9930885',
+      );
+      expect(secretSubkey.keyAlgorithm, KeyAlgorithm.x25519);
+      expect(secretSubkey.keyVersion, 6);
+      expect(secretSubkey.keyStrength, 255);
+      expect(secretSubkey.isDecrypted, isTrue);
+      expect(secretSubkey.isSubkey, isTrue);
+    });
 
     test('Curve 448 keys', () {});
   });
