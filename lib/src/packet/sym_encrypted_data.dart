@@ -24,9 +24,9 @@ class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketIn
   final Uint8List encrypted;
 
   @override
-  final PacketListInterface? packetList;
+  final PacketListInterface? packets;
 
-  SymEncryptedDataPacket(this.encrypted, {this.packetList}) : super(PacketType.symEncryptedData);
+  SymEncryptedDataPacket(this.encrypted, {this.packets}) : super(PacketType.symEncryptedData);
 
   factory SymEncryptedDataPacket.fromBytes(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
 
@@ -54,7 +54,7 @@ class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketIn
         ...prefix,
         ...cipher.process(packets.encode()),
       ]),
-      packetList: packets,
+      packets: packets,
     );
   }
 
@@ -66,10 +66,10 @@ class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketIn
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) {
-    if (packetList != null && packetList!.isNotEmpty) {
+    if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedDataPacket.encryptPackets(
         key,
-        packetList!,
+        packets!,
         symmetric: symmetric,
       );
     }
@@ -95,7 +95,7 @@ class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketIn
       );
     return SymEncryptedDataPacket(
       encrypted,
-      packetList: PacketList.decode(
+      packets: PacketList.decode(
         cipher.process(encrypted.sublist(blockSize + 2)),
       ),
     );

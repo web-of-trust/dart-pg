@@ -9,6 +9,7 @@ import 'dart:typed_data';
 import '../common/helpers.dart';
 import '../enum/aead_algorithm.dart';
 import '../enum/symmetric_algorithm.dart';
+import '../type/encrypted_data_packet.dart';
 import '../type/packet_list.dart';
 import 'base.dart';
 import 'packet_list.dart';
@@ -16,7 +17,7 @@ import 'packet_list.dart';
 /// Implementation of the Symmetrically Encrypted Authenticated Encryption with
 /// Additional Data (AEAD) Protected Data Packet(Tag 20)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class AeadEncryptedDataPacket extends BasePacket {
+class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketInterface {
   static const version = 1;
 
   final SymmetricAlgorithm symmetric;
@@ -24,10 +25,10 @@ class AeadEncryptedDataPacket extends BasePacket {
   final int chunkSize;
   final Uint8List iv;
 
-  /// Encrypted data
+  @override
   final Uint8List encrypted;
 
-  /// Decrypted packets contained within.
+  @override
   final PacketListInterface? packets;
 
   AeadEncryptedDataPacket(
@@ -113,24 +114,24 @@ class AeadEncryptedDataPacket extends BasePacket {
         ...encrypted,
       ]);
 
-  /// Encrypt the payload in the packet.
+  @override
   AeadEncryptedDataPacket encrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final AeadAlgorithm aead = AeadAlgorithm.ocb,
-    final int chunkSize = 12,
   }) {
     if (packets != null && packets!.isNotEmpty) {
       return AeadEncryptedDataPacket.encryptPackets(
         key,
         packets!,
         symmetric: symmetric,
+        aead: aead,
+        chunkSize: chunkSize,
       );
     }
     return this;
   }
 
-  /// Decrypts the encrypted data contained in the packet.
+  @override
   AeadEncryptedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,

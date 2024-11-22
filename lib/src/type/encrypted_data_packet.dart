@@ -16,7 +16,7 @@ abstract class EncryptedDataPacketInterface {
   Uint8List get encrypted;
 
   /// Decrypted packets contained within.
-  PacketListInterface? get packetList;
+  PacketListInterface? get packets;
 
   /// Encrypt the payload in the packet.
   EncryptedDataPacketInterface encrypt(

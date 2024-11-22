@@ -14,20 +14,23 @@ import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/aead_algorithm.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/symmetric_algorithm.dart';
+import '../type/encrypted_data_packet.dart';
 import '../type/packet_list.dart';
 import 'base.dart';
 import 'packet_list.dart';
 
 /// Implementation of the Sym. Encrypted Integrity Protected Data Packet (Tag 18)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SymEncryptedIntegrityProtectedDataPacket extends BasePacket {
+class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements EncryptedDataPacketInterface {
   static const saltSize = 32;
   static const mdcSuffix = [0xd3, 0x14];
 
   final int version;
 
+  @override
   final Uint8List encrypted;
 
+  @override
   final PacketListInterface? packets;
 
   final SymmetricAlgorithm? symmetric;
@@ -128,7 +131,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket {
     final Uint8List key,
     final PacketListInterface packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final AeadAlgorithm aead = AeadAlgorithm.gcm,
+    final AeadAlgorithm? aead,
     final bool aeadProtect = false,
   }) {
     Helper.assertSymmetric(symmetric);
@@ -144,7 +147,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket {
         key,
         packets.encode(),
         symmetric: symmetric,
-        aead: aead,
+        aead: aead ?? Config.preferredAead,
         chunkSizeByte: chunkSize,
         salt: salt,
       );
@@ -189,12 +192,10 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket {
         ...encrypted,
       ]);
 
-  /// Encrypt the payload in the packet.
+  @override
   SymEncryptedIntegrityProtectedDataPacket encrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    AeadAlgorithm aead = AeadAlgorithm.gcm,
-    bool aeadProtect = false,
   }) {
     if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
@@ -202,12 +203,13 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket {
         packets!,
         symmetric: symmetric,
         aead: aead,
-        aeadProtect: aeadProtect,
+        aeadProtect: aead != null,
       );
     }
     return this;
   }
 
+  @override
   SymEncryptedIntegrityProtectedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,

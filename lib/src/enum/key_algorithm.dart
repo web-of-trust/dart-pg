@@ -19,7 +19,7 @@ enum KeyAlgorithm {
   /// RSA (Sign only) [HAC]
   rsaSign(3),
 
-  /// Elgamal (Encrypt only) [ELGAMAL] [HAC]
+  /// ElGamal (Encrypt only) [ELGAMAL] [HAC]
   elgamal(16),
 
   /// DSA (Sign only) [FIPS186] [HAC]
