@@ -74,6 +74,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     final s2kUsage = S2kUsage.values.firstWhere(
       (usage) => usage.value == bytes[pos],
     );
+    pos++;
 
     // Only for a version 6 packet where the secret key material encrypted
     if (isV6 && s2kUsage != S2kUsage.none) {

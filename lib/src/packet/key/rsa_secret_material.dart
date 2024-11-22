@@ -109,15 +109,17 @@ class RSASecretMaterial implements SigningKeyMaterialInterface {
   @override
   bool get isValid {
     // expect pq = n
-    if ((primeP * primeQ).compareTo(publicMaterial.exponent) != 0) {
+    if ((primeP * primeQ).compareTo(publicMaterial.modulus) != 0) {
+      print('expect pq = n');
       return false;
     }
     // expect p*u = 1 mod q
     if (((primeP * coefficient) % primeQ).compareTo(BigInt.one) != 0) {
+      print('expect p*u = 1 mod q');
       return false;
     }
 
-    final sizeOver3 = (privateKey.modulus!.bitLength / 3).floor();
+    final sizeOver3 = (publicMaterial.modulus.bitLength / 3).floor();
     final r = Helper.randomBigInt(BigInt.two, BigInt.two << sizeOver3);
     final rde = r * exponent * publicMaterial.exponent;
     return (rde % (primeP - BigInt.one)).compareTo(r) == 0 && (rde % (primeQ - BigInt.one)).compareTo(r) == 0;
