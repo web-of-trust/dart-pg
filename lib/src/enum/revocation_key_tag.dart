@@ -4,7 +4,7 @@
 
 library;
 
-/// Revocation key tag enum
+/// Revocation key tags enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum RevocationKeyTag {
   classDefault(128),

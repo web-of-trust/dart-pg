@@ -4,7 +4,7 @@
 
 library;
 
-/// Armor type
+/// Armor types enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum ArmorType {
   multipartSection,

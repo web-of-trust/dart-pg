@@ -4,7 +4,7 @@
 
 library;
 
-/// Support Feature
+/// Support features enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum SupportFeature {
   /// 0x01 - Modification Detection (packets 18 and 19)

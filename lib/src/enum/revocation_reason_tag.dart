@@ -4,7 +4,7 @@
 
 library;
 
-/// Reason for Revocation
+/// Reason for revocation enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum RevocationReasonTag {
   /// No reason specified (key revocations or cert revocations)

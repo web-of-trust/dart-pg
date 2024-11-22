@@ -4,8 +4,7 @@
 
 library;
 
-/// Hash Algorithms enum
-/// See https://www.rfc-editor.org/rfc/rfc9580#section-9.5
+/// Hash algorithms enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum HashAlgorithm {
   md5(1),

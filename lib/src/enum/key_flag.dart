@@ -4,7 +4,7 @@
 
 library;
 
-/// Key flag enum
+/// Key flags enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum KeyFlag {
   /// 0x01 - This key may be used to certify other keys.

@@ -4,8 +4,7 @@
 
 library;
 
-/// String to key specifier type
-/// See https://www.rfc-editor.org/rfc/rfc9580#section-3.7.1
+/// String to key specifier types enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum S2kType {
   simple(0),

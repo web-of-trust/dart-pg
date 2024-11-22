@@ -4,7 +4,7 @@
 
 library;
 
-///Signature type enum
+///Signature types enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum SignatureType {
   /// Signature of a binary document.

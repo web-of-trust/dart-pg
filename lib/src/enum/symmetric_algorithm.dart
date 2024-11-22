@@ -10,8 +10,7 @@ import '../cryptor/symmetric/cast5.dart';
 import '../cryptor/symmetric/idea.dart';
 import '../cryptor/symmetric/twofish.dart';
 
-/// Symmetric Key Algorithms enum
-/// See https://www.rfc-editor.org/rfc/rfc9580#section-9.3
+/// Symmetric key algorithms enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum SymmetricAlgorithm {
   plaintext(0),

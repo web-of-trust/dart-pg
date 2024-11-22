@@ -10,7 +10,6 @@ import 'hash_algorithm.dart';
 import 'symmetric_algorithm.dart';
 
 /// Elliptic curve cryptography enum
-/// See https://www.rfc-editor.org/rfc/rfc9580#section-9.2
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum Ecc {
   secp256r1([1, 2, 840, 10045, 3, 1, 7], '1.2.840.10045.3.1.7'),

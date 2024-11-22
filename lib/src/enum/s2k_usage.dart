@@ -4,9 +4,8 @@
 
 library;
 
-/// S2k usage
+/// S2k usages enum
 /// Indicating whether and how the secret key material is protected by a passphrase
-/// See https://www.rfc-editor.org/rfc/rfc9580#section-3.7.2
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum S2kUsage {
   none(0),

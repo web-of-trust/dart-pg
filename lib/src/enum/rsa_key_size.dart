@@ -4,7 +4,7 @@
 
 library;
 
-/// RSA key size
+/// RSA key sizes enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum RSAKeySize {
   normal(2048),

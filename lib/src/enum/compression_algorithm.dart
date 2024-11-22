@@ -5,7 +5,6 @@
 library;
 
 /// Compression algorithms enum
-/// See https://www.rfc-editor.org/rfc/rfc9580#section-9.4
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum CompressionAlgorithm {
   uncompressed(0),

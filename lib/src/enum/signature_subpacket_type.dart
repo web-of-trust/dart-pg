@@ -4,7 +4,7 @@
 
 library;
 
-/// Signature subpacket type enum
+/// Signature subpacket types enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum SignatureSubpacketType {
   signatureCreationTime(2),

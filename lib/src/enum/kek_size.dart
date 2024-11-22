@@ -4,7 +4,7 @@
 
 library;
 
-/// Key encryption key size enum
+/// Key encryption key sizes enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum KekSize {
   normal(16),

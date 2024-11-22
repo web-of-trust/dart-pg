@@ -7,8 +7,7 @@ library;
 import '../common/config.dart';
 import 'key_version.dart';
 
-/// Public-Key Algorithms
-/// See https://www.rfc-editor.org/rfc/rfc9580#section-9.1
+/// Public key algorithms enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum KeyAlgorithm {
   /// RSA (Encrypt or Sign) [HAC]

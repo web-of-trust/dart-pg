@@ -5,7 +5,6 @@
 library;
 
 /// A list of packet types and numeric tags associated with them.
-/// See https://www.rfc-editor.org/rfc/rfc9580#section-5
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum PacketType {
   publicKeyEncryptedSessionKey(1),

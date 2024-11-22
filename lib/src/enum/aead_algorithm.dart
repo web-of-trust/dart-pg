@@ -12,8 +12,7 @@ import '../cryptor/aead/ocb.dart';
 import '../type/aead.dart';
 import 'symmetric_algorithm.dart';
 
-/// Aead Algorithms
-/// See https://www.rfc-editor.org/rfc/rfc9580#section-9.6
+/// Aead algorithms enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum AeadAlgorithm {
   eax(1),
