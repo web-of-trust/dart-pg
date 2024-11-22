@@ -275,7 +275,32 @@ BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
       expect(publicSubkey.isSubkey, isTrue);
     });
 
-    test('Curve 448 keys', () {});
+    test('Curve 448 keys', () {
+      const keyPacket = 'BmbzbxMcAAAAOclr6WO01hRcPLq6+/O0G+HA8hfV+fWyej4w7y9j6Im19Y5lOhbn99B0mZ0i6ggJLxcf/wPqwG3hAA==';
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(keyPacket),
+      );
+      expect(
+        publicKey.fingerprint.toHexadecimal(),
+        '3005ff8cc9384ac345005882c5419e988efdfcee6646b0ce4f627fa61b23dcf1',
+      );
+      expect(publicKey.keyAlgorithm, KeyAlgorithm.ed448);
+      expect(publicKey.keyVersion, 6);
+      expect(publicKey.keyStrength, 448);
+
+      const subkeyPacket = 'BmbzbxMaAAAAOJa5nnjGcHsLaqmdVTiX+7/V12+ROn+wufLdRd1egnJCCGBhvN7XDPd50Em1ZtAbYgbCsR+C8zgZ';
+      final publicSubkey = PublicSubkeyPacket.fromBytes(
+        base64.decode(subkeyPacket),
+      );
+      expect(
+        publicSubkey.fingerprint.toHexadecimal(),
+        '6572e897cc45e44e3c707b88ac5a754b4e3372d47d122f22dbaaee139ac82c89',
+      );
+      expect(publicSubkey.keyAlgorithm, KeyAlgorithm.x448);
+      expect(publicSubkey.keyVersion, 6);
+      expect(publicSubkey.keyStrength, 448);
+      expect(publicSubkey.isSubkey, isTrue);
+    });
   });
 
   group('Secret key', () {

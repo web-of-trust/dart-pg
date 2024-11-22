@@ -7,7 +7,6 @@ library;
 import 'dart:typed_data';
 
 import '../../type/key_material.dart';
-import '../../common/extensions.dart';
 import '../../enum/montgomery_curve.dart';
 
 /// Montgomery public key material
@@ -29,7 +28,7 @@ class MontgomeryPublicMaterial implements KeyMaterialInterface {
       );
 
   @override
-  int get keyStrength => publicKey.toBigInt().bitLength;
+  int get keyStrength => curve.keyStrength;
 
   @override
   Uint8List get toBytes => publicKey;
