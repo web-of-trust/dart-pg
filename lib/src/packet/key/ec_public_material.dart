@@ -29,7 +29,14 @@ abstract class ECPublicMaterial implements KeyMaterialInterface {
         );
 
   @override
-  int get keyLength => q.bitLength;
+  int get keyLength {
+    final params = ECDomainParameters(curve.name.toLowerCase());
+    final key = ECPublicKey(
+      params.curve.decodePoint(q.toUnsignedBytes()),
+      params,
+    );
+    return key.Q!.curve.fieldSize;
+  }
 
   @override
   Uint8List get toBytes {

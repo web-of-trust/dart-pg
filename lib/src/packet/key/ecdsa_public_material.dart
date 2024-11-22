@@ -35,14 +35,14 @@ class ECDSAPublicMaterial extends ECPublicMaterial implements VerificationKeyMat
     final HashAlgorithm hash,
     final Uint8List signature,
   ) {
-    final parameters = ECDomainParameters(curve.name.toLowerCase());
+    final params = ECDomainParameters(curve.name.toLowerCase());
     final signer = Signer('${hash.digestName}/DET-ECDSA')
       ..init(
         false,
         PublicKeyParameter<ECPublicKey>(
           ECPublicKey(
-            parameters.curve.decodePoint(q.toUnsignedBytes()),
-            parameters,
+            params.curve.decodePoint(q.toUnsignedBytes()),
+            params,
           ),
         ),
       );
