@@ -280,19 +280,24 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     S2kInterface s2k,
   }) encryptKeyMaterial(
     final String passphrase,
-    final SymmetricAlgorithm symmetric,
+    final SymmetricAlgorithm symmetric, [
     final AeadAlgorithm? aead,
-  ) {
+  ]) {
     if (passphrase.isEmpty) {
       throw ArgumentError('passphrase are required for key encryption');
     }
-    assert(s2kUsage != S2kUsage.none);
     Helper.assertSymmetric(symmetric);
     final aeadProtect = aead != null;
     if (aeadProtect && keyVersion != KeyVersion.v6.value) {
       throw ArgumentError('Using AEAD with version $keyVersion of the key packet is not allowed.');
     }
-    final s2k = aeadProtect ? Helper.stringToKey(S2kType.argon2) : Helper.stringToKey(S2kType.iterated);
+    final s2k = aeadProtect || Config.useV6Key
+        ? Helper.stringToKey(
+            S2kType.argon2,
+          )
+        : Helper.stringToKey(
+            S2kType.iterated,
+          );
     final random = Helper.secureRandom();
     final iv = random.nextBytes(symmetric.blockSize);
     final kek = _produceEncryptionKey(
