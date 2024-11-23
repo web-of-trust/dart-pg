@@ -57,15 +57,24 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
     final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
     final DateTime? date,
-  }) =>
-      _fromSecretKey(
-        SecretKeyPacket.generate(
-          algorithm,
-          rsaKeySize: rsaKeySize,
-          curve: curve,
-          date: date,
-        ),
-      );
+  }) {
+    final keyMaterial = SecretKeyPacket.generateKeyMaterial(
+      algorithm,
+      rsaKeySize: rsaKeySize,
+      curve: curve,
+      date: date,
+    );
+    return SecretSubkeyPacket(
+      PublicSubkeyPacket(
+        algorithm.keyVersion,
+        date ?? DateTime.now(),
+        keyMaterial.publicMaterial,
+        keyAlgorithm: algorithm,
+      ),
+      keyMaterial.toBytes,
+      secretKeyMaterial: keyMaterial,
+    );
+  }
 
   @override
   encrypt(
@@ -74,11 +83,15 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
     final AeadAlgorithm? aead,
   ) {
     if (secretKeyMaterial != null) {
-      return _fromSecretKey(super.encrypt(
-        passphrase,
-        symmetric,
-        aead,
-      ) as SecretKeyPacket);
+      return SecretSubkeyPacket(
+        publicKey as PublicSubkeyPacket,
+        encryptKeyMaterial(passphrase, symmetric, aead),
+        s2kUsage: s2kUsage,
+        symmetric: symmetric,
+        s2k: s2k,
+        iv: iv,
+        secretKeyMaterial: secretKeyMaterial,
+      );
     } else {
       return this;
     }
@@ -87,29 +100,17 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
   @override
   decrypt(final String passphrase) {
     if (secretKeyMaterial == null) {
-      return _fromSecretKey(super.decrypt(passphrase) as SecretKeyPacket);
+      return SecretSubkeyPacket(
+        publicKey as PublicSubkeyPacket,
+        keyData,
+        s2kUsage: s2kUsage,
+        symmetric: symmetric,
+        s2k: s2k,
+        iv: iv,
+        secretKeyMaterial: decryptKeyData(passphrase),
+      );
     } else {
       return this;
     }
-  }
-
-  static SecretSubkeyPacket _fromSecretKey(
-    final SecretKeyPacket secretKey,
-  ) {
-    final publicKey = secretKey.publicKey;
-    return SecretSubkeyPacket(
-      PublicSubkeyPacket(
-        publicKey.keyVersion,
-        publicKey.creationTime,
-        publicKey.keyMaterial,
-        keyAlgorithm: publicKey.keyAlgorithm,
-      ),
-      secretKey.keyData,
-      s2kUsage: secretKey.s2kUsage,
-      symmetric: secretKey.symmetric,
-      s2k: secretKey.s2k,
-      iv: secretKey.iv,
-      secretKeyMaterial: secretKey.secretKeyMaterial,
-    );
   }
 }

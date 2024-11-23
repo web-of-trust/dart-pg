@@ -88,7 +88,32 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     final Ecc curve = Ecc.secp521r1,
     final DateTime? date,
   }) {
-    final keyMaterial = switch (algorithm) {
+    final keyMaterial = generateKeyMaterial(
+      algorithm,
+      rsaKeySize: rsaKeySize,
+      curve: curve,
+      date: date,
+    );
+
+    return SecretKeyPacket(
+      PublicKeyPacket(
+        algorithm.keyVersion,
+        date ?? DateTime.now(),
+        keyMaterial.publicMaterial,
+        keyAlgorithm: algorithm,
+      ),
+      keyMaterial.toBytes,
+      secretKeyMaterial: keyMaterial,
+    );
+  }
+
+  static SecretKeyMaterialInterface generateKeyMaterial(
+    final KeyAlgorithm algorithm, {
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
+    final Ecc curve = Ecc.secp521r1,
+    final DateTime? date,
+  }) {
+    return switch (algorithm) {
       KeyAlgorithm.rsaEncryptSign ||
       KeyAlgorithm.rsaSign ||
       KeyAlgorithm.rsaEncrypt =>
@@ -102,17 +127,6 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
       KeyAlgorithm.ed448 => EdDSASecretMaterial.generate(EdDSACurve.ed448),
       _ => throw UnsupportedError("Key algorithm ${algorithm.name} is unsupported."),
     };
-
-    return SecretKeyPacket(
-      PublicKeyPacket(
-        algorithm.keyVersion,
-        date ?? DateTime.now(),
-        keyMaterial.publicMaterial,
-        keyAlgorithm: algorithm,
-      ),
-      keyMaterial.toBytes,
-      secretKeyMaterial: keyMaterial,
-    );
   }
 
   static ({
@@ -226,51 +240,9 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     final AeadAlgorithm? aead,
   ) {
     if (secretKeyMaterial != null) {
-      if (passphrase.isEmpty) {
-        throw ArgumentError('passphrase are required for key encryption');
-      }
-      assert(s2kUsage != S2kUsage.none);
-      Helper.assertSymmetric(symmetric);
-      final aeadProtect = aead != null;
-      if (aeadProtect && keyVersion != KeyVersion.v6.value) {
-        throw ArgumentError('Using AEAD with version $keyVersion of the key packet is not allowed.');
-      }
-      final s2k = aeadProtect ? Helper.stringToKey(S2kType.argon2) : Helper.stringToKey(S2kType.iterated);
-      final random = Helper.secureRandom();
-      final iv = random.nextBytes(symmetric.blockSize);
-      final kek = _produceEncryptionKey(
-        passphrase,
-        symmetric,
-        type,
-        s2k: s2k,
-        aead: aead,
-      );
-      final clearText = secretKeyMaterial!.toBytes;
-      final Uint8List cipherText;
-      if (aeadProtect) {
-        final cipher = aead.cipherEngine(kek, symmetric);
-        cipherText = cipher.encrypt(
-            clearText,
-            iv,
-            Uint8List.fromList([
-              type.value | 0xc0,
-              ...publicKey.data,
-            ]));
-      } else {
-        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-          ..init(
-            true,
-            ParametersWithIV(KeyParameter(kek), iv),
-          );
-
-        cipherText = cipher.process(Uint8List.fromList([
-          ...clearText,
-          ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
-        ]));
-      }
       return SecretKeyPacket(
         publicKey,
-        cipherText,
+        encryptKeyMaterial(passphrase, symmetric, aead),
         s2kUsage: s2kUsage,
         symmetric: symmetric,
         aead: aead,
@@ -286,50 +258,6 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   @override
   decrypt(final String passphrase) {
     if (secretKeyMaterial == null) {
-      final Uint8List clearText;
-      if (isEncrypted) {
-        final kek = _produceEncryptionKey(
-          passphrase,
-          symmetric,
-          type,
-          s2k: s2k,
-          aead: aead,
-        );
-        if (aead != null) {
-          final cipher = aead!.cipherEngine(kek, symmetric);
-          clearText = cipher.decrypt(
-              keyData,
-              iv!,
-              Uint8List.fromList([
-                type.value | 0xc0,
-                ...publicKey.data,
-              ]));
-        } else {
-          final cipher = BufferedCipher(symmetric.cfbCipherEngine)
-            ..init(
-              false,
-              ParametersWithIV(
-                KeyParameter(kek),
-                iv ?? Uint8List(symmetric.blockSize),
-              ),
-            );
-
-          final clearTextWithHash = cipher.process(keyData);
-          clearText = clearTextWithHash.sublist(
-            0,
-            clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
-          );
-          final hashText = clearTextWithHash.sublist(
-            clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
-          );
-          final hashed = Helper.hashDigest(clearText, HashAlgorithm.sha1);
-          if (!hashed.equals(hashText)) {
-            throw ArgumentError('Incorrect key passphrase');
-          }
-        }
-      } else {
-        clearText = keyData;
-      }
       return SecretKeyPacket(
         publicKey,
         keyData,
@@ -338,11 +266,109 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
         aead: aead,
         s2k: s2k,
         iv: iv,
-        secretKeyMaterial: _readKeyMaterial(clearText, publicKey),
+        secretKeyMaterial: decryptKeyData(passphrase),
       );
     } else {
       return this;
     }
+  }
+
+  Uint8List encryptKeyMaterial(
+    final String passphrase,
+    final SymmetricAlgorithm symmetric,
+    final AeadAlgorithm? aead,
+  ) {
+    if (passphrase.isEmpty) {
+      throw ArgumentError('passphrase are required for key encryption');
+    }
+    assert(s2kUsage != S2kUsage.none);
+    Helper.assertSymmetric(symmetric);
+    final aeadProtect = aead != null;
+    if (aeadProtect && keyVersion != KeyVersion.v6.value) {
+      throw ArgumentError('Using AEAD with version $keyVersion of the key packet is not allowed.');
+    }
+    final s2k = aeadProtect ? Helper.stringToKey(S2kType.argon2) : Helper.stringToKey(S2kType.iterated);
+    final random = Helper.secureRandom();
+    final iv = random.nextBytes(symmetric.blockSize);
+    final kek = _produceEncryptionKey(
+      passphrase,
+      symmetric,
+      type,
+      s2k: s2k,
+      aead: aead,
+    );
+    final clearText = secretKeyMaterial!.toBytes;
+    final Uint8List cipherText;
+    if (aeadProtect) {
+      final cipher = aead.cipherEngine(kek, symmetric);
+      cipherText = cipher.encrypt(
+          clearText,
+          iv,
+          Uint8List.fromList([
+            type.value | 0xc0,
+            ...publicKey.data,
+          ]));
+    } else {
+      final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+        ..init(
+          true,
+          ParametersWithIV(KeyParameter(kek), iv),
+        );
+
+      cipherText = cipher.process(Uint8List.fromList([
+        ...clearText,
+        ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
+      ]));
+    }
+    return cipherText;
+  }
+
+  SecretKeyMaterialInterface decryptKeyData(final String passphrase) {
+    final Uint8List clearText;
+    if (isEncrypted) {
+      final kek = _produceEncryptionKey(
+        passphrase,
+        symmetric,
+        type,
+        s2k: s2k,
+        aead: aead,
+      );
+      if (aead != null) {
+        final cipher = aead!.cipherEngine(kek, symmetric);
+        clearText = cipher.decrypt(
+            keyData,
+            iv!,
+            Uint8List.fromList([
+              type.value | 0xc0,
+              ...publicKey.data,
+            ]));
+      } else {
+        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+          ..init(
+            false,
+            ParametersWithIV(
+              KeyParameter(kek),
+              iv ?? Uint8List(symmetric.blockSize),
+            ),
+          );
+
+        final clearTextWithHash = cipher.process(keyData);
+        clearText = clearTextWithHash.sublist(
+          0,
+          clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
+        );
+        final hashText = clearTextWithHash.sublist(
+          clearTextWithHash.length - HashAlgorithm.sha1.digestSize,
+        );
+        final hashed = Helper.hashDigest(clearText, HashAlgorithm.sha1);
+        if (!hashed.equals(hashText)) {
+          throw ArgumentError('Incorrect key passphrase');
+        }
+      }
+    } else {
+      clearText = keyData;
+    }
+    return _readKeyMaterial(clearText, publicKey);
   }
 
   @override
