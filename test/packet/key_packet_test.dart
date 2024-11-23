@@ -8,7 +8,7 @@ import 'package:dart_pg/src/packet/key/public_material.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Public key', () {
+  group('Read public key', () {
     test('RSA keys', () {
       const keyPacket = '''
 BGc/4FEBCACZXe5kmfKWChtAGdoYRxRkEcfm0Ne431ovB4QS3zIOoclfyA7jgyq1UAhKbsYhZmTK
@@ -303,7 +303,7 @@ BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
     });
   });
 
-  group('Secret key', () {
+  group('Decrypt secret key', () {
     const passphrase = 'password';
 
     test('RSA keys', () {
@@ -702,4 +702,6 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       expect(secretSubkey.isSubkey, isTrue);
     });
   });
+
+  group('Generate secret key', () {});
 }

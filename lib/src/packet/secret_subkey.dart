@@ -11,6 +11,7 @@ import '../enum/ecc.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/packet_type.dart';
 import '../enum/rsa_key_size.dart';
+import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/subkey_packet.dart';
 import 'public_subkey.dart';
@@ -79,17 +80,19 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
   @override
   encrypt(
     final String passphrase,
-    final SymmetricAlgorithm symmetric,
+    final SymmetricAlgorithm symmetric, [
     final AeadAlgorithm? aead,
-  ) {
+  ]) {
     if (secretKeyMaterial != null) {
+      final record = encryptKeyMaterial(passphrase, symmetric, aead);
       return SecretSubkeyPacket(
         publicKey as PublicSubkeyPacket,
-        encryptKeyMaterial(passphrase, symmetric, aead),
-        s2kUsage: s2kUsage,
+        record.cipherText,
+        s2kUsage: aead != null ? S2kUsage.aeadProtect : S2kUsage.cfb,
         symmetric: symmetric,
-        s2k: s2k,
-        iv: iv,
+        aead: aead,
+        s2k: record.s2k,
+        iv: record.iv,
         secretKeyMaterial: secretKeyMaterial,
       );
     } else {

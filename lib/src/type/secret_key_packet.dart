@@ -33,9 +33,9 @@ abstract class SecretKeyPacketInterface extends KeyPacketInterface {
 
   SecretKeyPacketInterface encrypt(
     String passphrase,
-    SymmetricAlgorithm symmetric,
+    SymmetricAlgorithm symmetric, [
     AeadAlgorithm? aead,
-  );
+  ]);
 
   SecretKeyPacketInterface decrypt(String passphrase);
 }

@@ -236,18 +236,19 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   @override
   encrypt(
     final String passphrase,
-    final SymmetricAlgorithm symmetric,
+    final SymmetricAlgorithm symmetric, [
     final AeadAlgorithm? aead,
-  ) {
+  ]) {
     if (secretKeyMaterial != null) {
+      final record = encryptKeyMaterial(passphrase, symmetric, aead);
       return SecretKeyPacket(
         publicKey,
-        encryptKeyMaterial(passphrase, symmetric, aead),
-        s2kUsage: s2kUsage,
+        record.cipherText,
+        s2kUsage: aead != null ? S2kUsage.aeadProtect : S2kUsage.cfb,
         symmetric: symmetric,
         aead: aead,
-        s2k: s2k,
-        iv: iv,
+        s2k: record.s2k,
+        iv: record.iv,
         secretKeyMaterial: secretKeyMaterial,
       );
     } else {
@@ -273,7 +274,11 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     }
   }
 
-  Uint8List encryptKeyMaterial(
+  ({
+    Uint8List cipherText,
+    Uint8List iv,
+    S2kInterface s2k,
+  }) encryptKeyMaterial(
     final String passphrase,
     final SymmetricAlgorithm symmetric,
     final AeadAlgorithm? aead,
@@ -320,7 +325,11 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
         ...Helper.hashDigest(clearText, HashAlgorithm.sha1),
       ]));
     }
-    return cipherText;
+    return (
+      cipherText: cipherText,
+      iv: iv,
+      s2k: s2k,
+    );
   }
 
   SecretKeyMaterialInterface decryptKeyData(final String passphrase) {
