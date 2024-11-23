@@ -288,10 +288,11 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     }
     Helper.assertSymmetric(symmetric);
     final aeadProtect = aead != null;
-    if (aeadProtect && keyVersion != KeyVersion.v6.value) {
+    final isV6 = keyVersion != KeyVersion.v6.value;
+    if (aeadProtect && !isV6) {
       throw ArgumentError('Using AEAD with version $keyVersion of the key packet is not allowed.');
     }
-    final s2k = aeadProtect || Config.useV6Key
+    final s2k = aeadProtect || isV6
         ? Helper.stringToKey(
             S2kType.argon2,
           )
