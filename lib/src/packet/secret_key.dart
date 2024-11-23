@@ -43,7 +43,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
 
   final S2kUsage s2kUsage;
 
-  final SymmetricAlgorithm symmetric;
+  final SymmetricAlgorithm? symmetric;
 
   @override
   final AeadAlgorithm? aead;
@@ -58,8 +58,8 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   SecretKeyPacket(
     this.publicKey,
     this.keyData, {
-    this.s2kUsage = S2kUsage.cfb,
-    this.symmetric = SymmetricAlgorithm.aes128,
+    this.s2kUsage = S2kUsage.none,
+    this.symmetric,
     this.aead,
     this.s2k,
     this.iv,
@@ -343,13 +343,13 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     if (isEncrypted) {
       final kek = _produceEncryptionKey(
         passphrase,
-        symmetric,
+        symmetric!,
         type,
         s2k: s2k,
         aead: aead,
       );
       if (aead != null) {
-        final cipher = aead!.cipherEngine(kek, symmetric);
+        final cipher = aead!.cipherEngine(kek, symmetric!);
         clearText = cipher.decrypt(
             keyData,
             iv!,
@@ -358,12 +358,12 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
               ...publicKey.data,
             ]));
       } else {
-        final cipher = BufferedCipher(symmetric.cfbCipherEngine)
+        final cipher = BufferedCipher(symmetric!.cfbCipherEngine)
           ..init(
             false,
             ParametersWithIV(
               KeyParameter(kek),
-              iv ?? Uint8List(symmetric.blockSize),
+              iv ?? Uint8List(symmetric!.blockSize),
             ),
           );
 
@@ -391,7 +391,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     final isV6 = publicKey.keyVersion == KeyVersion.v6.value;
     if (isEncrypted) {
       final optBytes = Uint8List.fromList([
-        symmetric.value,
+        symmetric!.value,
         ...aead != null ? [aead!.value] : [],
         ...isV6 ? [s2k!.length] : [],
         ...s2k!.toBytes,
@@ -427,7 +427,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   bool get isDecrypted => secretKeyMaterial != null;
 
   @override
-  bool get isEncrypted => s2kUsage != S2kUsage.none;
+  bool get isEncrypted => s2kUsage != S2kUsage.none && symmetric != null;
 
   @override
   bool get isEncryptionKey => publicKey.isEncryptionKey;

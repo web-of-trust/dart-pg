@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/enum/ecc.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
+import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
 import 'package:dart_pg/src/packet/base.dart';
 import 'package:dart_pg/src/packet/key/public_material.dart';
 import 'package:test/test.dart';
@@ -703,5 +704,295 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
     });
   });
 
-  group('Generate secret key', () {});
+  group('Generate secret key', () {
+    const passphrase = 'password';
+
+    test('RSA keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.rsaEncryptSign,
+      );
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 2048);
+      expect(secretKey.keyVersion, 4);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.rsaEncryptSign,
+      );
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 2048);
+      expect(secretSubkey.keyVersion, 4);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+
+    test('ECDSA NIST P-384 keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.ecdsa,
+        curve: Ecc.secp384r1,
+      );
+      expect(secretKey.keyMaterial is ECDSAPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 384);
+      expect(secretKey.keyVersion, 4);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.ecdsa,
+        curve: Ecc.secp384r1,
+      );
+      expect(secretSubkey.keyMaterial is ECDSAPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 384);
+      expect(secretSubkey.keyVersion, 4);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+
+    test('ECDSA Brainpool P-512 keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.ecdsa,
+        curve: Ecc.brainpoolP512r1,
+      );
+      expect(secretKey.keyMaterial is ECDSAPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 512);
+      expect(secretKey.keyVersion, 4);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.ecdsa,
+        curve: Ecc.brainpoolP512r1,
+      );
+      expect(secretSubkey.keyMaterial is ECDSAPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 512);
+      expect(secretSubkey.keyVersion, 4);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+
+    test('EdDSA legacy keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.eddsaLegacy,
+      );
+      expect(secretKey.keyMaterial is EdDSALegacyPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 255);
+      expect(secretKey.keyVersion, 4);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.eddsaLegacy,
+      );
+      expect(secretSubkey.keyMaterial is EdDSALegacyPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 255);
+      expect(secretSubkey.keyVersion, 4);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+
+    test('ECDH NIST P-384 keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.ecdh,
+        curve: Ecc.secp384r1,
+      );
+      expect(secretKey.keyMaterial is ECDHPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 384);
+      expect(secretKey.keyVersion, 4);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.ecdh,
+        curve: Ecc.secp384r1,
+      );
+      expect(secretSubkey.keyMaterial is ECDHPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 384);
+      expect(secretSubkey.keyVersion, 4);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+
+    test('ECDH Brainpool P-512 keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.ecdh,
+        curve: Ecc.brainpoolP512r1,
+      );
+      expect(secretKey.keyMaterial is ECDHPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 512);
+      expect(secretKey.keyVersion, 4);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.ecdh,
+        curve: Ecc.brainpoolP512r1,
+      );
+      expect(secretSubkey.keyMaterial is ECDHPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 512);
+      expect(secretSubkey.keyVersion, 4);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+
+    test('ECDH Curve 25519 keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.ecdh,
+        curve: Ecc.curve25519,
+      );
+      expect(secretKey.keyMaterial is ECDHPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 255);
+      expect(secretKey.keyVersion, 4);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.ecdh,
+        curve: Ecc.curve25519,
+      );
+      expect(secretSubkey.keyMaterial is ECDHPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 255);
+      expect(secretSubkey.keyVersion, 4);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+  });
 }
