@@ -652,6 +652,54 @@ DqYVRdwUzAEEFS4Typ/05yT7HC6x34YCCUGvktXKv+W6nfHFC8dcVKOMDaFpd+g3rFQZF0MQcjr6
       expect(secretSubkey.isSubkey, isTrue);
     });
 
-    test('Curve 448 keys', () {});
+    test('Curve 448 keys', () {
+      final passphrase = 'Ax@2bGh;SxD&"A_;El%mPIvLx_!#3Aik';
+      final keyPacket = '''
+BmbzftccAAAAOR3+OzyG7CwqCJopfjLl1hr1L8xJb4yIqt3ya0SH/pNXF63tthhChdNUdqtTGppE
+g6KH7Dz3jXlFAP4dBwsDCE8kppqto8604GLcRc8hcyhrUDWxU2V3E15psak+FI3xvkubObRWMjxu
++NUhznzac9dBRg+VM2lUWpsZzvqK9qFCWXMUuqikfPeaz0CJkFaEHcvMWHxGZFRNk5fK119DPGF7
+MopiKg==
+''';
+      final secretKey = SecretKeyPacket.fromBytes(
+        base64.decode(
+          keyPacket.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      ).decrypt(passphrase);
+      expect(
+        secretKey.fingerprint.toHexadecimal(),
+        'a36695f7d9053d62296e0df63a0d48ba27730d9c3d4f71b82a58c8a7c90fea20',
+      );
+      expect(secretKey.keyAlgorithm, KeyAlgorithm.ed448);
+      expect(secretKey.keyVersion, 6);
+      expect(secretKey.keyStrength, 448);
+      expect(secretKey.isDecrypted, isTrue);
+
+      final subkeyPacket = '''
+BmbzftcaAAAAOLaHi0hNT/oyrJGS0PUH0zidqtP9+p8OinKC8yZaLrffq7v2mUHJ2wMUxzOqT6Jf
+TZlbH1pOB2K4/h0HCwMIG24D5RnoS/rgmiZyvFWJPrkY7xGZAtjFCZvsCDnsBvofCLBksUofLmuv
+qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
+8S8=
+''';
+      final secretSubkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          subkeyPacket.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      ).decrypt(passphrase);
+      expect(
+        secretSubkey.fingerprint.toHexadecimal(),
+        '0464ebb813cd5587314d29b48b116a09251e2383928aed4165670b861046fcb8',
+      );
+      expect(secretSubkey.keyAlgorithm, KeyAlgorithm.x448);
+      expect(secretSubkey.keyVersion, 6);
+      expect(secretSubkey.keyStrength, 448);
+      expect(secretSubkey.isDecrypted, isTrue);
+      expect(secretSubkey.isSubkey, isTrue);
+    });
   });
 }
