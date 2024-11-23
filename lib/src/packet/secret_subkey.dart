@@ -38,11 +38,13 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
   ) {
     final publicKey = PublicSubkeyPacket.fromBytes(bytes);
     final keyRecord = SecretKeyPacket.parseBytes(bytes, publicKey);
+
     return SecretSubkeyPacket(
       publicKey,
       keyRecord.keyData,
       s2kUsage: keyRecord.s2kUsage,
       symmetric: keyRecord.symmetric,
+      aead: keyRecord.aead,
       s2k: keyRecord.s2k,
       iv: keyRecord.iv,
       secretKeyMaterial: keyRecord.keyMaterial,
