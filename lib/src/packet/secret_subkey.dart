@@ -35,10 +35,19 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
 
   factory SecretSubkeyPacket.fromBytes(
     final Uint8List bytes,
-  ) =>
-      _fromSecretKey(
-        SecretKeyPacket.fromBytes(bytes),
-      );
+  ) {
+    final publicKey = PublicSubkeyPacket.fromBytes(bytes);
+    final keyRecord = SecretKeyPacket.parseBytes(bytes, publicKey);
+    return SecretSubkeyPacket(
+      publicKey,
+      keyRecord.keyData,
+      s2kUsage: keyRecord.s2kUsage,
+      symmetric: keyRecord.symmetric,
+      s2k: keyRecord.s2k,
+      iv: keyRecord.iv,
+      secretKeyMaterial: keyRecord.keyMaterial,
+    );
+  }
 
   /// Generate secret subkey packet
   factory SecretSubkeyPacket.generate(

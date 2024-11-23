@@ -24,12 +24,12 @@ class PublicSubkeyPacket extends PublicKeyPacket implements SubkeyPacketInterfac
   });
 
   factory PublicSubkeyPacket.fromBytes(final Uint8List bytes) {
-    final publicKey = PublicKeyPacket.fromBytes(bytes);
+    final keyRecord = PublicKeyPacket.parseBytes(bytes);
     return PublicSubkeyPacket(
-      publicKey.keyVersion,
-      publicKey.creationTime,
-      publicKey.keyMaterial,
-      keyAlgorithm: publicKey.keyAlgorithm,
+      keyRecord.keyVersion,
+      keyRecord.creationTime,
+      keyRecord.keyMaterial,
+      keyAlgorithm: keyRecord.keyAlgorithm,
     );
   }
 }

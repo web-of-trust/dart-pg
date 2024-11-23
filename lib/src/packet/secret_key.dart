@@ -68,6 +68,65 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
 
   factory SecretKeyPacket.fromBytes(final Uint8List bytes) {
     final publicKey = PublicKeyPacket.fromBytes(bytes);
+    final keyRecord = parseBytes(bytes, publicKey);
+    return SecretKeyPacket(
+      publicKey,
+      keyRecord.keyData,
+      s2kUsage: keyRecord.s2kUsage,
+      symmetric: keyRecord.symmetric,
+      aead: keyRecord.aead,
+      s2k: keyRecord.s2k,
+      iv: keyRecord.iv,
+      secretKeyMaterial: keyRecord.keyMaterial,
+    );
+  }
+
+  /// Generate secret key packet
+  factory SecretKeyPacket.generate(
+    final KeyAlgorithm algorithm, {
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
+    final Ecc curve = Ecc.secp521r1,
+    final DateTime? date,
+  }) {
+    final keyMaterial = switch (algorithm) {
+      KeyAlgorithm.rsaEncryptSign ||
+      KeyAlgorithm.rsaSign ||
+      KeyAlgorithm.rsaEncrypt =>
+        RSASecretMaterial.generate(rsaKeySize),
+      KeyAlgorithm.ecdsa => ECDSASecretMaterial.generate(curve),
+      KeyAlgorithm.ecdh => ECDHSecretMaterial.generate(curve),
+      KeyAlgorithm.eddsaLegacy => EdDSALegacySecretMaterial.generate(),
+      KeyAlgorithm.x25519 => MontgomerySecretMaterial.generate(MontgomeryCurve.x25519),
+      KeyAlgorithm.x448 => MontgomerySecretMaterial.generate(MontgomeryCurve.x448),
+      KeyAlgorithm.ed25519 => EdDSASecretMaterial.generate(EdDSACurve.ed25519),
+      KeyAlgorithm.ed448 => EdDSASecretMaterial.generate(EdDSACurve.ed448),
+      _ => throw UnsupportedError("Key algorithm ${algorithm.name} is unsupported."),
+    };
+
+    return SecretKeyPacket(
+      PublicKeyPacket(
+        algorithm.keyVersion,
+        date ?? DateTime.now(),
+        keyMaterial.publicMaterial,
+        keyAlgorithm: algorithm,
+      ),
+      keyMaterial.toBytes,
+      secretKeyMaterial: keyMaterial,
+    );
+  }
+
+  static ({
+    Uint8List keyData,
+    S2kUsage s2kUsage,
+    SymmetricAlgorithm symmetric,
+    AeadAlgorithm? aead,
+    S2kInterface? s2k,
+    Uint8List? iv,
+    SecretKeyMaterialInterface? keyMaterial,
+  }) parseBytes(
+    final Uint8List bytes,
+    final PublicKeyPacket publicKey,
+  ) {
     final isV6 = publicKey.keyVersion == KeyVersion.v6.value;
 
     var pos = publicKey.data.length;
@@ -135,7 +194,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
       pos += symmetric.blockSize;
     }
 
-    SecretKeyMaterialInterface? secretKeyMaterial;
+    SecretKeyMaterialInterface? keyMaterial;
     var keyData = bytes.sublist(pos);
     if (s2kUsage == S2kUsage.none) {
       final checksum = keyData.sublist(keyData.length - 2);
@@ -143,54 +202,20 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
       if (!checksum.equals(_computeChecksum(keyData))) {
         throw StateError('Key checksum mismatch!');
       }
-      secretKeyMaterial = _readKeyMaterial(
+      keyMaterial = _readKeyMaterial(
         keyData,
         publicKey,
       );
     }
-    return SecretKeyPacket(
-      publicKey,
-      keyData,
+
+    return (
+      keyData: keyData,
       s2kUsage: s2kUsage,
       symmetric: symmetric,
       aead: aead,
       s2k: s2k,
       iv: iv,
-      secretKeyMaterial: secretKeyMaterial,
-    );
-  }
-
-  /// Generate secret key packet
-  factory SecretKeyPacket.generate(
-    final KeyAlgorithm algorithm, {
-    final RSAKeySize rsaKeySize = RSAKeySize.normal,
-    final Ecc curve = Ecc.secp521r1,
-    final DateTime? date,
-  }) {
-    final keyMaterial = switch (algorithm) {
-      KeyAlgorithm.rsaEncryptSign ||
-      KeyAlgorithm.rsaSign ||
-      KeyAlgorithm.rsaEncrypt =>
-        RSASecretMaterial.generate(rsaKeySize),
-      KeyAlgorithm.ecdsa => ECDSASecretMaterial.generate(curve),
-      KeyAlgorithm.ecdh => ECDHSecretMaterial.generate(curve),
-      KeyAlgorithm.eddsaLegacy => EdDSALegacySecretMaterial.generate(),
-      KeyAlgorithm.x25519 => MontgomerySecretMaterial.generate(MontgomeryCurve.x25519),
-      KeyAlgorithm.x448 => MontgomerySecretMaterial.generate(MontgomeryCurve.x448),
-      KeyAlgorithm.ed25519 => EdDSASecretMaterial.generate(EdDSACurve.ed25519),
-      KeyAlgorithm.ed448 => EdDSASecretMaterial.generate(EdDSACurve.ed448),
-      _ => throw UnsupportedError("Key algorithm ${algorithm.name} is unsupported."),
-    };
-
-    return SecretKeyPacket(
-      PublicKeyPacket(
-        algorithm.keyVersion,
-        date ?? DateTime.now(),
-        keyMaterial.publicMaterial,
-        keyAlgorithm: algorithm,
-      ),
-      keyMaterial.toBytes,
-      secretKeyMaterial: keyMaterial,
+      keyMaterial: keyMaterial,
     );
   }
 

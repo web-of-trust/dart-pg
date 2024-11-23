@@ -54,6 +54,21 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
   }
 
   factory PublicKeyPacket.fromBytes(final Uint8List bytes) {
+    final keyRecord = parseBytes(bytes);
+    return PublicKeyPacket(
+      keyRecord.keyVersion,
+      keyRecord.creationTime,
+      keyRecord.keyMaterial,
+      keyAlgorithm: keyRecord.keyAlgorithm,
+    );
+  }
+
+  static ({
+    int keyVersion,
+    DateTime creationTime,
+    KeyAlgorithm keyAlgorithm,
+    KeyMaterialInterface keyMaterial,
+  }) parseBytes(final Uint8List bytes) {
     var pos = 0;
 
     /// /// A one-octet version number (4 or 6).
@@ -73,15 +88,14 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
       /// A four-octet scalar octet count for the following key material.
       pos += 4;
     }
-
-    return PublicKeyPacket(
-      version,
-      creation,
-      _readKeyMaterial(
+    return (
+      keyVersion: version,
+      creationTime: creation,
+      keyAlgorithm: algorithm,
+      keyMaterial: _readKeyMaterial(
         bytes.sublist(pos),
         algorithm,
-      ),
-      keyAlgorithm: algorithm,
+      )
     );
   }
 
