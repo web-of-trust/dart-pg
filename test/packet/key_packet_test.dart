@@ -994,5 +994,165 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       ).decrypt(passphrase);
       expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
     });
+
+    test('X25519 keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.x25519,
+      );
+      expect(secretKey.keyMaterial is MontgomeryPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 255);
+      expect(secretKey.keyVersion, 6);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.x25519,
+      );
+      expect(secretSubkey.keyMaterial is MontgomeryPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 255);
+      expect(secretSubkey.keyVersion, 6);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+
+    test('X448 keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.x448,
+      );
+      expect(secretKey.keyMaterial is MontgomeryPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 448);
+      expect(secretKey.keyVersion, 6);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.x448,
+      );
+      expect(secretSubkey.keyMaterial is MontgomeryPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 448);
+      expect(secretSubkey.keyVersion, 6);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+
+    test('ed25519 keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.ed25519,
+      );
+      expect(secretKey.keyMaterial is EdDSAPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 255);
+      expect(secretKey.keyVersion, 6);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.ed25519,
+      );
+      expect(secretSubkey.keyMaterial is EdDSAPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 255);
+      expect(secretSubkey.keyVersion, 6);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
+
+    test('ed448 keys', () {
+      final secretKey = SecretKeyPacket.generate(
+        KeyAlgorithm.ed448,
+      );
+      expect(secretKey.keyMaterial is EdDSAPublicMaterial, isTrue);
+      expect(secretKey.isEncrypted, isFalse);
+      expect(secretKey.keyStrength, 448);
+      expect(secretKey.keyVersion, 6);
+
+      final encryptedSecretKey = secretKey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretKey.isEncrypted, isTrue);
+
+      final decryptedSecretKey = SecretKeyPacket.fromBytes(
+        encryptedSecretKey.data,
+      ).decrypt(passphrase);
+      expect(secretKey.fingerprint, decryptedSecretKey.fingerprint);
+
+      final secretSubkey = SecretSubkeyPacket.generate(
+        KeyAlgorithm.ed448,
+      );
+      expect(secretSubkey.keyMaterial is EdDSAPublicMaterial, isTrue);
+      expect(secretSubkey.isEncrypted, isFalse);
+      expect(secretSubkey.keyStrength, 448);
+      expect(secretSubkey.keyVersion, 6);
+
+      final encryptedSecretSubkey = secretSubkey.encrypt(
+        passphrase,
+        SymmetricAlgorithm.aes128,
+      );
+      expect(encryptedSecretSubkey.isEncrypted, isTrue);
+
+      final decryptedSecretSubkey = SecretSubkeyPacket.fromBytes(
+        encryptedSecretSubkey.data,
+      ).decrypt(passphrase);
+      expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
+    });
   });
 }

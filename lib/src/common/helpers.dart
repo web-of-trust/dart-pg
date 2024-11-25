@@ -85,7 +85,7 @@ final class Helper {
           _secureRandom.nextBytes(Argon2S2k.saltLength),
         ),
       _ => GenericS2k(
-          _secureRandom.nextBytes(Argon2S2k.saltLength),
+          _secureRandom.nextBytes(GenericS2k.saltLength),
         ),
     };
   }

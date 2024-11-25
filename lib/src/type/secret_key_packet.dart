@@ -19,9 +19,6 @@ abstract class SecretKeyPacketInterface extends KeyPacketInterface {
   /// Get secret key material
   SecretKeyMaterialInterface? get secretKeyMaterial;
 
-  /// Get aead algorithm
-  AeadAlgorithm? get aead;
-
   /// Secret key packed is encrypted
   bool get isEncrypted;
 

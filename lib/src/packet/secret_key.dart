@@ -45,7 +45,6 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
 
   final SymmetricAlgorithm? symmetric;
 
-  @override
   final AeadAlgorithm? aead;
 
   final S2kInterface? s2k;
