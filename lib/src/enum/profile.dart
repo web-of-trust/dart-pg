@@ -8,5 +8,7 @@ library;
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum Profile {
   rfc4880,
+  rfc5581,
+  rfc6637,
   rfc9580;
 }

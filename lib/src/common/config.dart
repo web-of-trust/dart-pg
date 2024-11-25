@@ -25,7 +25,7 @@ final class Config {
 
   static bool aeadProtect = false;
 
-  static Profile useProfile = Profile.rfc4880;
+  static Profile useProfile = Profile.rfc6637;
 
   static HashAlgorithm preferredHash = HashAlgorithm.sha256;
 
