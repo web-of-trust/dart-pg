@@ -16,7 +16,7 @@ import '../enum/symmetric_algorithm.dart';
 import 'base.dart';
 import 'packet_list.dart';
 
-/// Implementation of the Symmetrically Encrypted Data Packet (Tag 9))
+/// Implementation of the Symmetrically Encrypted Data (SED) Packet - Type 9
 /// The encrypted contents will consist of more OpenPGP packets.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketInterface {

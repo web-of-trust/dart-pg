@@ -19,7 +19,7 @@ import '../type/packet_list.dart';
 import 'base.dart';
 import 'packet_list.dart';
 
-/// Implementation of the Sym. Encrypted Integrity Protected Data Packet (Tag 18)
+/// Implementation of the Sym. Encrypted Integrity Protected Data (SEIPD) Packet - Type 18
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements EncryptedDataPacketInterface {
   static const saltSize = 32;

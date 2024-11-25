@@ -11,7 +11,7 @@ import '../enum/compression_algorithm.dart';
 import 'base.dart';
 import 'packet_list.dart';
 
-/// Implementation of the Compressed Data Packet (Tag 8)
+/// Implementation of the Compressed Data (COMP) Packet - Type 11
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class CompressedDataPacket extends BasePacket {
   /// Default zip/zlib compression level, between 1 and 9

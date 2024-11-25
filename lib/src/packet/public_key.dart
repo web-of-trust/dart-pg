@@ -18,7 +18,7 @@ import '../type/subkey_packet.dart';
 import 'base.dart';
 import 'key/public_material.dart';
 
-/// Implementation of the Public Key Packet (Type 6)
+/// Implementation of the Public Key (PUBKEY) Packet - Type 6
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
   static const keyIDSize = 8;

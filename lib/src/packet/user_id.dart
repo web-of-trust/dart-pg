@@ -11,7 +11,7 @@ import '../common/helpers.dart';
 import '../type/user_id_packet.dart';
 import 'base.dart';
 
-/// Implementation of the User ID Packet (Tag 13)
+/// Implementation of the User ID (UID) Packet - Type 13
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class UserIDPacket extends BasePacket implements UserIDPacketInterface {
   final String userID;

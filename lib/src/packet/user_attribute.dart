@@ -13,7 +13,7 @@ import 'image_user_attribute.dart';
 import 'subpacket_reader.dart';
 import 'user_attribute_subpacket.dart';
 
-/// Implementation of the User Attribute Packet (Type 17)
+/// Implementation of the User Attribute (UAT) Packet - Type 17
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class UserAttributePacket extends BasePacket implements UserIDPacketInterface {
   final List<UserAttributeSubpacket> attributes;

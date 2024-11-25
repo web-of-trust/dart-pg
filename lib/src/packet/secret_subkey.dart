@@ -17,7 +17,7 @@ import '../type/subkey_packet.dart';
 import 'public_subkey.dart';
 import 'secret_key.dart';
 
-/// Implementation of the Secret Subkey Packet (Type 7)
+/// Implementation of the Secret Subkey (SECSUBKEY) Packet - Type 7
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterface {
   @override

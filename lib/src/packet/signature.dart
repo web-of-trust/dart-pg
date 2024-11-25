@@ -21,7 +21,7 @@ import 'base.dart';
 import 'signature_subpacket.dart';
 import 'subpacket_reader.dart';
 
-/// Implementation of the Signature Packet (Tag 2)
+/// Implementation of the Signature (SIG) Packet - Type 2
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   @override

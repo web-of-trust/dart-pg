@@ -9,7 +9,7 @@ import 'dart:typed_data';
 
 import 'base.dart';
 
-/// Implementation of the strange "Marker packet" (Tag 10)
+/// Implementation of the Marker (MARKER) Packet - Type 10
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class MarkerPacket extends BasePacket {
   static const marker = 'PGP';

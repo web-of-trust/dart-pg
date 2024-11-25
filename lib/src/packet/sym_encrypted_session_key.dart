@@ -20,7 +20,7 @@ import '../type/session_key.dart';
 import 'base.dart';
 import 'key/session_key.dart';
 
-/// Implementation of the Symmetric Key Encrypted Session Key Packet (Tag 3)
+/// Implementation of the Symmetric Key Encrypted Session Key (SKESK) Packet - Type 3
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SymEncryptedSessionKeyPacket extends BasePacket {
   final int version;

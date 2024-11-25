@@ -9,7 +9,7 @@ import 'dart:typed_data';
 import '../common/helpers.dart';
 import 'base.dart';
 
-/// Implementation of the Padding Packet (Type 21)
+/// Implementation of the Padding (PADDING) Packet - Type 21.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PaddingPacket extends BasePacket {
   static const paddingMin = 16;

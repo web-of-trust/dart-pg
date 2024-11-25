@@ -16,7 +16,7 @@ import 'base.dart';
 import 'key/public_material.dart';
 import 'key/session_key_cryptor.dart';
 
-/// Implementation of the Public-Key Encrypted Session Key (PKESK) Packet (Type 1)
+/// Implementation of the Public-Key Encrypted Session Key (PKESK) Packet - Type 1
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
   final int version;

@@ -12,7 +12,7 @@ import '../enum/literal_format.dart';
 import '../type/literal_data.dart';
 import 'base.dart';
 
-/// Implementation of the Literal Data Packet (Tag 11)
+/// Implementation of the Literal Data (LIT) Packet - Type 11
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class LiteralDataPacket extends BasePacket implements LiteralDataInterface {
   @override
