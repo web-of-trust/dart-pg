@@ -7,6 +7,7 @@ library;
 /// Hash algorithms enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum HashAlgorithm {
+  unknown(0),
   md5(1),
   sha1(2),
   ripemd160(3),
@@ -23,6 +24,7 @@ enum HashAlgorithm {
 
   /// pointy castle digest name
   String get digestName => switch (this) {
+        unknown => 'Unknown',
         md5 => 'MD5',
         sha1 => 'SHA-1',
         ripemd160 => 'RIPEMD-160',
@@ -35,6 +37,7 @@ enum HashAlgorithm {
       };
 
   int get digestSize => switch (this) {
+        unknown => 0,
         md5 => 16,
         sha1 || ripemd160 => 20,
         sha224 => 28,
@@ -44,7 +47,7 @@ enum HashAlgorithm {
       };
 
   int get saltSize => switch (this) {
-        md5 || sha1 || ripemd160 => 0,
+        unknown || md5 || sha1 || ripemd160 => 0,
         sha224 || sha256 || sha3_256 => 16,
         sha384 => 24,
         sha512 || sha3_512 => 32,
