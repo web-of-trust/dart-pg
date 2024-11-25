@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dart_pg/src/common/helpers.dart';
+import 'package:dart_pg/src/enum/aead_algorithm.dart';
 import 'package:dart_pg/src/enum/ecc.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
@@ -1007,6 +1008,7 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       final encryptedSecretKey = secretKey.encrypt(
         passphrase,
         SymmetricAlgorithm.aes128,
+        AeadAlgorithm.gcm,
       );
       expect(encryptedSecretKey.isEncrypted, isTrue);
 
@@ -1026,6 +1028,7 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       final encryptedSecretSubkey = secretSubkey.encrypt(
         passphrase,
         SymmetricAlgorithm.aes128,
+        AeadAlgorithm.gcm,
       );
       expect(encryptedSecretSubkey.isEncrypted, isTrue);
 
@@ -1127,6 +1130,7 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       final encryptedSecretKey = secretKey.encrypt(
         passphrase,
         SymmetricAlgorithm.aes128,
+        AeadAlgorithm.gcm,
       );
       expect(encryptedSecretKey.isEncrypted, isTrue);
 
@@ -1146,6 +1150,7 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       final encryptedSecretSubkey = secretSubkey.encrypt(
         passphrase,
         SymmetricAlgorithm.aes128,
+        AeadAlgorithm.gcm,
       );
       expect(encryptedSecretSubkey.isEncrypted, isTrue);
 

@@ -287,9 +287,11 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     }
     Helper.assertSymmetric(symmetric);
     final aeadProtect = aead != null;
-    final isV6 = keyVersion != KeyVersion.v6.value;
+    final isV6 = keyVersion == KeyVersion.v6.value;
     if (aeadProtect && !isV6) {
-      throw ArgumentError('Using AEAD with version $keyVersion of the key packet is not allowed.');
+      throw ArgumentError(
+        'Using AEAD with version $keyVersion of the key packet is not allowed.',
+      );
     }
     final s2k = aeadProtect || isV6
         ? Helper.stringToKey(
@@ -299,7 +301,13 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
             S2kType.iterated,
           );
     final random = Helper.secureRandom();
-    final iv = random.nextBytes(symmetric.blockSize);
+    final iv = aeadProtect
+        ? random.nextBytes(
+            aead.ivLength,
+          )
+        : random.nextBytes(
+            symmetric.blockSize,
+          );
     final kek = _produceEncryptionKey(
       passphrase,
       symmetric,
