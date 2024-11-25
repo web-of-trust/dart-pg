@@ -7,6 +7,7 @@ library;
 import '../enum/aead_algorithm.dart';
 import '../enum/compression_algorithm.dart';
 import '../enum/hash_algorithm.dart';
+import '../enum/profile.dart';
 import '../enum/symmetric_algorithm.dart';
 
 /// Configuration class
@@ -24,7 +25,7 @@ final class Config {
 
   static bool aeadProtect = false;
 
-  static bool useV6Key = false;
+  static Profile useProfile = Profile.rfc4880;
 
   static HashAlgorithm preferredHash = HashAlgorithm.sha256;
 

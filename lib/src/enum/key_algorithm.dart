@@ -6,6 +6,7 @@ library;
 
 import '../common/config.dart';
 import 'key_version.dart';
+import 'profile.dart';
 
 /// Public key algorithms enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -70,6 +71,6 @@ enum KeyAlgorithm {
 
   int get keyVersion => switch (this) {
         x25519 || x448 || ed25519 || ed448 => KeyVersion.v6.value,
-        _ => Config.useV6Key ? KeyVersion.v6.value : KeyVersion.v4.value,
+        _ => Config.useProfile == Profile.rfc9580 ? KeyVersion.v6.value : KeyVersion.v4.value,
       };
 }
