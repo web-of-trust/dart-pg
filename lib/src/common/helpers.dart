@@ -23,7 +23,7 @@ export 'extensions.dart';
 final class Helper {
   static final _random = Random.secure();
 
-  static final secureRandom = SecureRandom('Fortuna')
+  static get secureRandom => SecureRandom('Fortuna')
     ..seed(
       KeyParameter(
         Uint8List.fromList(
@@ -35,10 +35,12 @@ final class Helper {
       ),
     );
 
-  static BigInt readMPI(final Uint8List bytes) {
-    final bitLength = bytes.sublist(0, 2).unpack16();
-    return bytes.sublist(2, ((bitLength + 7) >> 3) + 2).toBigIntWithSign(1);
-  }
+  static BigInt readMPI(final Uint8List bytes) => bytes
+      .sublist(
+        2,
+        ((bytes.sublist(0, 2).unpack16() + 7) >> 3) + 2,
+      )
+      .toBigIntWithSign(1);
 
   static Uint8List generatePrefix([
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
@@ -59,20 +61,17 @@ final class Helper {
   static Uint8List hashDigest(
     final Uint8List input, [
     final HashAlgorithm hash = HashAlgorithm.sha256,
-  ]) {
-    return Digest(hash.digestName).process(input);
-  }
+  ]) =>
+      Digest(hash.digestName).process(input);
 
-  static String generatePassword([final int length = 32]) {
-    return List.generate(
-      length,
-      ((_) => _random.nextInt(126 - 40) + 40),
-    ).map((char) => String.fromCharCode(char)).join();
-  }
+  static String generatePassword([final int length = 32]) => List.generate(
+        length,
+        ((_) => _random.nextInt(126 - 40) + 40),
+      ).map((char) => String.fromCharCode(char)).join();
 
-  static Uint8List randomBytes(final int length) {
-    return secureRandom.nextBytes(length);
-  }
+  static Uint8List randomBytes(final int length) => secureRandom.nextBytes(
+        length,
+      );
 
   static BigInt randomBigInt(final BigInt min, final BigInt max) {
     BigInt k;
@@ -116,13 +115,17 @@ final class Helper {
   }
 
   static assertHash(final HashAlgorithm hash) {
-    assert(hash != HashAlgorithm.md5 && hash != HashAlgorithm.sha1 && hash != HashAlgorithm.ripemd160);
+    assert(
+      hash != HashAlgorithm.md5 && hash != HashAlgorithm.sha1 && hash != HashAlgorithm.ripemd160,
+    );
   }
 
   static assertSymmetric(final SymmetricAlgorithm symmetric) {
-    assert(symmetric != SymmetricAlgorithm.plaintext &&
-        symmetric != SymmetricAlgorithm.cast5 &&
-        symmetric != SymmetricAlgorithm.idea &&
-        symmetric != SymmetricAlgorithm.tripledes);
+    assert(
+      symmetric != SymmetricAlgorithm.plaintext &&
+          symmetric != SymmetricAlgorithm.cast5 &&
+          symmetric != SymmetricAlgorithm.idea &&
+          symmetric != SymmetricAlgorithm.tripledes,
+    );
   }
 }
