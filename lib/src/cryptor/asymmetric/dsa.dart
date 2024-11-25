@@ -33,7 +33,7 @@ class DSASigner implements Signer {
       _random = params.random;
       params = params.parameters;
     } else {
-      _random = Helper.secureRandom();
+      _random = Helper.secureRandom;
     }
     if (params is AsymmetricKeyParameter<DSAAsymmetricKey>) {
       _key = params.key;

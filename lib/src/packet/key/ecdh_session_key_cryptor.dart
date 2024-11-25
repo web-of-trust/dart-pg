@@ -70,7 +70,7 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
     switch (key.curve) {
       case Ecc.curve25519:
         final privateKey = nacl.PrivateKey.fromSeed(
-          Helper.secureRandom().nextBytes(TweetNaCl.seedSize),
+          Helper.randomBytes(TweetNaCl.seedSize),
         );
         ephemeralKey = privateKey.publicKey.asTypedList.toBigIntWithSign(1);
         sharedKey = TweetNaCl.crypto_scalarmult(
@@ -91,7 +91,7 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
           ..init(
             ParametersWithRandom(
               ECKeyGeneratorParameters(parameters),
-              Helper.secureRandom(),
+              Helper.secureRandom,
             ),
           );
         final keyPair = keyGen.generateKeyPair();

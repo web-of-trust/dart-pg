@@ -88,7 +88,7 @@ class RSASecretMaterial implements SigningKeyMaterialInterface {
             keySize.bits,
             mrTests,
           ),
-          Helper.secureRandom(),
+          Helper.secureRandom,
         ),
       );
     final keyPair = keyGen.generateKeyPair();

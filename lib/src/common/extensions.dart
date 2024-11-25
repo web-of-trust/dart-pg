@@ -112,7 +112,6 @@ extension IntExt on int {
   }
 }
 
-
 /// String extension
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 extension StringExt on String {
@@ -216,6 +215,8 @@ extension Uint8ListExt on Uint8List {
     }
     return result;
   }
+
+  BigInt toUnsignedBigInt() => toBigIntWithSign(1);
 
   DateTime toDateTime() => DateTime.fromMillisecondsSinceEpoch(
         unpack32() * 1000,

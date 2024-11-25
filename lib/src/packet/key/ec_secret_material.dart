@@ -31,7 +31,7 @@ abstract class ECSecretMaterial implements KeyMaterialInterface {
           ECKeyGeneratorParameters(
             ECDomainParameters(curve.toLowerCase()),
           ),
-          Helper.secureRandom(),
+          Helper.secureRandom,
         ),
       );
     return keyGen.generateKeyPair();

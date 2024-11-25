@@ -300,12 +300,11 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
         : Helper.stringToKey(
             S2kType.iterated,
           );
-    final random = Helper.secureRandom();
     final iv = aeadProtect
-        ? random.nextBytes(
+        ? Helper.randomBytes(
             aead.ivLength,
           )
-        : random.nextBytes(
+        : Helper.randomBytes(
             symmetric.blockSize,
           );
     final kek = _produceEncryptionKey(

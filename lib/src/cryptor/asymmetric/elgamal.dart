@@ -30,7 +30,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
       _random = params.random;
       params = params.parameters;
     } else {
-      _random = Helper.secureRandom();
+      _random = Helper.secureRandom;
     }
     if (params is AsymmetricKeyParameter<ElGamalAsymmetricKey>) {
       _key = params.key;

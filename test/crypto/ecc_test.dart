@@ -14,11 +14,10 @@ void main() {
     );
 
     test('Test ECDH', () {
-      final random = Helper.secureRandom();
       for (var i = 0; i < 100; i++) {
         /// Generate ephemeral private keys
-        final kA = random.nextBytes(X448.payloadSize);
-        final kB = random.nextBytes(X448.payloadSize);
+        final kA = Helper.randomBytes(X448.payloadSize);
+        final kB = Helper.randomBytes(X448.payloadSize);
 
         /// Publish their public keys
         final qA = X448.scalarMultBase(kA);

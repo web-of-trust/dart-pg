@@ -137,7 +137,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
     Helper.assertSymmetric(symmetric);
 
     final version = aeadProtect || Config.useV6Key ? 2 : 1;
-    final salt = aeadProtect ? Helper.secureRandom().nextBytes(saltSize) : null;
+    final salt = aeadProtect ? Helper.randomBytes(saltSize) : null;
     final chunkSize = aeadProtect ? Config.aeadChunkSize : 0;
 
     final Uint8List encrypted;

@@ -36,7 +36,7 @@ class EdDSALegacySecretMaterial implements SigningKeyMaterialInterface {
       );
 
   factory EdDSALegacySecretMaterial.generate() {
-    final seed = Helper.secureRandom().nextBytes(TweetNaCl.seedSize);
+    final seed = Helper.randomBytes(TweetNaCl.seedSize);
     return EdDSALegacySecretMaterial(
       seed.toBigIntWithSign(1),
       EdDSALegacyPublicMaterial(

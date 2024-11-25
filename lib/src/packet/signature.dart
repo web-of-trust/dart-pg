@@ -194,7 +194,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       hashedSubpackets.add(KeyExpirationTime.fromTime(keyExpirationTime));
     }
     final salt = version == 6
-        ? Helper.secureRandom().nextBytes(
+        ? Helper.randomBytes(
             hashAlgorithm.saltSize,
           )
         : Uint8List(0);

@@ -39,7 +39,7 @@ class NotationData extends SignatureSubpacket {
     int saltSize, {
     final bool critical = false,
   }) {
-    final salt = Helper.secureRandom().nextBytes(saltSize);
+    final salt = Helper.randomBytes(saltSize);
     final nameData = utf8.encode(saltName);
     final nameLength = min(nameData.length, 0xffff);
     return NotationData(

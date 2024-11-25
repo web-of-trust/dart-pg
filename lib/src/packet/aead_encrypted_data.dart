@@ -85,7 +85,7 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
     final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final int chunkSize = 12,
   }) {
-    final iv = Helper.secureRandom().nextBytes(aead.ivLength);
+    final iv = Helper.randomBytes(aead.ivLength);
     return AeadEncryptedDataPacket(
       symmetric,
       aead,

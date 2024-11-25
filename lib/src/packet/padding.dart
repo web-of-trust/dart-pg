@@ -21,7 +21,7 @@ class PaddingPacket extends BasePacket {
 
   factory PaddingPacket.createPadding(int lengh) {
     assert(paddingMin <= lengh && lengh <= paddingMax);
-    return PaddingPacket(Helper.secureRandom().nextBytes(lengh));
+    return PaddingPacket(Helper.randomBytes(lengh));
   }
 
   @override

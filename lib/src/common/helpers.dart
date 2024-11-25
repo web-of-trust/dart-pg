@@ -23,7 +23,7 @@ export 'extensions.dart';
 final class Helper {
   static final _random = Random.secure();
 
-  static final _secureRandom = SecureRandom('Fortuna')
+  static final secureRandom = SecureRandom('Fortuna')
     ..seed(
       KeyParameter(
         Uint8List.fromList(
@@ -40,12 +40,10 @@ final class Helper {
     return bytes.sublist(2, ((bitLength + 7) >> 3) + 2).toBigIntWithSign(1);
   }
 
-  static SecureRandom secureRandom() => _secureRandom;
-
   static Uint8List generatePrefix([
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   ]) {
-    final prefix = _secureRandom.nextBytes(symmetric.blockSize);
+    final prefix = randomBytes(symmetric.blockSize);
     return Uint8List.fromList([
       ...prefix,
       prefix[prefix.length - 2],
@@ -56,7 +54,7 @@ final class Helper {
   static Uint8List generateEncryptionKey([
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   ]) =>
-      _secureRandom.nextBytes((symmetric.keySize + 7) >> 3);
+      randomBytes((symmetric.keySize + 7) >> 3);
 
   static Uint8List hashDigest(
     final Uint8List input, [
@@ -65,15 +63,21 @@ final class Helper {
     return Digest(hash.digestName).process(input);
   }
 
-  static BigInt randomBigInt(
-    final BigInt min,
-    final BigInt max, {
-    SecureRandom? random,
-  }) {
-    random = random ?? secureRandom();
+  static String generatePassword([final int length = 32]) {
+    return List.generate(
+      length,
+      ((_) => _random.nextInt(126 - 40) + 40),
+    ).map((char) => String.fromCharCode(char)).join();
+  }
+
+  static Uint8List randomBytes(final int length) {
+    return secureRandom.nextBytes(length);
+  }
+
+  static BigInt randomBigInt(final BigInt min, final BigInt max) {
     BigInt k;
     do {
-      k = random.nextBigInteger(max.bitLength);
+      k = secureRandom.nextBigInteger(max.bitLength);
     } while (k.compareTo(min) <= 0 || k.compareTo(max) >= 0);
     return k;
   }
@@ -82,10 +86,10 @@ final class Helper {
     assert(type != S2kType.simple);
     return switch (type) {
       S2kType.argon2 => Argon2S2k(
-          _secureRandom.nextBytes(Argon2S2k.saltLength),
+          randomBytes(Argon2S2k.saltLength),
         ),
       _ => GenericS2k(
-          _secureRandom.nextBytes(GenericS2k.saltLength),
+          randomBytes(GenericS2k.saltLength),
         ),
     };
   }

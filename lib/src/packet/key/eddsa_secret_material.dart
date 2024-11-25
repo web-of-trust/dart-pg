@@ -37,7 +37,7 @@ class EdDSASecretMaterial implements SigningKeyMaterialInterface {
       );
 
   factory EdDSASecretMaterial.generate(final EdDSACurve curve) {
-    final secretKey = Helper.secureRandom().nextBytes(curve.payloadSize);
+    final secretKey = Helper.randomBytes(curve.payloadSize);
     final publicKey = switch (curve) {
       EdDSACurve.ed25519 => nacl.SigningKey.fromSeed(
           secretKey,

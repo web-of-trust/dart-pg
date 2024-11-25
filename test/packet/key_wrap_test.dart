@@ -110,8 +110,8 @@ void main() {
       expect(wrappedKey128, equals(wrappedKey128128));
       expect(unwrappedKey128, equals(keyData128));
 
-      final key = Helper.secureRandom().nextBytes(16);
-      final keyData = Helper.secureRandom().nextBytes(32);
+      final key = Helper.randomBytes(16);
+      final keyData = Helper.randomBytes(32);
       final wrappedKey = aes.wrap(key, keyData);
       final unwrappedKey = aes.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
@@ -190,8 +190,8 @@ void main() {
       expect(wrappedKey192, equals(wrappedKey192192));
       expect(unwrappedKey192, equals(keyData192));
 
-      final key = Helper.secureRandom().nextBytes(24);
-      final keyData = Helper.secureRandom().nextBytes(32);
+      final key = Helper.randomBytes(24);
+      final keyData = Helper.randomBytes(32);
       final wrappedKey = aes.wrap(key, keyData);
       final unwrappedKey = aes.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
@@ -317,8 +317,8 @@ void main() {
       expect(wrappedKey256, equals(wrappedKey256256));
       expect(unwrappedKey256, equals(keyData256));
 
-      final key = Helper.secureRandom().nextBytes(32);
-      final keyData = Helper.secureRandom().nextBytes(32);
+      final key = Helper.randomBytes(32);
+      final keyData = Helper.randomBytes(32);
       final wrappedKey = aes.wrap(key, keyData);
       final unwrappedKey = aes.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
@@ -331,8 +331,8 @@ void main() {
       final unwrappedKey128 = camellia.unwrap(key128, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
 
-      final key = Helper.secureRandom().nextBytes(16);
-      final keyData = Helper.secureRandom().nextBytes(32);
+      final key = Helper.randomBytes(16);
+      final keyData = Helper.randomBytes(32);
       final wrappedKey = camellia.wrap(key, keyData);
       final unwrappedKey = camellia.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
@@ -349,8 +349,8 @@ void main() {
       final unwrappedKey192 = camellia.unwrap(key192, wrappedKey192);
       expect(unwrappedKey192, equals(keyData192));
 
-      final key = Helper.secureRandom().nextBytes(24);
-      final keyData = Helper.secureRandom().nextBytes(32);
+      final key = Helper.randomBytes(24);
+      final keyData = Helper.randomBytes(32);
       final wrappedKey = camellia.wrap(key, keyData);
       final unwrappedKey = camellia.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
@@ -371,8 +371,8 @@ void main() {
       final unwrappedKey256 = camellia.unwrap(key256, wrappedKey256);
       expect(unwrappedKey256, equals(keyData256));
 
-      final key = Helper.secureRandom().nextBytes(32);
-      final keyData = Helper.secureRandom().nextBytes(32);
+      final key = Helper.randomBytes(32);
+      final keyData = Helper.randomBytes(32);
       final wrappedKey = camellia.wrap(key, keyData);
       final unwrappedKey = camellia.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));

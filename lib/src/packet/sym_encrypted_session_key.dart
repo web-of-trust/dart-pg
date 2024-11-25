@@ -157,7 +157,7 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
 
         final kek = Helper.hkdf(key, symmetric.keySizeInByte, info: adata);
 
-        iv = Helper.secureRandom().nextBytes(aead.ivLength);
+        iv = Helper.randomBytes(aead.ivLength);
         final cipher = aead.cipherEngine(kek, symmetric);
         encrypted = cipher.encrypt(sessionKey.encryptionKey, iv, adata);
       } else {

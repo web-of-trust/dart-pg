@@ -82,8 +82,7 @@ class MontgomerySecretMaterial implements SecretKeyMaterialInterface {
 
   static Uint8List _generateSecretKey(final MontgomeryCurve curve) {
     final payloadSize = curve.payloadSize;
-    final random = Helper.secureRandom();
-    final key = random.nextBytes(payloadSize);
+    final key = Helper.randomBytes(payloadSize);
     switch (curve) {
       case MontgomeryCurve.x25519:
         // The lowest three bits must be 0
