@@ -13,7 +13,6 @@ import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/aead_algorithm.dart';
 import '../enum/hash_algorithm.dart';
-import '../enum/preset_rfc.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/encrypted_data_packet.dart';
 import '../type/packet_list.dart';
@@ -137,15 +136,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
   }) {
     Helper.assertSymmetric(symmetric);
 
-    final version = switch (Config.presetRfc) {
-      PresetRfc.rfc4880 => 1,
-      PresetRfc.rfc9580 => aeadProtect ? 2 : 1,
-    };
-    if (aeadProtect && version == 1) {
-      throw ArgumentError(
-        'Using AEAD with version $version SEIPD packet is not allowed.',
-      );
-    }
+    final version = aeadProtect ? 2 : 1;
     final salt = aeadProtect ? Helper.randomBytes(saltSize) : null;
     final chunkSize = aeadProtect ? Config.aeadChunkSize : 0;
 
@@ -184,8 +175,8 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
       version,
       encrypted,
       packets: packets,
-      symmetric: version == 2 ? symmetric : null,
-      aead: version == 2 ? aead : null,
+      symmetric: aeadProtect ? symmetric : null,
+      aead: aeadProtect ? aead : null,
       chunkSize: chunkSize,
       salt: salt,
     );
