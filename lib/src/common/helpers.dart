@@ -9,7 +9,7 @@ import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 
 import '../enum/ecc.dart';
-import '../enum/profile.dart';
+import '../enum/preset_rfc.dart';
 import '../type/s2k.dart';
 import '../enum/s2k_type.dart';
 import '../enum/hash_algorithm.dart';
@@ -132,7 +132,7 @@ final class Helper {
   }
 
   static assertEcc(final Ecc ecc) {
-    if (Config.useProfile == PresetProfile.rfc4880) {
+    if (Config.presetRfc == PresetRfc.rfc4880) {
       assert(ecc != Ecc.brainpoolP256r1 &&
           ecc != Ecc.brainpoolP384r1 &&
           ecc != Ecc.brainpoolP512r1 &&

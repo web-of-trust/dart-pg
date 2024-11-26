@@ -7,7 +7,7 @@ library;
 import '../enum/aead_algorithm.dart';
 import '../enum/compression_algorithm.dart';
 import '../enum/hash_algorithm.dart';
-import '../enum/profile.dart';
+import '../enum/preset_rfc.dart';
 import '../enum/symmetric_algorithm.dart';
 
 /// Configuration class
@@ -25,7 +25,7 @@ final class Config {
 
   static bool aeadProtect = false;
 
-  static PresetProfile useProfile = PresetProfile.rfc4880;
+  static PresetRfc presetRfc = PresetRfc.rfc4880;
 
   static HashAlgorithm preferredHash = HashAlgorithm.sha256;
 

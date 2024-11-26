@@ -14,7 +14,7 @@ import '../common/generic_s2k.dart';
 import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/aead_algorithm.dart';
-import '../enum/preset_profile.dart';
+import '../enum/preset_rfc.dart';
 import '../enum/s2k_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/s2k.dart';
@@ -133,9 +133,9 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
     final bool aeadProtect = false,
   }) {
     Helper.assertSymmetric(symmetric);
-    final version = switch (Config.useProfile) {
-      PresetProfile.rfc4880 => 4,
-      PresetProfile.rfc9580 => 6,
+    final version = switch (Config.presetRfc) {
+      PresetRfc.rfc4880 => 4,
+      PresetRfc.rfc9580 => 6,
     };
     if (aeadProtect && sessionKey != null && version == 4) {
       throw ArgumentError(

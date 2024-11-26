@@ -6,7 +6,7 @@ library;
 
 import '../common/config.dart';
 import 'key_version.dart';
-import 'profile.dart';
+import 'preset_rfc.dart';
 
 /// Public key algorithms enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -71,6 +71,6 @@ enum KeyAlgorithm {
 
   int get keyVersion => switch (this) {
         x25519 || x448 || ed25519 || ed448 => KeyVersion.v6.value,
-        _ => Config.useProfile == PresetProfile.rfc9580 ? KeyVersion.v6.value : KeyVersion.v4.value,
+        _ => Config.presetRfc == PresetRfc.rfc9580 ? KeyVersion.v6.value : KeyVersion.v4.value,
       };
 }
