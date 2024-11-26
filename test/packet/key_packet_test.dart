@@ -706,7 +706,7 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
   });
 
   group('Generate secret key', () {
-    const passphrase = 'password';
+    final passphrase = Helper.generatePassword();
 
     test('RSA keys', () {
       final secretKey = SecretKeyPacket.generate(
