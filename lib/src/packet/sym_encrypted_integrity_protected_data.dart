@@ -185,7 +185,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
       encrypted,
       packets: packets,
       symmetric: version == 2 ? symmetric : null,
-      aead: aead,
+      aead: aeadProtect ? aead : null,
       chunkSize: chunkSize,
       salt: salt,
     );
