@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:dart_pg/src/common/argon2_s2k.dart';
+import 'package:dart_pg/src/common/config.dart';
 import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/enum/aead_algorithm.dart';
 import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
 import 'package:dart_pg/src/packet/base.dart';
+import 'package:dart_pg/src/packet/key/session_key.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/type/literal_data.dart';
 import 'package:faker/faker.dart';
@@ -48,13 +50,13 @@ void main() {
   });
 
   group('Symmetrically decryption', () {
-    const passphrase = 'password';
+    const password = 'password';
     const literalText = "Hello, world!";
 
     test('Encrypted using aead eax', () {
       final skesk = SymEncryptedSessionKeyPacket.fromBytes(base64.decode(
         'Bh4HAQsDCKWuV50fxdgr/2kiT5GZk7NQb6O1mmpzz/jF78X0HFf7VOHCJoFdeCj1+SxFTrZevgCrWYbGjm58VQ==',
-      )).decrypt(passphrase);
+      )).decrypt(password);
       expect(skesk.symmetric, SymmetricAlgorithm.aes128);
       expect(skesk.aead, AeadAlgorithm.eax);
 
@@ -77,7 +79,7 @@ void main() {
     test('Encrypted using aead ocb', () {
       final skesk = SymEncryptedSessionKeyPacket.fromBytes(base64.decode(
         'Bh0HAgsDCFaimNL142RT/8/MXBFmTtudtCWQ19xGsHJBthLDgSz/++oA8jR7JWQRI/iHrmDU/WFOCDfYGdNs',
-      )).decrypt(passphrase);
+      )).decrypt(password);
       expect(skesk.symmetric, SymmetricAlgorithm.aes128);
       expect(skesk.aead, AeadAlgorithm.ocb);
 
@@ -100,7 +102,7 @@ void main() {
     test('Encrypted using aead gcm', () {
       final skesk = SymEncryptedSessionKeyPacket.fromBytes(base64.decode(
         'BhoHAwsDCOnTl4WyBwAI/7QufEg+9IhEV8s3Jrmz25/3duX02aQJUuJEcpiFGr//dSbfLdVUQXV5p3mf',
-      )).decrypt(passphrase);
+      )).decrypt(password);
       expect(skesk.symmetric, SymmetricAlgorithm.aes128);
       expect(skesk.aead, AeadAlgorithm.gcm);
 
@@ -123,7 +125,7 @@ void main() {
     test('V4 SKESK Using Argon2 with AES-128', () {
       final skesk = SymEncryptedSessionKeyPacket.fromBytes(base64.decode(
         'BAcEnFL4PCf5XlDVNUQOzf8xNgEEFZ5S/K0izz+VZULLp5TvhAsR',
-      )).decrypt(passphrase);
+      )).decrypt(password);
       expect(skesk.symmetric, SymmetricAlgorithm.aes128);
       expect(skesk.s2k is Argon2S2k, isTrue);
 
@@ -144,7 +146,7 @@ void main() {
     test('V4 SKESK Using Argon2 with AES-192', () {
       final skesk = SymEncryptedSessionKeyPacket.fromBytes(base64.decode(
         'BAgE4UysRxU0WRipYtyjR+FD+AEEFYcyydr2txRvP6ZqSD3fx/5naFUuVQSy8Bc=',
-      )).decrypt(passphrase);
+      )).decrypt(password);
       expect(skesk.symmetric, SymmetricAlgorithm.aes192);
       expect(skesk.s2k is Argon2S2k, isTrue);
 
@@ -165,7 +167,7 @@ void main() {
     test('V4 SKESK Using Argon2 with AES-256', () {
       final skesk = SymEncryptedSessionKeyPacket.fromBytes(base64.decode(
         'BAkEuHiVICBv95nGiCxCRaZifAEEFZ2fZeyrWoHQpZvVGkP2ejP+a6JJUhqRrutt2Jml3sxo/A==',
-      )).decrypt(passphrase);
+      )).decrypt(password);
       expect(skesk.symmetric, SymmetricAlgorithm.aes256);
       expect(skesk.s2k is Argon2S2k, isTrue);
 
@@ -252,7 +254,94 @@ void main() {
     });
   });
 
-  group('Password protected session key', () {});
+  group('Password protected session key', () {
+    final password = Helper.generatePassword();
+    final literalText = faker.randomGenerator.string(1000);
+
+    test('Encrypt with null session key', () {
+      final skesk = SymEncryptedSessionKeyPacket.encryptSessionKey(
+        password,
+        symmetric: Config.preferredSymmetric,
+      );
+      final sessionKey = skesk.sessionKey!;
+      final seipd = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+        sessionKey.encryptionKey,
+        PacketList([LiteralDataPacket.fromText(literalText)]),
+        symmetric: sessionKey.symmetric,
+      );
+      expect(sessionKey.symmetric, skesk.symmetric);
+
+      final packets = PacketList.decode(PacketList([skesk, seipd]).encode());
+      final decryptSkesk = (packets[0] as SymEncryptedSessionKeyPacket).decrypt(password);
+      final decryptSeipd = (packets[1] as SymEncryptedIntegrityProtectedDataPacket).decrypt(
+        decryptSkesk.sessionKey!.encryptionKey,
+        symmetric: decryptSkesk.sessionKey!.symmetric,
+      );
+      final literalData = decryptSeipd.packets!.elementAt(0) as LiteralDataInterface;
+      expect(literalData.text, literalText);
+    });
+
+    test('Encrypt with session key', () {
+      final sessionKey = SessionKey.produceKey(Config.preferredSymmetric);
+      final skesk = SymEncryptedSessionKeyPacket.encryptSessionKey(
+        password,
+        sessionKey: sessionKey,
+        symmetric: SymmetricAlgorithm.aes256,
+      );
+      final seipd = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+        sessionKey.encryptionKey,
+        PacketList([LiteralDataPacket.fromText(literalText)]),
+        symmetric: sessionKey.symmetric,
+      );
+      expect(skesk.symmetric, SymmetricAlgorithm.aes256);
+
+      final packets = PacketList.decode(PacketList([skesk, seipd]).encode());
+      final decryptSkesk = (packets[0] as SymEncryptedSessionKeyPacket).decrypt(password);
+      final decryptSeipd = (packets[1] as SymEncryptedIntegrityProtectedDataPacket).decrypt(
+        decryptSkesk.sessionKey!.encryptionKey,
+        symmetric: decryptSkesk.sessionKey!.symmetric,
+      );
+      final literalData = decryptSeipd.packets!.elementAt(0) as LiteralDataInterface;
+      expect(
+        decryptSkesk.symmetric,
+        SymmetricAlgorithm.aes256,
+      );
+      expect(literalData.text, literalText);
+    });
+
+    test('Aead encrypt with session key', () {
+      final sessionKey = SessionKey.produceKey(Config.preferredSymmetric);
+      final skesk = SymEncryptedSessionKeyPacket.encryptSessionKey(
+        password,
+        sessionKey: sessionKey,
+        symmetric: SymmetricAlgorithm.aes256,
+        aead: Config.preferredAead,
+        aeadProtect: true,
+      );
+      final seipd = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
+        sessionKey.encryptionKey,
+        PacketList([LiteralDataPacket.fromText(literalText)]),
+        symmetric: sessionKey.symmetric,
+        aead: Config.preferredAead,
+        aeadProtect: true,
+      );
+      expect(skesk.version, 6);
+      expect(skesk.symmetric, SymmetricAlgorithm.aes256);
+      expect(skesk.aead, Config.preferredAead);
+      expect(seipd.version, 2);
+      expect(seipd.symmetric, sessionKey.symmetric);
+      expect(seipd.aead, Config.preferredAead);
+
+      final packets = PacketList.decode(PacketList([skesk, seipd]).encode());
+      final decryptSkesk = (packets[0] as SymEncryptedSessionKeyPacket).decrypt(password);
+      final decryptSeipd = (packets[1] as SymEncryptedIntegrityProtectedDataPacket).decrypt(
+        decryptSkesk.sessionKey!.encryptionKey,
+        symmetric: decryptSkesk.sessionKey!.symmetric,
+      );
+      final literalData = decryptSeipd.packets!.elementAt(0) as LiteralDataInterface;
+      expect(literalData.text, literalText);
+    });
+  });
 
   group('Public key protected session key', () {});
 }
