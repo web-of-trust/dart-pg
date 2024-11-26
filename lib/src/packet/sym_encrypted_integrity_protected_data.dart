@@ -139,7 +139,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
 
     final version = switch (Config.presetRfc) {
       PresetRfc.rfc4880 => 1,
-      PresetRfc.rfc9580 => 2,
+      PresetRfc.rfc9580 => aeadProtect ? 2 : 1,
     };
     if (aeadProtect && version == 1) {
       throw ArgumentError(
@@ -185,7 +185,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
       encrypted,
       packets: packets,
       symmetric: version == 2 ? symmetric : null,
-      aead: aeadProtect ? aead : null,
+      aead: version == 2 ? aead : null,
       chunkSize: chunkSize,
       salt: salt,
     );
@@ -248,7 +248,10 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
         if (!verifyHash) {
           throw StateError('Modification detected.');
         }
-        packetBytes = toHash.sublist(cipherSymmetric.blockSize + 2, toHash.length - 2);
+        packetBytes = toHash.sublist(
+          cipherSymmetric.blockSize + 2,
+          toHash.length - 2,
+        );
       }
       return SymEncryptedIntegrityProtectedDataPacket(
         version,
