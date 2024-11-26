@@ -9,10 +9,12 @@ import 'dart:typed_data';
 import 'package:pointycastle/api.dart';
 
 import '../common/argon2_s2k.dart';
+import '../common/config.dart';
 import '../common/generic_s2k.dart';
 import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/aead_algorithm.dart';
+import '../enum/profile.dart';
 import '../enum/s2k_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/s2k.dart';
@@ -130,8 +132,17 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
     final AeadAlgorithm aead = AeadAlgorithm.gcm,
     final bool aeadProtect = false,
   }) {
-    final version = aeadProtect && sessionKey != null ? 6 : 4;
-    final s2k = aeadProtect
+    Helper.assertSymmetric(symmetric);
+    final version = switch (Config.useProfile) {
+      Profile.rfc4880 => 4,
+      Profile.rfc9580 => 6,
+    };
+    if (aeadProtect && sessionKey != null && version == 4) {
+      throw ArgumentError(
+        'Using AEAD with version $version SKESK packet is not allowed.',
+      );
+    }
+    final s2k = version == 6
         ? Helper.stringToKey(
             S2kType.argon2,
           )
@@ -245,6 +256,7 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
         iv,
         encrypted,
         symmetric: symmetric,
+        aead: aead,
         sessionKey: sessionKey,
       );
     }
