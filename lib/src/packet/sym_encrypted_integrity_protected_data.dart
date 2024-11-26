@@ -132,12 +132,20 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
     final Uint8List key,
     final PacketListInterface packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final AeadAlgorithm? aead,
+    final AeadAlgorithm aead = AeadAlgorithm.gcm,
     final bool aeadProtect = false,
   }) {
     Helper.assertSymmetric(symmetric);
 
-    final version = aeadProtect || Config.presetRfc == PresetRfc.rfc9580 ? 2 : 1;
+    final version = switch (Config.presetRfc) {
+      PresetRfc.rfc4880 => 1,
+      PresetRfc.rfc9580 => 2,
+    };
+    if (aeadProtect && version == 1) {
+      throw ArgumentError(
+        'Using AEAD with version $version SEIPD packet is not allowed.',
+      );
+    }
     final salt = aeadProtect ? Helper.randomBytes(saltSize) : null;
     final chunkSize = aeadProtect ? Config.aeadChunkSize : 0;
 
@@ -148,7 +156,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
         key,
         packets.encode(),
         symmetric: symmetric,
-        aead: aead ?? Config.preferredAead,
+        aead: aead,
         chunkSizeByte: chunkSize,
         salt: salt,
       );
@@ -177,7 +185,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
       encrypted,
       packets: packets,
       symmetric: version == 2 ? symmetric : null,
-      aead: aeadProtect ? aead : null,
+      aead: aead,
       chunkSize: chunkSize,
       salt: salt,
     );
@@ -192,23 +200,6 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
         ...salt ?? [],
         ...encrypted,
       ]);
-
-  @override
-  SymEncryptedIntegrityProtectedDataPacket encrypt(
-    final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) {
-    if (packets != null && packets!.isNotEmpty) {
-      return SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
-        key,
-        packets!,
-        symmetric: symmetric,
-        aead: aead,
-        aeadProtect: aead != null,
-      );
-    }
-    return this;
-  }
 
   @override
   SymEncryptedIntegrityProtectedDataPacket decrypt(

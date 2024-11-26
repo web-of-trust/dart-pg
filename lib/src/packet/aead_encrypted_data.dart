@@ -115,23 +115,6 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
       ]);
 
   @override
-  AeadEncryptedDataPacket encrypt(
-    final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) {
-    if (packets != null && packets!.isNotEmpty) {
-      return AeadEncryptedDataPacket.encryptPackets(
-        key,
-        packets!,
-        symmetric: symmetric,
-        aead: aead,
-        chunkSize: chunkSize,
-      );
-    }
-    return this;
-  }
-
-  @override
   AeadEncryptedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,

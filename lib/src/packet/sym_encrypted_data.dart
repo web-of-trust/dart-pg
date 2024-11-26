@@ -62,21 +62,6 @@ class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketIn
   Uint8List get data => encrypted;
 
   @override
-  SymEncryptedDataPacket encrypt(
-    final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) {
-    if (packets != null && packets!.isNotEmpty) {
-      return SymEncryptedDataPacket.encryptPackets(
-        key,
-        packets!,
-        symmetric: symmetric,
-      );
-    }
-    return this;
-  }
-
-  @override
   SymEncryptedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,

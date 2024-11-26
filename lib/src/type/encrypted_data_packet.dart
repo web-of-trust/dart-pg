@@ -18,12 +18,6 @@ abstract class EncryptedDataPacketInterface {
   /// Decrypted packets contained within.
   PacketListInterface? get packets;
 
-  /// Encrypt the payload in the packet.
-  EncryptedDataPacketInterface encrypt(
-    final Uint8List key, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  });
-
   /// Decrypt the encrypted data contained in the packet.
   EncryptedDataPacketInterface decrypt(
     final Uint8List key, {
