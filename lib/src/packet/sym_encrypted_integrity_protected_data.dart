@@ -282,7 +282,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
 
     final derivedKey = Helper.hkdf(
       key,
-      keySize,
+      keySize + ivLength,
       info: aData,
       salt: salt,
     );
@@ -318,7 +318,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
       );
 
       chunkData = chunkData.sublist(size);
-      nonce.setAll(ivLength - 4, chunkIndex.pack32());
+      nonce.setAll(ivLength - 4, (++chunkIndex).pack32());
     }
 
     /// For encryption: empty final chunk
