@@ -25,7 +25,7 @@ final class Config {
 
   static bool aeadProtect = false;
 
-  static Profile useProfile = Profile.rfc4880;
+  static PresetProfile useProfile = PresetProfile.rfc4880;
 
   static HashAlgorithm preferredHash = HashAlgorithm.sha256;
 

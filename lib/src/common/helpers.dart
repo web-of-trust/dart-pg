@@ -132,7 +132,7 @@ final class Helper {
   }
 
   static assertEcc(final Ecc ecc) {
-    if (Config.useProfile == Profile.rfc4880) {
+    if (Config.useProfile == PresetProfile.rfc4880) {
       assert(ecc != Ecc.brainpoolP256r1 &&
           ecc != Ecc.brainpoolP384r1 &&
           ecc != Ecc.brainpoolP512r1 &&

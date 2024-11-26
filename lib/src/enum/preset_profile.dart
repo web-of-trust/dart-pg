@@ -4,9 +4,9 @@
 
 library;
 
-/// OpenPGP profiles enum
+/// OpenPGP preset profiles enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-enum Profile {
+enum PresetProfile {
   /// RFC 4880 & 5581 & 6637 profile
   /// https://www.rfc-editor.org/rfc/rfc4880
   /// https://www.rfc-editor.org/rfc/rfc5581

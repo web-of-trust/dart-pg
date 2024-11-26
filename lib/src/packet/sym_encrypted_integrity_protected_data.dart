@@ -6,7 +6,6 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/enum/profile.dart';
 import 'package:pointycastle/api.dart';
 
 import '../common/config.dart';
@@ -14,6 +13,7 @@ import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/aead_algorithm.dart';
 import '../enum/hash_algorithm.dart';
+import '../enum/preset_profile.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/encrypted_data_packet.dart';
 import '../type/packet_list.dart';
@@ -137,7 +137,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
   }) {
     Helper.assertSymmetric(symmetric);
 
-    final version = aeadProtect || Config.useProfile == Profile.rfc9580 ? 2 : 1;
+    final version = aeadProtect || Config.useProfile == PresetProfile.rfc9580 ? 2 : 1;
     final salt = aeadProtect ? Helper.randomBytes(saltSize) : null;
     final chunkSize = aeadProtect ? Config.aeadChunkSize : 0;
 
