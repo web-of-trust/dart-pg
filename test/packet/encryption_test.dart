@@ -28,7 +28,7 @@ void main() {
       expect(aepd.iv.toHexadecimal(), 'b732379f73c4928de25facfe6517ec10');
 
       final decryptAepd = aepd.decrypt('86f1efb86952329f24acd3bfd0e5346d'.hexToBytes());
-      final literalData = decryptAepd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = decryptAepd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -44,7 +44,7 @@ void main() {
       expect(aepd.iv.toHexadecimal(), '5ed2bc1e470abe8f1d644c7a6c8a56');
 
       final decryptAepd = aepd.decrypt('d1f01ba30e130aa7d2582c16e050ae44'.hexToBytes());
-      final literalData = decryptAepd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = decryptAepd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
   });
@@ -72,7 +72,7 @@ void main() {
       expect(seipd.symmetric, SymmetricAlgorithm.aes128);
       expect(seipd.aead, AeadAlgorithm.eax);
 
-      final literalData = seipd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -95,7 +95,7 @@ void main() {
       expect(seipd.symmetric, SymmetricAlgorithm.aes128);
       expect(seipd.aead, AeadAlgorithm.ocb);
 
-      final literalData = seipd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -118,7 +118,7 @@ void main() {
       expect(seipd.symmetric, SymmetricAlgorithm.aes128);
       expect(seipd.aead, AeadAlgorithm.gcm);
 
-      final literalData = seipd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -139,7 +139,7 @@ void main() {
       final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AZgYpj5gnPi7oX4MOUME6vk1FBe38okh/ibiY6UrIL+6otumcslkydOrejv0bEFN0h07OEdd8DempXiZPMU=',
       )).decrypt(sessionKey.encryptionKey, symmetric: sessionKey.symmetric);
-      final literalData = seipd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -160,7 +160,7 @@ void main() {
       final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AdJ1Sw56PRYiKZjCvHg+2bnq02s33AJJoyBexBI4QKATFRkyez2gldJldRysLVg77Mwwfgl2n/d572WciAM=',
       )).decrypt(sessionKey.encryptionKey, symmetric: sessionKey.symmetric);
-      final literalData = seipd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -181,7 +181,7 @@ void main() {
       final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AfirtbIE3SaPO19Vq7qe5dMCcqWZbNtVMHeu5vZKBetHnnx/yveQ9brJYlzhJvGskCUJma43+iur/T1sKjE=',
       )).decrypt(sessionKey.encryptionKey, symmetric: sessionKey.symmetric);
-      final literalData = seipd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
   });
@@ -272,12 +272,12 @@ void main() {
       expect(sessionKey.symmetric, skesk.symmetric);
 
       final packets = PacketList.decode(PacketList([skesk, seipd]).encode());
-      final decryptSkesk = (packets[0] as SymEncryptedSessionKeyPacket).decrypt(password);
-      final decryptSeipd = (packets[1] as SymEncryptedIntegrityProtectedDataPacket).decrypt(
+      final decryptSkesk = packets.whereType<SymEncryptedSessionKeyPacket>().first.decrypt(password);
+      final decryptSeipd = packets.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
         decryptSkesk.sessionKey!.encryptionKey,
         symmetric: decryptSkesk.sessionKey!.symmetric,
       );
-      final literalData = decryptSeipd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.text, literalText);
     });
 
@@ -296,12 +296,12 @@ void main() {
       expect(skesk.symmetric, SymmetricAlgorithm.aes256);
 
       final packets = PacketList.decode(PacketList([skesk, seipd]).encode());
-      final decryptSkesk = (packets[0] as SymEncryptedSessionKeyPacket).decrypt(password);
-      final decryptSeipd = (packets[1] as SymEncryptedIntegrityProtectedDataPacket).decrypt(
+      final decryptSkesk = packets.whereType<SymEncryptedSessionKeyPacket>().first.decrypt(password);
+      final decryptSeipd = packets.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
         decryptSkesk.sessionKey!.encryptionKey,
         symmetric: decryptSkesk.sessionKey!.symmetric,
       );
-      final literalData = decryptSeipd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
       expect(
         decryptSkesk.symmetric,
         SymmetricAlgorithm.aes256,
@@ -333,12 +333,12 @@ void main() {
       expect(seipd.aead, Config.preferredAead);
 
       final packets = PacketList.decode(PacketList([skesk, seipd]).encode());
-      final decryptSkesk = (packets[0] as SymEncryptedSessionKeyPacket).decrypt(password);
-      final decryptSeipd = (packets[1] as SymEncryptedIntegrityProtectedDataPacket).decrypt(
+      final decryptSkesk = packets.whereType<SymEncryptedSessionKeyPacket>().first.decrypt(password);
+      final decryptSeipd = packets.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
         decryptSkesk.sessionKey!.encryptionKey,
         symmetric: decryptSkesk.sessionKey!.symmetric,
       );
-      final literalData = decryptSeipd.packets!.elementAt(0) as LiteralDataInterface;
+      final literalData = decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.text, literalText);
     });
   });
