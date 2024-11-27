@@ -134,7 +134,7 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
             Uint8List.fromList(
               key.d.toUnsignedBytes().reversed.toList(),
             ),
-            ephemeralKey.toUnsignedBytes(),
+            ephemeralKey.toUnsignedBytes().sublist(1),
           );
           break;
         case Ecc.ed25519:
