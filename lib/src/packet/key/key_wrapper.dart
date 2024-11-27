@@ -15,10 +15,7 @@ export 'camellia_key_wrapper.dart';
 /// An implementation of the key wrapper based on RFC 3394.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class KeyWrapper {
-  static final _iv = Uint8List.fromList([
-    0xa6, 0xa6, 0xa6, 0xa6, // 0 - 3
-    0xa6, 0xa6, 0xa6, 0xa6
-  ]);
+  static const iv = [0xa6, 0xa6, 0xa6, 0xa6, 0xa6, 0xa6, 0xa6, 0xa6];
 
   final BlockCipher cipher;
 
@@ -41,7 +38,7 @@ abstract class KeyWrapper {
     }
 
     cipher.init(true, KeyParameter(kek));
-    final a = Uint8List.fromList(_iv);
+    final a = Uint8List.fromList(iv);
     final r = Uint8List.fromList(key);
     final n = key.length ~/ 8;
     for (var j = 0; j <= 5; j++) {
@@ -91,8 +88,7 @@ abstract class KeyWrapper {
         r.setAll((i - 1) * 8, buffer.sublist(8, 16));
       }
     }
-
-    if (!_iv.equals(a)) {
+    if (!a.equals(Uint8List.fromList(iv))) {
       throw StateError('Integrity check failed.');
     }
 
