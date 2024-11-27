@@ -72,7 +72,10 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
         final privateKey = nacl.PrivateKey.fromSeed(
           Helper.randomBytes(TweetNaCl.seedSize),
         );
-        ephemeralKey = privateKey.publicKey.asTypedList.toBigIntWithSign(1);
+        ephemeralKey = Uint8List.fromList([
+          0x40,
+          ...privateKey.publicKey.asTypedList,
+        ]).toUnsignedBigInt();
         sharedKey = TweetNaCl.crypto_scalarmult(
           Uint8List(TweetNaCl.sharedKeyLength),
           privateKey.asTypedList,
