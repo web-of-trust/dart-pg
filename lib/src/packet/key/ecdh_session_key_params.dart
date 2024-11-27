@@ -146,7 +146,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
           Uint8List.fromList(
             secretParams.d.toUnsignedBytes().reversed.toList(),
           ),
-          ephemeralKey.toUnsignedBytes(),
+          ephemeralKey.toUnsignedBytes().sublist(1),
         );
         break;
       case CurveInfo.ed25519:
