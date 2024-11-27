@@ -29,16 +29,16 @@ class PublicKey extends Key {
   }
 
   factory PublicKey.fromPacketList(final PacketList packetList) {
-    final keyMap = Key.readPacketList(packetList);
-    if (keyMap['keyPacket'] is! PublicKeyPacket) {
+    final keyRecord = Key.readPacketList(packetList);
+    if (keyRecord.keyPacket is! PublicKeyPacket) {
       throw StateError('Key packet not of secret key type');
     }
     return PublicKey(
-      keyMap['keyPacket'] as PublicKeyPacket,
-      revocationSignatures: keyMap['revocationSignatures'],
-      directSignatures: keyMap['directSignatures'],
-      users: keyMap['users'],
-      subkeys: keyMap['subkeys'],
+      keyRecord.keyPacket as PublicKeyPacket,
+      revocationSignatures: keyRecord.revocationSignatures,
+      directSignatures: keyRecord.directSignatures,
+      users: keyRecord.users,
+      subkeys: keyRecord.subkeys,
     );
   }
 

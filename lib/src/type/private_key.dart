@@ -46,16 +46,16 @@ class PrivateKey extends Key {
   }
 
   factory PrivateKey.fromPacketList(final PacketList packetList) {
-    final keyMap = Key.readPacketList(packetList);
-    if (keyMap['keyPacket'] is! SecretKeyPacket) {
+    final keyRecord = Key.readPacketList(packetList);
+    if (keyRecord.keyPacket is! SecretKeyPacket) {
       throw StateError('Key packet not of secret key type');
     }
     return PrivateKey(
-      keyMap['keyPacket'] as SecretKeyPacket,
-      revocationSignatures: keyMap['revocationSignatures'],
-      directSignatures: keyMap['directSignatures'],
-      users: keyMap['users'],
-      subkeys: keyMap['subkeys'],
+      keyRecord.keyPacket as SecretKeyPacket,
+      revocationSignatures: keyRecord.revocationSignatures,
+      directSignatures: keyRecord.directSignatures,
+      users: keyRecord.users,
+      subkeys: keyRecord.subkeys,
     );
   }
 

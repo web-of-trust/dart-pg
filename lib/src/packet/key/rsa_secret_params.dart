@@ -90,7 +90,7 @@ class RSASecretParams extends KeyParams {
       );
     final signature = signer.generateSignature(message) as RSASignature;
     return Uint8List.fromList([
-      ...(signature.bytes.lengthInBytes * 8).pack16(),
+      ...(signature.bytes.length * 8).pack16(),
       ...signature.bytes,
     ]);
   }

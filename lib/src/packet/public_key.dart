@@ -157,7 +157,7 @@ class PublicKeyPacket extends ContainedPacket implements KeyPacket {
     final bytes = toByteData();
     return Uint8List.fromList([
       0x99,
-      ...bytes.lengthInBytes.pack16(),
+      ...bytes.length.pack16(),
       ...bytes,
     ]);
   }

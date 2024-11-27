@@ -249,7 +249,7 @@ class SignaturePacket extends ContainedPacket {
       ...signatureData,
       ..._calculateTrailer(
         version,
-        signatureData.lengthInBytes,
+        signatureData.length,
       )
     ]);
     return SignaturePacket(
@@ -504,7 +504,7 @@ class SignaturePacket extends ContainedPacket {
       ...signatureData,
       ..._calculateTrailer(
         version,
-        signatureData.lengthInBytes,
+        signatureData.length,
       )
     ]);
     final hash = Helper.hashDigest(message, hashAlgorithm);

@@ -100,7 +100,7 @@ extension Uint8ListExt on Uint8List {
 
   String toHexadecimal() {
     final result = StringBuffer();
-    for (var i = 0; i < lengthInBytes; i++) {
+    for (var i = 0; i < length; i++) {
       final part = this[i];
       result.write('${part < 16 ? '0' : ''}${part.toRadixString(16)}');
     }

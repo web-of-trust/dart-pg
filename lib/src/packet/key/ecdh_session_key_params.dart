@@ -68,7 +68,10 @@ class ECDHSessionKeyParams extends SessionKeyParams {
         final privateKey = nacl.PrivateKey.fromSeed(
           Helper.secureRandom().nextBytes(TweetNaCl.seedSize),
         );
-        ephemeralKey = privateKey.publicKey.asTypedList.toBigIntWithSign(1);
+        ephemeralKey = Uint8List.fromList([
+          0x40,
+          ...privateKey.publicKey.asTypedList,
+        ]).toBigIntWithSign(1);
         sharedKey = TweetNaCl.crypto_scalarmult(
           Uint8List(TweetNaCl.sharedKeyLength),
           privateKey.asTypedList,
@@ -129,7 +132,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
   Uint8List encode() => Uint8List.fromList([
         ...ephemeralKey.bitLength.pack16(),
         ...ephemeralKey.toUnsignedBytes(),
-        wrappedKey.lengthInBytes,
+        wrappedKey.length,
         ...wrappedKey,
       ]);
 
@@ -146,7 +149,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
           Uint8List.fromList(
             secretParams.d.toUnsignedBytes().reversed.toList(),
           ),
-          ephemeralKey.toUnsignedBytes(),
+          ephemeralKey.toUnsignedBytes().sublist(1),
         );
         break;
       case CurveInfo.ed25519:
@@ -220,7 +223,7 @@ class ECDHSessionKeyParams extends SessionKeyParams {
 
   /// Add pkcs5 padding to a message
   static Uint8List _pkcs5Encode(final Uint8List message) {
-    final c = 8 - (message.lengthInBytes % 8);
+    final c = 8 - (message.length % 8);
     return Uint8List.fromList(
       List.filled(message.length + c, c),
     )..setAll(0, message);

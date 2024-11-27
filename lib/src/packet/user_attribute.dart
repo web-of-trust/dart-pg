@@ -44,7 +44,7 @@ class UserAttributePacket extends ContainedPacket {
     final bytes = toByteData();
     return Uint8List.fromList([
       0xd1,
-      ...bytes.lengthInBytes.pack32(),
+      ...bytes.length.pack32(),
       ...bytes,
     ]);
   }

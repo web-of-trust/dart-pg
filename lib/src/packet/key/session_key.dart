@@ -32,7 +32,7 @@ class SessionKey {
   /// Compute checksum
   Uint8List computeChecksum() {
     var sum = 0;
-    for (var i = 0; i < key.lengthInBytes; i++) {
+    for (var i = 0; i < key.length; i++) {
       sum = (sum + key[i]) & 0xffff;
     }
     return sum.pack16();
