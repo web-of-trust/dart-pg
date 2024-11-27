@@ -9,7 +9,7 @@ import 'key_params.dart';
 
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class VerificationParams extends KeyParams {
-  Future<bool> verify(
+  bool verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,

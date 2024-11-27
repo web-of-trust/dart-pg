@@ -28,15 +28,17 @@ class SymEncryptedDataPacket extends ContainedPacket {
   /// Decrypted packets contained within.
   final PacketList? packets;
 
-  SymEncryptedDataPacket(this.encrypted, {this.packets}) : super(PacketTag.symEncryptedData);
+  SymEncryptedDataPacket(this.encrypted, {this.packets})
+      : super(PacketTag.symEncryptedData);
 
-  factory SymEncryptedDataPacket.fromByteData(final Uint8List bytes) => SymEncryptedDataPacket(bytes);
+  factory SymEncryptedDataPacket.fromByteData(final Uint8List bytes) =>
+      SymEncryptedDataPacket(bytes);
 
-  static Future<SymEncryptedDataPacket> encryptPackets(
+  static SymEncryptedDataPacket encryptPackets(
     final Uint8List key,
     final PacketList packets, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) async {
+  }) {
     final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         true,
@@ -66,10 +68,10 @@ class SymEncryptedDataPacket extends ContainedPacket {
   }
 
   /// Encrypt the symmetrically-encrypted packet data
-  Future<SymEncryptedDataPacket> encrypt(
+  SymEncryptedDataPacket encrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) async {
+  }) {
     if (packets != null && packets!.isNotEmpty) {
       return SymEncryptedDataPacket.encryptPackets(
         key,
@@ -81,11 +83,11 @@ class SymEncryptedDataPacket extends ContainedPacket {
   }
 
   /// Decrypt the symmetrically-encrypted packet data
-  Future<SymEncryptedDataPacket> decrypt(
+  SymEncryptedDataPacket decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final bool allowUnauthenticatedMessages = false,
-  }) async {
+  }) {
     if (!allowUnauthenticatedMessages) {
       throw StateError('Message is not authenticated.');
     }

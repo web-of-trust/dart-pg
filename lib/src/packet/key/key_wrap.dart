@@ -25,10 +25,10 @@ abstract class KeyWrap {
 
   KeyWrap(this.cipher, this.keySize);
 
-  Future<Uint8List> wrap(
+  Uint8List wrap(
     final Uint8List kek,
     final Uint8List key,
-  ) async {
+  ) {
     if (kek.length != keySize) {
       throw ArgumentError('Key encryption key size must be $keySize bytes.');
     }
@@ -59,10 +59,10 @@ abstract class KeyWrap {
     return Uint8List.fromList([...a, ...r]);
   }
 
-  Future<Uint8List> unwrap(
+  Uint8List unwrap(
     final Uint8List kek,
     final Uint8List wrappedKey,
-  ) async {
+  ) {
     if (kek.length != keySize) {
       throw ArgumentError('Key encryption key size must be $keySize bytes.');
     }

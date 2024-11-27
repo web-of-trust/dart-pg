@@ -19,11 +19,11 @@ import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../helpers.dart';
+import 'contained_packet.dart';
 import 'key/key_id.dart';
 import 'key/key_pair_params.dart';
 import 'key/key_params.dart';
 import 'key/s2k.dart';
-import 'contained_packet.dart';
 import 'key_packet.dart';
 
 /// SecretKey represents a possibly encrypted private key.
@@ -81,7 +81,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
 
     Uint8List? iv;
-    if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
+    if (!(s2k != null && s2k.type == S2kType.gnu) &&
+        s2kUsage != S2kUsage.none) {
       final blockSize = symmetric.blockSize;
       iv = bytes.sublist(pos, pos + blockSize);
       pos += blockSize;
@@ -112,14 +113,14 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     );
   }
 
-  static Future<SecretKeyPacket> generate(
+  static SecretKeyPacket generate(
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.s4096,
     final DHKeySize dhKeySize = DHKeySize.l2048n224,
     final CurveInfo curve = CurveInfo.secp521r1,
     final DateTime? date,
-  }) async {
-    final keyPair = await KeyPairParams.generate(
+  }) {
+    final keyPair = KeyPairParams.generate(
       algorithm,
       rsaKeySize: rsaKeySize,
       dhKeySize: dhKeySize,
@@ -192,13 +193,13 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
   }
 
-  Future<SecretKeyPacket> encrypt(
+  SecretKeyPacket encrypt(
     final String passphrase, {
     final S2kUsage s2kUsage = S2kUsage.sha1,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     final HashAlgorithm hash = HashAlgorithm.sha1,
     final S2kType type = S2kType.iterated,
-  }) async {
+  }) {
     if (secretParams != null) {
       if (passphrase.isEmpty) {
         throw ArgumentError('passphrase are required for key encryption');
@@ -214,7 +215,7 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       );
       final iv = random.nextBytes(symmetric.blockSize);
 
-      final key = await s2k.produceKey(passphrase, symmetric.keySizeInByte);
+      final key = s2k.produceKey(passphrase, symmetric.keySizeInByte);
       final cipher = BufferedCipher(symmetric.cfbCipherEngine)
         ..init(
           true,
@@ -241,11 +242,12 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
     }
   }
 
-  Future<SecretKeyPacket> decrypt(final String passphrase) async {
+  SecretKeyPacket decrypt(final String passphrase) {
     if (secretParams == null) {
       final Uint8List clearText;
       if (isEncrypted) {
-        final key = await s2k?.produceKey(passphrase, symmetric.keySizeInByte) ?? Uint8List(symmetric.keySizeInByte);
+        final key = s2k?.produceKey(passphrase, symmetric.keySizeInByte) ??
+            Uint8List(symmetric.keySizeInByte);
         final cipher = BufferedCipher(symmetric.cfbCipherEngine)
           ..init(
             false,
@@ -299,7 +301,8 @@ class SecretKeyPacket extends ContainedPacket implements KeyPacket {
       return keyParams.validatePublicParams(publicParams as DSAPublicParams);
     }
     if (keyParams is ElGamalSecretParams) {
-      return keyParams.validatePublicParams(publicParams as ElGamalPublicParams);
+      return keyParams
+          .validatePublicParams(publicParams as ElGamalPublicParams);
     }
     if (keyParams is ECSecretParams) {
       return keyParams.validatePublicParams(publicParams as ECPublicParams);

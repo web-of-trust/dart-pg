@@ -16,8 +16,8 @@ import 'public_key.dart';
 import 'subkey.dart';
 import 'user.dart';
 
-export 'public_key.dart';
 export 'private_key.dart';
+export 'public_key.dart';
 
 /// Abstract class that represents an OpenPGP key. Must contain a primary key.
 /// Can contain additional subkeys, signatures, user ids, user attributes.
@@ -81,7 +81,8 @@ abstract class Key {
       for (final user in users) {
         for (var signature in user.selfCertifications) {
           if (signature.keyFlags != null &&
-              !(signature.keyFlags!.isEncryptStorage || signature.keyFlags!.isEncryptCommunication)) {
+              !(signature.keyFlags!.isEncryptStorage ||
+                  signature.keyFlags!.isEncryptCommunication)) {
             return false;
           }
         }
@@ -106,7 +107,8 @@ abstract class Key {
   bool get aeadSupported {
     for (final user in users) {
       for (var signature in user.selfCertifications) {
-        if (signature.features != null && signature.features!.supportAeadEncryptedData) {
+        if (signature.features != null &&
+            signature.features!.supportAeadEncryptedData) {
           return true;
         }
       }
@@ -119,19 +121,19 @@ abstract class Key {
 
   /// Verify primary key.
   /// Checks for revocation signatures, expiration time and valid self signature.
-  Future<bool> verifyPrimaryKey({
+  bool verifyPrimaryKey({
     final String userID = '',
     final DateTime? date,
-  }) async {
-    if (await isRevoked(date: date)) {
+  }) {
+    if (isRevoked(date: date)) {
       return false;
     }
-    final user = await getPrimaryUser(userID: userID, date: date);
-    if (!await user.verify(date: date)) {
+    final user = getPrimaryUser(userID: userID, date: date);
+    if (!user.verify(date: date)) {
       return false;
     }
     for (final signature in directSignatures) {
-      if (!await signature.verify(
+      if (!signature.verify(
         keyPacket,
         keyPacket.writeForSign(),
         date: date,
@@ -142,10 +144,10 @@ abstract class Key {
     return true;
   }
 
-  Future<User> getPrimaryUser({
+  User getPrimaryUser({
     final String userID = '',
     final DateTime? date,
-  }) async {
+  }) {
     final validUsers = <User>[];
     for (final user in users) {
       if (user.userID == null) {
@@ -157,7 +159,7 @@ abstract class Key {
             a.creationTime.creationTime,
           ),
         );
-      if (await user.isRevoked(
+      if (user.isRevoked(
         date: date,
         signature: selfCertifications.isNotEmpty ? selfCertifications[0] : null,
       )) {
@@ -177,15 +179,16 @@ abstract class Key {
   }
 
   /// Checks if a signature on a key is revoked
-  Future<bool> isRevoked({
+  bool isRevoked({
     final SignaturePacket? signature,
     final DateTime? date,
-  }) async {
+  }) {
     if (revocationSignatures.isNotEmpty) {
       final revocationKeyIDs = <String>[];
       for (final revocation in revocationSignatures) {
-        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
-          if (await revocation.verify(
+        if (signature == null ||
+            revocation.issuerKeyID.id == signature.issuerKeyID.id) {
+          if (revocation.verify(
             keyPacket,
             keyPacket.writeForSign(),
             date: date,
@@ -200,7 +203,7 @@ abstract class Key {
     return false;
   }
 
-  Future<DateTime?> getExpirationTime() async {
+  DateTime? getExpirationTime() {
     DateTime? expirationTime;
     final signatures = directSignatures.toList(growable: false)
       ..sort(
@@ -217,7 +220,7 @@ abstract class Key {
       }
     }
     if (expirationTime == null) {
-      final user = await getPrimaryUser();
+      final user = getPrimaryUser();
       user.selfCertifications.sort(
         (a, b) => b.creationTime.creationTime.compareTo(
           a.creationTime.creationTime,
@@ -242,7 +245,9 @@ abstract class Key {
         ...revocationSignatures,
         ...directSignatures,
         ...users.map((user) => user.toPacketList()).expand((packet) => packet),
-        ...subkeys.map((subkey) => subkey.toPacketList()).expand((packet) => packet),
+        ...subkeys
+            .map((subkey) => subkey.toPacketList())
+            .expand((packet) => packet),
       ]);
 
   static ({
