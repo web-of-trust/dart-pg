@@ -64,3 +64,6 @@
 
 ## 1.5.3 (2024-11-18)
 - Refactor AEAD crypt
+
+## 1.5.4 (2024-11-27)
+- Fix ecdh ephemeral key for curve 25519
