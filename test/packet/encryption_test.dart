@@ -346,6 +346,7 @@ void main() {
 
   group('Public key protected session key', () {
     const literalText = 'Hello World :)';
+    final sessionKey = SessionKey.produceKey();
 
     test('Decrypt with RSA subkey', () {
       final subkeyData = '''
@@ -610,6 +611,188 @@ ExAnXHXIb8I=
           );
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, 'Hello there'.toBytes());
+    });
+
+    test('Encrypt session key with RSA subkey', () {
+      final publicSubkeyData = '''
+BF2lnPIBDADWML9cbGMrp12CtF9b2P6z9TTT74S8iyBOzaSvdGDQY/sUtZXRg21HWamXnn9sSXvI
+DEINOQ6A9QxdxoqWdCHrOuW3ofneYXoG+zeKc4dC86wa1TR2q9vW+RMXSO4uImA+Uzula/6k1Dog
+Df28qhCxMwG/i/m9g1c/0aApuDyKdQ1PXsHHNlgd/Dn6rrd5y2AObaifV7wIhEJnvqgFXDN2RXGj
+LeCOHV4Q2WTYPg/S4k1nMXVDwZXrvIsA0YwIMgIT86Rafp1qKlgPNbiIlC1g9RY/iFaGN2b4Ir6G
+DohBQSfZW2+LXoPZuVE/wGlQ01rh827KVZW4lXvqsge+wtnWlszcselGATyzqOK9LdHPdZGzROZY
+I2e8c+paLNDdVPL6vdRBUnkCaEkOtl1mr2JpQi5nTU+gTX4IeInC7E+1a9UDF/Y85ybUz8XV8rUn
+R76UqVC7KidNepdHbZjjXCt8/Zo+Tec9JNbYNQB/e9ExmDntmlHEsSEQzFwzj8sxH48AEQEAAQ==
+''';
+      final secretSubkeyData = '''
+BF2lnPIBDADWML9cbGMrp12CtF9b2P6z9TTT74S8iyBOzaSvdGDQY/sUtZXRg21HWamXnn9sSXvI
+DEINOQ6A9QxdxoqWdCHrOuW3ofneYXoG+zeKc4dC86wa1TR2q9vW+RMXSO4uImA+Uzula/6k1Dog
+Df28qhCxMwG/i/m9g1c/0aApuDyKdQ1PXsHHNlgd/Dn6rrd5y2AObaifV7wIhEJnvqgFXDN2RXGj
+LeCOHV4Q2WTYPg/S4k1nMXVDwZXrvIsA0YwIMgIT86Rafp1qKlgPNbiIlC1g9RY/iFaGN2b4Ir6G
+DohBQSfZW2+LXoPZuVE/wGlQ01rh827KVZW4lXvqsge+wtnWlszcselGATyzqOK9LdHPdZGzROZY
+I2e8c+paLNDdVPL6vdRBUnkCaEkOtl1mr2JpQi5nTU+gTX4IeInC7E+1a9UDF/Y85ybUz8XV8rUn
+R76UqVC7KidNepdHbZjjXCt8/Zo+Tec9JNbYNQB/e9ExmDntmlHEsSEQzFwzj8sxH48AEQEAAQAL
+/RdgsLI0vko4dTNb3oCW2Y3ouIBdRx6RDNCtD0l7KUn1b6UeAKEieB3ugl0jFoNKLfFyrQ7maFfY
+5yWhEuVC/aTAA+ycCDqmZvw2FSTOYTgEgodXN+ev8EmxW80Rz7VHWTvUN9FhTSTOaR2wiT47TaEZ
+kRpH+9Ucbbxwc8u56RmvlulPzVSh8NItAmMDCNGJSg2pGFtz5vkC/oB2Rb54BsHk6HdH/ZdlSywJ
+nkEf3PhGbO5TbpobmfJl3MIVHPSUCITpKTvsK3g8rBBZAHLCm5ED91A1LANYBcfaWzM09La9aGat
+muEAbcUoR8z/6Yeyi6TfuqrY5LN8Qf8o04Ghpra8DPLUntMA9UcF0vv9aAR6V050O033jhlALuCg
+qDkC7+hC6Slm0QS1roj8DHWxqb1RQCzvPpLygIPf6/v58szNhkB2PidyYeScT4iZx31zWYyCi2xW
+yD3UijciQbms11vMSGv/5hBzCOTnL7GQSnJQCKey184xIylyMB8A3E5/aQYA6XTikxzrSdyVCsdK
+1lbAx+sKuoilfxU1UmOY5czfqbjhLLJBdS38Z/SbCYoQFTt8jbKekb5CrcjZRWs2glSrQwJpI6Ie
+tFzcXDUaq4Ap8HaW4HRz+r/4b2WOeGWiY8+i9nvLpzRJGC8Q7fHJgMhj4B9l4C+4IhyKfY67EGkt
+/NYJ2MDV+sBNWhIpILWPdZ6iY8D5YmxfWr0smEKDLRKjP9VI04wdinQ/zIrSuXz9Fab7l6TWGXnZ
+squFDjMHZIjTBgDq35jnk9KJYC60zE+R/ewp92MW5Nd7lxzbv2VGWTXvLPkLbi31JSgCbSxFLrTd
+905VkGOdthVdJte0vm/NMSYm98mVSbXlbq64eR0lhwDPs4IUALwnrIOQi12tnTTJEwpmSoAgb3wy
+2bmW4xcJ8AiOrvzYTmPXoCrlH0gP43v0V2k/JuVcS2DMcKkFygKcw/O379LSz5VSBL4xLGn/fdrR
+RBUjT3BtZf46XeQFV8OpCrn/OVJCbWEdcdjJEA66mNUF/1zMNNJLfMvZDGVK3tfWggK3JqK/oQ4U
+SRNxreECaw/c/2yAhEsOG+M9g24A/18/SF7AP6/XCojNYeUDLV77ocn1XjNNXp4cTBmzh94I6qhj
+SsrMdFDgxhMK+gFfYQHfEVlzHISS2hMSvSeUkWsEoOu9TmwFNuEnWLzEPWeJAENvtUXlGc396IEj
+EWbTE/ndfIE+i/dP8vgD2SGqAKyz4XmyABqt/Ry5idusd89FgIK6QNZDbI1xF5KImRjyyiBqHt4a
+''';
+
+      final publicSubkey = PublicSubkeyPacket.fromBytes(
+        base64.decode(
+          publicSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final secretSubkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          secretSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(publicSubkey.keyAlgorithm, KeyAlgorithm.rsaEncryptSign);
+      expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
+
+      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+        publicSubkey,
+        sessionKey,
+      );
+      final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
+        encryptedPkesk.data,
+      ).decrypt(secretSubkey);
+      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+    });
+
+    test('Encrypt session key with ECDH subkey', () {
+      final publicSubkeyData = '''
+BFxHBOkSCisGAQQBl1UBBQEBB0BC/wYhratJPOCptcKkMNgyIpFWK0KzLbTfHewT356+IgMBCAc=
+''';
+      final secretSubkeyData = '''
+BFxHBOkSCisGAQQBl1UBBQEBB0BC/wYhratJPOCptcKkMNgyIpFWK0KzLbTfHewT356+IgMBCAcA
+AP9/8RTxulNe64U7qvtO4JhL2hWCn8UQerIAGIlukzE6UBCu
+''';
+
+      final publicSubkey = PublicSubkeyPacket.fromBytes(
+        base64.decode(
+          publicSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final secretSubkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          secretSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(publicSubkey.keyAlgorithm, KeyAlgorithm.ecdh);
+      expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
+
+      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+        publicSubkey,
+        sessionKey,
+      );
+      final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
+        encryptedPkesk.data,
+      ).decrypt(secretSubkey);
+      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+    });
+
+    test('Encrypt session key with x25519 rfc9580 subkey', () {
+      final publicSubkeyData = '''
+BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1
+''';
+      final secretSubkeyData = '''
+BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u
+/tVY6a//1q0NWC1X+yui3O24
+''';
+
+      final publicSubkey = PublicSubkeyPacket.fromBytes(
+        base64.decode(
+          publicSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final secretSubkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          secretSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(publicSubkey.keyAlgorithm, KeyAlgorithm.x25519);
+      expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
+
+      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+        publicSubkey,
+        sessionKey,
+      );
+      final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
+        encryptedPkesk.data,
+      ).decrypt(secretSubkey);
+      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+    });
+
+    test('Encrypt session key with x448 rfc9580 subkey', () {
+      final publicSubkeyData = '''
+BmUai2IaAAAAON1puvWiEA6dtJRSRWG1Qz8tV2diAMuGZqNhnU3tNZjR+oSkyTYsujbXrkc6aF11
+E95MHVNZu7AH
+''';
+      final secretSubkeyData = '''
+BmUai2IaAAAAON1puvWiEA6dtJRSRWG1Qz8tV2diAMuGZqNhnU3tNZjR+oSkyTYsujbXrkc6aF11
+E95MHVNZu7AHAHyUpzdzMVTNhwCC9nTxPlJRQeN8iGN4l5jjJ3Q5kN/M/DW9t6AJzu33htP5cagh
+BsL8GXscLICI
+''';
+
+      final publicSubkey = PublicSubkeyPacket.fromBytes(
+        base64.decode(
+          publicSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final secretSubkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          secretSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(publicSubkey.keyAlgorithm, KeyAlgorithm.x448);
+      expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
+
+      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+        publicSubkey,
+        sessionKey,
+      );
+      final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
+        encryptedPkesk.data,
+      ).decrypt(secretSubkey);
+      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
     });
   });
 }
