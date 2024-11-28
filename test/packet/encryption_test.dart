@@ -525,7 +525,7 @@ SdJraH1GfEeeMdV9t8623Gu3xkQ4hXf+figKNUWdq+kwHGqbQQNoeai1TYYNCuY=
       expect(literalData.binary, literalText.toBytes());
     });
 
-    test('Decrypt with x25519 subkey', () {
+    test('Decrypt with x25519 rfc9580 subkey', () {
       final subkeyData = '''
 BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u
 /tVY6a//1q0NWC1X+yui3O24
@@ -563,6 +563,53 @@ UQi6XlKOsfRPH6ozJjwLn7nPdfz5pHPtR0QljShJqeM=
           );
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
+    });
+
+    test('Decrypt with x448 rfc9580 subkey', () {
+      final subkeyData = '''
+BmUai2IaAAAAON1puvWiEA6dtJRSRWG1Qz8tV2diAMuGZqNhnU3tNZjR+oSkyTYsujbXrkc6aF11
+E95MHVNZu7AHAHyUpzdzMVTNhwCC9nTxPlJRQeN8iGN4l5jjJ3Q5kN/M/DW9t6AJzu33htP5cagh
+BsL8GXscLICI
+''';
+      final packetListData = '''
+wXUGIQZh4qTsn8glFgGNbIdCTl8gH2OtkI/PAGCQ0gi9s9k/rhrDhXo7kUKDJ39FfNp3kmAaM24C
+e3bcYXwLy0gF2i6rxfL20D+g3cxv0i3CuXQCgcbojTN/8KY8ExiVXdfo+OWIZ5XndtyMpJW28BiL
+Hru+n9bSwM8CBwMMENh7cT8lILXteh885FrUUD1QJMtD7xJUn2y78cVGgFSIkLbvFPDerB37xuht
+MRkykuWgbUoJH/kcgBPdeCoYzJmfLV9FyATv0/AYq0yWpQ0VUfNLTFyeHIGxz7NHvrzJSrOy1Gm3
+1PXqWvb4sBROjnOXoAk12JdPudz3l1QZT/DX947f4h6hwkVv7RRT0oOS2pMaz/mekRuD6utUcpsj
+FQ/MEDphnhOsB4RH0il8YPVc9DCnf3GhSs66h+Z699MXHBaUmdtiN1IgoEgLfb/900U2TfI6dvrv
+C56WIMA8EA1COvLGc9Ge4owW0UE8jIuqWLzA2nVg5belbzhNnOEh9b1cOcDUh8CfBuXqHEi/ANMU
+OMmaIGfcHfQFVu5v/UMcLxcH/fSVF6DvtOxEoUxASWBSmp6yC4A778BFuDFXb+/T8FjuJBaUj9rC
+SkYqt1TYVKG1XZPI4OdIvGtneo+vH/CqF6bxlLWU6oskZ5SE+xJblmmO01ObM9JRi9D8jZnXedTH
+ExAnXHXIb8I=
+''';
+
+      final subkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          subkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(subkey.keyAlgorithm, KeyAlgorithm.x448);
+
+      final packetList = PacketList.decode(
+        base64.decode(
+          packetListData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final sessionKey = pkesk.sessionKey!;
+      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+            sessionKey.encryptionKey,
+            symmetric: sessionKey.symmetric,
+          );
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      expect(literalData.binary, 'Hello there'.toBytes());
     });
   });
 }
