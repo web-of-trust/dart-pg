@@ -524,5 +524,45 @@ SdJraH1GfEeeMdV9t8623Gu3xkQ4hXf+figKNUWdq+kwHGqbQQNoeai1TYYNCuY=
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
+
+    test('Decrypt with x25519 subkey', () {
+      final subkeyData = '''
+BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u
+/tVY6a//1q0NWC1X+yui3O24
+''';
+      final packetListData = '''
+wW0GIQYSyD8ecG9jCP4VGkF3Q6HwM3kOk+mXhIjR2zeNqZMIhRmYQIdvyFFkbvQontVWA5ukwSV2
+G16sUGyAgCirPA+1ISgjo8WL43phtu5TkL7Z59/eXc9IogZy/V+V+SkcSc1vF0WQ2F8kX/Az0loC
+CQIM3eSIHALVilESDk12PS37M9JkaseDvMWVtfEOE9b1lG3aYJXruqm0GZAV8DoyM/HCQBTOGa8m
+UQi6XlKOsfRPH6ozJjwLn7nPdfz5pHPtR0QljShJqeM=
+''';
+
+      final subkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          subkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(subkey.keyAlgorithm, KeyAlgorithm.x25519);
+
+      final packetList = PacketList.decode(
+        base64.decode(
+          packetListData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final sessionKey = pkesk.sessionKey!;
+      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+            sessionKey.encryptionKey,
+            symmetric: sessionKey.symmetric,
+          );
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      expect(literalData.binary, literalText.toBytes());
+    });
   });
 }

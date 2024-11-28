@@ -91,11 +91,11 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
           bytes.sublist(pos),
         ),
       KeyAlgorithm.x25519 => MontgomerySessionKeyCryptor.fromBytes(
-          bytes,
+          bytes.sublist(pos),
           MontgomeryCurve.x25519,
         ),
       KeyAlgorithm.x448 => MontgomerySessionKeyCryptor.fromBytes(
-          bytes,
+          bytes.sublist(pos),
           MontgomeryCurve.x448,
         ),
       _ => throw UnsupportedError(

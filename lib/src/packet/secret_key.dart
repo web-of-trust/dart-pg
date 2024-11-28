@@ -210,10 +210,12 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     SecretKeyMaterialInterface? keyMaterial;
     var keyData = bytes.sublist(pos);
     if (s2kUsage == S2kUsage.none) {
-      final checksum = keyData.sublist(keyData.length - 2);
-      keyData = keyData.sublist(0, keyData.length - 2);
-      if (!checksum.equals(_computeChecksum(keyData))) {
-        throw StateError('Key checksum mismatch!');
+      if (!isV6) {
+        final checksum = keyData.sublist(keyData.length - 2);
+        keyData = keyData.sublist(0, keyData.length - 2);
+        if (!checksum.equals(_computeChecksum(keyData))) {
+          throw StateError('Key checksum mismatch!');
+        }
       }
       keyMaterial = _readKeyMaterial(
         keyData,
