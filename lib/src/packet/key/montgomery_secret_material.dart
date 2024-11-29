@@ -10,7 +10,7 @@ import 'package:pinenacl/tweetnacl.dart';
 
 import '../../common/helpers.dart';
 import '../../type/secret_key_material.dart';
-import '../../cryptor/ecc/x448.dart';
+import '../../cryptor/dh/x448.dart';
 import '../../enum/montgomery_curve.dart';
 import 'montgomery_public_material.dart';
 

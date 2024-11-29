@@ -1,5 +1,5 @@
 import 'package:dart_pg/src/common/helpers.dart';
-import 'package:dart_pg/src/cryptor/ecc/x448.dart';
+import 'package:dart_pg/src/cryptor/dh/x448.dart';
 import 'package:test/test.dart';
 
 void main() {
