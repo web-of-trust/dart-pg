@@ -38,13 +38,13 @@ class EdDSALegacySecretMaterial implements SigningKeyMaterialInterface {
   factory EdDSALegacySecretMaterial.generate() {
     final seed = Helper.randomBytes(TweetNaCl.seedSize);
     return EdDSALegacySecretMaterial(
-      seed.toBigIntWithSign(1),
+      seed.toUnsignedBigInt(),
       EdDSALegacyPublicMaterial(
           Ecc.ed25519.asn1Oid,
           Uint8List.fromList([
             0x40,
             ...nacl.SigningKey.fromSeed(seed).verifyKey.asTypedList,
-          ]).toBigIntWithSign(1)),
+          ]).toUnsignedBigInt()),
     );
   }
 
@@ -55,7 +55,7 @@ class EdDSALegacySecretMaterial implements SigningKeyMaterialInterface {
       0x40,
       ...signingKey.verifyKey.asTypedList,
     ]);
-    return publicMaterial.q.compareTo(dG.toBigIntWithSign(1)) == 0;
+    return publicMaterial.q.compareTo(dG.toUnsignedBigInt()) == 0;
   }
 
   @override

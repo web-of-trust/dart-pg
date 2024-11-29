@@ -5,7 +5,7 @@
 library;
 
 import 'dart:typed_data';
-import 'package:pinenacl/ed25519.dart' as nacl;
+import 'package:pinenacl/x25519.dart' as nacl;
 import 'package:pinenacl/tweetnacl.dart';
 import 'package:pointycastle/pointycastle.dart';
 
@@ -50,13 +50,13 @@ class ECDHSecretMaterial extends ECSecretMaterial implements SecretKeyMaterialIn
         return ECDHSecretMaterial(
           Uint8List.fromList(
             privateKey.asTypedList.reversed.toList(),
-          ).toBigIntWithSign(1),
+          ).toUnsignedBigInt(),
           ECDHPublicMaterial(
             curve.asn1Oid,
             Uint8List.fromList([
               0x40,
               ...privateKey.publicKey.asTypedList,
-            ]).toBigIntWithSign(1),
+            ]).toUnsignedBigInt(),
             curve.hashAlgorithm,
             curve.symmetricAlgorithm,
           ),
@@ -73,11 +73,7 @@ class ECDHSecretMaterial extends ECSecretMaterial implements SecretKeyMaterialIn
           privateKey.d!,
           ECDHPublicMaterial(
             curve.asn1Oid,
-            q
-                .getEncoded(
-                  q.isCompressed,
-                )
-                .toBigIntWithSign(1),
+            q.getEncoded(q.isCompressed).toUnsignedBigInt(),
             curve.hashAlgorithm,
             curve.symmetricAlgorithm,
           ),
@@ -99,7 +95,7 @@ class ECDHSecretMaterial extends ECSecretMaterial implements SecretKeyMaterialIn
           0x40,
           ...privateKey.publicKey.asTypedList,
         ]);
-        return publicMaterial.q.compareTo(dG.toBigIntWithSign(1)) == 0;
+        return publicMaterial.q.compareTo(dG.toUnsignedBigInt()) == 0;
       case Ecc.ed25519:
         return false;
       default:

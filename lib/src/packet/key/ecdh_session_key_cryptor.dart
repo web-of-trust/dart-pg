@@ -109,7 +109,7 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
             ))
             .toUnsignedBytes();
         final publicKey = keyPair.publicKey as ECPublicKey;
-        ephemeralKey = publicKey.Q!.getEncoded(false).toBigIntWithSign(1);
+        ephemeralKey = publicKey.Q!.getEncoded(false).toUnsignedBigInt();
     }
     final keyWrapper = _selectKeyWrapper(key.kdfSymmetric);
     return ECDHSessionKeyCryptor(

@@ -4,8 +4,7 @@
 
 library;
 
-import 'dart:typed_data';
-import 'package:pinenacl/ed25519.dart' as nacl;
+import 'package:pinenacl/x25519.dart';
 import 'package:pinenacl/tweetnacl.dart';
 
 import '../../common/helpers.dart';
@@ -36,7 +35,7 @@ class MontgomerySecretMaterial implements SecretKeyMaterialInterface {
   factory MontgomerySecretMaterial.generate(final MontgomeryCurve curve) {
     final secretKey = _generateSecretKey(curve);
     final publicKey = switch (curve) {
-      MontgomeryCurve.x25519 => nacl.PrivateKey(
+      MontgomeryCurve.x25519 => PrivateKey(
           secretKey,
         ).publicKey.asTypedList,
       MontgomeryCurve.x448 => X448.scalarMultBase(secretKey),
@@ -59,7 +58,7 @@ class MontgomerySecretMaterial implements SecretKeyMaterialInterface {
   @override
   bool get isValid {
     final publicKey = switch (publicMaterial.curve) {
-      MontgomeryCurve.x25519 => nacl.PrivateKey(
+      MontgomeryCurve.x25519 => PrivateKey(
           secretKey,
         ).publicKey.asTypedList,
       MontgomeryCurve.x448 => X448.scalarMultBase(secretKey),

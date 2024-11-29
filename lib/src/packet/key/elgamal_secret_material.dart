@@ -69,7 +69,10 @@ class ElGamalSecretMaterial implements SecretKeyMaterialInterface {
     // Re-derive public key y' = g ** x mod p
     // Expect y == y'
     // Blinded exponentiation computes g**{r(p-1) + x} to compare to y
-    final r = Helper.randomBigInt(BigInt.two << (pSize - 1), BigInt.two << pSize);
+    final r = Helper.randomBigInt(
+      BigInt.two << (pSize - 1),
+      BigInt.two << pSize,
+    );
     final rqx = ((publicMaterial.prime - BigInt.one) * r) + exponent;
     return publicMaterial.exponent.compareTo(
           publicMaterial.generator.modPow(rqx, publicMaterial.prime),

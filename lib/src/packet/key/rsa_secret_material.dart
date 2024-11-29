@@ -110,12 +110,10 @@ class RSASecretMaterial implements SigningKeyMaterialInterface {
   bool get isValid {
     // expect pq = n
     if ((primeP * primeQ).compareTo(publicMaterial.modulus) != 0) {
-      print('expect pq = n');
       return false;
     }
     // expect p*u = 1 mod q
     if (((primeP * coefficient) % primeQ).compareTo(BigInt.one) != 0) {
-      print('expect p*u = 1 mod q');
       return false;
     }
 

@@ -38,7 +38,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor {
             PublicKeyParameter<RSAPublicKey>(key.publicKey),
           ),
         sessionKey,
-      ).toBigIntWithSign(1),
+      ).toUnsignedBigInt(),
     );
   }
 
