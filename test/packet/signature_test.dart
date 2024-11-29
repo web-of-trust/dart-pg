@@ -96,7 +96,7 @@ void main() {
   group('Verification', () {
     const literalText = 'Hello World :)';
 
-    test('RSA key', () {
+    test('Verify with RSA key', () {
       const keyData = '''
 BF2lnPIBDAC5cL9PQoQLTMuhjbYvb4Ncuuo0bfmgPRFywX53jPhoFf4Zg6mv/seOXpgecTdOcVtt
 fzC8ycIKrt3aQTiwOG/ctaR4Bk/t6ayNFfdUNxHWk4WCKzdz/56fW2O0F23qIRd8UUJp5IIlN4RD
@@ -138,7 +138,7 @@ j1AUElFDMJNJEXHK6cgf51OphuFdfgqUmymRmCPh2FehrykW6sUL2YcV1igpUB1wRQ==
       expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
     });
 
-    test('DSA key', () {
+    test('Verify with DSA key', () {
       const keyData = '''
 BF3+CmgRDADZhdKTM3ms3XpXnQke83FgaIBtP1g1qhqpCfg50WiPS0kjiMC0OJz2vh59nusbBLzg
 I//Y1VMhKfIWYbqMcIY+lWbseHjl52rqW6AaJ0TH4NgVt7vhyVeJt0k/NnxvNhMd0587KXmfpDxr
@@ -190,7 +190,70 @@ EzSE9lH3RInTOtPd+ICKWrA7
       expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
     });
 
-    test('EdDSA legacy key', () {
+    test('Verify with ECDSA NIST P-384 key', () {
+      const keyData = '''
+BGc/+YkTBSuBBAAiAwMEd3FJXIrlQksBiwOLB+ksANWsTQzFNxqpxzjpglaDNKjgF/RXVXj9A6os
+ao0WJtqkKFKZvkASvOCgOaBn3GDUZmF8GJwuuLNOci0JC/N+g5nFd/BeXNJNyECMIbllcLt9
+''';
+      const signatureData = '''
+BAATCQBdBQJnSYcNFiEEoyUQfma8qz7qQHVQOW7Li7htGSIJEDluy4u4bRkiNRQAAAAAABQAGHNh
+bHRAcGhwLW9wZW5wZ3Aub3Jn67K0PLenjKjdnfzO74JVwHinZH47yg9GAAA0CgF8Dth3ap+Dc8+3
+4OamLRo8MRCH2fBbjRNPxtKjz1ZG9NDOF6KePoSv57ijpwPjXpIuAX0RhdUWB1HX6lY/f2zcVetC
+CqiCSnlWWoGYsnbr2P8E9ra3g7s5O9vEM0v78eEYaNs=
+''';
+
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(
+          keyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final signature = SignaturePacket.fromBytes(
+        base64.decode(
+          signatureData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+
+      expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
+    });
+
+    test('Verify with ECDSA Brainpool P-256 key', () {
+      const keyData = '''
+BGc/+dATCSskAwMCCAEBBwIDBJ15ari0PCq317awmdNNIwz+yOZ18yUCg8LOAmYEaRAqAh1HmAnS
+K5d4i1CX2M2/UKup7f/KD/o5Y6oid+VuTZQ=
+''';
+      const signatureData = '''
+BAATCABVBQJnSYZUFiEEzRtbFClPgL5lzvvvmVEhn8nelXgJEJlRIZ/J3pV4LRQAAAAAABQAEHNh
+bHRAcGhwLW9wZW5wZ3Aub3JnxGTgM/wcO2Hyp0OjyEEnVwAAXiwA/3ZoYHQHEJnc279Wu4YgTGNH
+HEfWo+l0t+wTCKJUh9iuAQCcmwa2Jh5BJNJd9ezMwPyH/uCgYyyemg9S1J5xNKFepw==
+''';
+
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(
+          keyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final signature = SignaturePacket.fromBytes(
+        base64.decode(
+          signatureData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+
+      expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
+    });
+
+    test('Verify with EdDSA legacy key', () {
       const keyData = '''
 BFxHBOkWCSsGAQQB2kcPAQEHQK41sJNxQKsohWxQSk+E813FQaj0wd4Js5Qv1G+ztbtd
 ''';
@@ -221,7 +284,7 @@ emD753kKao1uctpHT1WHDw==
       expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
     });
 
-    test('Ed25519 key', () {
+    test('Verify with Ed25519 key', () {
       const keyData = '''
 BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj
 ''';
