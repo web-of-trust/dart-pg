@@ -487,7 +487,89 @@ heUWSSwsi+sdLtKcnQQfj/RDqmhO9tmfk8sRTu3Myp9tYJLnjngOxsNEMoRRgo7eBSLVjUQlQu8=
       expect(literalData.binary, literalText.toBytes());
     });
 
-    test('Decrypt with ECDH subkey', () {
+    test('Decrypt with ECDH NIST P-384 subkey', () {
+      final subkeyData = '''
+BGc/+YkSBSuBBAAiAwME6+LPwcbdvoEdxPA2L002pKXp8Nt7PxIsjUegQRw2bTQXMlu5zplsUNpr
+WJZ1W/iqLhmEH8eLONxcuzVEQMb3dCImxBzmL3Y5HxGGti81EsU7JBIZxHKhl85RY78HdHgCAwEJ
+CQABf19UJNkpedSjrDT3bwSSzOlI8/uyJzKkqF5z26O2i+UbQ/VYIK78pSWB5/YNCfpTHRn5
+''';
+      final packetListData = '''
+wY4DWimQzmvWOyASAwME8gf7ALFjHdnr+1HOfeaBR7LJ3cSQBXB+vSd1d1Tt7nk6aKvCTrkDg8FN
+n4V8crQpq5O47id1cWX5RaxxPoqN0wVeqFcDwfRKjAkR6hheaUnnAkrkN873nH6QkQTKJm7bICWq
+PXVtziQ8IyqoGshWNSwpWcPZl9KW2mUBGVIpOtCg0j8BYZTkYDl0D/a62/c1QUyqjpXqgGhzXvuS
+23BdpGx/IkjjyOVV3mSvG54iZDtqtfYL5WWys9Euw7n2zOWb8E4=
+''';
+
+      final subkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          subkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(subkey.keyAlgorithm, KeyAlgorithm.ecdh);
+
+      final packetList = PacketList.decode(
+        base64.decode(
+          packetListData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final sessionKey = pkesk.sessionKey!;
+      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+            sessionKey.encryptionKey,
+            symmetric: sessionKey.symmetric,
+          );
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      expect(literalData.binary, literalText.toBytes());
+    });
+
+    test('Decrypt with ECDH Brainpool P-256 subkey', () {
+      final subkeyData = '''
+BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
+2JJsuQqI0Pne08Y7og4bhyv9S+D+wcU8sv0DAQgHAAEAoE4oBDyVgNFV3b7pSIJe+mrkuJYxel3E
+JezusZoe4R0RBg==
+''';
+      final packetListData = '''
+wW4DZbU70a/wXgYSAgMEho+Zrglsg+H4OtMqAI96cGR9lPCWr3q5DhnCAM2kIGofREOFwOm3BIcZ
+1QPGtziET3wRmVxF7bSu3i7Sxgq/TSBdQdIy4GS4UpC2LP+bwgyXRgJBMFWa0EL86TcwcAwn49I/
+AXzl+1DZczLIfN+EPS+dkDwlf4BiX82RZby5klmHzg8r3VqtMkyAwwoGgxn1JXzoWKUINsFBOG6J
+dJb40maS
+''';
+
+      final subkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          subkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(subkey.keyAlgorithm, KeyAlgorithm.ecdh);
+
+      final packetList = PacketList.decode(
+        base64.decode(
+          packetListData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final sessionKey = pkesk.sessionKey!;
+      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+            sessionKey.encryptionKey,
+            symmetric: sessionKey.symmetric,
+          );
+      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      expect(literalData.binary, literalText.toBytes());
+    });
+
+    test('Decrypt with ECDH x25519 subkey', () {
       final subkeyData = '''
 BFxHBOkSCisGAQQBl1UBBQEBB0BC/wYhratJPOCptcKkMNgyIpFWK0KzLbTfHewT356+IgMBCAcA
 AP9/8RTxulNe64U7qvtO4JhL2hWCn8UQerIAGIlukzE6UBCu
@@ -679,7 +761,88 @@ EWbTE/ndfIE+i/dP8vgD2SGqAKyz4XmyABqt/Ry5idusd89FgIK6QNZDbI1xF5KImRjyyiBqHt4a
       expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
     });
 
-    test('Encrypt session key with ECDH subkey', () {
+    test('Encrypt session key with ECDH NIST P-384 subkey', () {
+      final publicSubkeyData = '''
+BGc/+YkSBSuBBAAiAwME6+LPwcbdvoEdxPA2L002pKXp8Nt7PxIsjUegQRw2bTQXMlu5zplsUNpr
+WJZ1W/iqLhmEH8eLONxcuzVEQMb3dCImxBzmL3Y5HxGGti81EsU7JBIZxHKhl85RY78HdHgCAwEJ
+CQ==
+''';
+      final secretSubkeyData = '''
+BGc/+YkSBSuBBAAiAwME6+LPwcbdvoEdxPA2L002pKXp8Nt7PxIsjUegQRw2bTQXMlu5zplsUNpr
+WJZ1W/iqLhmEH8eLONxcuzVEQMb3dCImxBzmL3Y5HxGGti81EsU7JBIZxHKhl85RY78HdHgCAwEJ
+CQABf19UJNkpedSjrDT3bwSSzOlI8/uyJzKkqF5z26O2i+UbQ/VYIK78pSWB5/YNCfpTHRn5
+''';
+
+      final publicSubkey = PublicSubkeyPacket.fromBytes(
+        base64.decode(
+          publicSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final secretSubkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          secretSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(publicSubkey.keyAlgorithm, KeyAlgorithm.ecdh);
+      expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
+
+      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+        publicSubkey,
+        sessionKey,
+      );
+      final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
+        encryptedPkesk.data,
+      ).decrypt(secretSubkey);
+      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+    });
+
+    test('Encrypt session key with ECDH Brainpool P-256  subkey', () {
+      final publicSubkeyData = '''
+BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
+2JJsuQqI0Pne08Y7og4bhyv9S+D+wcU8sv0DAQgH
+''';
+      final secretSubkeyData = '''
+BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
+2JJsuQqI0Pne08Y7og4bhyv9S+D+wcU8sv0DAQgHAAEAoE4oBDyVgNFV3b7pSIJe+mrkuJYxel3E
+JezusZoe4R0RBg==
+''';
+
+      final publicSubkey = PublicSubkeyPacket.fromBytes(
+        base64.decode(
+          publicSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final secretSubkey = SecretSubkeyPacket.fromBytes(
+        base64.decode(
+          secretSubkeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      expect(publicSubkey.keyAlgorithm, KeyAlgorithm.ecdh);
+      expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
+
+      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+        publicSubkey,
+        sessionKey,
+      );
+      final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
+        encryptedPkesk.data,
+      ).decrypt(secretSubkey);
+      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+    });
+
+    test('Encrypt session key with ECDH x25519 subkey', () {
       final publicSubkeyData = '''
 BFxHBOkSCisGAQQBl1UBBQEBB0BC/wYhratJPOCptcKkMNgyIpFWK0KzLbTfHewT356+IgMBCAc=
 ''';
