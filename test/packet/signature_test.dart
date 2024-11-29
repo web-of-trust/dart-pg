@@ -347,5 +347,17 @@ sU42Y3hMyl3ZAZyV2uFHbqAUz+KbMO4oAA==
     });
   });
 
-  group('Signing', () {});
+  group('Signing', () {
+    test('Sign with RSA key', () {});
+
+    test('Sign with ECDSA NIST P-384 key', () {});
+
+    test('Sign with ECDSA Brainpool P-256 key', () {});
+
+    test('Sign with EdDSA legacy key', () {});
+
+    test('Sign with Ed25519 key', () {});
+
+    test('Sign with Ed448 key', () {});
+  });
 }
