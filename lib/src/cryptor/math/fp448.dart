@@ -8,7 +8,7 @@ import 'dart:typed_data';
 
 /// Implementation of rfc-7748 x448 field element
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Fp448 {
+final class Fp448 {
   /// Field element size
   static const size = 16;
 
