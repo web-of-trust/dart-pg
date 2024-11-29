@@ -43,18 +43,18 @@ class NotationData extends SignatureSubpacket {
     int saltSize, {
     final bool critical = false,
   }) {
-    final salt = Helper.randomBytes(saltSize);
-    final nameData = utf8.encode(saltName);
+    final valueData = Helper.generatePassword(saltSize).toBytes();
+    final nameData = saltName.toBytes();
     final nameLength = min(nameData.length, 0xffff);
     return NotationData(
       Uint8List.fromList([
         ...[0, 0, 0, 0],
         (nameLength >> 8) & 0xff,
         (nameLength >> 0) & 0xff,
-        (salt.length >> 8) & 0xff,
-        (salt.length >> 0) & 0xff,
+        (valueData.length >> 8) & 0xff,
+        (valueData.length >> 0) & 0xff,
         ...nameData,
-        ...salt,
+        ...valueData,
       ]),
       critical: critical,
     );
@@ -62,18 +62,22 @@ class NotationData extends SignatureSubpacket {
 
   bool get isHumanReadable => data[0] == 0x80;
 
-  String get notationName {
+  String get notationName => utf8.decode(nameData);
+
+  String get notationValue => utf8.decode(valueData);
+
+  Uint8List get nameData {
     final nameLength = (((data[headerFlagLength] & 0xff) << 8) + (data[headerFlagLength + 1] & 0xff));
     final nameOffset = headerFlagLength + headerNameLength + headerValueLength;
-    return utf8.decode(data.sublist(nameOffset, nameOffset + nameLength));
+    return data.sublist(nameOffset, nameOffset + nameLength);
   }
 
-  String get notationValue {
+  Uint8List get valueData {
     final nameLength = (((data[headerFlagLength] & 0xff) << 8) + (data[headerFlagLength + 1] & 0xff));
     final valueLength = (((data[headerFlagLength + headerNameLength] & 0xff) << 8) +
         (data[headerFlagLength + headerNameLength + 1] & 0xff));
     final valueOffset = headerFlagLength + headerNameLength + headerValueLength + nameLength;
-    return utf8.decode(data.sublist(valueOffset, valueOffset + valueLength));
+    return data.sublist(valueOffset, valueOffset + valueLength);
   }
 
   static Uint8List _notationToBytes(
@@ -81,13 +85,12 @@ class NotationData extends SignatureSubpacket {
     final String notationName,
     final String notationValue,
   ) {
-    final nameData = utf8.encode(notationName);
+    final nameData = notationName.toBytes();
     final nameLength = min(nameData.length, 0xffff);
     if (nameLength != nameData.length) {
       throw ArgumentError('notationName exceeds maximum length.');
     }
-
-    final valueData = utf8.encode(notationValue);
+    final valueData = notationValue.toBytes();
     final valueLength = min(valueData.length, 0xffff);
     if (valueLength != valueData.length) {
       throw ArgumentError('notationValue exceeds maximum length.');
