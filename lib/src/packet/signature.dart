@@ -208,6 +208,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     ]);
 
     final message = Uint8List.fromList([
+      ...salt,
       ...dataToSign,
       ...signatureData,
       ..._calculateTrailer(
@@ -297,8 +298,8 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   bool isExpired([final DateTime? time]) {
     final timestamp = time?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
     final creation = creationTime?.millisecondsSinceEpoch ?? 0;
-    final expiration = expirationTime?.millisecondsSinceEpoch ?? 0;
-    return !(creation < timestamp && timestamp < expiration);
+    final expiration = expirationTime?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+    return !(creation <= timestamp && timestamp <= expiration);
   }
 
   @override
@@ -307,7 +308,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     final Uint8List dataToVerify, [
     final DateTime? time,
   ]) {
-    if (issuerKeyID != verifyKey.keyID) {
+    if (!issuerKeyID.equals(verifyKey.keyID)) {
       throw ArgumentError('Signature was not issued by the given public key.');
     }
     if (keyAlgorithm != verifyKey.keyAlgorithm) {
@@ -320,6 +321,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     }
 
     final message = Uint8List.fromList([
+      ...salt,
       ...dataToVerify,
       ...signatureData,
       ..._calculateTrailer(
@@ -327,6 +329,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
         signatureData.length,
       )
     ]);
+
     final hash = Helper.hashDigest(message, hashAlgorithm);
     if (signedHashValue[0] != hash[0] || signedHashValue[1] != hash[1]) {
       throw StateError('Signed digest did not match!');
