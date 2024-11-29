@@ -16,5 +16,8 @@ class EmbeddedSignature extends SignatureSubpacket {
   EmbeddedSignature(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.embeddedSignature, data);
 
-  factory EmbeddedSignature.fromSignature(final SignaturePacket signature) => EmbeddedSignature(signature.data);
+  factory EmbeddedSignature.fromSignature(
+    final SignaturePacket signature,
+  ) =>
+      EmbeddedSignature(signature.data);
 }
