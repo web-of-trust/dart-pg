@@ -313,6 +313,38 @@ CcHUtYDD2WgFQiCPnL6DfYYdS2ttmRWtQkCGmw6oumQ0LHU7ig4=
 
       expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
     });
+
+    test('Verify with Ed448 key', () {
+      const keyData = '''
+BmbzftccAAAAOR3+OzyG7CwqCJopfjLl1hr1L8xJb4yIqt3ya0SH/pNXF63tthhChdNUdqtTGppE
+g6KH7Dz3jXlFAA==
+''';
+      const signatureData = '''
+BgAcCAAAADMFAmdJlAEiIQajZpX32QU9YiluDfY6DUi6J3MNnD1PcbgqWMinyQ/qIAkQo2aV99kF
+PWIAAAAAUIoQbFoa0AGrM/71CxsKoDRGUBDJuaNAY5eefCAWYJyMKaQHktcakEk22D9FFV/jonlA
+1Wc7R087rKOb7OF7ikAFCvJZNm04770BgPph3pY2wRU82uD/J5P+DBi7pKj63EXAPzla/jmY3cs9
+sU42Y3hMyl3ZAZyV2uFHbqAUz+KbMO4oAA==
+''';
+
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(
+          keyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final signature = SignaturePacket.fromBytes(
+        base64.decode(
+          signatureData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+
+      expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
+    });
   });
 
   group('Signing', () {});
