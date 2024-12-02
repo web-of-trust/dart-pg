@@ -34,7 +34,15 @@ abstract class SubkeyInterface extends PacketContainerInterface {
 
   int get keyStrength;
 
+  bool get isSigningKey;
+
+  bool get isEncryptionKey;
+
   Iterable<SignaturePacketInterface> get revocationSignatures;
 
   Iterable<SignaturePacketInterface> get bindingSignatures;
+
+  bool isRevoked([final DateTime? time]);
+
+  bool verify([final DateTime? time]);
 }

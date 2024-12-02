@@ -26,4 +26,8 @@ abstract class UserInterface extends PacketContainerInterface {
   Iterable<SignaturePacketInterface> get selfSignatures;
 
   Iterable<SignaturePacketInterface> get otherSignatures;
+
+  bool isRevoked([final DateTime? time]);
+
+  bool verify([final DateTime? time]);
 }
