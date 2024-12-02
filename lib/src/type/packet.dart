@@ -10,7 +10,7 @@ import '../enum/packet_type.dart';
 
 /// Packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class PacketInterface {
+abstract interface class PacketInterface {
   /// Get packet type
   PacketType get type;
 

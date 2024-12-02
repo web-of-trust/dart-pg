@@ -12,7 +12,7 @@ import 'secret_key_material.dart';
 
 /// Secret key packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class SecretKeyPacketInterface extends KeyPacketInterface {
+abstract class SecretKeyPacketInterface implements KeyPacketInterface {
   /// Get public key packet
   KeyPacketInterface get publicKey;
 

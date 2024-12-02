@@ -12,7 +12,7 @@ import 'packet.dart';
 
 /// Key packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class KeyPacketInterface extends PacketInterface {
+abstract interface class KeyPacketInterface implements PacketInterface {
   /// Get key version
   int get keyVersion;
 

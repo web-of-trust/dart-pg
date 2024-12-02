@@ -10,7 +10,7 @@ import 'packet.dart';
 
 /// User ID packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class UserIDPacketInterface extends PacketInterface {
+abstract class UserIDPacketInterface implements PacketInterface {
     /// Get bytes for sign
   Uint8List get signBytes;
 }
