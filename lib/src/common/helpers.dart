@@ -26,7 +26,7 @@ export 'extensions.dart';
 final class Helper {
   static final _random = Random.secure();
 
-  static get secureRandom => SecureRandom('Fortuna')
+  static SecureRandom get secureRandom => SecureRandom('Fortuna')
     ..seed(
       KeyParameter(
         Uint8List.fromList(
