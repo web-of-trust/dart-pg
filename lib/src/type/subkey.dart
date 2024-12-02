@@ -42,7 +42,10 @@ abstract interface class SubkeyInterface implements PacketContainerInterface {
 
   Iterable<SignaturePacketInterface> get bindingSignatures;
 
+  /// Check if a subkey is revoked
   bool isRevoked([final DateTime? time]);
 
+  /// Verify subkey.
+  /// Check for existence and validity of binding signature.
   bool verify([final DateTime? time]);
 }
