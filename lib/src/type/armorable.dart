@@ -6,7 +6,7 @@ library;
 
 /// Armorable interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class ArmorableInterface {
+abstract interface class ArmorableInterface {
   /// Return ASCII armored text
   String armor();
 }

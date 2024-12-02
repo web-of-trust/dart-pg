@@ -8,7 +8,7 @@ import 'dart:typed_data';
 
 /// AEAD Authenticated-Encryption interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class AeadInterface {
+abstract interface class AeadInterface {
   /// Encrypt plaintext input.
   Uint8List encrypt(
     final Uint8List plainText,

@@ -11,7 +11,7 @@ import 'packet_list.dart';
 
 /// Encrypted data packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class EncryptedDataPacketInterface {
+abstract interface class EncryptedDataPacketInterface {
   /// Encrypted data
   Uint8List get encrypted;
 

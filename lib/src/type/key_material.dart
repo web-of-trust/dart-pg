@@ -8,7 +8,7 @@ import 'dart:typed_data';
 
 /// Key material interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class KeyMaterialInterface {
+abstract interface class KeyMaterialInterface {
   /// Get key strength
   int get keyStrength;
 

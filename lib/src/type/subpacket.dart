@@ -10,7 +10,7 @@ import '../enum/signature_subpacket_type.dart';
 
 /// Subpacket interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class SubpacketInterface {
+abstract interface class SubpacketInterface {
   /// Get sub-packet type
   SignatureSubpacketType get type;
 

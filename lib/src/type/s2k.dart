@@ -10,7 +10,7 @@ import '../enum/s2k_type.dart';
 
 /// String-to-key interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class S2kInterface {
+abstract interface class S2kInterface {
   /// Get S2K type
   S2kType get type;
 

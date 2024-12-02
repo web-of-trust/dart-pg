@@ -8,7 +8,7 @@ import 'packet_list.dart';
 
 /// Packet container interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class PacketContainerInterface {
+abstract interface class PacketContainerInterface {
   /// Get packet list
   PacketListInterface get packetList;
 }

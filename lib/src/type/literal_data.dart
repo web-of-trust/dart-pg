@@ -10,7 +10,7 @@ import 'package:dart_pg/src/enum/literal_format.dart';
 
 /// Literal data interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class LiteralDataInterface {
+abstract interface class LiteralDataInterface {
   LiteralFormat get format;
 
   String get filename;
