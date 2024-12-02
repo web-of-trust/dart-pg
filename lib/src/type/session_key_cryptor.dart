@@ -10,7 +10,7 @@ import 'secret_key_material.dart';
 
 /// Session key cryptor interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class SessionKeyCryptorInterface {
+abstract interface class SessionKeyCryptorInterface {
   Uint8List encode();
 
   Uint8List decrypt(SecretKeyMaterialInterface key);

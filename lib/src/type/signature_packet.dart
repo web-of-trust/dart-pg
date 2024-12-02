@@ -15,7 +15,7 @@ import 'subpacket.dart';
 
 /// Signature packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class SignaturePacketInterface implements PacketInterface {
+abstract interface class SignaturePacketInterface implements PacketInterface {
   int get version;
 
   SignatureType get signatureType;

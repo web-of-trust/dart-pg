@@ -12,7 +12,7 @@ import 'user_id_packet.dart';
 /// OpenPGP user interface
 /// That represents an user ID or attribute packet and the relevant signatures.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class UserInterface implements PacketContainerInterface {
+abstract interface class UserInterface implements PacketContainerInterface {
   KeyInterface get mainKey;
 
   UserIDPacketInterface get userIDPacket;

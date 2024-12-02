@@ -8,4 +8,4 @@ import 'key_packet.dart';
 
 /// Subkey packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class SubkeyPacketInterface implements KeyPacketInterface {}
+abstract interface class SubkeyPacketInterface implements KeyPacketInterface {}
