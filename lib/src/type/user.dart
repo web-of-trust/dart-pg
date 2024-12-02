@@ -21,9 +21,9 @@ abstract class UserInterface extends PacketContainerInterface {
 
   bool get isPrimary;
 
-  Iterable<SignaturePacketInterface> get revocationCertifications;
+  Iterable<SignaturePacketInterface> get revocationSignatures;
 
-  Iterable<SignaturePacketInterface> get selfCertifications;
+  Iterable<SignaturePacketInterface> get selfSignatures;
 
-  Iterable<SignaturePacketInterface> get otherCertifications;
+  Iterable<SignaturePacketInterface> get otherSignatures;
 }
