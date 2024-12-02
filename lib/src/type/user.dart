@@ -13,7 +13,7 @@ import 'user_id_packet.dart';
 /// That represents an user ID or attribute packet and the relevant signatures.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class UserInterface extends PacketContainerInterface {
-  KeyInterface get mainKey;
+  KeyInterface? get mainKey;
 
   UserIDPacketInterface get userIDPacket;
 

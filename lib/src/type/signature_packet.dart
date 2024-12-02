@@ -40,6 +40,8 @@ abstract class SignaturePacketInterface extends PacketInterface {
 
   DateTime? get expirationTime;
 
+  int get keyExpirationTime;
+
   Uint8List get issuerKeyID;
 
   Uint8List get issuerFingerprint;

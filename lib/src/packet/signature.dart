@@ -246,6 +246,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   DateTime? get expirationTime => getSubpacket<SignatureExpirationTime>()?.expirationTime;
 
   @override
+  int get keyExpirationTime => getSubpacket<KeyExpirationTime>()?.expiry ?? 0;
+
+  @override
   bool get isCertRevocation => signatureType == SignatureType.certRevocation;
 
   @override

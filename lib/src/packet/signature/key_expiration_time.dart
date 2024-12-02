@@ -30,5 +30,5 @@ class KeyExpirationTime extends SignatureSubpacket {
       KeyExpirationTime(seconds.pack32(), critical: critical);
 
   /// Return the number of seconds after creation time a key is valid for.
-  int get time => data.unpack32();
+  int get expiry => data.unpack32();
 }

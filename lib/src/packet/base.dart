@@ -32,7 +32,7 @@ export 'trust.dart';
 export 'user_attribute.dart';
 export 'user_id.dart';
 
-/// Base packet abstract class
+/// Base abstract packet class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class BasePacket implements PacketInterface {
   static const partialMinSize = 512;

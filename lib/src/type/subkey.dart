@@ -16,11 +16,11 @@ import 'subkey_packet.dart';
 /// That represents a subkey packet and the relevant signatures.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class SubkeyInterface extends PacketContainerInterface {
-  KeyInterface get mainKey;
+  KeyInterface? get mainKey;
 
   SubkeyPacketInterface get keyPacket;
 
-  int get version;
+  int get keyVersion;
 
   DateTime? get creationTime;
 
