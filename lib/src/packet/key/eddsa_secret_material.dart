@@ -83,6 +83,7 @@ class EdDSASecretMaterial implements SigningKeyMaterialInterface {
             .sign(
               Helper.hashDigest(message, hash),
             )
+            .signature
             .asTypedList,
         EdDSACurve.ed448 => EdPrivateKey.fromBytes(
             secretKey,

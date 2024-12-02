@@ -250,7 +250,7 @@ BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
       expect(subkeyMaterial.curve, Ecc.curve25519);
     });
 
-    test('Curve 25519 keys', () {
+    test('Curve 25519 rfc9580 keys', () {
       const keyPacket = 'BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj';
       final publicKey = PublicKeyPacket.fromBytes(
         base64.decode(keyPacket),
@@ -277,7 +277,7 @@ BGc/+dASCSskAwMCCAEBBwIDBGuDRKYwfAtThNOAM51Is4J1BYPN6qZCTN0c9ldSQzGSVO0lI/BV
       expect(publicSubkey.isSubkey, isTrue);
     });
 
-    test('Curve 448 keys', () {
+    test('Curve 448 rfc9580 keys', () {
       const keyPacket = 'BmbzbxMcAAAAOclr6WO01hRcPLq6+/O0G+HA8hfV+fWyej4w7y9j6Im19Y5lOhbn99B0mZ0i6ggJLxcf/wPqwG3hAA==';
       final publicKey = PublicKeyPacket.fromBytes(
         base64.decode(keyPacket),
@@ -606,7 +606,7 @@ gWiiTYzGt55CPH+6z9IdUnM/22Y2nOVfXg==
       expect(subkeyMaterial.curve, Ecc.curve25519);
     });
 
-    test('Curve 25519 keys', () {
+    test('RFC9580 Curve 25519 keys', () {
       final passphrase = 'correct horse battery staple';
       final keyPacket = '''
 BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj/SYJAhQEXW/XHJ4JbR62
@@ -654,7 +654,7 @@ DqYVRdwUzAEEFS4Typ/05yT7HC6x34YCCUGvktXKv+W6nfHFC8dcVKOMDaFpd+g3rFQZF0MQcjr6
       expect(secretSubkey.isSubkey, isTrue);
     });
 
-    test('Curve 448 keys', () {
+    test('RFC9580 Curve 448 keys', () {
       final passphrase = 'Ax@2bGh;SxD&"A_;El%mPIvLx_!#3Aik';
       final keyPacket = '''
 BmbzftccAAAAOR3+OzyG7CwqCJopfjLl1hr1L8xJb4yIqt3ya0SH/pNXF63tthhChdNUdqtTGppE
@@ -996,7 +996,7 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
     });
 
-    test('X25519 keys', () {
+    test('RFC9580 X25519 keys', () {
       final secretKey = SecretKeyPacket.generate(
         KeyAlgorithm.x25519,
       );
@@ -1036,7 +1036,7 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
     });
 
-    test('X448 keys', () {
+    test('RFC9580 X448 keys', () {
       final secretKey = SecretKeyPacket.generate(
         KeyAlgorithm.x448,
       );
@@ -1078,7 +1078,7 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
     });
 
-    test('ed25519 keys', () {
+    test('RFC9580 Ed25519 keys', () {
       final secretKey = SecretKeyPacket.generate(
         KeyAlgorithm.ed25519,
       );
@@ -1120,7 +1120,7 @@ qMBOq2Y5lwP1KQ6i4kdyb8vb8YPEEJlZVGW4fmbbWuiNWJq3xjFQlBnOvUypeyqXIoJ2C/fS8+Vt
       expect(secretSubkey.fingerprint, decryptedSecretSubkey.fingerprint);
     });
 
-    test('ed448 keys', () {
+    test('RFC9580 Ed448 keys', () {
       final secretKey = SecretKeyPacket.generate(
         KeyAlgorithm.ed448,
       );

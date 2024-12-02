@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/enum/key_flag.dart';
 import 'package:dart_pg/src/enum/signature_subpacket_type.dart';
+import 'package:dart_pg/src/enum/signature_type.dart';
 import 'package:dart_pg/src/enum/support_feature.dart';
 import 'package:dart_pg/src/packet/base.dart';
 import 'package:dart_pg/src/packet/signature_subpacket.dart';
@@ -90,6 +91,61 @@ void main() {
       final saltNotation = NotationData.saltNotation(16);
       expect(saltNotation.notationName, NotationData.saltName);
       expect(saltNotation.valueData.length, 16);
+    });
+  });
+
+  group('One-Pass Signature', () {
+    test('Version 3', () {
+      const signatureData = '''
+BAEBCgBtBYJnOHr4CZD7/MgqAV5zMEUUAAAAAAAcACBzYWx0QG5vdGF0aW9ucy5vcGVucGdwanMu
+b3JnOjEa9EOdbhBhQV8InW6o4SNTRRHi1SlZZb7xXxYI7U4WIQTRpm4aI7GCyZgPeIz7/MgqAV5z
+MAAAy7IL/17BbwLPAXrf6xhjeYU7JJrLODcW9sbEz0NmmnppO2AsYAGYFtBz/K4USDLGV9EeyVX+
+hsbcsOXV+nS07ZbY3PhJU2/xyVba/iEVzde0GkOSfI87VZ7WW26jytsnSYjN8uvXJG3pHTjHPiD9
+krfOCoUlN/CEp85tkS4nZ68x6eI/6PYtR/S4e4DWGtF5uB3Y3xLAbgPX03v0/sonjs21By9i7uy0
+JZI0/nsU0mJDU04p8jOKhYBy3W4O2GboZ8T3YEnpeDxpkbi6ZEVrMi/j3MfgDrl46IQxK8Xaru+E
+LugRLCSgY5lrz+6G8v0d2oU/YpwLs7XpRgDszOCSp1aJZoP4wqMqqE8COzq2dJc52b0ysYsxmxtr
+nk3eLE5XsXU7oSq1HMFQkxMS7NiEbG8FPpwGdd+4NOOZj6Wli/DzMfBwf1sGj6wcvGLlLMGGHScc
+j1AUElFDMJNJEXHK6cgf51OphuFdfgqUmymRmCPh2FehrykW6sUL2YcV1igpUB1wRQ==
+''';
+      final signature = SignaturePacket.fromBytes(
+        base64.decode(
+          signatureData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+
+      final ops = OnePassSignaturePacket.fromSignature(signature);
+      expect(ops.version, 3);
+      expect(ops.signatureType, signature.signatureType);
+      expect(ops.hashAlgorithm, signature.hashAlgorithm);
+      expect(ops.keyAlgorithm, signature.keyAlgorithm);
+      expect(ops.issuerKeyID, signature.issuerKeyID);
+    });
+
+    test('Version 6', () {
+      const signatureData = '''
+BgEbCgAAACkFgmc4euIioQbLGGxPBgmml+TVLfpscisMHx4nwYpWcI9lJewnutmsyQAAAADkJyCU
+jQRajkQCbyj5lwWuYQL8v+POcIyOEQPiE0ieuHH2CyqwLxNq8KQ06K8+4PLazLhcdk8A34nfuiGS
+CcHUtYDD2WgFQiCPnL6DfYYdS2ttmRWtQkCGmw6oumQ0LHU7ig4=
+''';
+      final signature = SignaturePacket.fromBytes(
+        base64.decode(
+          signatureData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+
+      final ops = OnePassSignaturePacket.fromSignature(signature);
+      expect(ops.version, 6);
+      expect(ops.signatureType, signature.signatureType);
+      expect(ops.hashAlgorithm, signature.hashAlgorithm);
+      expect(ops.salt, signature.salt);
+      expect(ops.issuerFingerprint, signature.issuerFingerprint);
+      expect(ops.issuerKeyID, signature.issuerKeyID);
     });
   });
 
@@ -284,7 +340,7 @@ emD753kKao1uctpHT1WHDw==
       expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
     });
 
-    test('Verify with Ed25519 key', () {
+    test('Verify with Ed25519 rfc9580 key', () {
       const keyData = '''
 BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj
 ''';
@@ -314,7 +370,7 @@ CcHUtYDD2WgFQiCPnL6DfYYdS2ttmRWtQkCGmw6oumQ0LHU7ig4=
       expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
     });
 
-    test('Verify with Ed448 key', () {
+    test('Verify with Ed448 rfc9580 key', () {
       const keyData = '''
 BmbzftccAAAAOR3+OzyG7CwqCJopfjLl1hr1L8xJb4yIqt3ya0SH/pNXF63tthhChdNUdqtTGppE
 g6KH7Dz3jXlFAA==
@@ -348,16 +404,223 @@ sU42Y3hMyl3ZAZyV2uFHbqAUz+KbMO4oAA==
   });
 
   group('Signing', () {
-    test('Sign with RSA key', () {});
+    const literalText = 'Hello World :)';
 
-    test('Sign with ECDSA NIST P-384 key', () {});
+    test('Sign with RSA key', () {
+      const secretKeyData = '''
+BGc/4FEBCACZXe5kmfKWChtAGdoYRxRkEcfm0Ne431ovB4QS3zIOoclfyA7jgyq1UAhKbsYhZmTK
+xx0FO5/HKOO2ojJU3AeKbLP+xhH8yVdEK5JiySvX/16Tz27d+r5WGLkjZMYZAxWW9hdfurajYp8v
+cdACvErKMXShXUR9npCKH5O0QBagxMg6vczfJfNG1qWJ9aeFO7yffUt9n+39ru3Cc67EAp7m29Wo
+wto15xmeXCPkYEgE+BM+86AHGqihOERjPCzWeFVLRuCwj2YjmZvtMh9A2gx5K6dMQ5viMDsTSoB0
+DEZzvY+Q7gr7/qiWCpSfmy3gvmReOvMzk8uI7+Nt6vdJia4vABEBAAEAB/oDLokNzxuJgcRP9n3p
+MJoJMkz0LwElARb1GYjjtVdHKSX2TKwEHi7hSalqXwwah7c44y4yKhi4SWU9KD9JNiA+x977PsqV
+dMcHfRntAyokw/h0+5Q3Ub16J+8CNlPvyjDOQpvBrQd6jZAqmeNehXHyV8ebTI8gRg08nOwYenJ5
+KTYIZTFaZ2kvVkV1ihbaUk5AGQsFsh8e3Y+Zh2KfjJfl2ykng23SMocF99Lth7ityO8LYFSk1iNk
+IeLqAxC3yblEtr2QYSlOwmXjU5Mos7PGHuBZjvEpwDqyZTuAMFhN0e/iPKtejFp6u5OOtABwUE7s
+rB9tQ7DnB5nXfaprzemFBADDRLSHU4ICg8lGwBFF+XtlQ+pmv3AawiwjV0DUcCxDu3YUBbnyZPIe
+J5CAIzLE7syNFgL2y4LB2396ej5weEE+1bmbKDQZ3YDKqI02qy540dqPdEtikW8tLUZbWkwooTLk
++Ltv8USNc1dyHYdHFgv6m0fUOmgEjJJpkQEUsv8m9QQAyREGq2qL9TGY2NHAKBGQprzm8KduW1Z+
+3sN0BkcFJDMsYaH05dekh5o/p/b1cc22hhaNUtiK9goqNUPXqLTZwU/8w7piblPzcSx7xWP5yWbh
+s43PqR7I56PHuZ5HNk8IfxFnFxSfr+eUzoHkSuZeXcuuvdOBXJOqLCa7t9bwYhMD/0G/N+W0KEve
+Wk723L6iG1cWrX7uKQLo9L4zdvn1CknANvGWD8UBjDk4QJKl4EFE1FWp/uFjQ9mcP7u/F3S+Ekhv
+nXllXNZ1lBvdnmW0xkPwd3MJFpQ269Q46Fgw2t5mQ2B44qvAEXfs7XvpHQOkpBJnpPVDKvXbciXf
+Sl6rNjITOic=
+''';
+      const publicKeyData = '''
+BGc/4FEBCACZXe5kmfKWChtAGdoYRxRkEcfm0Ne431ovB4QS3zIOoclfyA7jgyq1UAhKbsYhZmTK
+xx0FO5/HKOO2ojJU3AeKbLP+xhH8yVdEK5JiySvX/16Tz27d+r5WGLkjZMYZAxWW9hdfurajYp8v
+cdACvErKMXShXUR9npCKH5O0QBagxMg6vczfJfNG1qWJ9aeFO7yffUt9n+39ru3Cc67EAp7m29Wo
+wto15xmeXCPkYEgE+BM+86AHGqihOERjPCzWeFVLRuCwj2YjmZvtMh9A2gx5K6dMQ5viMDsTSoB0
+DEZzvY+Q7gr7/qiWCpSfmy3gvmReOvMzk8uI7+Nt6vdJia4vABEBAAE=
+''';
+      final secretKey = SecretKeyPacket.fromBytes(
+        base64.decode(
+          secretKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(
+          publicKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final signature = SignaturePacket.createSignature(
+        secretKey,
+        SignatureType.standalone,
+        literalText.toBytes(),
+      );
+      expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
+    });
 
-    test('Sign with ECDSA Brainpool P-256 key', () {});
+    test('Sign with ECDSA NIST P-384 key', () {
+      const secretKeyData = '''
+BGc/+YkTBSuBBAAiAwMEd3FJXIrlQksBiwOLB+ksANWsTQzFNxqpxzjpglaDNKjgF/RXVXj9A6os
+ao0WJtqkKFKZvkASvOCgOaBn3GDUZmF8GJwuuLNOci0JC/N+g5nFd/BeXNJNyECMIbllcLt9AAGA
+45H1wvi7/byiPz3owPhTAh0Pxc/T/U+MiGt/qGO3dVKRfIwlBVMbMb0JDMkBSARKGCU=
+''';
+      const publicKeyData = '''
+BGc/+YkTBSuBBAAiAwMEd3FJXIrlQksBiwOLB+ksANWsTQzFNxqpxzjpglaDNKjgF/RXVXj9A6os
+ao0WJtqkKFKZvkASvOCgOaBn3GDUZmF8GJwuuLNOci0JC/N+g5nFd/BeXNJNyECMIbllcLt9
+''';
+      final secretKey = SecretKeyPacket.fromBytes(
+        base64.decode(
+          secretKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(
+          publicKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final signature = SignaturePacket.createSignature(
+        secretKey,
+        SignatureType.standalone,
+        literalText.toBytes(),
+      );
+      expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
+    });
 
-    test('Sign with EdDSA legacy key', () {});
+    test('Sign with ECDSA Brainpool P-256 key', () {
+      const secretKeyData = '''
+BGc/+dATCSskAwMCCAEBBwIDBJ15ari0PCq317awmdNNIwz+yOZ18yUCg8LOAmYEaRAqAh1HmAnS
+K5d4i1CX2M2/UKup7f/KD/o5Y6oid+VuTZQAAQCAetZiozf4F0b5trgEPGOsbT4PYke6PlfnRjlP
+s4Zxog7L
+''';
+      const publicKeyData = '''
+BGc/+dATCSskAwMCCAEBBwIDBJ15ari0PCq317awmdNNIwz+yOZ18yUCg8LOAmYEaRAqAh1HmAnS
+K5d4i1CX2M2/UKup7f/KD/o5Y6oid+VuTZQ=
+''';
+      final secretKey = SecretKeyPacket.fromBytes(
+        base64.decode(
+          secretKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(
+          publicKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final signature = SignaturePacket.createSignature(
+        secretKey,
+        SignatureType.standalone,
+        literalText.toBytes(),
+      );
+      expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
+    });
 
-    test('Sign with Ed25519 key', () {});
+    test('Sign with EdDSA legacy key', () {
+      const secretKeyData = '''
+BGc/+gYWCSsGAQQB2kcPAQEHQGUAHTxwcB6TD72goFQpLf3jAqdbm1cZwv1N2mjBffEgAAD/fBmt
+MQFsViG6cDhKa8Mjx3gK1PRMy9CXs375s8jmjlERTA==
+''';
+      const publicKeyData = '''
+BGc/+gYWCSsGAQQB2kcPAQEHQGUAHTxwcB6TD72goFQpLf3jAqdbm1cZwv1N2mjBffEg
+''';
+      final secretKey = SecretKeyPacket.fromBytes(
+        base64.decode(
+          secretKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(
+          publicKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final signature = SignaturePacket.createSignature(
+        secretKey,
+        SignatureType.standalone,
+        literalText.toBytes(),
+      );
+      expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
+    });
 
-    test('Sign with Ed448 key', () {});
+    test('Sign with Ed25519 rfc9580 key', () {
+      const secretKeyData = '''
+BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWjABlygXsSvnB+jV9YbOYT
+YSAdNE6yZqLIL95oNXYrZbC3
+''';
+      const publicKeyData = '''
+BmOHf+MbAAAAIPlNp7tI1gph5WdwamWH0DMZmbudiRoIJC6thFQ9+JWj
+''';
+      final secretKey = SecretKeyPacket.fromBytes(
+        base64.decode(
+          secretKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(
+          publicKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final signature = SignaturePacket.createSignature(
+        secretKey,
+        SignatureType.standalone,
+        literalText.toBytes(),
+      );
+      expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
+    });
+
+    test('Sign with Ed448 rfc9580 key', () {
+      const secretKeyData = '''
+BmbzftccAAAAOR3+OzyG7CwqCJopfjLl1hr1L8xJb4yIqt3ya0SH/pNXF63tthhChdNUdqtTGppE
+g6KH7Dz3jXlFAAD8C816Koa0GGjpC5lWzhe5Ve8u3Q567f44XWum3y63z8fldhY1jvB2ixSGZtNc
+yFlK9T9y2q2KGTA=
+''';
+      const publicKeyData = '''
+BmbzftccAAAAOR3+OzyG7CwqCJopfjLl1hr1L8xJb4yIqt3ya0SH/pNXF63tthhChdNUdqtTGppE
+g6KH7Dz3jXlFAA==
+''';
+      final secretKey = SecretKeyPacket.fromBytes(
+        base64.decode(
+          secretKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final publicKey = PublicKeyPacket.fromBytes(
+        base64.decode(
+          publicKeyData.replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '',
+          ),
+        ),
+      );
+      final signature = SignaturePacket.createSignature(
+        secretKey,
+        SignatureType.standalone,
+        literalText.toBytes(),
+      );
+      expect(signature.verify(publicKey, literalText.toBytes()), isTrue);
+    });
   });
 }
