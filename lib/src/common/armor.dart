@@ -39,18 +39,19 @@ class Armor {
   static const splitPattern = r'^-----[^-]+-----$';
   static const emptyLinePattern = r'^[ \f\r\t\u00a0\u2000-\u200a\u202f\u205f\u3000]*$';
   static const headerPattern = r'^([^\s:]|[^\s:][^:]*[^\s:]): .+$';
-  static const beginPattern = r'^-----BEGIN PGP (MESSAGE, PART \d+\/\d+'
-      r'|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|'
-      r'PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$';
 
   static const base64Chunk = 76;
 
+  /// Armor type
   final ArmorType type;
 
+  /// Armor data
   final Uint8List data;
 
+  /// Armor headers
   final List<String> headers;
 
+  /// Armor text
   final String text;
 
   Armor(
@@ -74,7 +75,7 @@ class Armor {
     final lines = LineSplitter.split(armored);
     for (final line in lines) {
       if (type == null && splitPattern.hasMatch(line)) {
-        type = _getType(line);
+        type = ArmorType.fromBegin(line);
       } else {
         if (headerPattern.hasMatch(line)) {
           headers.add(line);
@@ -192,30 +193,6 @@ class Armor {
         break;
     }
     return result.join();
-  }
-
-  static ArmorType _getType(final String text) {
-    final matches = RegExp(beginPattern).allMatches(text);
-    if (matches.isEmpty) {
-      throw ArgumentError('Unknown ASCII armor type');
-    }
-    final match = matches.elementAt(0)[0]!;
-    if (r'MESSAGE, PART \d+\/\d+'.hasMatch(match)) {
-      return ArmorType.multipartSection;
-    } else if (r'MESSAGE, PART \d+'.hasMatch(match)) {
-      return ArmorType.multipartLast;
-    } else if (r'SIGNED MESSAGE'.hasMatch(match)) {
-      return ArmorType.signedMessage;
-    } else if (r'MESSAGE'.hasMatch(match)) {
-      return ArmorType.message;
-    } else if (r'PUBLIC KEY BLOCK'.hasMatch(match)) {
-      return ArmorType.publicKey;
-    } else if (r'PRIVATE KEY BLOCK'.hasMatch(match)) {
-      return ArmorType.privateKey;
-    } else if (r'SIGNATURE'.hasMatch(match)) {
-      return ArmorType.signature;
-    }
-    return ArmorType.multipartSection;
   }
 
   static String _addHeader([final String customComment = '']) {
