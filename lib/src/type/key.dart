@@ -18,29 +18,42 @@ import 'user.dart';
 /// That represents a key packet, the relevant signatures, users and subkeys.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class KeyInterface implements ArmorableInterface, PacketContainerInterface {
+  /// Return key packet
   KeyPacketInterface get keyPacket;
 
+  /// Return key as public key
   KeyInterface get publicKey;
 
+  /// Return key version
   int get version;
 
+  /// Get creation time
   DateTime get creationTime;
 
+  /// Return the expiration time of the key or null if key does not expire.
   DateTime? get expirationTime;
 
+  /// Get key algorithm
   KeyAlgorithm get keyAlgorithm;
 
+  /// Get fingerprint
   Uint8List get fingerprint;
 
+  /// Get key ID
   Uint8List get keyID;
 
+  /// Get key strength
   int get keyStrength;
 
+  /// Get revocation signatures
   Iterable<SignaturePacketInterface> get revocationSignatures;
 
+  /// Get direct signatures
   Iterable<SignaturePacketInterface> get directSignatures;
 
+  /// Get users
   Iterable<UserInterface> get users;
 
+  /// Get subkeys
   Iterable<SubkeyInterface> get subkeys;
 }

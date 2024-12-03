@@ -11,8 +11,10 @@ import '../enum/symmetric_algorithm.dart';
 /// Session key interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class SessionKeyInterface {
+  /// Get encryption key
   Uint8List get encryptionKey;
 
+  /// Get algorithm to encrypt the message with
   SymmetricAlgorithm get symmetric;
 
   /// Checksum the encryption key

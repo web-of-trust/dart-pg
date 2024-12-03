@@ -19,23 +19,25 @@ abstract interface class SecretKeyPacketInterface implements KeyPacketInterface 
   /// Get secret key material
   SecretKeyMaterialInterface? get secretKeyMaterial;
 
-  /// Secret key packed is encrypted
+  /// Secret key packet is encrypted
   bool get isEncrypted;
 
-  /// Secret key packed is decrypted
+  /// Secret key packet is decrypted
   bool get isDecrypted;
 
-  /// Secret key packed is aead protected
+  /// Secret key packet is aead protected
   bool get aeadProtected;
 
   /// Get preferred hash algorithm
   HashAlgorithm get preferredHash;
 
+  /// Encrypt secret key packet with passphrase
   SecretKeyPacketInterface encrypt(
     String passphrase,
     SymmetricAlgorithm symmetric, [
     AeadAlgorithm? aead,
   ]);
 
+  /// Decrypt secret key packet with passphrase
   SecretKeyPacketInterface decrypt(String passphrase);
 }

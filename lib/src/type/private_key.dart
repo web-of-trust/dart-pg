@@ -10,12 +10,16 @@ import 'key.dart';
 /// OpenPGP private key interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class PrivateKeyInterface implements KeyInterface {
+  /// Private key is encrypted
   bool get isEncrypted;
 
+  /// Private key is decrypted
   bool get isDecrypted;
 
+  /// Private key is aead protected
   bool get aeadProtected;
 
+  /// Get preferred hash algorithm
   HashAlgorithm get preferredHash;
 
   /// Lock a private key with the given passphrase.

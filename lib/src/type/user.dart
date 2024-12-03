@@ -13,18 +13,25 @@ import 'user_id_packet.dart';
 /// That represents an user ID or attribute packet and the relevant signatures.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class UserInterface implements PacketContainerInterface {
+  /// Get main key
   KeyInterface get mainKey;
 
+  /// Get user ID packet
   UserIDPacketInterface get userIDPacket;
 
+  /// Get user ID
   String get userID;
 
+  /// Return user is primary
   bool get isPrimary;
 
+  /// Get revocation signatures
   Iterable<SignaturePacketInterface> get revocationSignatures;
 
+  /// Get self signatures
   Iterable<SignaturePacketInterface> get selfSignatures;
 
+  /// Get other signatures
   Iterable<SignaturePacketInterface> get otherSignatures;
 
   /// Check if a given certificate of the user is revoked

@@ -16,30 +16,43 @@ import 'subkey_packet.dart';
 /// That represents a subkey packet and the relevant signatures.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class SubkeyInterface implements PacketContainerInterface {
+  /// Get main key
   KeyInterface get mainKey;
 
+  /// Get key packet
   SubkeyPacketInterface get keyPacket;
 
+  /// Return key version
   int get version;
 
+  /// Get creation time
   DateTime get creationTime;
 
+  /// Get the expiration time of the subkey or null if subkey does not expire.
   DateTime? get expirationTime;
 
+  /// Get key algorithm
   KeyAlgorithm get keyAlgorithm;
 
+  /// Get fingerprint
   Uint8List get fingerprint;
 
+  /// Get key ID
   Uint8List get keyID;
 
+  /// Get key strength
   int get keyStrength;
 
+  /// Return subkey is signing or verification key
   bool get isSigningKey;
 
+  /// Return subkey is encryption or decryption key
   bool get isEncryptionKey;
 
+  /// Get revocation signatures
   Iterable<SignaturePacketInterface> get revocationSignatures;
 
+  /// Get binding signatures
   Iterable<SignaturePacketInterface> get bindingSignatures;
 
   /// Check if a subkey is revoked
