@@ -6,10 +6,14 @@ library;
 
 import '../enum/hash_algorithm.dart';
 import 'key.dart';
+import 'secret_key_packet.dart';
 
 /// OpenPGP private key interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class PrivateKeyInterface implements KeyInterface {
+  /// Get secret key packet
+  SecretKeyPacketInterface get secretKeyPacket;
+
   /// Private key is encrypted
   bool get isEncrypted;
 

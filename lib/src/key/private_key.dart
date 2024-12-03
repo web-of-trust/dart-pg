@@ -23,19 +23,19 @@ final class PrivateKey extends Base implements PrivateKeyInterface {
   PrivateKey(super.packetList);
 
   @override
-  SecretKeyPacketInterface get keyPacket => super.keyPacket as SecretKeyPacketInterface;
+  SecretKeyPacketInterface get secretKeyPacket => super.keyPacket as SecretKeyPacketInterface;
 
   @override
-  bool get isDecrypted => keyPacket.isDecrypted;
+  bool get isDecrypted => secretKeyPacket.isDecrypted;
 
   @override
-  bool get isEncrypted => keyPacket.isEncrypted;
+  bool get isEncrypted => secretKeyPacket.isEncrypted;
 
   @override
-  bool get aeadProtected => keyPacket.aeadProtected;
+  bool get aeadProtected => secretKeyPacket.aeadProtected;
 
   @override
-  HashAlgorithm get preferredHash => keyPacket.preferredHash;
+  HashAlgorithm get preferredHash => secretKeyPacket.preferredHash;
 
   @override
   KeyInterface get publicKey {
@@ -70,7 +70,7 @@ final class PrivateKey extends Base implements PrivateKeyInterface {
     if (passphrase.isEmpty) {
       throw ArgumentError('Passphrase are required for key encryption.');
     }
-    if (!keyPacket.isDecrypted) {
+    if (!secretKeyPacket.isDecrypted) {
       throw StateError('Private key must be decrypted before encrypting.');
     }
 
@@ -99,7 +99,7 @@ final class PrivateKey extends Base implements PrivateKeyInterface {
     });
 
     return PrivateKey(PacketList([
-      keyPacket.encrypt(
+      secretKeyPacket.encrypt(
         passphrase,
         Config.preferredSymmetric,
         aead,
@@ -135,7 +135,7 @@ final class PrivateKey extends Base implements PrivateKeyInterface {
       }
     });
     return PrivateKey(PacketList([
-      keyPacket.decrypt(passphrase),
+      secretKeyPacket.decrypt(passphrase),
       ...revocationSignatures,
       ...directSignatures,
       ...users.map((user) => user.packetList).expand((packet) => packet),
