@@ -39,8 +39,9 @@ class Armor {
   static const splitPattern = r'^-----[^-]+-----$';
   static const emptyLinePattern = r'^[ \f\r\t\u00a0\u2000-\u200a\u202f\u205f\u3000]*$';
   static const headerPattern = r'^([^\s:]|[^\s:][^:]*[^\s:]): .+$';
-  static const beginPattern =
-      r'^-----BEGIN PGP (MESSAGE, PART \d+\/\d+|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$';
+  static const beginPattern = r'^-----BEGIN PGP (MESSAGE, PART \d+\/\d+'
+      r'|MESSAGE, PART \d+|SIGNED MESSAGE|MESSAGE|'
+      r'PUBLIC KEY BLOCK|PRIVATE KEY BLOCK|SIGNATURE)-----$';
 
   static const base64Chunk = 76;
 
