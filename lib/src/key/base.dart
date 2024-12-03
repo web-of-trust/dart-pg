@@ -22,7 +22,7 @@ import 'user.dart';
 
 /// Base abstract OpenPGP key class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class Base implements KeyInterface {
+abstract class BaseKey implements KeyInterface {
   @override
   late final KeyPacketInterface keyPacket;
 
@@ -38,7 +38,7 @@ abstract class Base implements KeyInterface {
   @override
   late final List<SubkeyInterface> subkeys;
 
-  Base(final PacketListInterface packetList) {
+  BaseKey(final PacketListInterface packetList) {
     _readPacketList(packetList);
   }
 

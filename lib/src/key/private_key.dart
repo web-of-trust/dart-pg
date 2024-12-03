@@ -20,7 +20,7 @@ import 'package:dart_pg/src/type/packet.dart';
 import 'package:dart_pg/src/type/private_key.dart';
 import 'package:dart_pg/src/type/secret_key_packet.dart';
 
-final class PrivateKey extends Base implements PrivateKeyInterface {
+final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   PrivateKey(super.packetList);
 
   @override

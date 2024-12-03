@@ -42,7 +42,7 @@ final class Subkey implements SubkeyInterface {
   DateTime get creationTime => keyPacket.creationTime;
 
   @override
-  DateTime? get expirationTime => Base.keyExpiration(bindingSignatures);
+  DateTime? get expirationTime => BaseKey.keyExpiration(bindingSignatures);
 
   @override
   Uint8List get fingerprint => keyPacket.fingerprint;

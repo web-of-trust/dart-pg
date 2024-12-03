@@ -16,7 +16,7 @@ import 'base.dart';
 
 /// OpenPGP public key class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-final class PublicKey extends Base {
+final class PublicKey extends BaseKey {
   PublicKey(super.packetList);
 
   /// Read public key from armored string
