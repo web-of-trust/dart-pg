@@ -78,7 +78,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
   }
 
   @override
-  encrypt(
+  SecretSubkeyPacket encrypt(
     final String passphrase,
     final SymmetricAlgorithm symmetric, [
     final AeadAlgorithm? aead,
@@ -101,7 +101,7 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
   }
 
   @override
-  decrypt(final String passphrase) {
+  SecretSubkeyPacket decrypt(final String passphrase) {
     if (secretKeyMaterial == null) {
       return SecretSubkeyPacket(
         publicKey as PublicSubkeyPacket,

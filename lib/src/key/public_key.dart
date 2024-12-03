@@ -13,7 +13,7 @@ import 'base.dart';
 
 /// OpenPGP public key class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PublicKey extends Base {
+final class PublicKey extends Base {
   PublicKey(super.packetList);
 
   factory PublicKey.fromArmored(final String armored) {

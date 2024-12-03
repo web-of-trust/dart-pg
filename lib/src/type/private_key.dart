@@ -4,7 +4,8 @@
 
 library;
 
-import 'package:dart_pg/src/type/key.dart';
+import '../enum/hash_algorithm.dart';
+import 'key.dart';
 
 /// OpenPGP private key interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -14,6 +15,8 @@ abstract interface class PrivateKeyInterface implements KeyInterface {
   bool get isDecrypted;
 
   bool get aeadProtected;
+
+  HashAlgorithm get preferredHash;
 
   /// Lock a private key with the given passphrase.
   /// This method does not change the original key.

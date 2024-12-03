@@ -25,6 +25,9 @@ abstract interface class SecretKeyPacketInterface implements KeyPacketInterface 
   /// Secret key packed is decrypted
   bool get isDecrypted;
 
+  /// Secret key packed is aead protected
+  bool get aeadProtected;
+
   /// Get preferred hash algorithm
   HashAlgorithm get preferredHash;
 

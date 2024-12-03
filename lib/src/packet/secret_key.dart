@@ -462,6 +462,9 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   int get keyVersion => publicKey.keyVersion;
 
   @override
+  bool get aeadProtected => aead != null;
+
+  @override
   HashAlgorithm get preferredHash {
     if ((keyMaterial is ECPublicMaterial)) {
       final curve = Ecc.values.firstWhere(

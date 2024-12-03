@@ -10,14 +10,13 @@ import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/enum/signature_type.dart';
 import 'package:dart_pg/src/packet/base.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
+import 'package:dart_pg/src/type/key.dart';
 import 'package:dart_pg/src/type/key_packet.dart';
 import 'package:dart_pg/src/type/packet_list.dart';
 import 'package:dart_pg/src/type/signature_packet.dart';
 import 'package:dart_pg/src/type/subkey.dart';
 import 'package:dart_pg/src/type/subkey_packet.dart';
 import 'package:dart_pg/src/type/user.dart';
-
-import '../type/key.dart';
 import 'subkey.dart';
 import 'user.dart';
 
@@ -28,16 +27,16 @@ abstract class Base implements KeyInterface {
   late final KeyPacketInterface keyPacket;
 
   @override
-  late final Iterable<SignaturePacketInterface> revocationSignatures;
+  late final List<SignaturePacketInterface> revocationSignatures;
 
   @override
-  late final Iterable<SignaturePacketInterface> directSignatures;
+  late final List<SignaturePacketInterface> directSignatures;
 
   @override
-  late final Iterable<UserInterface> users;
+  late final List<UserInterface> users;
 
   @override
-  late final Iterable<SubkeyInterface> subkeys;
+  late final List<SubkeyInterface> subkeys;
 
   Base(final PacketListInterface packetList) {
     _readPacketList(packetList);
@@ -169,8 +168,8 @@ abstract class Base implements KeyInterface {
     this.keyPacket = keyPacket;
     this.revocationSignatures = revocationSignatures;
     this.directSignatures = directSignatures;
-    this.users = users.where((user) => user.verify());
-    this.subkeys = subkeys.where((subkey) => subkey.verify());
+    this.users = users.where((user) => user.verify()).toList();
+    this.subkeys = subkeys.where((subkey) => subkey.verify()).toList();
   }
 
   static DateTime? keyExpiration(
