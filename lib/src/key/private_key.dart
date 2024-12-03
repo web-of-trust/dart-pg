@@ -9,6 +9,7 @@ import 'package:dart_pg/src/common/config.dart';
 import 'package:dart_pg/src/enum/aead_algorithm.dart';
 import 'package:dart_pg/src/enum/armor_type.dart';
 import 'package:dart_pg/src/enum/hash_algorithm.dart';
+import 'package:dart_pg/src/enum/key_version.dart';
 import 'package:dart_pg/src/key/base.dart';
 import 'package:dart_pg/src/key/public_key.dart';
 import 'package:dart_pg/src/key/subkey.dart';
@@ -75,12 +76,12 @@ final class PrivateKey extends Base implements PrivateKeyInterface {
     }
 
     AeadAlgorithm? aead;
-    if (version == 6 && Config.aeadProtect) {
+    if (version == KeyVersion.v6.value && Config.aeadProtect) {
       aead = Config.preferredAead;
     }
     final subkeys = this.subkeys.map((subkey) {
       final index = this.subkeys.indexOf(subkey);
-      final subkeyPass = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
+      final subkeyPass = subkeyPassphrases.elementAtOrNull(index) ?? passphrase;
       if (subkeyPass.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
         final keyPacket = (subkey.keyPacket as SecretSubkeyPacket);
         return Subkey(
@@ -121,7 +122,7 @@ final class PrivateKey extends Base implements PrivateKeyInterface {
     }
     final subkeys = this.subkeys.map((subkey) {
       final index = this.subkeys.indexOf(subkey);
-      final subkeyPass = (index < subkeyPassphrases.length) ? subkeyPassphrases.elementAt(index) : passphrase;
+      final subkeyPass = subkeyPassphrases.elementAtOrNull(index) ?? passphrase;
       if (subkeyPass.isNotEmpty && subkey.keyPacket is SecretSubkeyPacket) {
         final keyPacket = (subkey.keyPacket as SecretSubkeyPacket);
         return Subkey(
