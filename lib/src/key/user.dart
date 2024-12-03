@@ -44,8 +44,8 @@ final class User implements UserInterface {
   bool get isPrimary {
     final signatures = selfSignatures.toList();
     signatures.sort(
-      (a, b) => b.creationTime!.compareTo(
-        a.creationTime!,
+      (a, b) => b.creationTime.compareTo(
+        a.creationTime,
       ),
     );
     for (final signature in signatures) {

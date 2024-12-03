@@ -176,13 +176,13 @@ abstract class Base implements KeyInterface {
     final List<SignaturePacketInterface> signatures,
   ) {
     signatures.sort(
-      (a, b) => b.creationTime!.compareTo(
-        a.creationTime!,
+      (a, b) => b.creationTime.compareTo(
+        a.creationTime,
       ),
     );
     for (final signature in signatures) {
       if (signature.keyExpirationTime > 0) {
-        final creationTime = signature.creationTime!;
+        final creationTime = signature.creationTime;
         return creationTime.add(Duration(
           seconds: signature.keyExpirationTime,
         ));

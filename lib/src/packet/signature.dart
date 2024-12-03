@@ -240,7 +240,8 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       ]);
 
   @override
-  DateTime? get creationTime => getSubpacket<SignatureCreationTime>()?.creationTime;
+  DateTime get creationTime =>
+      getSubpacket<SignatureCreationTime>()?.creationTime ?? DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
   DateTime? get expirationTime => getSubpacket<SignatureExpirationTime>()?.expirationTime;
@@ -300,7 +301,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   @override
   bool isExpired([final DateTime? time]) {
     final timestamp = time?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
-    final creation = creationTime?.millisecondsSinceEpoch ?? 0;
+    final creation = creationTime.millisecondsSinceEpoch;
     final expiration = expirationTime?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
     return !(creation <= timestamp && timestamp <= expiration);
   }

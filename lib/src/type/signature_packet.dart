@@ -47,7 +47,7 @@ abstract interface class SignaturePacketInterface implements PacketInterface {
   Uint8List get signature;
 
   /// Get signature creation time
-  DateTime? get creationTime;
+  DateTime get creationTime;
 
   /// Get signature expiration time
   DateTime? get expirationTime;
