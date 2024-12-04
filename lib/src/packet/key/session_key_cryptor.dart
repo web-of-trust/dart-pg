@@ -21,7 +21,7 @@ export 'rsa_session_key_cryptor.dart';
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class SessionKeyCryptor implements SessionKeyCryptorInterface {
   static SessionKeyInterface decodeSessionKey(final Uint8List data) {
-    return SessionKey.decode(data);
+    return SessionKey.fromBytes(data);
   }
 
   static Uint8List processInBlocks(

@@ -24,5 +24,5 @@ abstract interface class SessionKeyInterface {
   Uint8List computeChecksum();
 
   /// Serialize session key to bytes
-  Uint8List encode();
+  Uint8List toBytes();
 }

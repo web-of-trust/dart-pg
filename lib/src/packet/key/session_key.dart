@@ -29,7 +29,7 @@ class SessionKey implements SessionKeyInterface {
         symmetric,
       );
 
-  factory SessionKey.decode(final Uint8List data) {
+  factory SessionKey.fromBytes(final Uint8List data) {
     final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
       (algo) => algo.value == data[0],
     );
@@ -42,7 +42,7 @@ class SessionKey implements SessionKeyInterface {
   }
 
   @override
-  encode() => Uint8List.fromList(
+  toBytes() => Uint8List.fromList(
         [symmetric.value, ...encryptionKey],
       );
 

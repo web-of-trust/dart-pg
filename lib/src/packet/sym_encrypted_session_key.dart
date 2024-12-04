@@ -173,7 +173,7 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
             ),
           );
         iv = Uint8List(0);
-        encrypted = cipher.process(sessionKey.encode());
+        encrypted = cipher.process(sessionKey.toBytes());
       }
     } else {
       iv = Uint8List(0);

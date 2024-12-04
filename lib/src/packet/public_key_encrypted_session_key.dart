@@ -122,7 +122,7 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
       KeyAlgorithm.x25519 || KeyAlgorithm.x448 => sessionKey.encryptionKey,
       _ => version == 3
           ? Uint8List.fromList([
-              ...sessionKey.encode(),
+              ...sessionKey.toBytes(),
               ...sessionKey.computeChecksum(),
             ])
           : Uint8List.fromList([
@@ -187,7 +187,7 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
       final keyData = cryptor.decrypt(key.secretKeyMaterial!);
       final SessionKeyInterface sessionKey;
       if (version == 3) {
-        sessionKey = SessionKey.decode(keyData);
+        sessionKey = SessionKey.fromBytes(keyData);
       } else {
         switch (keyAlgorithm) {
           case KeyAlgorithm.x25519:
