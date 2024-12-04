@@ -276,7 +276,10 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     return SignaturePacket.createSignature(
       signKey,
       SignatureType.certGeneric,
-      userID.signBytes,
+      Uint8List.fromList([
+        ...signKey.signBytes,
+        ...userID.signBytes,
+      ]),
       subpackets: subpackets,
       time: time,
     );
