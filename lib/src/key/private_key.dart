@@ -60,11 +60,20 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
     return PublicKey(PacketList(packets));
   }
 
+  /// Reads an armored OpenPGP private key and returns a PrivateKey object
+  factory PrivateKey.fromArmored(final String armored) {
+    final armor = Armor.decode(armored);
+    if (armor.type != ArmorType.privateKey) {
+      throw ArgumentError('Armored text not of private key type');
+    }
+    return PrivateKey(PacketList.decode(armor.data));
+  }
+
   @override
   String armor() => Armor.encode(ArmorType.privateKey, packetList.encode());
 
   @override
-  PrivateKeyInterface encrypt(
+  PrivateKey encrypt(
     final String passphrase, [
     final Iterable<String> subkeyPassphrases = const [],
   ]) {
@@ -113,7 +122,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   }
 
   @override
-  PrivateKeyInterface decrypt(
+  PrivateKey decrypt(
     String passphrase, [
     Iterable<String> subkeyPassphrases = const [],
   ]) {

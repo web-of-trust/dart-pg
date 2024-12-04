@@ -6,6 +6,7 @@ import 'package:test/test.dart';
 void main() {
   group('Key reading', () {
     const userID = 'Dart Privacy Guard <dartpg@openpgp.example.com>';
+
     test('RSA key', () {
       const armored = '''
 -----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -273,11 +274,16 @@ fjfQblPSXk32Zpv5RXzNhOIelkIuA9USba2Zw7ZRB4iuDfOgEJAw7VEt
 -----END PGP PUBLIC KEY BLOCK-----
 ''';
       final publicKey = PublicKey.fromArmored(armored);
+      final directSignature = publicKey.directSignatures[0];
       final user = publicKey.users[0];
       final subkey = publicKey.subkeys[0];
 
       expect(
         publicKey.fingerprint.toHexadecimal(),
+        '7b2522d17acbc689154050fb1a2455f9fc9a46318ad6ef5039d3e6e3bc04a679',
+      );
+      expect(
+        directSignature.issuerFingerprint.toHexadecimal(),
         '7b2522d17acbc689154050fb1a2455f9fc9a46318ad6ef5039d3e6e3bc04a679',
       );
       expect(publicKey.version, 6);
@@ -322,11 +328,16 @@ FmXTxip3kr4=
 -----END PGP PUBLIC KEY BLOCK-----
 ''';
       final publicKey = PublicKey.fromArmored(armored);
+      final directSignature = publicKey.directSignatures[0];
       final user = publicKey.users[0];
       final subkey = publicKey.subkeys[0];
 
       expect(
         publicKey.fingerprint.toHexadecimal(),
+        '93877c2a7656e41e8e39a16d405614663a4c5593da3306f78035f466669c6051',
+      );
+      expect(
+        directSignature.issuerFingerprint.toHexadecimal(),
         '93877c2a7656e41e8e39a16d405614663a4c5593da3306f78035f466669c6051',
       );
       expect(publicKey.version, 6);
