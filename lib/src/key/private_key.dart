@@ -91,8 +91,8 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
             Config.preferredSymmetric,
             aead,
           ),
-          revocationSignatures: subkey.revocationSignatures.toList(),
-          bindingSignatures: subkey.bindingSignatures.toList(),
+          revocationSignatures: subkey.revocationSignatures,
+          bindingSignatures: subkey.bindingSignatures,
         );
       } else {
         return subkey;
@@ -128,8 +128,8 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
         return Subkey(
           this,
           keyPacket.decrypt(subkeyPass),
-          revocationSignatures: subkey.revocationSignatures.toList(),
-          bindingSignatures: subkey.bindingSignatures.toList(),
+          revocationSignatures: subkey.revocationSignatures,
+          bindingSignatures: subkey.bindingSignatures,
         );
       } else {
         return subkey;

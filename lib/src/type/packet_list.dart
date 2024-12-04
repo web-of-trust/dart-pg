@@ -10,9 +10,9 @@ import 'packet.dart';
 
 /// Packet list interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class PacketListInterface<T extends PacketInterface> extends Iterable<T> {
+abstract interface class PacketListInterface<T extends PacketInterface> implements List<T> {
   /// Get packets
-  Iterable<PacketInterface> get packets;
+  List<PacketInterface> get packets;
 
   /// Serialize packets to bytes
   Uint8List encode();

@@ -50,10 +50,10 @@ abstract interface class SubkeyInterface implements PacketContainerInterface {
   bool get isEncryptionKey;
 
   /// Get revocation signatures
-  Iterable<SignaturePacketInterface> get revocationSignatures;
+  List<SignaturePacketInterface> get revocationSignatures;
 
   /// Get binding signatures
-  Iterable<SignaturePacketInterface> get bindingSignatures;
+  List<SignaturePacketInterface> get bindingSignatures;
 
   /// Check if a subkey is revoked
   bool isRevoked([final DateTime? time]);

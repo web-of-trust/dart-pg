@@ -26,13 +26,13 @@ abstract interface class UserInterface implements PacketContainerInterface {
   bool get isPrimary;
 
   /// Get revocation signatures
-  Iterable<SignaturePacketInterface> get revocationSignatures;
+  List<SignaturePacketInterface> get revocationSignatures;
 
   /// Get self signatures
-  Iterable<SignaturePacketInterface> get selfSignatures;
+  List<SignaturePacketInterface> get selfSignatures;
 
   /// Get other signatures
-  Iterable<SignaturePacketInterface> get otherSignatures;
+  List<SignaturePacketInterface> get otherSignatures;
 
   /// Check if a given certificate of the user is revoked
   bool isRevoked([final DateTime? time]);

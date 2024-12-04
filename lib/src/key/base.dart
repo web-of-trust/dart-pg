@@ -8,8 +8,6 @@ import 'dart:typed_data';
 
 import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
-import 'package:dart_pg/src/enum/signature_type.dart';
-import 'package:dart_pg/src/packet/base.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/type/key.dart';
 import 'package:dart_pg/src/type/key_packet.dart';
@@ -18,6 +16,7 @@ import 'package:dart_pg/src/type/signature_packet.dart';
 import 'package:dart_pg/src/type/subkey.dart';
 import 'package:dart_pg/src/type/subkey_packet.dart';
 import 'package:dart_pg/src/type/user.dart';
+import 'package:dart_pg/src/type/user_id_packet.dart';
 import 'subkey.dart';
 import 'user.dart';
 
@@ -84,97 +83,109 @@ abstract class BaseKey implements KeyInterface {
       ]);
 
   _readPacketList(final PacketListInterface packetList) {
-    final revocationSignatures = <SignaturePacketInterface>[];
-    final directSignatures = <SignaturePacketInterface>[];
-    final users = <UserInterface>[];
-    final subkeys = <SubkeyInterface>[];
+    final keyPacketList = packetList.takeWhile(
+      (packet) => packet is KeyPacketInterface,
+    );
 
-    KeyPacketInterface? keyPacket;
-    Subkey? subkey;
+    if (keyPacketList.isEmpty) {
+      throw StateError('Key packet not found in packet list.');
+    }
+    if (keyPacketList.length > 1) {
+      throw StateError('Key block contains multiple key packets.');
+    }
+    keyPacket = keyPacketList.whereType<KeyPacketInterface>().first;
+
+    var remainPackets = packetList.skipWhile(
+      (packet) => packet is KeyPacketInterface,
+    );
+
+    revocationSignatures = remainPackets
+        .takeWhile((packet) {
+          if (packet is SignaturePacketInterface) {
+            return packet.isCertRevocation;
+          }
+          return false;
+        })
+        .whereType<SignaturePacketInterface>()
+        .toList();
+    remainPackets = remainPackets.skipWhile((packet) {
+      if (packet is SignaturePacketInterface) {
+        return packet.isKeyRevocation;
+      }
+      return false;
+    });
+
+    directSignatures = remainPackets
+        .takeWhile((packet) {
+          if (packet is SignaturePacketInterface) {
+            return packet.isDirectKey;
+          }
+          return false;
+        })
+        .whereType<SignaturePacketInterface>()
+        .toList();
+    remainPackets = remainPackets.skipWhile((packet) {
+      if (packet is SignaturePacketInterface) {
+        return packet.isDirectKey;
+      }
+      return false;
+    });
+
     User? user;
-    Uint8List? primaryKeyID;
-    for (final packet in packetList) {
-      switch (packet.type) {
-        case PacketType.publicKey:
-        case PacketType.secretKey:
-          if (keyPacket != null) {
-            throw StateError('Key block contains multiple key packets');
+    final users = <UserInterface>[];
+    final userPackets = remainPackets.takeWhile((packet) {
+      return packet is! SubkeyPacketInterface;
+    });
+    for (final packet in userPackets) {
+      if (packet is UserIDPacketInterface) {
+        user = User(
+          this,
+          packet,
+          revocationSignatures: [],
+          selfSignatures: [],
+          otherSignatures: [],
+        );
+        users.add(user);
+      }
+      if (packet is SignaturePacketInterface) {
+        if (packet.isCertification) {
+          if (packet.issuerKeyID.equals(keyPacket.keyID)) {
+            user?.selfSignatures.add(packet);
+          } else {
+            user?.otherSignatures.add(packet);
           }
-          if (packet is KeyPacketInterface) {
-            keyPacket = packet;
-            primaryKeyID = packet.keyID;
-          }
-          break;
-        case PacketType.publicSubkey:
-        case PacketType.secretSubkey:
-          if (packet is SubkeyPacketInterface) {
-            subkey = Subkey(
-              this,
-              packet,
-              revocationSignatures: [],
-              bindingSignatures: [],
-            );
-            subkeys.add(subkey);
-          }
-          user = null;
-          break;
-        case PacketType.userID:
-        case PacketType.userAttribute:
-          if (packet is UserIDPacket) {
-            user = User(
-              this,
-              packet,
-              revocationSignatures: [],
-              selfSignatures: [],
-              otherSignatures: [],
-            );
-            users.add(user);
-          }
-          break;
-        case PacketType.signature:
-          if (packet is SignaturePacket) {
-            switch (packet.signatureType) {
-              case SignatureType.certGeneric:
-              case SignatureType.certPersona:
-              case SignatureType.certCasual:
-              case SignatureType.certPositive:
-                if (packet.issuerKeyID.equals(primaryKeyID!)) {
-                  user?.selfSignatures.add(packet);
-                } else {
-                  user?.otherSignatures.add(packet);
-                }
-                break;
-              case SignatureType.certRevocation:
-                user?.revocationSignatures.add(packet);
-                break;
-              case SignatureType.subkeyBinding:
-                subkey?.bindingSignatures.add(packet);
-                break;
-              case SignatureType.subkeyRevocation:
-                subkey?.revocationSignatures.add(packet);
-                break;
-              case SignatureType.directKey:
-                directSignatures.add(packet);
-                break;
-              case SignatureType.keyRevocation:
-                revocationSignatures.add(packet);
-                break;
-              default:
-            }
-          }
-          break;
-        default:
+        }
+        if (packet.isCertRevocation) {
+          user?.revocationSignatures.add(packet);
+        }
       }
     }
-
-    if (keyPacket == null) {
-      throw StateError('Key packet not found in packet list');
-    }
-
-    this.keyPacket = keyPacket;
-    this.revocationSignatures = revocationSignatures;
-    this.directSignatures = directSignatures;
     this.users = users.where((user) => user.verify()).toList();
+
+    Subkey? subkey;
+    final subkeys = <SubkeyInterface>[];
+    final subkeyPackets = remainPackets.skipWhile((packet) {
+      return packet is! SubkeyPacketInterface;
+    });
+    for (final packet in subkeyPackets) {
+      if (packet is SubkeyPacketInterface) {
+        subkey = Subkey(
+          this,
+          packet,
+          revocationSignatures: [],
+          bindingSignatures: [],
+        );
+        subkeys.add(subkey);
+      }
+      if (packet is SignaturePacketInterface) {
+        if (packet.isSubkeyRevocation) {
+          subkey?.revocationSignatures.add(packet);
+        }
+        if (packet.isSubkeyBinding) {
+          subkey?.bindingSignatures.add(packet);
+        }
+      }
+    }
     this.subkeys = subkeys.where((subkey) => subkey.verify()).toList();
   }
 
