@@ -5,6 +5,7 @@
 library;
 
 import 'package:dart_pg/src/common/helpers.dart';
+import 'package:dart_pg/src/packet/base.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/type/key.dart';
 import 'package:dart_pg/src/type/key_packet.dart';
@@ -77,6 +78,16 @@ abstract class BaseKey implements KeyInterface {
         ...directSignatures,
         ...users.map((user) => user.packetList).expand((packet) => packet),
         ...subkeys.map((subkey) => subkey.packetList).expand((packet) => packet),
+        ...keyPacket.isV6Key
+            ? [
+                PaddingPacket.createPadding(
+                  Helper.randomInt(
+                    PaddingPacket.paddingMin,
+                    PaddingPacket.paddingMax,
+                  ),
+                )
+              ]
+            : [],
       ]);
 
   _readPacketList(final PacketListInterface packetList) {

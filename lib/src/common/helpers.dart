@@ -81,6 +81,12 @@ final class Helper {
     return k;
   }
 
+  static int randomInt(
+    final int min,
+    final int max,
+  ) =>
+      _random.nextInt(max - min) + min;
+
   static S2kInterface stringToKey(final S2kType type) {
     assert(type != S2kType.simple);
     return switch (type) {
