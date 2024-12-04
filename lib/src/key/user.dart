@@ -24,20 +24,20 @@ final class User implements UserInterface {
   final UserIDPacketInterface userIDPacket;
 
   @override
+  final List<SignaturePacketInterface> revocationSignatures;
+
+  @override
   final List<SignaturePacketInterface> selfSignatures;
 
   @override
   final List<SignaturePacketInterface> otherSignatures;
 
-  @override
-  final List<SignaturePacketInterface> revocationSignatures;
-
   User(
     this.mainKey,
     this.userIDPacket, {
+    this.revocationSignatures = const [],
     this.selfSignatures = const [],
     this.otherSignatures = const [],
-    this.revocationSignatures = const [],
   });
 
   @override

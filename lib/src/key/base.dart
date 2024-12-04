@@ -6,6 +6,7 @@ library;
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/enum/signature_type.dart';
 import 'package:dart_pg/src/packet/base.dart';
@@ -110,6 +111,8 @@ abstract class BaseKey implements KeyInterface {
             subkey = Subkey(
               this,
               packet,
+              revocationSignatures: [],
+              bindingSignatures: [],
             );
             subkeys.add(subkey);
           }
@@ -121,6 +124,9 @@ abstract class BaseKey implements KeyInterface {
             user = User(
               this,
               packet,
+              revocationSignatures: [],
+              selfSignatures: [],
+              otherSignatures: [],
             );
             users.add(user);
           }
@@ -132,7 +138,7 @@ abstract class BaseKey implements KeyInterface {
               case SignatureType.certPersona:
               case SignatureType.certCasual:
               case SignatureType.certPositive:
-                if (packet.issuerKeyID == primaryKeyID) {
+                if (packet.issuerKeyID.equals(primaryKeyID!)) {
                   user?.selfSignatures.add(packet);
                 } else {
                   user?.otherSignatures.add(packet);
