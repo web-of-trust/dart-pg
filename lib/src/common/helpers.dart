@@ -8,14 +8,11 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:pointycastle/export.dart';
 
-import '../enum/ecc.dart';
-import '../enum/preset_rfc.dart';
 import '../type/s2k.dart';
 import '../enum/s2k_type.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/symmetric_algorithm.dart';
 import 'argon2_s2k.dart';
-import 'config.dart';
 import 'extensions.dart';
 import 'generic_s2k.dart';
 
@@ -118,26 +115,28 @@ final class Helper {
   }
 
   static assertHash(final HashAlgorithm hash) {
-    assert(hash != HashAlgorithm.unknown &&
-        hash != HashAlgorithm.md5 &&
-        hash != HashAlgorithm.sha1 &&
-        hash != HashAlgorithm.ripemd160);
+    switch (hash) {
+      case HashAlgorithm.unknown:
+      case HashAlgorithm.md5:
+      case HashAlgorithm.sha1:
+      case HashAlgorithm.ripemd160:
+        throw UnsupportedError(
+          'Hash ${hash.name} is unsupported.',
+        );
+      default:
+    }
   }
 
   static assertSymmetric(final SymmetricAlgorithm symmetric) {
-    assert(symmetric != SymmetricAlgorithm.plaintext &&
-        symmetric != SymmetricAlgorithm.cast5 &&
-        symmetric != SymmetricAlgorithm.idea &&
-        symmetric != SymmetricAlgorithm.tripledes);
-  }
-
-  static assertEcc(final Ecc ecc) {
-    if (Config.presetRfc == PresetRfc.rfc4880) {
-      assert(ecc != Ecc.brainpoolP256r1 &&
-          ecc != Ecc.brainpoolP384r1 &&
-          ecc != Ecc.brainpoolP512r1 &&
-          ecc != Ecc.ed25519 &&
-          ecc != Ecc.curve25519);
+    switch (symmetric) {
+      case SymmetricAlgorithm.plaintext:
+      case SymmetricAlgorithm.cast5:
+      case SymmetricAlgorithm.idea:
+      case SymmetricAlgorithm.tripledes:
+        throw UnsupportedError(
+          'Symmetric ${symmetric.name} is unsupported.',
+        );
+      default:
     }
   }
 }

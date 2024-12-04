@@ -12,6 +12,7 @@ import '../enum/hash_algorithm.dart';
 import '../enum/key_version.dart';
 import '../enum/montgomery_curve.dart';
 import '../enum/key_algorithm.dart';
+import '../enum/rsa_key_size.dart';
 import '../type/key_material.dart';
 import '../type/key_packet.dart';
 import '../type/subkey_packet.dart';
@@ -50,7 +51,8 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
         'Version $keyVersion of the key packet is unsupported.',
       );
     }
-    _calculateFingerprintAndKeyID();
+    _assertKeyStrength();
+    _calculateFingerprint();
   }
 
   factory PublicKeyPacket.fromBytes(final Uint8List bytes) {
@@ -138,7 +140,23 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
 
   bool get isV6Key => keyVersion == KeyVersion.v6.value;
 
-  _calculateFingerprintAndKeyID() {
+  void _assertKeyStrength() {
+    switch (keyAlgorithm) {
+      case KeyAlgorithm.rsaEncryptSign:
+      case KeyAlgorithm.rsaEncrypt:
+      case KeyAlgorithm.rsaSign:
+      case KeyAlgorithm.dsa:
+      case KeyAlgorithm.elgamal:
+        if (keyMaterial.keyStrength < RSAKeySize.normal.bits) {
+          throw UnsupportedError(
+            'Key strength ${keyMaterial.keyStrength} of the algorithm ${keyAlgorithm.name} is unsupported.',
+          );
+        }
+      default:
+    }
+  }
+
+  _calculateFingerprint() {
     if (isV6Key) {
       _fingerprint = Uint8List.fromList(
         Helper.hashDigest(signBytes, HashAlgorithm.sha256),
