@@ -122,6 +122,9 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
   get isSubkey => this is SubkeyPacketInterface;
 
   @override
+  bool get isV6Key => keyVersion == KeyVersion.v6.value;
+
+  @override
   get keyID => _keyID;
 
   @override
@@ -133,8 +136,6 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
         ...isV6Key ? data.length.pack32() : data.length.pack16(),
         ...data,
       ]);
-
-  bool get isV6Key => keyVersion == KeyVersion.v6.value;
 
   void _assertKey() {
     if (keyVersion != KeyVersion.v4.value && keyVersion != KeyVersion.v6.value) {

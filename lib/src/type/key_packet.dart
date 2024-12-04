@@ -40,6 +40,9 @@ abstract interface class KeyPacketInterface implements PacketInterface {
   /// Is encryption key
   bool get isEncryptionKey;
 
+  /// Is version 6 key
+  bool get isV6Key;
+
   /// Get bytes for sign
   Uint8List get signBytes;
 

@@ -442,6 +442,9 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
 
   @override
   get isSubkey => this is SubkeyPacketInterface;
+  
+  @override
+  bool get isV6Key => publicKey.isV6Key;
 
   @override
   get keyAlgorithm => publicKey.keyAlgorithm;

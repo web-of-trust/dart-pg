@@ -70,8 +70,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
       curve: curve,
       time: time,
     );
-    final v6Key = secretKey.keyVersion == KeyVersion.v6.value;
-    final aead = v6Key && Config.aeadProtect ? Config.preferredAead : null;
+    final aead = secretKey.isV6Key && Config.aeadProtect ? Config.preferredAead : null;
     final packets = <PacketInterface>[
       secretKey.encrypt(
         passphrase,
@@ -79,7 +78,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
         aead,
       ),
     ];
-    if (v6Key) {
+    if (secretKey.isV6Key) {
       /// Wrap secret key with direct key signature
       packets.add(SignaturePacket.createDirectKeySignature(
         secretKey,
