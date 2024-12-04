@@ -6,12 +6,10 @@ library;
 
 import 'package:dart_pg/src/common/armor.dart';
 import 'package:dart_pg/src/common/config.dart';
-import 'package:dart_pg/src/enum/aead_algorithm.dart';
 import 'package:dart_pg/src/enum/armor_type.dart';
 import 'package:dart_pg/src/enum/ecc.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/enum/key_type.dart';
-import 'package:dart_pg/src/enum/key_version.dart';
 import 'package:dart_pg/src/enum/rsa_key_size.dart';
 import 'package:dart_pg/src/key/base.dart';
 import 'package:dart_pg/src/key/public_key.dart';
@@ -184,10 +182,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
       throw StateError('Private key must be decrypted before encrypting.');
     }
 
-    AeadAlgorithm? aead;
-    if (version == KeyVersion.v6.value && Config.aeadProtect) {
-      aead = Config.preferredAead;
-    }
+    final aead = keyPacket.isV6Key && Config.aeadProtect ? Config.preferredAead : null;
     final subkeys = this.subkeys.map((subkey) {
       final index = this.subkeys.indexOf(subkey);
       final subkeyPass = subkeyPassphrases.elementAtOrNull(index) ?? passphrase;
