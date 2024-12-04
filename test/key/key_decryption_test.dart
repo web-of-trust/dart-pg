@@ -195,7 +195,7 @@ Lvrv2K9VfqgHGB2NDYsdLdXOIHardOmkFmD3rTbjsjHkQrLCs/lCQkVhAYCxmcY1
         'a325107e66bcab3eea407550396ecb8bb86d1922',
       );
       expect(privateKey.version, 4);
-      expect(privateKey.keyAlgorithm, KeyAlgorithm.ecdh);
+      expect(privateKey.keyAlgorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.keyStrength, 384);
 
       expect(
@@ -239,7 +239,7 @@ GwwACgkQmVEhn8nelXjEygEAiKyuVndDuoMDyeK0h1qNd0NCvS7YfGQbV8kqmWf1
         'cd1b5b14294f80be65cefbef9951219fc9de9578',
       );
       expect(privateKey.version, 4);
-      expect(privateKey.keyAlgorithm, KeyAlgorithm.ecdh);
+      expect(privateKey.keyAlgorithm, KeyAlgorithm.ecdsa);
       expect(privateKey.keyStrength, 256);
 
       expect(
