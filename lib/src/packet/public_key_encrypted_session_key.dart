@@ -167,7 +167,7 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
         ...version == 6 ? keyFingerprint : [],
         ...version == 3 ? keyID : [],
         keyAlgorithm.value,
-        ...cryptor.encode(),
+        ...cryptor.toBytes(),
       ]);
 
   PublicKeyEncryptedSessionKeyPacket decrypt(

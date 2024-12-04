@@ -29,10 +29,10 @@ abstract interface class SignaturePacketInterface implements PacketInterface {
   HashAlgorithm get hashAlgorithm;
 
   /// Get hashed subpackets
-  Iterable<SubpacketInterface> get hashedSubpackets;
+  List<SubpacketInterface> get hashedSubpackets;
 
   /// Get unhashed subpackets
-  Iterable<SubpacketInterface> get unhashedSubpackets;
+  List<SubpacketInterface> get unhashedSubpackets;
 
   /// Get signature data
   Uint8List get signatureData;

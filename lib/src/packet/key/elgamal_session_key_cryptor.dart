@@ -51,7 +51,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  encode() => Uint8List.fromList([
+  toBytes() => Uint8List.fromList([
         ...gamma.bitLength.pack16(),
         ...gamma.toUnsignedBytes(),
         ...phi.bitLength.pack16(),

@@ -86,7 +86,7 @@ class MontgomerySessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  encode() => Uint8List.fromList([
+  toBytes() => Uint8List.fromList([
         ...ephemeralKey,
         wrappedKey.length,
         ...wrappedKey,

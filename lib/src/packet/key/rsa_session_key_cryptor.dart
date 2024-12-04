@@ -59,7 +59,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  encode() => Uint8List.fromList([
+  toBytes() => Uint8List.fromList([
         ...encrypted.bitLength.pack16(),
         ...encrypted.toUnsignedBytes(),
       ]);

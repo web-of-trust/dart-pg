@@ -177,7 +177,7 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  encode() => Uint8List.fromList([
+  toBytes() => Uint8List.fromList([
         ...ephemeralKey.bitLength.pack16(),
         ...ephemeralKey.toUnsignedBytes(),
         wrappedKey.length,

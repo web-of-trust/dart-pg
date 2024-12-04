@@ -46,10 +46,10 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   final Uint8List signature;
 
   @override
-  final Iterable<SubpacketInterface> hashedSubpackets;
+  final List<SubpacketInterface> hashedSubpackets;
 
   @override
-  final Iterable<SubpacketInterface> unhashedSubpackets;
+  final List<SubpacketInterface> unhashedSubpackets;
 
   @override
   final Uint8List signatureData;
@@ -364,7 +364,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     }
   }
 
-  static Iterable<SubpacketInterface> _readSubpackets(final Uint8List bytes) {
+  static List<SubpacketInterface> _readSubpackets(final Uint8List bytes) {
     final subpackets = <SubpacketInterface>[];
     var offset = 0;
     while (offset < bytes.length) {

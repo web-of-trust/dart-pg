@@ -12,7 +12,7 @@ import 'secret_key_material.dart';
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class SessionKeyCryptorInterface {
   /// Serialize session key cryptor to bytes
-  Uint8List encode();
+  Uint8List toBytes();
 
   /// Decrypt session key by using secret key packet
   Uint8List decrypt(SecretKeyMaterialInterface key);
