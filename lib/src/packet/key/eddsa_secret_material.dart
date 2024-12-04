@@ -57,7 +57,7 @@ class EdDSASecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  bool get isValid {
+  get isValid {
     final publicKey = switch (publicMaterial.curve) {
       EdDSACurve.ed25519 => nacl.SigningKey.fromSeed(
           secretKey,
@@ -71,10 +71,10 @@ class EdDSASecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  int get keyStrength => publicMaterial.keyStrength;
+  get keyStrength => publicMaterial.keyStrength;
 
   @override
-  Uint8List sign(
+  sign(
     final Uint8List message,
     final HashAlgorithm hash,
   ) =>
@@ -94,5 +94,5 @@ class EdDSASecretMaterial implements SigningKeyMaterialInterface {
       };
 
   @override
-  Uint8List get toBytes => secretKey;
+  get toBytes => secretKey;
 }

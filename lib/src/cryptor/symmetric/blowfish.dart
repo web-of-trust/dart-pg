@@ -311,13 +311,13 @@ class BlowfishEngine extends BaseEngine {
   final _p = List<int>.filled(_pSZ, 0);
 
   @override
-  String get algorithmName => 'Blowfish';
+  get algorithmName => 'Blowfish';
 
   @override
-  int get blockSize => _blockSize;
+  get blockSize => _blockSize;
 
   @override
-  void init(final bool forEncryption, final CipherParameters? params) {
+  init(final bool forEncryption, final CipherParameters? params) {
     if (params is KeyParameter) {
       _forEncryption = forEncryption;
       _workingKey = params.key;
@@ -330,7 +330,7 @@ class BlowfishEngine extends BaseEngine {
   }
 
   @override
-  int processBlock(
+  processBlock(
     final Uint8List input,
     final int inOff,
     final Uint8List output,

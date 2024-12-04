@@ -62,7 +62,7 @@ class MontgomerySessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  Uint8List decrypt(final SecretKeyMaterialInterface key) {
+  decrypt(final SecretKeyMaterialInterface key) {
     if (key is MontgomerySecretMaterial) {
       final keyWrapper = AesKeyWrapper(
         key.publicMaterial.curve.kekSize,
@@ -86,7 +86,7 @@ class MontgomerySessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  Uint8List encode() => Uint8List.fromList([
+  encode() => Uint8List.fromList([
         ...ephemeralKey,
         wrappedKey.length,
         ...wrappedKey,

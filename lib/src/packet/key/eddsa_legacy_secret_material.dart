@@ -49,7 +49,7 @@ class EdDSALegacySecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  bool get isValid {
+  get isValid {
     final signingKey = nacl.SigningKey.fromSeed(seed.toUnsignedBytes());
     final dG = Uint8List.fromList([
       0x40,
@@ -59,10 +59,10 @@ class EdDSALegacySecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  int get keyStrength => publicMaterial.keyStrength;
+  get keyStrength => publicMaterial.keyStrength;
 
   @override
-  Uint8List sign(Uint8List message, HashAlgorithm hash) {
+  sign(Uint8List message, HashAlgorithm hash) {
     final signed = nacl.SigningKey.fromSeed(seed.toUnsignedBytes()).sign(
       Helper.hashDigest(message, hash),
     );
@@ -76,7 +76,7 @@ class EdDSALegacySecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         ...seed.bitLength.pack16(),
         ...seed.toUnsignedBytes(),
       ]);

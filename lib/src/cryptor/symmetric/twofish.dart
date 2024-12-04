@@ -379,13 +379,13 @@ class TwofishEngine extends BaseEngine {
   Uint8List _workingKey = Uint8List(0);
 
   @override
-  String get algorithmName => 'Twofish';
+  get algorithmName => 'Twofish';
 
   @override
-  int get blockSize => _blockSize;
+  get blockSize => _blockSize;
 
   @override
-  void init(final bool forEncryption, final CipherParameters? params) {
+  init(final bool forEncryption, final CipherParameters? params) {
     if (params is KeyParameter) {
       _forEncryption = forEncryption;
       _workingKey = params.key;

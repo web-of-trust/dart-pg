@@ -21,10 +21,10 @@ class ElGamalEngine implements AsymmetricBlockCipher {
   late int _bitSize;
 
   @override
-  String get algorithmName => 'ElGamal';
+  get algorithmName => 'ElGamal';
 
   @override
-  void init(final bool forEncryption, CipherParameters params) {
+  init(final bool forEncryption, CipherParameters params) {
     _forEncryption = forEncryption;
     if (params is ParametersWithRandom) {
       _random = params.random;
@@ -52,14 +52,14 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
   /// Return the maximum size for an input block to this engine.
   @override
-  int get inputBlockSize => _forEncryption ? (_bitSize - 1) ~/ 8 : 2 * ((_bitSize + 7) >> 3);
+  get inputBlockSize => _forEncryption ? (_bitSize - 1) ~/ 8 : 2 * ((_bitSize + 7) >> 3);
 
   /// Return the maximum size for an output block to this engine.
   @override
-  int get outputBlockSize => _forEncryption ? 2 * ((_bitSize + 7) >> 3) : (_bitSize - 1) ~/ 8;
+  get outputBlockSize => _forEncryption ? 2 * ((_bitSize + 7) >> 3) : (_bitSize - 1) ~/ 8;
 
   @override
-  Uint8List process(final Uint8List data) {
+  process(final Uint8List data) {
     final out = Uint8List(outputBlockSize);
     final len = processBlock(data, 0, data.length, out, 0);
     return out.sublist(0, len);
@@ -67,7 +67,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
   /// Process a single block using the basic ElGamal algorithm.
   @override
-  int processBlock(
+  processBlock(
     final Uint8List input,
     final int inOff,
     final int inLength,
@@ -123,7 +123,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
   }
 
   @override
-  void reset() {}
+  reset() {}
 
   BigInt _calculateK(final BigInt n) {
     BigInt k;

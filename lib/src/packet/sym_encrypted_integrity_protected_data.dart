@@ -183,7 +183,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
   }
 
   @override
-  Uint8List get data => Uint8List.fromList([
+  get data => Uint8List.fromList([
         version,
         ...symmetric != null ? [symmetric!.value] : [],
         ...aead != null ? [aead!.value] : [],

@@ -28,7 +28,7 @@ class UserAttributePacket extends BasePacket implements UserIDPacketInterface {
       );
 
   @override
-  Uint8List get data => Uint8List.fromList(
+  get data => Uint8List.fromList(
         attributes
             .map(
               (attr) => attr.encode(),
@@ -38,7 +38,7 @@ class UserAttributePacket extends BasePacket implements UserIDPacketInterface {
       );
 
   @override
-  Uint8List get signBytes => Uint8List.fromList([
+  get signBytes => Uint8List.fromList([
         0xd1,
         ...data.length.pack32(),
         ...data,

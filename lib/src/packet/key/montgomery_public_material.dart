@@ -28,8 +28,8 @@ class MontgomeryPublicMaterial implements KeyMaterialInterface {
       );
 
   @override
-  int get keyStrength => curve.keyStrength;
+  get keyStrength => curve.keyStrength;
 
   @override
-  Uint8List get toBytes => publicKey;
+  get toBytes => publicKey;
 }

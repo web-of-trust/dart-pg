@@ -567,20 +567,20 @@ class CAST5Engine extends BaseEngine {
   int _rounds = _maxRounds;
 
   @override
-  String get algorithmName => 'CAST5';
+  get algorithmName => 'CAST5';
 
   @override
-  int get blockSize => _blockSize;
+  get blockSize => _blockSize;
 
   @override
-  void reset() {
+  reset() {
     super.reset();
     _rotating.setAll(0, List.filled(17, 0));
     _masking.setAll(0, List.filled(17, 0));
   }
 
   @override
-  void init(final bool forEncryption, final CipherParameters? params) {
+  init(final bool forEncryption, final CipherParameters? params) {
     if (params is KeyParameter) {
       _forEncryption = forEncryption;
       _workingKey = params.key;
@@ -593,7 +593,7 @@ class CAST5Engine extends BaseEngine {
   }
 
   @override
-  int processBlock(
+  processBlock(
     final Uint8List input,
     final int inOff,
     final Uint8List output,

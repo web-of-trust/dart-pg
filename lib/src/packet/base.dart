@@ -44,7 +44,7 @@ abstract class BasePacket implements PacketInterface {
   BasePacket(this.type);
 
   @override
-  Uint8List encode() {
+  encode() {
     switch (type) {
       case PacketType.aeadEncryptedData:
       case PacketType.compressedData:

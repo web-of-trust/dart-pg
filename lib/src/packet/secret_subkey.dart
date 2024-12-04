@@ -21,7 +21,7 @@ import 'secret_key.dart';
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterface {
   @override
-  PacketType get type => PacketType.secretSubkey;
+  get type => PacketType.secretSubkey;
 
   SecretSubkeyPacket(
     PublicSubkeyPacket super.publicKey,

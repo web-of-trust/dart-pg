@@ -38,10 +38,10 @@ class RSAPublicMaterial implements VerificationKeyMaterial {
   }
 
   @override
-  int get keyStrength => modulus.bitLength;
+  get keyStrength => modulus.bitLength;
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         ...modulus.bitLength.pack16(),
         ...modulus.toUnsignedBytes(),
         ...exponent.bitLength.pack16(),
@@ -49,7 +49,7 @@ class RSAPublicMaterial implements VerificationKeyMaterial {
       ]);
 
   @override
-  bool verify(
+  verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,

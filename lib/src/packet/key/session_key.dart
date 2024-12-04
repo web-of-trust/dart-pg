@@ -42,12 +42,12 @@ class SessionKey implements SessionKeyInterface {
   }
 
   @override
-  Uint8List encode() => Uint8List.fromList(
+  encode() => Uint8List.fromList(
         [symmetric.value, ...encryptionKey],
       );
 
   @override
-  Uint8List computeChecksum() {
+  computeChecksum() {
     var sum = 0;
     for (var i = 0; i < encryptionKey.length; i++) {
       sum = (sum + encryptionKey[i]) & 0xffff;
@@ -56,7 +56,7 @@ class SessionKey implements SessionKeyInterface {
   }
 
   @override
-  void checksum(final Uint8List checksum) {
+  checksum(final Uint8List checksum) {
     final computedChecksum = computeChecksum();
     if (!((computedChecksum[0] == checksum[0]) && (computedChecksum[1] == checksum[1]))) {
       throw StateError('Session key checksum mismatch!');

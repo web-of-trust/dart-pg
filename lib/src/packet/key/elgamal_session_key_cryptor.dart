@@ -32,7 +32,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  Uint8List decrypt(final SecretKeyMaterialInterface key) {
+  decrypt(final SecretKeyMaterialInterface key) {
     if (key is ElGamalSecretMaterial) {
       return _pkcs1Decode(SessionKeyCryptor.processInBlocks(
         ElGamalEngine()
@@ -51,7 +51,7 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  Uint8List encode() => Uint8List.fromList([
+  encode() => Uint8List.fromList([
         ...gamma.bitLength.pack16(),
         ...gamma.toUnsignedBytes(),
         ...phi.bitLength.pack16(),

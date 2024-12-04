@@ -230,7 +230,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   }
 
   @override
-  Uint8List get data => Uint8List.fromList([
+  get data => Uint8List.fromList([
         ...signatureData,
         ..._encodeSubpackets(unhashedSubpackets, version == 6),
         ...signedHashValue,
@@ -240,20 +240,20 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       ]);
 
   @override
-  DateTime get creationTime =>
+  get creationTime =>
       getSubpacket<SignatureCreationTime>()?.creationTime ?? DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
-  DateTime? get expirationTime => getSubpacket<SignatureExpirationTime>()?.expirationTime;
+  get expirationTime => getSubpacket<SignatureExpirationTime>()?.expirationTime;
 
   @override
-  int get keyExpirationTime => getSubpacket<KeyExpirationTime>()?.expiry ?? 0;
+  get keyExpirationTime => getSubpacket<KeyExpirationTime>()?.expiry ?? 0;
 
   @override
-  bool get isCertRevocation => signatureType == SignatureType.certRevocation;
+  get isCertRevocation => signatureType == SignatureType.certRevocation;
 
   @override
-  bool get isCertification => switch (signatureType) {
+  get isCertification => switch (signatureType) {
         SignatureType.certGeneric ||
         SignatureType.certPersona ||
         SignatureType.certCasual ||
@@ -263,26 +263,26 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       };
 
   @override
-  bool get isDirectKey => signatureType == SignatureType.directKey;
+  get isDirectKey => signatureType == SignatureType.directKey;
 
   @override
-  bool get isKeyRevocation => signatureType == SignatureType.keyRevocation;
+  get isKeyRevocation => signatureType == SignatureType.keyRevocation;
 
   @override
-  bool get isPrimaryUserID => getSubpacket<PrimaryUserID>()?.isPrimary ?? false;
+  get isPrimaryUserID => getSubpacket<PrimaryUserID>()?.isPrimary ?? false;
 
   @override
-  bool get isSubkeyBinding => signatureType == SignatureType.subkeyBinding;
+  get isSubkeyBinding => signatureType == SignatureType.subkeyBinding;
 
   @override
-  bool get isSubkeyRevocation => signatureType == SignatureType.subkeyRevocation;
+  get isSubkeyRevocation => signatureType == SignatureType.subkeyRevocation;
 
   @override
-  Uint8List get issuerFingerprint =>
+  get issuerFingerprint =>
       getSubpacket<IssuerFingerprint>()?.fingerprint ?? Uint8List(version == 6 ? 32 : 20);
 
   @override
-  Uint8List get issuerKeyID {
+  get issuerKeyID {
     final subpacket = getSubpacket<IssuerKeyID>();
     if (subpacket != null) {
       return subpacket.keyID;
@@ -294,12 +294,12 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   }
 
   @override
-  T? getSubpacket<T extends SubpacketInterface>() {
+  getSubpacket<T extends SubpacketInterface>() {
     return hashedSubpackets.whereType<T>().elementAtOrNull(0) ?? unhashedSubpackets.whereType<T>().elementAtOrNull(0);
   }
 
   @override
-  bool isExpired([final DateTime? time]) {
+  isExpired([final DateTime? time]) {
     final timestamp = time?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
     final creation = creationTime.millisecondsSinceEpoch;
     final expiration = expirationTime?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
@@ -307,7 +307,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   }
 
   @override
-  bool verify(
+  verify(
     final KeyPacketInterface verifyKey,
     final Uint8List dataToVerify, [
     final DateTime? time,

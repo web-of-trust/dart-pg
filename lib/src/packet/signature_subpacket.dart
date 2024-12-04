@@ -60,7 +60,7 @@ class SignatureSubpacket implements SubpacketInterface {
   });
 
   @override
-  Uint8List encode() {
+  encode() {
     final List<int> header;
     final bodyLen = data.length + 1;
 

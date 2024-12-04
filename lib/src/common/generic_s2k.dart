@@ -81,7 +81,7 @@ class GenericS2k implements S2kInterface {
   }
 
   @override
-  Uint8List produceKey(final String passphrase, final int length) {
+  produceKey(final String passphrase, final int length) {
     switch (type) {
       case S2kType.simple:
         return _hashDigest(passphrase.toBytes(), length);
@@ -107,10 +107,10 @@ class GenericS2k implements S2kInterface {
   }
 
   @override
-  int get length => type.length;
+  get length => type.length;
 
   @override
-  Uint8List get toBytes {
+  get toBytes {
     final bytes = [type.value, hash.value];
     switch (type) {
       case S2kType.simple:

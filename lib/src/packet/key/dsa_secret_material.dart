@@ -40,10 +40,10 @@ class DSASecretMaterial implements SigningKeyMaterialInterface {
       DSASecretMaterial(Helper.readMPI(bytes), publicMaterial);
 
   @override
-  int get keyStrength => publicMaterial.keyStrength;
+  get keyStrength => publicMaterial.keyStrength;
 
   @override
-  Uint8List sign(final Uint8List message, final HashAlgorithm hash) {
+  sign(final Uint8List message, final HashAlgorithm hash) {
     final signer = DSASigner(Digest(hash.digestName))
       ..init(
         true,
@@ -53,13 +53,13 @@ class DSASecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         ...exponent.bitLength.pack16(),
         ...exponent.toUnsignedBytes(),
       ]);
 
   @override
-  bool get isValid {
+  get isValid {
     // Check that 1 < g < p
     if (publicMaterial.generator.compareTo(BigInt.one) <= 0 ||
         publicMaterial.generator.compareTo(publicMaterial.prime) >= 0) {

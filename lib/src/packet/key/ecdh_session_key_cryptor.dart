@@ -127,7 +127,7 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  Uint8List decrypt(final SecretKeyMaterialInterface key) {
+  decrypt(final SecretKeyMaterialInterface key) {
     if (key is ECDHSecretMaterial) {
       final Uint8List sharedKey;
       switch (key.publicMaterial.curve) {
@@ -177,7 +177,7 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  Uint8List encode() => Uint8List.fromList([
+  encode() => Uint8List.fromList([
         ...ephemeralKey.bitLength.pack16(),
         ...ephemeralKey.toUnsignedBytes(),
         wrappedKey.length,

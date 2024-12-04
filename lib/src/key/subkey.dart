@@ -6,12 +6,10 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/key/base.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/packet/signature/key_flags.dart';
 import 'package:dart_pg/src/type/key.dart';
-import 'package:dart_pg/src/type/packet_list.dart';
 import 'package:dart_pg/src/type/signature_packet.dart';
 import 'package:dart_pg/src/type/subkey.dart';
 import 'package:dart_pg/src/type/subkey_packet.dart';
@@ -39,25 +37,25 @@ final class Subkey implements SubkeyInterface {
   });
 
   @override
-  DateTime get creationTime => keyPacket.creationTime;
+  get creationTime => keyPacket.creationTime;
 
   @override
-  DateTime? get expirationTime => BaseKey.keyExpiration(bindingSignatures);
+  get expirationTime => BaseKey.keyExpiration(bindingSignatures);
 
   @override
-  Uint8List get fingerprint => keyPacket.fingerprint;
+  get fingerprint => keyPacket.fingerprint;
 
   @override
-  KeyAlgorithm get keyAlgorithm => keyPacket.keyAlgorithm;
+  get keyAlgorithm => keyPacket.keyAlgorithm;
 
   @override
-  Uint8List get keyID => keyPacket.keyID;
+  get keyID => keyPacket.keyID;
 
   @override
-  int get keyStrength => keyPacket.keyStrength;
+  get keyStrength => keyPacket.keyStrength;
 
   @override
-  bool get isEncryptionKey {
+  get isEncryptionKey {
     if (keyPacket.isEncryptionKey) {
       for (final signature in bindingSignatures) {
         final keyFlags = signature.getSubpacket<KeyFlags>();
@@ -70,7 +68,7 @@ final class Subkey implements SubkeyInterface {
   }
 
   @override
-  bool get isSigningKey {
+  get isSigningKey {
     if (keyPacket.isSigningKey) {
       for (final signature in bindingSignatures) {
         final keyFlags = signature.getSubpacket<KeyFlags>();
@@ -83,17 +81,17 @@ final class Subkey implements SubkeyInterface {
   }
 
   @override
-  PacketListInterface get packetList => PacketList([
+  get packetList => PacketList([
         keyPacket,
         ...revocationSignatures,
         ...bindingSignatures,
       ]);
 
   @override
-  int get version => keyPacket.keyVersion;
+  get version => keyPacket.keyVersion;
 
   @override
-  bool isRevoked([
+  isRevoked([
     final DateTime? time,
   ]) {
     for (final revocation in revocationSignatures) {
@@ -112,7 +110,7 @@ final class Subkey implements SubkeyInterface {
   }
 
   @override
-  bool verify([DateTime? time]) {
+  verify([DateTime? time]) {
     for (final signature in bindingSignatures) {
       if (signature.verify(
         mainKey.keyPacket,

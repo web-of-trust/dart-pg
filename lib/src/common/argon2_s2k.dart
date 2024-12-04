@@ -53,7 +53,7 @@ class Argon2S2k implements S2kInterface {
   }
 
   @override
-  Uint8List produceKey(String passphrase, int length) {
+  produceKey(String passphrase, int length) {
     final gen = Argon2BytesGenerator()
       ..init(Argon2Parameters(
         Argon2Parameters.ARGON2_id,
@@ -67,10 +67,10 @@ class Argon2S2k implements S2kInterface {
   }
 
   @override
-  int get length => type.length;
+  get length => type.length;
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         type.value,
         ...salt,
         iteration,
@@ -79,5 +79,5 @@ class Argon2S2k implements S2kInterface {
       ]);
 
   @override
-  S2kType get type => S2kType.argon2;
+  get type => S2kType.argon2;
 }

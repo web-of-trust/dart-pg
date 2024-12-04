@@ -46,14 +46,14 @@ abstract interface class KeyInterface implements ArmorableInterface, PacketConta
   int get keyStrength;
 
   /// Get revocation signatures
-  Iterable<SignaturePacketInterface> get revocationSignatures;
+  List<SignaturePacketInterface> get revocationSignatures;
 
   /// Get direct signatures
-  Iterable<SignaturePacketInterface> get directSignatures;
+  List<SignaturePacketInterface> get directSignatures;
 
   /// Get users
-  Iterable<UserInterface> get users;
+  List<UserInterface> get users;
 
   /// Get subkeys
-  Iterable<SubkeyInterface> get subkeys;
+  List<SubkeyInterface> get subkeys;
 }

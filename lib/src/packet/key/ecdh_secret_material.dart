@@ -82,10 +82,10 @@ class ECDHSecretMaterial extends ECSecretMaterial implements SecretKeyMaterialIn
   }
 
   @override
-  int get keyStrength => publicMaterial.keyStrength;
+  get keyStrength => publicMaterial.keyStrength;
 
   @override
-  bool get isValid {
+  get isValid {
     switch (publicMaterial.curve) {
       case Ecc.curve25519:
         final privateKey = nacl.PrivateKey(

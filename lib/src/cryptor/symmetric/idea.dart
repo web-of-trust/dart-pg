@@ -21,13 +21,13 @@ class IDEAEngine extends BaseEngine {
   late List<int> _workingKey;
 
   @override
-  String get algorithmName => 'IDEA';
+  get algorithmName => 'IDEA';
 
   @override
-  int get blockSize => _blockSize;
+  get blockSize => _blockSize;
 
   @override
-  void init(final bool forEncryption, final CipherParameters? params) {
+  init(final bool forEncryption, final CipherParameters? params) {
     if (params is KeyParameter) {
       _workingKey = _generateWorkingKey(forEncryption, params.key);
     } else {
@@ -38,7 +38,7 @@ class IDEAEngine extends BaseEngine {
   }
 
   @override
-  int processBlock(
+  processBlock(
     final Uint8List input,
     final int inOff,
     final Uint8List output,

@@ -24,5 +24,5 @@ class TrustPacket extends BasePacket {
       );
 
   @override
-  Uint8List get data => levelAndTrustAmount;
+  get data => levelAndTrustAmount;
 }

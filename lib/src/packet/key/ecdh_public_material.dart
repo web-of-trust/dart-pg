@@ -64,7 +64,7 @@ class ECDHPublicMaterial extends ECPublicMaterial {
   ]);
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         ...super.toBytes,
         0x3,
         reserved,

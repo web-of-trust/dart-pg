@@ -63,10 +63,10 @@ class DSAPublicMaterial implements VerificationKeyMaterial {
   }
 
   @override
-  int get keyStrength => prime.bitLength;
+  get keyStrength => prime.bitLength;
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         ...prime.bitLength.pack16(),
         ...prime.toUnsignedBytes(),
         ...order.bitLength.pack16(),
@@ -78,7 +78,7 @@ class DSAPublicMaterial implements VerificationKeyMaterial {
       ]);
 
   @override
-  bool verify(
+  verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,

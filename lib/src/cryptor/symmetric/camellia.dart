@@ -231,13 +231,13 @@ class CamelliaEngine extends BaseEngine {
   final _state = List.filled(4, 0);
 
   @override
-  String get algorithmName => 'Camellia';
+  get algorithmName => 'Camellia';
 
   @override
-  int get blockSize => _blockSize;
+  get blockSize => _blockSize;
 
   @override
-  void init(final bool forEncryption, final CipherParameters? params) {
+  init(final bool forEncryption, final CipherParameters? params) {
     if (params is! KeyParameter) {
       throw Exception('only simple KeyParameter expected.');
     }
@@ -248,7 +248,7 @@ class CamelliaEngine extends BaseEngine {
   }
 
   @override
-  int processBlock(
+  processBlock(
     final Uint8List input,
     final int inOff,
     final Uint8List output,

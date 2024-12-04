@@ -105,7 +105,7 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
   }
 
   @override
-  Uint8List get data => Uint8List.fromList([
+  get data => Uint8List.fromList([
         version,
         symmetric.value,
         aead.value,
@@ -115,7 +115,7 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
       ]);
 
   @override
-  AeadEncryptedDataPacket decrypt(
+  decrypt(
     final Uint8List key, {
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) {

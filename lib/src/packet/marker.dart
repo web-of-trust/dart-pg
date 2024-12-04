@@ -5,7 +5,6 @@
 library;
 
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'base.dart';
 
@@ -17,5 +16,5 @@ class MarkerPacket extends BasePacket {
   MarkerPacket() : super(PacketType.marker);
 
   @override
-  Uint8List get data => utf8.encoder.convert(marker);
+  get data => utf8.encoder.convert(marker);
 }

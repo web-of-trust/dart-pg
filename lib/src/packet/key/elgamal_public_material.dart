@@ -40,10 +40,10 @@ class ElGamalPublicMaterial implements KeyMaterialInterface {
   }
 
   @override
-  int get keyStrength => prime.bitLength;
+  get keyStrength => prime.bitLength;
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         ...prime.bitLength.pack16(),
         ...prime.toUnsignedBytes(),
         ...generator.bitLength.pack16(),

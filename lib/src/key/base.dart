@@ -4,10 +4,7 @@
 
 library;
 
-import 'dart:typed_data';
-
 import 'package:dart_pg/src/common/helpers.dart';
-import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/type/key.dart';
 import 'package:dart_pg/src/type/key_packet.dart';
@@ -59,22 +56,22 @@ abstract class BaseKey implements KeyInterface {
   }
 
   @override
-  Uint8List get fingerprint => keyPacket.fingerprint;
+  get fingerprint => keyPacket.fingerprint;
 
   @override
-  KeyAlgorithm get keyAlgorithm => keyPacket.keyAlgorithm;
+  get keyAlgorithm => keyPacket.keyAlgorithm;
 
   @override
-  Uint8List get keyID => keyPacket.keyID;
+  get keyID => keyPacket.keyID;
 
   @override
-  int get keyStrength => keyPacket.keyStrength;
+  get keyStrength => keyPacket.keyStrength;
 
   @override
-  int get version => keyPacket.keyVersion;
+  get version => keyPacket.keyVersion;
 
   @override
-  PacketListInterface get packetList => PacketList([
+  get packetList => PacketList([
         keyPacket,
         ...revocationSignatures,
         ...directSignatures,

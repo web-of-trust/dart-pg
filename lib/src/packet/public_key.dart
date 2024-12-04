@@ -102,7 +102,7 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
   }
 
   @override
-  Uint8List get data {
+  get data {
     final kmBytes = keyMaterial.toBytes;
     return Uint8List.fromList([
       keyVersion,
@@ -114,25 +114,25 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
   }
 
   @override
-  Uint8List get fingerprint => _fingerprint;
+  get fingerprint => _fingerprint;
 
   @override
-  bool get isEncryptionKey => keyAlgorithm.forEncryption;
+  get isEncryptionKey => keyAlgorithm.forEncryption;
 
   @override
-  bool get isSigningKey => keyAlgorithm.forSigning;
+  get isSigningKey => keyAlgorithm.forSigning;
 
   @override
-  bool get isSubkey => this is SubkeyPacketInterface;
+  get isSubkey => this is SubkeyPacketInterface;
 
   @override
-  Uint8List get keyID => _keyID;
+  get keyID => _keyID;
 
   @override
-  int get keyStrength => keyMaterial.keyStrength;
+  get keyStrength => keyMaterial.keyStrength;
 
   @override
-  Uint8List get signBytes => Uint8List.fromList([
+  get signBytes => Uint8List.fromList([
         0x95 + keyVersion,
         ...isV6Key ? data.length.pack32() : data.length.pack16(),
         ...data,

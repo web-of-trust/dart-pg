@@ -160,7 +160,7 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
   }
 
   @override
-  Uint8List get data => Uint8List.fromList([
+  get data => Uint8List.fromList([
         version,
         ...version == 6 ? [keyFingerprint.length + 1] : [],
         ...version == 6 ? [keyVersion] : [],

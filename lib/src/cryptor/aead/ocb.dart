@@ -14,25 +14,25 @@ import '../../type/aead.dart';
 /// OCB Authenticated-Encryption class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Ocb implements AeadInterface {
-  final Uint8List _key;
-  final SymmetricAlgorithm _symmetric;
+  final Uint8List key;
+  final SymmetricAlgorithm symmetric;
 
-  Ocb(this._key, this._symmetric);
+  Ocb(this.key, this.symmetric);
 
   @override
-  Uint8List encrypt(
+  encrypt(
     final Uint8List plainText,
     final Uint8List nonce,
     final Uint8List aData,
   ) {
     final cipher = OCBCipher(
-      _symmetric.cipherEngine,
-      _symmetric.cipherEngine,
+      symmetric.cipherEngine,
+      symmetric.cipherEngine,
     )..init(
         true,
         AEADParameters(
-          KeyParameter(_key),
-          _symmetric.blockSize * 8,
+          KeyParameter(key),
+          symmetric.blockSize * 8,
           nonce,
           aData,
         ),
@@ -42,19 +42,19 @@ class Ocb implements AeadInterface {
   }
 
   @override
-  Uint8List decrypt(
+  decrypt(
     final Uint8List cipherText,
     final Uint8List nonce,
     final Uint8List aData,
   ) {
     final cipher = OCBCipher(
-      _symmetric.cipherEngine,
-      _symmetric.cipherEngine,
+      symmetric.cipherEngine,
+      symmetric.cipherEngine,
     )..init(
         false,
         AEADParameters(
-          KeyParameter(_key),
-          _symmetric.blockSize * 8,
+          KeyParameter(key),
+          symmetric.blockSize * 8,
           nonce,
           aData,
         ),
@@ -64,7 +64,7 @@ class Ocb implements AeadInterface {
   }
 
   @override
-  Uint8List getNonce(
+  getNonce(
     final Uint8List iv,
     final Uint8List chunkIndex,
   ) {
@@ -144,10 +144,10 @@ class OCBCipher implements AEADCipher {
   int get macSize => _macSize;
 
   @override
-  String get algorithmName => '${_mainCipher.algorithmName}/OCB';
+  get algorithmName => '${_mainCipher.algorithmName}/OCB';
 
   @override
-  Uint8List get mac => _getMac();
+  get mac => _getMac();
 
   /// The block size
   int get blockSize => _blockSize;
@@ -156,7 +156,7 @@ class OCBCipher implements AEADCipher {
   BlockCipher get underlyingCipher => _mainCipher;
 
   @override
-  void init(
+  init(
     final bool forEncryption,
     final CipherParameters params,
   ) {
@@ -236,7 +236,7 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
-  int doFinal(final Uint8List output, final int outOff) {
+  doFinal(final Uint8List output, final int outOff) {
     /// For decryption, get the tag from the end of the message
     Uint8List? tag;
     if (!_forEncryption) {
@@ -316,7 +316,7 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
-  int processByte(
+  processByte(
     final int input,
     final Uint8List output,
     final int outOff,
@@ -330,7 +330,7 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
-  int processBytes(
+  processBytes(
     final Uint8List input,
     final int inOff,
     final int len,
@@ -353,7 +353,7 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
-  int getUpdateOutputSize(final int len) {
+  getUpdateOutputSize(final int len) {
     var totalData = len + _mainBlockPos;
     if (!forEncryption) {
       if (totalData < macSize) {
@@ -365,7 +365,7 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
-  int getOutputSize(final int len) {
+  getOutputSize(final int len) {
     final totalData = len + _mainBlockPos;
     if (_forEncryption) {
       return totalData + _macSize;
@@ -374,7 +374,7 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
-  void processAADByte(final int input) {
+  processAADByte(final int input) {
     _hashBlock[_hashBlockPos] = input;
     if (++_hashBlockPos == _hashBlock.length) {
       _processHashBlock();
@@ -382,7 +382,7 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
-  void processAADBytes(
+  processAADBytes(
     final Uint8List input,
     final int offset,
     final int len,
@@ -396,7 +396,7 @@ class OCBCipher implements AEADCipher {
   }
 
   @override
-  void reset() {
+  reset() {
     _reset(true);
   }
 

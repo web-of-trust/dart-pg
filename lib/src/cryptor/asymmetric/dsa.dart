@@ -24,10 +24,10 @@ class DSASigner implements Signer {
   DSASigner([this._digest]);
 
   @override
-  String get algorithmName => '${_digest?.algorithmName}/DSA';
+  get algorithmName => '${_digest?.algorithmName}/DSA';
 
   @override
-  void init(final bool forSigning, CipherParameters params) {
+  init(final bool forSigning, CipherParameters params) {
     _forSigning = forSigning;
     if (params is ParametersWithRandom) {
       _random = params.random;
@@ -53,7 +53,7 @@ class DSASigner implements Signer {
   }
 
   @override
-  void reset() {
+  reset() {
     _digest?.reset();
   }
 
@@ -92,7 +92,7 @@ class DSASigner implements Signer {
   }
 
   @override
-  bool verifySignature(
+  verifySignature(
     final Uint8List message,
     covariant final DSASignature signature,
   ) {
@@ -166,13 +166,13 @@ class DSASignature implements Signature {
   String toString() => '(${r.toString()},${s.toString()})';
 
   @override
-  bool operator ==(other) {
+  operator ==(other) {
     if (other is! DSASignature) return false;
     return (other.r == r) && (other.s == s);
   }
 
   @override
-  int get hashCode {
+  get hashCode {
     return r.hashCode + s.hashCode;
   }
 }

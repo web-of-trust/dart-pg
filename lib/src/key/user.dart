@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import 'package:dart_pg/src/packet/base.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/type/key.dart';
-import 'package:dart_pg/src/type/packet_list.dart';
 import 'package:dart_pg/src/type/signature_packet.dart';
 import 'package:dart_pg/src/type/user.dart';
 import 'package:dart_pg/src/type/user_id_packet.dart';
@@ -41,7 +40,7 @@ final class User implements UserInterface {
   });
 
   @override
-  bool get isPrimary {
+  get isPrimary {
     final signatures = selfSignatures.toList();
     signatures.sort(
       (a, b) => b.creationTime.compareTo(
@@ -57,7 +56,7 @@ final class User implements UserInterface {
   }
 
   @override
-  PacketListInterface get packetList => PacketList([
+  get packetList => PacketList([
         userIDPacket,
         ...revocationSignatures,
         ...selfSignatures,
@@ -65,10 +64,10 @@ final class User implements UserInterface {
       ]);
 
   @override
-  String get userID => (userIDPacket is UserIDPacket) ? (userIDPacket as UserIDPacket).userID : "";
+  get userID => (userIDPacket is UserIDPacket) ? (userIDPacket as UserIDPacket).userID : "";
 
   @override
-  bool isRevoked([DateTime? time]) {
+  isRevoked([DateTime? time]) {
     for (final revocation in revocationSignatures) {
       if (revocation.verify(
         mainKey.keyPacket,
@@ -85,7 +84,7 @@ final class User implements UserInterface {
   }
 
   @override
-  bool verify([DateTime? time]) {
+  verify([DateTime? time]) {
     for (final signature in selfSignatures) {
       if (signature.verify(
         mainKey.keyPacket,

@@ -26,7 +26,6 @@ import '../enum/key_algorithm.dart';
 import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
-import '../type/key_material.dart';
 import '../type/s2k.dart';
 import '../type/secret_key_material.dart';
 import '../type/secret_key_packet.dart';
@@ -395,7 +394,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   }
 
   @override
-  Uint8List get data {
+  get data {
     final isV6 = publicKey.keyVersion == KeyVersion.v6.value;
     if (isEncrypted) {
       final optBytes = Uint8List.fromList([
@@ -423,49 +422,49 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   }
 
   @override
-  Uint8List get signBytes => publicKey.signBytes;
+  get signBytes => publicKey.signBytes;
 
   @override
-  DateTime get creationTime => publicKey.creationTime;
+  get creationTime => publicKey.creationTime;
 
   @override
-  Uint8List get fingerprint => publicKey.fingerprint;
+  get fingerprint => publicKey.fingerprint;
 
   @override
-  bool get isDecrypted => secretKeyMaterial != null;
+  get isDecrypted => secretKeyMaterial != null;
 
   @override
-  bool get isEncrypted => s2kUsage != S2kUsage.none && symmetric != null;
+  get isEncrypted => s2kUsage != S2kUsage.none && symmetric != null;
 
   @override
-  bool get isEncryptionKey => publicKey.isEncryptionKey;
+  get isEncryptionKey => publicKey.isEncryptionKey;
 
   @override
-  bool get isSigningKey => publicKey.isSigningKey;
+  get isSigningKey => publicKey.isSigningKey;
 
   @override
-  bool get isSubkey => this is SubkeyPacketInterface;
+  get isSubkey => this is SubkeyPacketInterface;
 
   @override
-  KeyAlgorithm get keyAlgorithm => publicKey.keyAlgorithm;
+  get keyAlgorithm => publicKey.keyAlgorithm;
 
   @override
-  Uint8List get keyID => publicKey.keyID;
+  get keyID => publicKey.keyID;
 
   @override
-  KeyMaterialInterface get keyMaterial => publicKey.keyMaterial;
+  get keyMaterial => publicKey.keyMaterial;
 
   @override
-  int get keyStrength => publicKey.keyStrength;
+  get keyStrength => publicKey.keyStrength;
 
   @override
-  int get keyVersion => publicKey.keyVersion;
+  get keyVersion => publicKey.keyVersion;
 
   @override
-  bool get aeadProtected => aead != null;
+  get aeadProtected => aead != null;
 
   @override
-  HashAlgorithm get preferredHash {
+  get preferredHash {
     if ((keyMaterial is ECPublicMaterial)) {
       final curve = Ecc.values.firstWhere(
         (info) => info.asn1Oid == (keyMaterial as ECPublicMaterial).oid,

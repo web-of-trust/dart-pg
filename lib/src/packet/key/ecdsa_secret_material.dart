@@ -57,17 +57,17 @@ class ECDSASecretMaterial extends ECSecretMaterial implements SigningKeyMaterial
   }
 
   @override
-  bool get isValid {
+  get isValid {
     final parameters = ECDomainParameters(publicMaterial.curve.name.toLowerCase());
     final q = parameters.curve.decodePoint(publicMaterial.q.toUnsignedBytes());
     return q != null && !q.isInfinity && (parameters.G * d) == q;
   }
 
   @override
-  int get keyStrength => publicMaterial.keyStrength;
+  get keyStrength => publicMaterial.keyStrength;
 
   @override
-  Uint8List sign(final Uint8List message, final HashAlgorithm hash) {
+  sign(final Uint8List message, final HashAlgorithm hash) {
     final signer = Signer('${hash.digestName}/DET-ECDSA')
       ..init(
         true,

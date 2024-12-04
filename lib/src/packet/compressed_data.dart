@@ -55,7 +55,7 @@ class CompressedDataPacket extends BasePacket {
       );
 
   @override
-  Uint8List get data => Uint8List.fromList([
+  get data => Uint8List.fromList([
         algorithm.value,
         ...compressed,
       ]);

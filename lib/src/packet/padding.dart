@@ -25,5 +25,5 @@ class PaddingPacket extends BasePacket {
   }
 
   @override
-  Uint8List get data => padding;
+  get data => padding;
 }

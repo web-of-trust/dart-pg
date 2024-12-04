@@ -68,5 +68,5 @@ final class PublicKey extends BaseKey {
   String armor() => Armor.encode(ArmorType.publicKey, packetList.encode());
 
   @override
-  KeyInterface get publicKey => this;
+  get publicKey => this;
 }

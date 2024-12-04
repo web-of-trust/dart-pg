@@ -8,14 +8,12 @@ import 'package:dart_pg/src/common/armor.dart';
 import 'package:dart_pg/src/common/config.dart';
 import 'package:dart_pg/src/enum/aead_algorithm.dart';
 import 'package:dart_pg/src/enum/armor_type.dart';
-import 'package:dart_pg/src/enum/hash_algorithm.dart';
 import 'package:dart_pg/src/enum/key_version.dart';
 import 'package:dart_pg/src/key/base.dart';
 import 'package:dart_pg/src/key/public_key.dart';
 import 'package:dart_pg/src/key/subkey.dart';
 import 'package:dart_pg/src/packet/base.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
-import 'package:dart_pg/src/type/key.dart';
 import 'package:dart_pg/src/type/packet.dart';
 import 'package:dart_pg/src/type/private_key.dart';
 import 'package:dart_pg/src/type/secret_key_packet.dart';
@@ -24,22 +22,22 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   PrivateKey(super.packetList);
 
   @override
-  SecretKeyPacketInterface get secretKeyPacket => super.keyPacket as SecretKeyPacketInterface;
+  get secretKeyPacket => super.keyPacket as SecretKeyPacketInterface;
 
   @override
-  bool get isDecrypted => secretKeyPacket.isDecrypted;
+  get isDecrypted => secretKeyPacket.isDecrypted;
 
   @override
-  bool get isEncrypted => secretKeyPacket.isEncrypted;
+  get isEncrypted => secretKeyPacket.isEncrypted;
 
   @override
-  bool get aeadProtected => secretKeyPacket.aeadProtected;
+  get aeadProtected => secretKeyPacket.aeadProtected;
 
   @override
-  HashAlgorithm get preferredHash => secretKeyPacket.preferredHash;
+  get preferredHash => secretKeyPacket.preferredHash;
 
   @override
-  KeyInterface get publicKey {
+  get publicKey {
     final packets = <PacketInterface>[];
     for (final packet in packetList) {
       switch (packet.type) {
@@ -70,10 +68,10 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   }
 
   @override
-  String armor() => Armor.encode(ArmorType.privateKey, packetList.encode());
+  armor() => Armor.encode(ArmorType.privateKey, packetList.encode());
 
   @override
-  PrivateKey encrypt(
+  encrypt(
     final String passphrase, [
     final Iterable<String> subkeyPassphrases = const [],
   ]) {
@@ -122,7 +120,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   }
 
   @override
-  PrivateKey decrypt(
+  decrypt(
     String passphrase, [
     Iterable<String> subkeyPassphrases = const [],
   ]) {

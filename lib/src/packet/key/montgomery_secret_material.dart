@@ -50,13 +50,13 @@ class MontgomerySecretMaterial implements SecretKeyMaterialInterface {
   }
 
   @override
-  int get keyStrength => publicMaterial.keyStrength;
+  get keyStrength => publicMaterial.keyStrength;
 
   @override
-  Uint8List get toBytes => secretKey;
+  get toBytes => secretKey;
 
   @override
-  bool get isValid {
+  get isValid {
     final publicKey = switch (publicMaterial.curve) {
       MontgomeryCurve.x25519 => PrivateKey(
           secretKey,

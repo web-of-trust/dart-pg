@@ -19,7 +19,7 @@ abstract class ECSecretMaterial implements KeyMaterialInterface {
   ECSecretMaterial(this.d);
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         ...d.bitLength.pack16(),
         ...d.toUnsignedBytes(),
       ]);

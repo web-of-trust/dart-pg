@@ -119,7 +119,7 @@ class OnePassSignaturePacket extends BasePacket {
   }
 
   @override
-  Uint8List get data => Uint8List.fromList([
+  get data => Uint8List.fromList([
         version,
         signatureType.value,
         hashAlgorithm.value,

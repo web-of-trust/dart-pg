@@ -254,7 +254,7 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
   }
 
   @override
-  Uint8List get data => Uint8List.fromList([
+  get data => Uint8List.fromList([
         version,
         ...version == 6 ? [3 + s2k.length + iv.length] : [],
         symmetric.value,

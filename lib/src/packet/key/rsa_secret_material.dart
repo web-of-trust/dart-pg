@@ -107,7 +107,7 @@ class RSASecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  bool get isValid {
+  get isValid {
     // expect pq = n
     if ((primeP * primeQ).compareTo(publicMaterial.modulus) != 0) {
       return false;
@@ -124,10 +124,10 @@ class RSASecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  int get keyStrength => publicMaterial.keyStrength;
+  get keyStrength => publicMaterial.keyStrength;
 
   @override
-  Uint8List sign(final Uint8List message, final HashAlgorithm hash) {
+  sign(final Uint8List message, final HashAlgorithm hash) {
     final signer = Signer('${hash.digestName}/RSA')
       ..init(
         true,
@@ -141,7 +141,7 @@ class RSASecretMaterial implements SigningKeyMaterialInterface {
   }
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         ...exponent.bitLength.pack16(),
         ...exponent.toUnsignedBytes(),
         ...primeP.bitLength.pack16(),

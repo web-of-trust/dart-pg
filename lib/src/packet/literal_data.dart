@@ -79,13 +79,13 @@ class LiteralDataPacket extends BasePacket implements LiteralDataInterface {
       );
 
   @override
-  Uint8List get data => Uint8List.fromList([
+  get data => Uint8List.fromList([
         ...header,
         ...signBytes,
       ]);
 
   @override
-  Uint8List get signBytes => binary.isNotEmpty
+  get signBytes => binary.isNotEmpty
       ? binary
       : text
           .replaceAll(
@@ -95,7 +95,7 @@ class LiteralDataPacket extends BasePacket implements LiteralDataInterface {
           .toBytes();
 
   @override
-  Uint8List get header => Uint8List.fromList([
+  get header => Uint8List.fromList([
         format.value,
         filename.length,
         ...filename.toBytes(),

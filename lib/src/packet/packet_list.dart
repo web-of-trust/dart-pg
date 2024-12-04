@@ -70,7 +70,7 @@ class PacketList extends ListBase<PacketInterface> implements PacketListInterfac
   }
 
   @override
-  Uint8List encode() => Uint8List.fromList(
+  encode() => Uint8List.fromList(
         packets
             .map(
               (packet) => packet.encode(),
@@ -99,13 +99,13 @@ class PacketList extends ListBase<PacketInterface> implements PacketListInterfac
   }
 
   @override
-  int get length => packets.length;
+  get length => packets.length;
 
   @override
-  PacketInterface operator [](int index) => packets[index];
+  operator [](int index) => packets[index];
 
   @override
-  void operator []=(int index, PacketInterface packet) {
+  operator []=(int index, PacketInterface packet) {
     packets[index] = packet;
   }
 

@@ -34,10 +34,10 @@ class UserIDPacket extends BasePacket implements UserIDPacketInterface {
       UserIDPacket(utf8.decode(bytes));
 
   @override
-  Uint8List get data => userID.toBytes();
+  get data => userID.toBytes();
 
   @override
-  Uint8List get signBytes => Uint8List.fromList([
+  get signBytes => Uint8List.fromList([
         0xb4,
         ...data.length.pack32(),
         ...data,

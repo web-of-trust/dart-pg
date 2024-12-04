@@ -43,7 +43,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  Uint8List decrypt(final SecretKeyMaterialInterface key) {
+  decrypt(final SecretKeyMaterialInterface key) {
     if (key is RSASecretMaterial) {
       return SessionKeyCryptor.processInBlocks(
         AsymmetricBlockCipher('RSA/PKCS1')
@@ -59,7 +59,7 @@ class RSASessionKeyCryptor extends SessionKeyCryptor {
   }
 
   @override
-  Uint8List encode() => Uint8List.fromList([
+  encode() => Uint8List.fromList([
         ...encrypted.bitLength.pack16(),
         ...encrypted.toUnsignedBytes(),
       ]);

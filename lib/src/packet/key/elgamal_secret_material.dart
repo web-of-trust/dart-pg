@@ -38,10 +38,10 @@ class ElGamalSecretMaterial implements SecretKeyMaterialInterface {
       );
 
   @override
-  int get keyStrength => publicMaterial.keyStrength;
+  get keyStrength => publicMaterial.keyStrength;
 
   @override
-  bool get isValid {
+  get isValid {
     // Check that 1 < g < p
     if (publicMaterial.generator.compareTo(BigInt.one) <= 0 ||
         publicMaterial.generator.compareTo(publicMaterial.prime) >= 0) {
@@ -81,7 +81,7 @@ class ElGamalSecretMaterial implements SecretKeyMaterialInterface {
   }
 
   @override
-  Uint8List get toBytes => Uint8List.fromList([
+  get toBytes => Uint8List.fromList([
         ...exponent.bitLength.pack16(),
         ...exponent.toUnsignedBytes(),
       ]);

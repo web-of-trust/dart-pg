@@ -29,7 +29,7 @@ abstract class ECPublicMaterial implements KeyMaterialInterface {
         );
 
   @override
-  int get keyStrength {
+  get keyStrength {
     if (curve == Ecc.ed25519 || curve == Ecc.curve25519) {
       return 255;
     } else {
@@ -43,7 +43,7 @@ abstract class ECPublicMaterial implements KeyMaterialInterface {
   }
 
   @override
-  Uint8List get toBytes {
+  get toBytes {
     return Uint8List.fromList([
       ...oid.encode().sublist(1),
       ...q.bitLength.pack16(),

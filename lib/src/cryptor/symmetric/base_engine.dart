@@ -11,12 +11,12 @@ import 'package:pointycastle/api.dart';
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class BaseEngine implements BlockCipher {
   @override
-  Uint8List process(final Uint8List input) {
+  process(final Uint8List input) {
     final output = Uint8List(blockSize);
     final len = processBlock(input, 0, output, 0);
     return output.sublist(0, len);
   }
 
   @override
-  void reset() {}
+  reset() {}
 }

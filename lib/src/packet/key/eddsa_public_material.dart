@@ -36,13 +36,13 @@ class EdDSAPublicMaterial implements VerificationKeyMaterial {
       );
 
   @override
-  int get keyStrength => curve.keyStrength;
+  get keyStrength => curve.keyStrength;
 
   @override
-  Uint8List get toBytes => publicKey;
+  get toBytes => publicKey;
 
   @override
-  bool verify(
+  verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,

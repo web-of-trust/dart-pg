@@ -30,7 +30,7 @@ class ECDSAPublicMaterial extends ECPublicMaterial implements VerificationKeyMat
   }
 
   @override
-  bool verify(
+  verify(
     final Uint8List message,
     final HashAlgorithm hash,
     final Uint8List signature,

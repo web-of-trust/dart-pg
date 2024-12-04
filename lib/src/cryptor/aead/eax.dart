@@ -14,24 +14,24 @@ import '../../type/aead.dart';
 /// EAX Authenticated-Encryption class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Eax implements AeadInterface {
-  final Uint8List _key;
-  final SymmetricAlgorithm _symmetric;
+  final Uint8List key;
+  final SymmetricAlgorithm symmetric;
 
-  Eax(this._key, this._symmetric);
+  Eax(this.key, this.symmetric);
 
   @override
-  Uint8List encrypt(
+  encrypt(
     final Uint8List plainText,
     final Uint8List nonce,
     final Uint8List aData,
   ) {
     final cipher = EAX(
-      _symmetric.cipherEngine,
+      symmetric.cipherEngine,
     )..init(
         true,
         AEADParameters(
-          KeyParameter(_key),
-          _symmetric.blockSize * 8,
+          KeyParameter(key),
+          symmetric.blockSize * 8,
           nonce,
           aData,
         ),
@@ -41,18 +41,18 @@ class Eax implements AeadInterface {
   }
 
   @override
-  Uint8List decrypt(
+  decrypt(
     final Uint8List cipherText,
     final Uint8List nonce,
     final Uint8List aData,
   ) {
     final cipher = EAX(
-      _symmetric.cipherEngine,
+      symmetric.cipherEngine,
     )..init(
         false,
         AEADParameters(
-          KeyParameter(_key),
-          _symmetric.blockSize * 8,
+          KeyParameter(key),
+          symmetric.blockSize * 8,
           nonce,
           aData,
         ),
@@ -62,7 +62,7 @@ class Eax implements AeadInterface {
   }
 
   @override
-  Uint8List getNonce(
+  getNonce(
     final Uint8List iv,
     final Uint8List chunkIndex,
   ) {
