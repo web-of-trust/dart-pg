@@ -7,6 +7,7 @@ library;
 import 'dart:typed_data';
 
 import '../common/helpers.dart';
+import '../enum/ecc.dart';
 import '../enum/eddsa_curve.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_version.dart';
@@ -46,12 +47,7 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
     this.keyMaterial, {
     this.keyAlgorithm = KeyAlgorithm.rsaEncryptSign,
   }) : super(PacketType.publicKey) {
-    if (keyVersion != KeyVersion.v4.value && keyVersion != KeyVersion.v6.value) {
-      throw UnsupportedError(
-        'Version $keyVersion of the key packet is unsupported.',
-      );
-    }
-    _assertKeyStrength();
+    _assertKey();
     _calculateFingerprint();
   }
 
@@ -140,7 +136,27 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
 
   bool get isV6Key => keyVersion == KeyVersion.v6.value;
 
-  void _assertKeyStrength() {
+  void _assertKey() {
+    if (keyVersion != KeyVersion.v4.value && keyVersion != KeyVersion.v6.value) {
+      throw UnsupportedError(
+        'Version $keyVersion of the key packet is unsupported.',
+      );
+    }
+    if (isV6Key) {
+      if (keyMaterial is ECPublicMaterial) {
+        final curve = (keyMaterial as ECPublicMaterial).curve;
+        if (curve == Ecc.ed25519 || curve == Ecc.curve25519) {
+          throw ArgumentError(
+            'Legacy curve ${curve.name} cannot be used with v$keyVersion key packet.',
+          );
+        }
+      }
+      if (keyAlgorithm == KeyAlgorithm.dsa || keyAlgorithm == KeyAlgorithm.elgamal) {
+        throw ArgumentError(
+          'Key algorithm ${keyAlgorithm.name} cannot be used with v$keyVersion key packet.',
+        );
+      }
+    }
     switch (keyAlgorithm) {
       case KeyAlgorithm.rsaEncryptSign:
       case KeyAlgorithm.rsaEncrypt:

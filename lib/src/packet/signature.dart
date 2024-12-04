@@ -6,6 +6,15 @@ library;
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/enum/aead_algorithm.dart';
+import 'package:dart_pg/src/enum/compression_algorithm.dart';
+import 'package:dart_pg/src/enum/key_flag.dart';
+import 'package:dart_pg/src/enum/key_version.dart';
+import 'package:dart_pg/src/enum/support_feature.dart';
+import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
+import 'package:dart_pg/src/type/subkey_packet.dart';
+import 'package:dart_pg/src/type/user_id_packet.dart';
+
 import '../common/helpers.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
@@ -167,14 +176,14 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     );
   }
 
+  /// Create signature
   factory SignaturePacket.createSignature(
     SecretKeyPacketInterface signKey,
     SignatureType signatureType,
     Uint8List dataToSign, {
     final HashAlgorithm? preferredHash,
     final Iterable<SubpacketInterface> subpackets = const [],
-    final int keyExpirationTime = 0,
-    final DateTime? date,
+    final DateTime? time,
   }) {
     final version = signKey.keyVersion;
     final keyAlgorithm = signKey.keyAlgorithm;
@@ -182,16 +191,13 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     Helper.assertHash(hashAlgorithm);
 
     final hashedSubpackets = [
-      SignatureCreationTime.fromTime(date ?? DateTime.now()),
+      SignatureCreationTime.fromTime(time ?? DateTime.now()),
       IssuerFingerprint.fromKey(signKey),
       IssuerKeyID(signKey.keyID),
       ...subpackets,
     ];
     if (version == 4) {
       hashedSubpackets.add(NotationData.saltNotation(hashAlgorithm.saltSize));
-    }
-    if (keyExpirationTime > 0) {
-      hashedSubpackets.add(KeyExpirationTime.fromTime(keyExpirationTime));
     }
     final salt = version == 6
         ? Helper.randomBytes(
@@ -229,6 +235,101 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     );
   }
 
+  /// Create direct key signature
+  factory SignaturePacket.createDirectKeySignature(
+    SecretKeyPacketInterface signKey, {
+    int keyExpiry = 0,
+    DateTime? time,
+  }) {
+    final subpackets = _keySubpackets(signKey.keyVersion);
+    if (keyExpiry > 0) {
+      subpackets.add(KeyExpirationTime.fromTime(keyExpiry));
+    }
+    return SignaturePacket.createSignature(
+      signKey,
+      SignatureType.directKey,
+      signKey.signBytes,
+      subpackets: subpackets,
+      time: time,
+    );
+  }
+
+  /// Create self signature
+  factory SignaturePacket.createSelfCertificate(
+    SecretKeyPacketInterface signKey,
+    UserIDPacketInterface userID, {
+    bool isPrimaryUser = false,
+    int keyExpiry = 0,
+    DateTime? time,
+  }) {
+    final subpackets = signKey.keyVersion == KeyVersion.v4.value
+        ? _keySubpackets(
+            signKey.keyVersion,
+          )
+        : <SubpacketInterface>[];
+    if (isPrimaryUser) {
+      subpackets.add(PrimaryUserID(Uint8List.fromList([1])));
+    }
+    if (keyExpiry > 0) {
+      subpackets.add(KeyExpirationTime.fromTime(keyExpiry));
+    }
+    return SignaturePacket.createSignature(
+      signKey,
+      SignatureType.certGeneric,
+      userID.signBytes,
+      subpackets: subpackets,
+      time: time,
+    );
+  }
+
+  /// Create subkey binding signature
+  factory SignaturePacket.createSubkeyBinding(
+    SecretKeyPacketInterface signKey,
+    SubkeyPacketInterface subkey, {
+    int keyExpiry = 0,
+    bool forSigning = false,
+    DateTime? time,
+  }) {
+    final subpackets = <SubpacketInterface>[];
+    if (keyExpiry > 0) {
+      subpackets.add(KeyExpirationTime.fromTime(keyExpiry));
+    }
+    if (forSigning) {
+      subpackets.add(KeyFlags.fromFlags(
+        KeyFlag.signData.value,
+      ));
+      if (subkey is SecretKeyPacketInterface) {
+        subpackets.add(EmbeddedSignature.fromSignature(
+          SignaturePacket.createSignature(
+            subkey as SecretKeyPacketInterface,
+            SignatureType.keyBinding,
+            Uint8List.fromList([
+              ...signKey.signBytes,
+              ...subkey.signBytes,
+            ]),
+            time: time,
+          ),
+        ));
+      }
+    } else {
+      subpackets.add(
+        KeyFlags.fromFlags(
+          KeyFlag.encryptCommunication.value | KeyFlag.encryptStorage.value,
+        ),
+      );
+    }
+    return SignaturePacket.createSignature(
+      signKey,
+      SignatureType.subkeyBinding,
+      Uint8List.fromList([
+        ...signKey.signBytes,
+        ...subkey.signBytes,
+      ]),
+      subpackets: subpackets,
+      time: time,
+    );
+  }
+
   @override
   get data => Uint8List.fromList([
         ...signatureData,
@@ -240,8 +341,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       ]);
 
   @override
-  get creationTime =>
-      getSubpacket<SignatureCreationTime>()?.creationTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+  get creationTime => getSubpacket<SignatureCreationTime>()?.creationTime ?? DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
   get expirationTime => getSubpacket<SignatureExpirationTime>()?.expirationTime;
@@ -278,8 +378,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   get isSubkeyRevocation => signatureType == SignatureType.subkeyRevocation;
 
   @override
-  get issuerFingerprint =>
-      getSubpacket<IssuerFingerprint>()?.fingerprint ?? Uint8List(version == 6 ? 32 : 20);
+  get issuerFingerprint => getSubpacket<IssuerFingerprint>()?.fingerprint ?? Uint8List(version == 6 ? 32 : 20);
 
   @override
   get issuerKeyID {
@@ -347,6 +446,47 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
         'Unsupported public key algorithm for verification.',
       );
     }
+  }
+
+  static List<SubpacketInterface> _keySubpackets(final int version) {
+    final symmetrics = Uint8List.fromList([
+      SymmetricAlgorithm.aes128.value,
+      SymmetricAlgorithm.aes256.value,
+    ]);
+    final aeads = Uint8List.fromList([
+      ...AeadAlgorithm.values.map((algo) => algo.value),
+    ]);
+    final subpackets = [
+      KeyFlags.fromFlags(KeyFlag.certifyKeys.value | KeyFlag.signData.value),
+      PreferredSymmetricAlgorithms(symmetrics),
+      PreferredAeadAlgorithms(aeads),
+      PreferredHashAlgorithms(Uint8List.fromList([
+        HashAlgorithm.sha256.value,
+        HashAlgorithm.sha3_256.value,
+        HashAlgorithm.sha512.value,
+        HashAlgorithm.sha3_512.value,
+      ])),
+      PreferredCompressionAlgorithms(Uint8List.fromList([
+        CompressionAlgorithm.uncompressed.value,
+        CompressionAlgorithm.zip.value,
+        CompressionAlgorithm.zlib.value,
+      ])),
+      Features.fromFeatures(
+        SupportFeature.version1SEIPD.value | SupportFeature.aeadEncrypted.value | SupportFeature.version2SEIPD.value,
+      ),
+    ];
+    if (version == KeyVersion.v6.value) {
+      subpackets.add(PreferredAeadCiphers(Uint8List.fromList(aeads
+          .map((aead) => [
+                symmetrics[0],
+                aead,
+                symmetrics[1],
+                aead,
+              ])
+          .expand((ciphers) => ciphers)
+          .toList())));
+    }
+    return subpackets;
   }
 
   static Uint8List _signMessage(

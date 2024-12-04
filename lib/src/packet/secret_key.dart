@@ -84,19 +84,18 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
-    final DateTime? date,
+    final DateTime? time,
   }) {
     final keyMaterial = generateKeyMaterial(
       algorithm,
       rsaKeySize: rsaKeySize,
       curve: curve,
-      date: date,
     );
 
     return SecretKeyPacket(
       PublicKeyPacket(
         algorithm.keyVersion,
-        date ?? DateTime.now(),
+        time ?? DateTime.now(),
         keyMaterial.publicMaterial,
         keyAlgorithm: algorithm,
       ),
@@ -109,7 +108,6 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
-    final DateTime? date,
   }) {
     return switch (algorithm) {
       KeyAlgorithm.rsaEncryptSign ||

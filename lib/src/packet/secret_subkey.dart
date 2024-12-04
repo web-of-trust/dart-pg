@@ -57,18 +57,17 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
     final KeyAlgorithm algorithm, {
     final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
-    final DateTime? date,
+    final DateTime? time,
   }) {
     final keyMaterial = SecretKeyPacket.generateKeyMaterial(
       algorithm,
       rsaKeySize: rsaKeySize,
       curve: curve,
-      date: date,
     );
     return SecretSubkeyPacket(
       PublicSubkeyPacket(
         algorithm.keyVersion,
-        date ?? DateTime.now(),
+        time ?? DateTime.now(),
         keyMaterial.publicMaterial,
         keyAlgorithm: algorithm,
       ),
