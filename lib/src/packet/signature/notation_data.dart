@@ -68,7 +68,7 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface {
   String get notationValue => utf8.decode(valueData);
 
   @override
-  bool get isHumanReadable => data[0] == 0x80;
+  bool get humanReadable => data[0] == 0x80;
 
   Uint8List get nameData {
     final nameLength = (((data[headerFlagLength] & 0xff) << 8) + (data[headerFlagLength + 1] & 0xff));

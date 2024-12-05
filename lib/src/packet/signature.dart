@@ -11,13 +11,17 @@ import '../enum/aead_algorithm.dart';
 import '../enum/compression_algorithm.dart';
 import '../enum/key_flag.dart';
 import '../enum/key_version.dart';
+import '../enum/literal_format.dart';
 import '../enum/support_feature.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/signature_subpacket_type.dart';
 import '../enum/signature_type.dart';
+import '../type/key.dart';
 import '../type/key_packet.dart';
+import '../type/literal_data.dart';
+import '../type/notation_data.dart';
 import '../type/secret_key_packet.dart';
 import '../type/signature_packet.dart';
 import '../type/signing_key_material.dart';
@@ -327,6 +331,46 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
         ...signKey.signBytes,
         ...subkey.signBytes,
       ]),
+      subpackets: subpackets,
+      time: time,
+    );
+  }
+
+  /// Create literal data signature
+  factory SignaturePacket.createLiteralData(
+    SecretKeyPacketInterface signKey,
+    LiteralDataInterface literalData, {
+    Iterable<KeyInterface> recipients = const [],
+    NotationDataInterface? notationData,
+    DateTime? time,
+  }) {
+    final signatureType = switch (literalData.format) {
+      LiteralFormat.text || LiteralFormat.utf8 => SignatureType.text,
+      _ => SignatureType.binary
+    };
+    final subpackets = <SubpacketInterface>[];
+    if (signKey.isV6Key) {
+      for (final recipient in recipients) {
+        subpackets.add(
+          IntendedRecipientFingerprint.fromKey(
+            recipient.keyPacket,
+          ),
+        );
+      }
+    }
+    if (notationData != null) {
+      subpackets.add(
+        NotationData.fromNotation(
+          notationData.humanReadable,
+          notationData.notationName,
+          notationData.notationValue,
+        ),
+      );
+    }
+    return SignaturePacket.createSignature(
+      signKey,
+      signatureType,
+      literalData.signBytes,
       subpackets: subpackets,
       time: time,
     );

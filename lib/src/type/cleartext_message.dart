@@ -18,6 +18,8 @@ abstract interface class CleartextMessageInterface {
   String get text;
 
   /// Get normalized cleartext
+  /// Remove trailing whitespace and
+  /// normalize EOL to canonical form <CR><LF>
   String get normalizeText;
 
   /// Sign the message

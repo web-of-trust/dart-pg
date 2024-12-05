@@ -14,5 +14,5 @@ abstract interface class NotationDataInterface {
   String get notationValue;
 
   /// Is human readable
-  bool get isHumanReadable;
+  bool get humanReadable;
 }

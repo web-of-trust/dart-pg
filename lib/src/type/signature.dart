@@ -6,6 +6,7 @@ library;
 
 import 'dart:typed_data';
 
+import '../enum/hash_algorithm.dart';
 import 'armorable.dart';
 import 'cleartext_message.dart';
 import 'key.dart';
@@ -16,6 +17,9 @@ import 'verification.dart';
 /// Signature interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class SignatureInterface implements ArmorableInterface, PacketContainerInterface {
+  /// Get hash algorithms
+  Iterable<HashAlgorithm> get hashAlgorithms;
+
   /// Get signing key IDs
   Iterable<Uint8List> get signingKeyIDs;
 
