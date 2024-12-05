@@ -4,6 +4,8 @@
 
 library;
 
+import 'dart:typed_data';
+
 import 'key.dart';
 import 'secret_key_packet.dart';
 
@@ -21,6 +23,9 @@ abstract interface class PrivateKeyInterface implements KeyInterface {
 
   /// Private key is aead protected
   bool get aeadProtected;
+
+  /// Get decryptionK key packet
+  SecretKeyPacketInterface? getDecryptionKeyPacket([final Uint8List? keyID]);
 
   /// Lock a private key with the given passphrase.
   /// This method does not change the original key.

@@ -4,6 +4,8 @@
 
 library;
 
+import 'dart:typed_data';
+
 import '../common/armor.dart';
 import '../common/config.dart';
 import '../enum/armor_type.dart';
@@ -164,6 +166,9 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
     }
     return PublicKey(PacketList(packets));
   }
+
+  @override
+  getDecryptionKeyPacket([Uint8List? keyID]) => getEncryptionKeyPacket(keyID) as SecretKeyPacketInterface;
 
   @override
   armor() => Armor.encode(ArmorType.privateKey, packetList.encode());
