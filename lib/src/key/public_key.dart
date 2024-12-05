@@ -11,7 +11,7 @@ import '../enum/armor_type.dart';
 import '../packet/base.dart';
 import '../packet/packet_list.dart';
 import '../type/key.dart';
-import 'base.dart';
+import 'base_key.dart';
 
 /// OpenPGP public key class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

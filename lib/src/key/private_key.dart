@@ -11,7 +11,7 @@ import '../enum/ecc.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/key_type.dart';
 import '../enum/rsa_key_size.dart';
-import '../key/base.dart';
+import 'base_key.dart';
 import '../key/public_key.dart';
 import '../key/subkey.dart';
 import '../packet/base.dart';
