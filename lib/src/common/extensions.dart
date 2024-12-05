@@ -144,6 +144,12 @@ extension StringExt on String {
   Uint8List toBytes() => utf8.encoder.convert(this);
 
   bool hasMatch(final String text) => RegExp(this).hasMatch(text);
+
+  String removeTrailingSpaces() => LineSplitter.split(this)
+      .map(
+        (line) => line.trimRight(),
+      )
+      .join(r'\n');
 }
 
 /// Uint8List extension

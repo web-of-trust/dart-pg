@@ -88,6 +88,7 @@ class LiteralDataPacket extends BasePacket implements LiteralDataInterface {
   get signBytes => binary.isNotEmpty
       ? binary
       : text
+          .removeTrailingSpaces()
           .replaceAll(
             RegExp(r'\r?\n', multiLine: true),
             '\r\n',
