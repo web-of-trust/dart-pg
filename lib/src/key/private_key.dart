@@ -216,8 +216,8 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
 
   @override
   decrypt(
-    String passphrase, [
-    Iterable<String> subkeyPassphrases = const [],
+    final String passphrase, [
+    final Iterable<String> subkeyPassphrases = const [],
   ]) {
     if (passphrase.isEmpty) {
       throw ArgumentError('Passphrase are required for key decryption,');

@@ -52,7 +52,10 @@ final class PublicKey extends BaseKey {
   }
 
   /// Armor multiple public key.
-  static String armorPublicKeys(Iterable<KeyInterface> keys) => Armor.encode(
+  static String armorPublicKeys(
+    final Iterable<KeyInterface> keys,
+  ) =>
+      Armor.encode(
       ArmorType.publicKey,
       Uint8List.fromList(keys
           .map(

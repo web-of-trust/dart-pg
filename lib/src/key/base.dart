@@ -93,7 +93,7 @@ abstract class BaseKey implements KeyInterface {
       ]);
 
   @override
-  getEncryptionKeyPacket([Uint8List? keyID]) {
+  getEncryptionKeyPacket([final Uint8List? keyID]) {
     subkeys.sort(
       (a, b) => b.creationTime.compareTo(
         a.creationTime,
@@ -111,9 +111,9 @@ abstract class BaseKey implements KeyInterface {
 
   @override
   isRevoked({
-    KeyInterface? verifyKey,
-    SignaturePacketInterface? certificate,
-    DateTime? time,
+    final KeyInterface? verifyKey,
+    final SignaturePacketInterface? certificate,
+    final DateTime? time,
   }) {
     if (revocationSignatures.isNotEmpty) {
       final keyID = certificate?.issuerKeyID;
@@ -150,7 +150,11 @@ abstract class BaseKey implements KeyInterface {
   @override
   verify([final String userID = '', final DateTime? time]) {
     for (final signature in directSignatures) {
-      if (!signature.verify(publicKey.keyPacket, keyPacket.signBytes, time)) {
+      if (!signature.verify(
+        publicKey.keyPacket,
+        keyPacket.signBytes,
+        time,
+      )) {
         return false;
       }
     }
