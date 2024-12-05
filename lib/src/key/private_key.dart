@@ -4,21 +4,21 @@
 
 library;
 
-import 'package:dart_pg/src/common/armor.dart';
-import 'package:dart_pg/src/common/config.dart';
-import 'package:dart_pg/src/enum/armor_type.dart';
-import 'package:dart_pg/src/enum/ecc.dart';
-import 'package:dart_pg/src/enum/key_algorithm.dart';
-import 'package:dart_pg/src/enum/key_type.dart';
-import 'package:dart_pg/src/enum/rsa_key_size.dart';
-import 'package:dart_pg/src/key/base.dart';
-import 'package:dart_pg/src/key/public_key.dart';
-import 'package:dart_pg/src/key/subkey.dart';
-import 'package:dart_pg/src/packet/base.dart';
-import 'package:dart_pg/src/packet/packet_list.dart';
-import 'package:dart_pg/src/type/packet.dart';
-import 'package:dart_pg/src/type/private_key.dart';
-import 'package:dart_pg/src/type/secret_key_packet.dart';
+import '../common/armor.dart';
+import '../common/config.dart';
+import '../enum/armor_type.dart';
+import '../enum/ecc.dart';
+import '../enum/key_algorithm.dart';
+import '../enum/key_type.dart';
+import '../enum/rsa_key_size.dart';
+import '../key/base.dart';
+import '../key/public_key.dart';
+import '../key/subkey.dart';
+import '../packet/base.dart';
+import '../packet/packet_list.dart';
+import '../type/packet.dart';
+import '../type/private_key.dart';
+import '../type/secret_key_packet.dart';
 
 final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   PrivateKey(super.packetList);
@@ -144,9 +144,6 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   get aeadProtected => secretKeyPacket.aeadProtected;
 
   @override
-  get preferredHash => secretKeyPacket.preferredHash;
-
-  @override
   get publicKey {
     final packets = <PacketInterface>[];
     for (final packet in packetList) {
@@ -183,7 +180,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
       throw StateError('Private key must be decrypted before encrypting.');
     }
 
-    final aead = keyPacket.isV6Key && Config.aeadProtect ? Config.preferredAead : null;
+    final aead = aeadProtected && Config.aeadProtect ? Config.preferredAead : null;
     final subkeys = this.subkeys.map((subkey) {
       final index = this.subkeys.indexOf(subkey);
       final subkeyPass = subkeyPassphrases.elementAtOrNull(index) ?? passphrase;

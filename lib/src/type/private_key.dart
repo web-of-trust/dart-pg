@@ -4,7 +4,6 @@
 
 library;
 
-import '../enum/hash_algorithm.dart';
 import 'key.dart';
 import 'secret_key_packet.dart';
 
@@ -22,9 +21,6 @@ abstract interface class PrivateKeyInterface implements KeyInterface {
 
   /// Private key is aead protected
   bool get aeadProtected;
-
-  /// Get preferred hash algorithm
-  HashAlgorithm get preferredHash;
 
   /// Lock a private key with the given passphrase.
   /// This method does not change the original key.
