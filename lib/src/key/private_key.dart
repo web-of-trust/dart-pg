@@ -102,7 +102,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
       index++;
     }
 
-    if (signOnly) {
+    if (!signOnly) {
       /// Generate & Wrap secret subkey with binding signature
       final KeyAlgorithm subkeyAlgorithm = switch (type) {
         KeyType.rsa => KeyAlgorithm.rsaEncryptSign,
