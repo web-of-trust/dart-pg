@@ -4,6 +4,8 @@
 
 library;
 
+import 'dart:typed_data';
+
 import '../common/helpers.dart';
 import '../packet/base.dart';
 import '../packet/packet_list.dart';
@@ -89,6 +91,23 @@ abstract class BaseKey implements KeyInterface {
               ]
             : [],
       ]);
+
+  @override
+  getEncryptionKeyPacket([Uint8List? keyID]) {
+    subkeys.sort(
+      (a, b) => b.creationTime.compareTo(
+        a.creationTime,
+      ),
+    );
+    for (final subkey in subkeys) {
+      if (keyID == null || subkey.keyID.equals(keyID)) {
+        if (subkey.isEncryptionKey) {
+          return subkey.keyPacket;
+        }
+      }
+    }
+    return null;
+  }
 
   @override
   isRevoked({
