@@ -4,7 +4,7 @@
 
 library;
 
-import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'signature_packet.dart';
 
@@ -12,7 +12,7 @@ import 'signature_packet.dart';
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class VerificationInterface {
   /// Get verification key ID
-  Uint8 get keyID;
+  Uint8List get keyID;
 
   /// Get signature packet
   SignaturePacketInterface get signaturePacket;

@@ -19,9 +19,6 @@ abstract interface class SignatureInterface implements ArmorableInterface, Packe
   /// Get signing key IDs
   Iterable<Uint8List> get signingKeyIDs;
 
-  /// Get verification errors
-  Iterable<String> get verificationErrors;
-
   /// Verify signature with literal data
   /// Return verification iterable
   Iterable<VerificationInterface> verify(
