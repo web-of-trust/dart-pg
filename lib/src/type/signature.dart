@@ -12,6 +12,7 @@ import 'cleartext_message.dart';
 import 'key.dart';
 import 'literal_data.dart';
 import 'packet_container.dart';
+import 'signature_packet.dart';
 import 'verification.dart';
 
 /// Signature interface
@@ -22,6 +23,9 @@ abstract interface class SignatureInterface implements ArmorableInterface, Packe
 
   /// Get signing key IDs
   Iterable<Uint8List> get signingKeyIDs;
+
+  /// Get signature packets
+  Iterable<SignaturePacketInterface> get packets;
 
   /// Verify signature with literal data
   /// Return verification iterable

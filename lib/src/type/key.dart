@@ -45,6 +45,9 @@ abstract interface class KeyInterface implements ArmorableInterface, PacketConta
   /// Get key strength
   int get keyStrength;
 
+  /// Return aead supported
+  bool get aeadSupported;
+
   /// Get revocation signatures
   List<SignaturePacketInterface> get revocationSignatures;
 

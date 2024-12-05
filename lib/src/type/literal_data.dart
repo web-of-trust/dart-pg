@@ -6,11 +6,12 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/enum/literal_format.dart';
+import '../enum/literal_format.dart';
+import 'packet.dart';
 
 /// Literal data interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class LiteralDataInterface {
+abstract interface class LiteralDataInterface implements PacketInterface {
   /// Get literal format
   LiteralFormat get format;
 

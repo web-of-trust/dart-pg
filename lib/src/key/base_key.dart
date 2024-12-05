@@ -6,6 +6,8 @@ library;
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/packet/signature/features.dart';
+
 import '../common/helpers.dart';
 import '../packet/base.dart';
 import '../packet/packet_list.dart';
@@ -91,6 +93,27 @@ abstract class BaseKey implements KeyInterface {
               ]
             : [],
       ]);
+
+  @override
+  bool get aeadSupported {
+    for (final signature in directSignatures) {
+      final features = signature.getSubpacket<Features>();
+      if (features != null && features.supportVersion2SEIPD) {
+        return true;
+      }
+    }
+    for (final user in users) {
+      if (user.isPrimary) {
+        for (final signature in user.selfSignatures) {
+          final features = signature.getSubpacket<Features>();
+          if (features != null && features.supportVersion2SEIPD) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
 
   @override
   getEncryptionKeyPacket([final Uint8List? keyID]) {
