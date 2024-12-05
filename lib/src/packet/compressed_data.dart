@@ -8,6 +8,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import '../enum/compression_algorithm.dart';
+import '../type/packet_list.dart';
 import 'base.dart';
 import 'packet_list.dart';
 
@@ -23,7 +24,7 @@ class CompressedDataPacket extends BasePacket {
   final Uint8List compressed;
 
   /// Decompressed packets contained within.
-  final PacketList packets;
+  final PacketListInterface packets;
 
   CompressedDataPacket(
     this.compressed,
@@ -45,7 +46,7 @@ class CompressedDataPacket extends BasePacket {
   }
 
   factory CompressedDataPacket.fromPacketList(
-    final PacketList packets, {
+    final PacketListInterface packets, {
     final CompressionAlgorithm algorithm = CompressionAlgorithm.uncompressed,
   }) =>
       CompressedDataPacket(
@@ -61,7 +62,7 @@ class CompressedDataPacket extends BasePacket {
       ]);
 
   static Uint8List _compress(
-    final PacketList packets,
+    final PacketListInterface packets,
     final CompressionAlgorithm algorithm,
   ) =>
       switch (algorithm) {
