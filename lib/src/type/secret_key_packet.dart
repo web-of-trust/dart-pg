@@ -33,11 +33,11 @@ abstract interface class SecretKeyPacketInterface implements KeyPacketInterface 
 
   /// Encrypt secret key packet with passphrase
   SecretKeyPacketInterface encrypt(
-    String passphrase,
-    SymmetricAlgorithm symmetric, [
-    AeadAlgorithm? aead,
+    final String passphrase,
+    final SymmetricAlgorithm symmetric, [
+    final AeadAlgorithm? aead,
   ]);
 
   /// Decrypt secret key packet with passphrase
-  SecretKeyPacketInterface decrypt(String passphrase);
+  SecretKeyPacketInterface decrypt(final String passphrase);
 }

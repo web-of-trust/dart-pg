@@ -18,7 +18,7 @@ abstract interface class SignedMessageInterface implements ArmorableInterface {
   /// Verify signature of signed message
   /// Return verification iterable
   Iterable<VerificationInterface> verify(
-    Iterable<KeyInterface> verificationKeys, [
-    DateTime? time,
+    final Iterable<KeyInterface> verificationKeys, [
+    final DateTime? time,
   ]);
 }

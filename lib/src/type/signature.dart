@@ -6,14 +6,16 @@ library;
 
 import 'dart:typed_data';
 
+import 'armorable.dart';
 import 'cleartext_message.dart';
 import 'key.dart';
 import 'literal_data.dart';
+import 'packet_container.dart';
 import 'verification.dart';
 
 /// Signature interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class SignatureInterface {
+abstract interface class SignatureInterface implements ArmorableInterface, PacketContainerInterface {
   /// Get signing key IDs
   Iterable<Uint8List> get signingKeyIDs;
 
@@ -23,16 +25,16 @@ abstract interface class SignatureInterface {
   /// Verify signature with literal data
   /// Return verification iterable
   Iterable<VerificationInterface> verify(
-    Iterable<KeyInterface> verificationKeys,
-    LiteralDataInterface literalData, [
-    DateTime? time,
+    final Iterable<KeyInterface> verificationKeys,
+    final LiteralDataInterface literalData, [
+    final DateTime? time,
   ]);
 
   /// Verify signature with cleartext
   /// Return verification iterable
   Iterable<VerificationInterface> verifyCleartext(
-    Iterable<KeyInterface> verificationKeys,
-    CleartextMessageInterface cleartext, [
-    DateTime? time,
+    final Iterable<KeyInterface> verificationKeys,
+    final CleartextMessageInterface cleartext, [
+    final DateTime? time,
   ]);
 }

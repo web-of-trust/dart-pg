@@ -15,5 +15,5 @@ abstract interface class SessionKeyCryptorInterface {
   Uint8List toBytes();
 
   /// Decrypt session key by using secret key packet
-  Uint8List decrypt(SecretKeyMaterialInterface key);
+  Uint8List decrypt(final SecretKeyMaterialInterface key);
 }

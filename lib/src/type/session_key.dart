@@ -18,7 +18,7 @@ abstract interface class SessionKeyInterface {
   SymmetricAlgorithm get symmetric;
 
   /// Checksum the encryption key
-  void checksum(Uint8List checksum);
+  void checksum(final Uint8List checksum);
 
   /// Compute checksum
   Uint8List computeChecksum();

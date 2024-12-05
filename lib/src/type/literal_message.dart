@@ -24,42 +24,42 @@ abstract interface class LiteralMessageInterface implements ArmorableInterface, 
 
   /// Sign the message
   LiteralMessageInterface sign(
-    Iterable<PrivateKeyInterface> signingKeys, {
-    Iterable<KeyInterface> recipients = const [],
-    NotationDataInterface? notationData,
-    DateTime? time,
+    final Iterable<PrivateKeyInterface> signingKeys, {
+    final Iterable<KeyInterface> recipients = const [],
+    final NotationDataInterface? notationData,
+    final DateTime? time,
   });
 
   /// Sign the message
   SignatureInterface signDetached(
-    Iterable<PrivateKeyInterface> signingKeys, {
-    Iterable<KeyInterface> recipients = const [],
-    NotationDataInterface? notationData,
-    DateTime? time,
+    final Iterable<PrivateKeyInterface> signingKeys, {
+    final Iterable<KeyInterface> recipients = const [],
+    final NotationDataInterface? notationData,
+    final DateTime? time,
   });
 
   /// Verify signature
   Iterable<VerificationInterface> verify(
-    Iterable<KeyInterface> verificationKeys, [
-    DateTime? time,
+    final Iterable<KeyInterface> verificationKeys, [
+    final DateTime? time,
   ]);
 
   /// Verify detached signature & return verification array
   Iterable<VerificationInterface> verifyDetached(
-    Iterable<KeyInterface> verificationKeys,
-    SignatureInterface signature, [
-    DateTime? time,
+    final Iterable<KeyInterface> verificationKeys,
+    final SignatureInterface signature, [
+    final DateTime? time,
   ]);
 
   /// Encrypt the message either with public keys, passwords, or both at once.
   /// Return new message with encrypted content.
   EncryptedMessageInterface encrypt({
-    Iterable<KeyInterface> encryptionKeys = const [],
-    Iterable<String> passwords = const [],
-    SymmetricAlgorithm? symmetric,
+    final Iterable<KeyInterface> encryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+    final SymmetricAlgorithm? symmetric,
   });
 
   /// Compress the message (the literal and signature packets of the message)
   /// Return new message with compressed content.
-  LiteralMessageInterface compress([CompressionAlgorithm? algorithm]);
+  LiteralMessageInterface compress([final CompressionAlgorithm? algorithm]);
 }

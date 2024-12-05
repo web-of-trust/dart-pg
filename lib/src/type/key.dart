@@ -58,7 +58,7 @@ abstract interface class KeyInterface implements ArmorableInterface, PacketConta
   List<SubkeyInterface> get subkeys;
 
   /// Get encryption key packet
-  KeyPacketInterface? getEncryptionKeyPacket([Uint8List? keyID]);
+  KeyPacketInterface? getEncryptionKeyPacket([final Uint8List? keyID]);
 
   /// Check if the key is revoked
   bool isRevoked({

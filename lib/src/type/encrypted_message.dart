@@ -22,7 +22,7 @@ abstract interface class EncryptedMessageInterface {
   /// One of `decryptionKeys` or `passwords` must be specified.
   /// Return new message with decrypted content.
   LiteralMessageInterface decrypt({
-    Iterable<PrivateKeyInterface> decryptionKeys = const [],
-    Iterable<String> passwords = const [],
+    final Iterable<PrivateKeyInterface> decryptionKeys = const [],
+    final Iterable<String> passwords = const [],
   });
 }
