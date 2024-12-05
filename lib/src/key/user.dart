@@ -6,13 +6,13 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/common/helpers.dart';
-import 'package:dart_pg/src/packet/base.dart';
-import 'package:dart_pg/src/packet/packet_list.dart';
-import 'package:dart_pg/src/type/key.dart';
-import 'package:dart_pg/src/type/signature_packet.dart';
-import 'package:dart_pg/src/type/user.dart';
-import 'package:dart_pg/src/type/user_id_packet.dart';
+import '../common/helpers.dart';
+import '../packet/base.dart';
+import '../packet/packet_list.dart';
+import '../type/key.dart';
+import '../type/signature_packet.dart';
+import '../type/user.dart';
+import '../type/user_id_packet.dart';
 
 /// OpenPGP user class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

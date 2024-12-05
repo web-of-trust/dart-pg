@@ -7,9 +7,6 @@ library;
 import 'dart:typed_data';
 import 'package:pointycastle/api.dart';
 
-import 'key/public_material.dart';
-import 'key/secret_material.dart';
-
 import '../common/argon2_s2k.dart';
 import '../common/config.dart';
 import '../common/generic_s2k.dart';
@@ -30,6 +27,8 @@ import '../type/s2k.dart';
 import '../type/secret_key_material.dart';
 import '../type/secret_key_packet.dart';
 import '../type/subkey_packet.dart';
+import 'key/public_material.dart';
+import 'key/secret_material.dart';
 import 'base.dart';
 
 /// Implementation of the Secret Key (SECKEY) Packet - Type 5

@@ -41,10 +41,10 @@ abstract class BaseKey implements KeyInterface {
   }
 
   @override
-  DateTime get creationTime => keyPacket.creationTime;
+  get creationTime => keyPacket.creationTime;
 
   @override
-  DateTime? get expirationTime {
+  get expirationTime {
     final time = keyExpiration(directSignatures.toList());
     if (time == null) {
       for (final user in users) {

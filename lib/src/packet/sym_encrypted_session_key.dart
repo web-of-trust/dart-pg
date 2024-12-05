@@ -5,7 +5,6 @@
 library;
 
 import 'dart:typed_data';
-
 import 'package:pointycastle/api.dart';
 
 import '../common/argon2_s2k.dart';

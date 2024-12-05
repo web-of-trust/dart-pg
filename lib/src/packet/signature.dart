@@ -6,16 +6,13 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/enum/aead_algorithm.dart';
-import 'package:dart_pg/src/enum/compression_algorithm.dart';
-import 'package:dart_pg/src/enum/key_flag.dart';
-import 'package:dart_pg/src/enum/key_version.dart';
-import 'package:dart_pg/src/enum/support_feature.dart';
-import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
-import 'package:dart_pg/src/type/subkey_packet.dart';
-import 'package:dart_pg/src/type/user_id_packet.dart';
-
 import '../common/helpers.dart';
+import '../enum/aead_algorithm.dart';
+import '../enum/compression_algorithm.dart';
+import '../enum/key_flag.dart';
+import '../enum/key_version.dart';
+import '../enum/support_feature.dart';
+import '../enum/symmetric_algorithm.dart';
 import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/signature_subpacket_type.dart';
@@ -24,7 +21,9 @@ import '../type/key_packet.dart';
 import '../type/secret_key_packet.dart';
 import '../type/signature_packet.dart';
 import '../type/signing_key_material.dart';
+import '../type/subkey_packet.dart';
 import '../type/subpacket.dart';
+import '../type/user_id_packet.dart';
 import '../type/verification_key_material.dart';
 import 'base.dart';
 import 'signature_subpacket.dart';
