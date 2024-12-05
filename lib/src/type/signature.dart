@@ -4,7 +4,7 @@
 
 library;
 
-import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'cleartext_message.dart';
 import 'key.dart';
@@ -15,7 +15,7 @@ import 'verification.dart';
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class SignatureInterface {
   /// Get signing key IDs
-  Iterable<Uint8> get signingKeyIDs;
+  Iterable<Uint8List> get signingKeyIDs;
 
   /// Get verification errors
   Iterable<String> get verificationErrors;

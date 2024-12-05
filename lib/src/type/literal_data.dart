@@ -29,6 +29,6 @@ abstract interface class LiteralDataInterface {
   /// Get header
   Uint8List get header;
 
-  /// Get sign bytes
+  /// Get bytes for sign
   Uint8List get signBytes;
 }
