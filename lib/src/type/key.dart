@@ -56,4 +56,22 @@ abstract interface class KeyInterface implements ArmorableInterface, PacketConta
 
   /// Get subkeys
   List<SubkeyInterface> get subkeys;
+
+  /// Check if the key is revoked
+  bool isRevoked({
+    final KeyInterface? verifyKey,
+    final SignaturePacketInterface? certificate,
+    final DateTime? time,
+  });
+
+  /// Check if the key is certified
+  bool isCertified({
+    final KeyInterface? verifyKey,
+    final SignaturePacketInterface? certificate,
+    final DateTime? time,
+  });
+
+  /// Verify the key.
+  /// Check for existence and validity of direct & user signature.
+  bool verify([final String userID = '', final DateTime? time]);
 }

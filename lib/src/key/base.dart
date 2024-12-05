@@ -90,6 +90,61 @@ abstract class BaseKey implements KeyInterface {
             : [],
       ]);
 
+  @override
+  isRevoked({
+    KeyInterface? verifyKey,
+    SignaturePacketInterface? certificate,
+    DateTime? time,
+  }) {
+    if (revocationSignatures.isNotEmpty) {
+      final keyID = certificate?.issuerKeyID;
+      final keyPacket = verifyKey?.publicKey.keyPacket ?? publicKey.keyPacket;
+      for (final signature in revocationSignatures) {
+        if (keyID == null || signature.issuerKeyID.equals(keyID)) {
+          if (signature.verify(keyPacket, keyPacket.signBytes, time)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  @override
+  isCertified({
+    final KeyInterface? verifyKey,
+    final SignaturePacketInterface? certificate,
+    final DateTime? time,
+  }) {
+    for (var user in users) {
+      if (user.isPrimary) {
+        return user.isCertified(
+          verifyKey: verifyKey,
+          certificate: certificate,
+          time: time,
+        );
+      }
+    }
+    return false;
+  }
+
+  @override
+  verify([final String userID = '', final DateTime? time]) {
+    for (final signature in directSignatures) {
+      if (!signature.verify(publicKey.keyPacket, keyPacket.signBytes, time)) {
+        return false;
+      }
+    }
+    for (var user in users) {
+      if (userID.isEmpty || user.userID == userID) {
+        if (!user.verify(time)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   _readPacketList(final PacketListInterface packetList) {
     final keyPacketList = packetList.takeWhile(
       (packet) => packet is KeyPacketInterface,

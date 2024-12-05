@@ -91,9 +91,7 @@ final class Subkey implements SubkeyInterface {
   get version => keyPacket.keyVersion;
 
   @override
-  isRevoked([
-    final DateTime? time,
-  ]) {
+  isRevoked([final DateTime? time]) {
     for (final revocation in revocationSignatures) {
       if (revocation.verify(
         mainKey.keyPacket,
@@ -110,7 +108,7 @@ final class Subkey implements SubkeyInterface {
   }
 
   @override
-  verify([DateTime? time]) {
+  verify([final DateTime? time]) {
     for (final signature in bindingSignatures) {
       if (signature.verify(
         mainKey.keyPacket,

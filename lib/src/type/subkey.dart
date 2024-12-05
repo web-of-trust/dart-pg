@@ -55,7 +55,7 @@ abstract interface class SubkeyInterface implements PacketContainerInterface {
   /// Get binding signatures
   List<SignaturePacketInterface> get bindingSignatures;
 
-  /// Check if a subkey is revoked
+  /// Check if the subkey is revoked
   bool isRevoked([final DateTime? time]);
 
   /// Verify subkey.

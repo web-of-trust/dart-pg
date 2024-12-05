@@ -37,6 +37,13 @@ abstract interface class UserInterface implements PacketContainerInterface {
   /// Check if a given certificate of the user is revoked
   bool isRevoked([final DateTime? time]);
 
+  /// Check if the key is certified
+  bool isCertified({
+    final KeyInterface? verifyKey,
+    final SignaturePacketInterface? certificate,
+    final DateTime? time,
+  });
+
   /// Verify user.
   /// Check for existence and validity of self signature.
   bool verify([final DateTime? time]);

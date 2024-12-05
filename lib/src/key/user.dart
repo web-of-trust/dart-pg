@@ -6,6 +6,7 @@ library;
 
 import 'dart:typed_data';
 
+import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/packet/base.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/type/key.dart';
@@ -67,7 +68,7 @@ final class User implements UserInterface {
   get userID => (userIDPacket is UserIDPacket) ? (userIDPacket as UserIDPacket).userID : "";
 
   @override
-  isRevoked([DateTime? time]) {
+  isRevoked([final DateTime? time]) {
     for (final revocation in revocationSignatures) {
       if (revocation.verify(
         mainKey.keyPacket,
@@ -84,7 +85,34 @@ final class User implements UserInterface {
   }
 
   @override
-  verify([DateTime? time]) {
+  isCertified({
+    final KeyInterface? verifyKey,
+    final SignaturePacketInterface? certificate,
+    final DateTime? time,
+  }) {
+    if (otherSignatures.isNotEmpty) {
+      final keyID = certificate?.issuerKeyID;
+      final keyPacket = verifyKey?.publicKey.keyPacket ?? mainKey.keyPacket;
+      for (final signature in otherSignatures) {
+        if (keyID == null || signature.issuerKeyID.equals(keyID)) {
+          if (signature.verify(
+            keyPacket,
+            Uint8List.fromList([
+              ...mainKey.keyPacket.signBytes,
+              ...userIDPacket.signBytes,
+            ]),
+            time,
+          )) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  @override
+  verify([final DateTime? time]) {
     for (final signature in selfSignatures) {
       if (signature.verify(
         mainKey.keyPacket,
