@@ -145,11 +145,11 @@ extension StringExt on String {
 
   bool hasMatch(final String text) => RegExp(this).hasMatch(text);
 
-  String removeTrailingSpaces() => LineSplitter.split(this)
+  String removeTrailingSpaces() => split('\n')
       .map(
         (line) => line.trimRight(),
       )
-      .join(r'\n');
+      .join('\r\n');
 }
 
 /// Uint8List extension

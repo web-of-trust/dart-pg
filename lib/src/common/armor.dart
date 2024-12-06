@@ -72,7 +72,7 @@ class Armor {
     final textLines = <String>[];
     final dataLines = <String>[];
 
-    final lines = LineSplitter.split(armored);
+    final lines = armored.split('\n');
     for (final line in lines) {
       if (type == null && splitPattern.hasMatch(line)) {
         type = ArmorType.fromBegin(line);
@@ -81,9 +81,13 @@ class Armor {
           headers.add(line);
         } else if (!textDone && type == ArmorType.signedMessage) {
           if (!splitPattern.hasMatch(line)) {
-            textLines.add(line.replaceAll(RegExp(r'^- '), ''));
+            textLines.add(line.trimRight().replaceAll(RegExp(r'^- '), ''));
           } else {
             textDone = true;
+            if (textLines.isNotEmpty) {
+              /// Remove first empty line (not included in the message digest)
+              textLines.removeAt(0);
+            }
           }
         } else if (!splitPattern.hasMatch(line)) {
           if (emptyLinePattern.hasMatch(line)) {
@@ -98,7 +102,7 @@ class Armor {
       }
     }
 
-    final text = textLines.join('\r\n').trim();
+    final text = textLines.join('\r\n');
     final data = base64.decode(dataLines.join().trim());
 
     if ((checksum != _crc24Checksum(data)) && (checksum.isNotEmpty || Config.checksumRequired)) {
