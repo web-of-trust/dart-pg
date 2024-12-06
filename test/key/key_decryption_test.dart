@@ -91,6 +91,15 @@ GI+GuY8P5tMHtY7TbkZVr0qX2+zzusB4RVe0RcmI3GVM/wEZJHPPVrIpD1jhRxjZ
       expect(subkey.keyStrength, 2048);
 
       expect(user.userID, userID);
+
+      final encrypted = OpenPGP.encryptPrivateKey(
+        privateKey,
+        Helper.generatePassword(),
+      );
+      expect(
+        privateKey.fingerprint.toHexadecimal(),
+        encrypted.fingerprint.toHexadecimal(),
+      );
     });
 
     test('DSA & ElGamal key', () {
@@ -160,6 +169,15 @@ CorNeTDAKJEwL5SJhzt+bmo+
       expect(subkey.keyStrength, 2048);
 
       expect(user.userID, userID);
+
+      final encrypted = OpenPGP.encryptPrivateKey(
+        privateKey,
+        Helper.generatePassword(),
+      );
+      expect(
+        privateKey.fingerprint.toHexadecimal(),
+        encrypted.fingerprint.toHexadecimal(),
+      );
     });
 
     test('ECC NIST P-384 key', () {
@@ -207,6 +225,15 @@ Lvrv2K9VfqgHGB2NDYsdLdXOIHardOmkFmD3rTbjsjHkQrLCs/lCQkVhAYCxmcY1
       expect(subkey.keyStrength, 384);
 
       expect(user.userID, userID);
+
+      final encrypted = OpenPGP.encryptPrivateKey(
+        privateKey,
+        Helper.generatePassword(),
+      );
+      expect(
+        privateKey.fingerprint.toHexadecimal(),
+        encrypted.fingerprint.toHexadecimal(),
+      );
     });
 
     test('ECC Brainpool P-256 key', () {
@@ -251,6 +278,15 @@ GwwACgkQmVEhn8nelXjEygEAiKyuVndDuoMDyeK0h1qNd0NCvS7YfGQbV8kqmWf1
       expect(subkey.keyStrength, 256);
 
       expect(user.userID, userID);
+
+      final encrypted = OpenPGP.encryptPrivateKey(
+        privateKey,
+        Helper.generatePassword(),
+      );
+      expect(
+        privateKey.fingerprint.toHexadecimal(),
+        encrypted.fingerprint.toHexadecimal(),
+      );
     });
 
     test('ECC Curve 25519 key', () {
@@ -294,6 +330,15 @@ CgAgFiEEEUiyok9YCXfCeyYiPtR13SEtIh4FAmc/+gYCGwwACgkQPtR13SEtIh6w
       expect(subkey.keyStrength, 255);
 
       expect(user.userID, userID);
+
+      final encrypted = OpenPGP.encryptPrivateKey(
+        privateKey,
+        Helper.generatePassword(),
+      );
+      expect(
+        privateKey.fingerprint.toHexadecimal(),
+        encrypted.fingerprint.toHexadecimal(),
+      );
     });
 
     test('Rfc9580 Curve 25519 key', () {
@@ -346,6 +391,15 @@ C8sssUAhAtMI5sgtlfA7Ow7VHjDLcQ0doBgA9J4afJjd12/e+PYN4Kdqvt5Gbv5ltA==
       expect(subkey.keyStrength, 255);
 
       expect(user.userID, userID);
+
+      final encrypted = OpenPGP.encryptPrivateKey(
+        privateKey,
+        Helper.generatePassword(),
+      );
+      expect(
+        privateKey.fingerprint.toHexadecimal(),
+        encrypted.fingerprint.toHexadecimal(),
+      );
     });
 
     test('Rfc9580 Curve 448 key', () {
@@ -404,6 +458,15 @@ x6s=
       expect(subkey.keyStrength, 448);
 
       expect(user.userID, userID);
+
+      final encrypted = OpenPGP.encryptPrivateKey(
+        privateKey,
+        Helper.generatePassword(),
+      );
+      expect(
+        privateKey.fingerprint.toHexadecimal(),
+        encrypted.fingerprint.toHexadecimal(),
+      );
     });
   });
 }
