@@ -10,7 +10,6 @@ What we need from the grocery store:
 - tofu
 - vegetables
 - noodles
-
 ''';
 
     test('with key Bob', () {
