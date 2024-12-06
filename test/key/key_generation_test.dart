@@ -4,7 +4,7 @@ import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/enum/key_type.dart';
 import 'package:dart_pg/src/enum/key_version.dart';
 import 'package:dart_pg/src/enum/rsa_key_size.dart';
-import 'package:dart_pg/src/key/private_key.dart';
+import 'package:dart_pg/src/openpgp.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -13,7 +13,7 @@ void main() {
     final passphrase = Helper.generatePassword();
 
     test('RSA key', () {
-      final privateKey = PrivateKey.generate(
+      final privateKey = OpenPGP.generateKey(
         [userID],
         passphrase,
         type: KeyType.rsa,
@@ -23,7 +23,7 @@ void main() {
       expect(privateKey.keyStrength, RSAKeySize.high.bits);
       expect(privateKey.users[0].userID, userID);
 
-      final priKey = PrivateKey.fromArmored(
+      final priKey = OpenPGP.readPrivateKey(
         privateKey.armor(),
       ).decrypt(passphrase);
       expect(priKey.fingerprint, privateKey.fingerprint);
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('ECDSA NIST P-384 key', () {
-      final privateKey = PrivateKey.generate(
+      final privateKey = OpenPGP.generateKey(
         [userID],
         passphrase,
         type: KeyType.ecc,
@@ -49,7 +49,7 @@ void main() {
       expect(subkey.keyAlgorithm, KeyAlgorithm.ecdh);
       expect(subkey.keyStrength, 384);
 
-      final priKey = PrivateKey.fromArmored(
+      final priKey = OpenPGP.readPrivateKey(
         privateKey.armor(),
       ).decrypt(passphrase);
       expect(priKey.fingerprint, privateKey.fingerprint);
@@ -61,7 +61,7 @@ void main() {
     });
 
     test('ECDSA Brainpool P-512 key', () {
-      final privateKey = PrivateKey.generate(
+      final privateKey = OpenPGP.generateKey(
         [userID],
         passphrase,
         type: KeyType.ecc,
@@ -75,7 +75,7 @@ void main() {
       expect(subkey.keyAlgorithm, KeyAlgorithm.ecdh);
       expect(subkey.keyStrength, 512);
 
-      final priKey = PrivateKey.fromArmored(
+      final priKey = OpenPGP.readPrivateKey(
         privateKey.armor(),
       ).decrypt(passphrase);
       expect(priKey.fingerprint, privateKey.fingerprint);
@@ -87,7 +87,7 @@ void main() {
     });
 
     test('EdDSA legacy key', () {
-      final privateKey = PrivateKey.generate(
+      final privateKey = OpenPGP.generateKey(
         [userID],
         passphrase,
         type: KeyType.ecc,
@@ -101,7 +101,7 @@ void main() {
       expect(subkey.keyAlgorithm, KeyAlgorithm.ecdh);
       expect(subkey.keyStrength, 255);
 
-      final priKey = PrivateKey.fromArmored(
+      final priKey = OpenPGP.readPrivateKey(
         privateKey.armor(),
       ).decrypt(passphrase);
       expect(priKey.fingerprint, privateKey.fingerprint);
@@ -113,7 +113,7 @@ void main() {
     });
 
     test('RFC9580 Curve 25519 key', () {
-      final privateKey = PrivateKey.generate(
+      final privateKey = OpenPGP.generateKey(
         [userID],
         passphrase,
         type: KeyType.curve25519,
@@ -126,7 +126,7 @@ void main() {
       expect(subkey.keyAlgorithm, KeyAlgorithm.x25519);
       expect(subkey.keyStrength, 255);
 
-      final priKey = PrivateKey.fromArmored(
+      final priKey = OpenPGP.readPrivateKey(
         privateKey.armor(),
       ).decrypt(passphrase);
       expect(priKey.fingerprint, privateKey.fingerprint);
@@ -138,7 +138,7 @@ void main() {
     });
 
     test('RFC9580 Curve 448 key', () {
-      final privateKey = PrivateKey.generate(
+      final privateKey = OpenPGP.generateKey(
         [userID],
         passphrase,
         type: KeyType.curve448,
@@ -151,7 +151,7 @@ void main() {
       expect(subkey.keyAlgorithm, KeyAlgorithm.x448);
       expect(subkey.keyStrength, 448);
 
-      final priKey = PrivateKey.fromArmored(
+      final priKey = OpenPGP.readPrivateKey(
         privateKey.armor(),
       ).decrypt(passphrase);
       expect(priKey.fingerprint, privateKey.fingerprint);

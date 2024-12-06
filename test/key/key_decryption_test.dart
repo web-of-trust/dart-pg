@@ -1,6 +1,6 @@
 import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
-import 'package:dart_pg/src/key/private_key.dart';
+import 'package:dart_pg/src/openpgp.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -70,7 +70,7 @@ GI+GuY8P5tMHtY7TbkZVr0qX2+zzusB4RVe0RcmI3GVM/wEZJHPPVrIpD1jhRxjZ
 =QeXb
 -----END PGP PRIVATE KEY BLOCK-----
 ''';
-      final privateKey = PrivateKey.fromArmored(armored).decrypt(passphrase);
+      final privateKey = OpenPGP.decryptPrivateKey(armored, passphrase);
       final user = privateKey.users[0];
       final subkey = privateKey.subkeys[0];
 
@@ -139,7 +139,7 @@ CorNeTDAKJEwL5SJhzt+bmo+
 =7ZVq
 -----END PGP PRIVATE KEY BLOCK-----
 ''';
-      final privateKey = PrivateKey.fromArmored(armored).decrypt(passphrase);
+      final privateKey = OpenPGP.decryptPrivateKey(armored, passphrase);
       final user = privateKey.users[0];
       final subkey = privateKey.subkeys[0];
 
@@ -186,7 +186,7 @@ Lvrv2K9VfqgHGB2NDYsdLdXOIHardOmkFmD3rTbjsjHkQrLCs/lCQkVhAYCxmcY1
 =rr8a
 -----END PGP PRIVATE KEY BLOCK-----
 ''';
-      final privateKey = PrivateKey.fromArmored(armored).decrypt(passphrase);
+      final privateKey = OpenPGP.decryptPrivateKey(armored, passphrase);
       final user = privateKey.users[0];
       final subkey = privateKey.subkeys[0];
 
@@ -230,7 +230,7 @@ GwwACgkQmVEhn8nelXjEygEAiKyuVndDuoMDyeK0h1qNd0NCvS7YfGQbV8kqmWf1
 =CNK9
 -----END PGP PRIVATE KEY BLOCK-----
 ''';
-      final privateKey = PrivateKey.fromArmored(armored).decrypt(passphrase);
+      final privateKey = OpenPGP.decryptPrivateKey(armored, passphrase);
       final user = privateKey.users[0];
       final subkey = privateKey.subkeys[0];
 
@@ -273,7 +273,7 @@ CgAgFiEEEUiyok9YCXfCeyYiPtR13SEtIh4FAmc/+gYCGwwACgkQPtR13SEtIh6w
 =4mmg
 -----END PGP PRIVATE KEY BLOCK-----
 ''';
-      final privateKey = PrivateKey.fromArmored(armored).decrypt(passphrase);
+      final privateKey = OpenPGP.decryptPrivateKey(armored, passphrase);
       final user = privateKey.users[0];
       final subkey = privateKey.subkeys[0];
 
@@ -320,7 +320,7 @@ NDm6QTmbvRO5EjvPyQf9I1gqhYkVZExIvt/x5vpX/ID29c91PagKcr4eoJrl9Xyfn8ksYFkmXI/B
 C8sssUAhAtMI5sgtlfA7Ow7VHjDLcQ0doBgA9J4afJjd12/e+PYN4Kdqvt5Gbv5ltA==
 -----END PGP PRIVATE KEY BLOCK-----
 ''';
-      final privateKey = PrivateKey.fromArmored(armored).decrypt(passphrase);
+      final privateKey = OpenPGP.decryptPrivateKey(armored, passphrase);
       final directSignature = privateKey.directSignatures[0];
       final user = privateKey.users[0];
       final subkey = privateKey.subkeys[0];
@@ -378,7 +378,7 @@ lzIMFLqFsDiKPzuwpZBhzEh+sj0Z3WtqZOueBwxVocwDANUX0mClieCAd2U0VQHW7lMIkRYMY5ZS
 x6s=
 -----END PGP PRIVATE KEY BLOCK-----
 ''';
-      final privateKey = PrivateKey.fromArmored(armored).decrypt(passphrase);
+      final privateKey = OpenPGP.decryptPrivateKey(armored, passphrase);
       final directSignature = privateKey.directSignatures[0];
       final user = privateKey.users[0];
       final subkey = privateKey.subkeys[0];
