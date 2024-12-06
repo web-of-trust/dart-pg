@@ -283,11 +283,11 @@ final class OpenPGP {
             );
   }
 
-  /// Encrypt literal data using public keys, passwords or both at once.
+  /// Encrypt binary data using public keys, passwords or both at once.
   /// At least one of `encryptionKeys`, `passwords`must be specified.
   /// If signing keys are specified, those will be used to sign the message.
-  static encryptLiteralData(
-    final Uint8List literalData, {
+  static EncryptedMessageInterface encryptBinaryData(
+    final Uint8List bytes, {
     final Iterable<KeyInterface> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
     final Iterable<PrivateKeyInterface> signingKeys = const [],
@@ -297,7 +297,7 @@ final class OpenPGP {
     final DateTime? time,
   }) {
     return encrypt(
-      createLiteralMessage(literalData),
+      createLiteralMessage(bytes),
       encryptionKeys: encryptionKeys,
       passwords: passwords,
       signingKeys: signingKeys,
