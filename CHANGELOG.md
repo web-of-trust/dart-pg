@@ -67,3 +67,6 @@
 
 ## 1.5.4 (2024-11-27)
 - Fix ecdh ephemeral key for curve 25519
+
+## 1.5.5 (2024-12-6)
+- Fix read public key list ignore last index

@@ -1,6 +1,6 @@
 name: dart_pg
 description:  Dart PG (Dart Privacy Guard) - The OpenPGP implementation in Dart language.
-version: 1.5.4
+version: 1.5.5
 homepage: https://github.com/web-of-trust/dart-pg
 
 environment:
