@@ -6,6 +6,7 @@ library;
 
 import 'dart:typed_data';
 
+import 'common/extensions.dart';
 import 'enum/compression_algorithm.dart';
 import 'enum/ecc.dart';
 import 'enum/key_type.dart';
@@ -252,7 +253,7 @@ final class OpenPGP {
   /// At least one of `encryptionKeys`, `passwords`must be specified.
   /// If signing keys are specified, those will be used to sign the message.
   static EncryptedMessageInterface encrypt(
-    LiteralMessageInterface message, {
+    final LiteralMessageInterface message, {
     final Iterable<KeyInterface> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
     final Iterable<PrivateKeyInterface> signingKeys = const [],
@@ -282,10 +283,58 @@ final class OpenPGP {
             );
   }
 
+  /// Encrypt literal data using public keys, passwords or both at once.
+  /// At least one of `encryptionKeys`, `passwords`must be specified.
+  /// If signing keys are specified, those will be used to sign the message.
+  static encryptLiteralData(
+    final Uint8List literalData, {
+    final Iterable<KeyInterface> encryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+    final Iterable<PrivateKeyInterface> signingKeys = const [],
+    final SymmetricAlgorithm? symmetric,
+    final CompressionAlgorithm? compression,
+    final NotationDataInterface? notationData,
+    final DateTime? time,
+  }) {
+    return encrypt(
+      createLiteralMessage(literalData),
+      encryptionKeys: encryptionKeys,
+      passwords: passwords,
+      signingKeys: signingKeys,
+      symmetric: symmetric,
+      notationData: notationData,
+      time: time,
+    );
+  }
+
+  /// Encrypt cleartext using public keys, passwords or both at once.
+  /// At least one of `encryptionKeys`, `passwords`must be specified.
+  /// If signing keys are specified, those will be used to sign the message.
+  static EncryptedMessageInterface encryptCleartext(
+    final String cleartext, {
+    final Iterable<KeyInterface> encryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+    final Iterable<PrivateKeyInterface> signingKeys = const [],
+    final SymmetricAlgorithm? symmetric,
+    final CompressionAlgorithm? compression,
+    final NotationDataInterface? notationData,
+    final DateTime? time,
+  }) {
+    return encrypt(
+      createLiteralMessage(cleartext.toBytes()),
+      encryptionKeys: encryptionKeys,
+      passwords: passwords,
+      signingKeys: signingKeys,
+      symmetric: symmetric,
+      notationData: notationData,
+      time: time,
+    );
+  }
+
   /// Decrypt a message with the user's private keys, or passwords.
   /// One of `decryptionKeys` or `passwords` must be specified.
   static LiteralMessageInterface decrypt(
-    EncryptedMessageInterface message, {
+    final EncryptedMessageInterface message, {
     final Iterable<PrivateKeyInterface> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
   }) {
@@ -299,7 +348,7 @@ final class OpenPGP {
   /// the user's private keys, or passwords.
   /// One of `decryptionKeys` or `passwords` must be specified.
   static LiteralMessageInterface decryptMessage(
-    String message, {
+    final String message, {
     final Iterable<PrivateKeyInterface> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
   }) {
