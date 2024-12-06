@@ -4,19 +4,19 @@
 
 library;
 
-import 'package:dart_pg/src/common/armor.dart';
-import 'package:dart_pg/src/common/helpers.dart';
-import 'package:dart_pg/src/enum/armor_type.dart';
-import 'package:dart_pg/src/enum/hash_algorithm.dart';
-import 'package:dart_pg/src/message/verification.dart';
-import 'package:dart_pg/src/packet/base.dart';
-import 'package:dart_pg/src/packet/packet_list.dart';
-import 'package:dart_pg/src/type/cleartext_message.dart';
-import 'package:dart_pg/src/type/key.dart';
-import 'package:dart_pg/src/type/literal_data.dart';
-import 'package:dart_pg/src/type/signature.dart';
-import 'package:dart_pg/src/type/signature_packet.dart';
-import 'package:dart_pg/src/type/verification.dart';
+import '../common/armor.dart';
+import '../common/helpers.dart';
+import '../enum/armor_type.dart';
+import '../enum/hash_algorithm.dart';
+import '../message/verification.dart';
+import '../packet/base.dart';
+import '../packet/packet_list.dart';
+import '../type/cleartext_message.dart';
+import '../type/key.dart';
+import '../type/literal_data.dart';
+import '../type/signature.dart';
+import '../type/signature_packet.dart';
+import '../type/verification.dart';
 
 /// Signature class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

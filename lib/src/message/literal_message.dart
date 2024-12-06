@@ -6,28 +6,28 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/common/armor.dart';
-import 'package:dart_pg/src/common/config.dart';
-import 'package:dart_pg/src/common/helpers.dart';
-import 'package:dart_pg/src/enum/armor_type.dart';
-import 'package:dart_pg/src/enum/compression_algorithm.dart';
-import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
-import 'package:dart_pg/src/message/base_message.dart';
-import 'package:dart_pg/src/message/encrypted_message.dart';
-import 'package:dart_pg/src/message/signature.dart';
-import 'package:dart_pg/src/packet/base.dart';
-import 'package:dart_pg/src/packet/key/session_key.dart';
-import 'package:dart_pg/src/packet/packet_list.dart';
-import 'package:dart_pg/src/type/key.dart';
-import 'package:dart_pg/src/type/literal_data.dart';
-import 'package:dart_pg/src/type/literal_message.dart';
-import 'package:dart_pg/src/type/notation_data.dart';
-import 'package:dart_pg/src/type/packet_list.dart';
-import 'package:dart_pg/src/type/private_key.dart';
-import 'package:dart_pg/src/type/signature.dart';
-import 'package:dart_pg/src/type/signature_packet.dart';
-import 'package:dart_pg/src/type/signed_message.dart';
-import 'package:dart_pg/src/type/verification.dart';
+import '../common/armor.dart';
+import '../common/config.dart';
+import '../common/helpers.dart';
+import '../enum/armor_type.dart';
+import '../enum/compression_algorithm.dart';
+import '../enum/symmetric_algorithm.dart';
+import '../message/base_message.dart';
+import '../message/encrypted_message.dart';
+import '../message/signature.dart';
+import '../packet/base.dart';
+import '../packet/key/session_key.dart';
+import '../packet/packet_list.dart';
+import '../type/key.dart';
+import '../type/literal_data.dart';
+import '../type/literal_message.dart';
+import '../type/notation_data.dart';
+import '../type/packet_list.dart';
+import '../type/private_key.dart';
+import '../type/signature.dart';
+import '../type/signature_packet.dart';
+import '../type/signed_message.dart';
+import '../type/verification.dart';
 
 /// OpenPGP literal message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

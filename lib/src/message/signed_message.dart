@@ -4,14 +4,14 @@
 
 library;
 
-import 'package:dart_pg/src/common/armor.dart';
-import 'package:dart_pg/src/enum/armor_type.dart';
-import 'package:dart_pg/src/message/signature.dart';
-import 'package:dart_pg/src/packet/packet_list.dart';
-import 'package:dart_pg/src/type/key.dart';
-import 'package:dart_pg/src/type/signature.dart';
-import 'package:dart_pg/src/type/signature_packet.dart';
-import 'package:dart_pg/src/type/signed_cleartext_message.dart';
+import '../common/armor.dart';
+import '../enum/armor_type.dart';
+import '../message/signature.dart';
+import '../packet/packet_list.dart';
+import '../type/key.dart';
+import '../type/signature.dart';
+import '../type/signature_packet.dart';
+import '../type/signed_cleartext_message.dart';
 
 import 'cleartext_message.dart';
 

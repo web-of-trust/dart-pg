@@ -6,8 +6,8 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/type/signature_packet.dart';
-import 'package:dart_pg/src/type/verification.dart';
+import '../type/signature_packet.dart';
+import '../type/verification.dart';
 
 /// Verification class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

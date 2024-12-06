@@ -4,17 +4,17 @@
 
 library;
 
-import 'package:dart_pg/src/common/armor.dart';
-import 'package:dart_pg/src/common/helpers.dart';
-import 'package:dart_pg/src/enum/armor_type.dart';
-import 'package:dart_pg/src/message/base_message.dart';
-import 'package:dart_pg/src/message/literal_message.dart';
-import 'package:dart_pg/src/packet/base.dart';
-import 'package:dart_pg/src/packet/packet_list.dart';
-import 'package:dart_pg/src/type/encrypted_data_packet.dart';
-import 'package:dart_pg/src/type/encrypted_message.dart';
-import 'package:dart_pg/src/type/private_key.dart';
-import 'package:dart_pg/src/type/session_key.dart';
+import '../common/armor.dart';
+import '../common/helpers.dart';
+import '../enum/armor_type.dart';
+import '../message/base_message.dart';
+import '../message/literal_message.dart';
+import '../packet/base.dart';
+import '../packet/packet_list.dart';
+import '../type/encrypted_data_packet.dart';
+import '../type/encrypted_message.dart';
+import '../type/private_key.dart';
+import '../type/session_key.dart';
 
 /// OpenPGP encrypted message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

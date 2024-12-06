@@ -4,11 +4,11 @@
 
 library;
 
-import 'package:dart_pg/src/common/armor.dart';
-import 'package:dart_pg/src/enum/armor_type.dart';
-import 'package:dart_pg/src/type/armorable.dart';
-import 'package:dart_pg/src/type/packet_container.dart';
-import 'package:dart_pg/src/type/packet_list.dart';
+import '../common/armor.dart';
+import '../enum/armor_type.dart';
+import '../type/armorable.dart';
+import '../type/packet_container.dart';
+import '../type/packet_list.dart';
 
 /// Base abstract OpenPGP message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
