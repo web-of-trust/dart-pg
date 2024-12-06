@@ -234,6 +234,19 @@ final class OpenPGP {
     );
   }
 
+  /// Verify signatures of signed literal message.
+  /// Return verification array.
+  static Iterable<VerificationInterface> verifyInline(
+    final String armored,
+    final Iterable<KeyInterface> verificationKeys, [
+    final DateTime? time,
+  ]) {
+    return readLiteralMessage(armored).verify(
+      verificationKeys,
+      time,
+    );
+  }
+
   /// Encrypt a message using public keys, passwords or both at once.
   /// At least one of `encryptionKeys`, `passwords`must be specified.
   /// If signing keys are specified, those will be used to sign the message.
