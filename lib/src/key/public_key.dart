@@ -46,6 +46,14 @@ final class PublicKey extends BaseKey {
             ),
           ),
         );
+      } else {
+        publicKeys.add(
+          PublicKey(
+            PacketList(
+              packetList.packets.sublist(indexes[i]),
+            ),
+          ),
+        );
       }
     }
     return publicKeys;
@@ -56,15 +64,15 @@ final class PublicKey extends BaseKey {
     final Iterable<KeyInterface> keys,
   ) =>
       Armor.encode(
-      ArmorType.publicKey,
-      Uint8List.fromList(keys
-          .map(
-            (key) => key.publicKey.packetList,
-          )
-          .expand(
-            (packet) => packet.encode(),
-          )
-          .toList()));
+          ArmorType.publicKey,
+          Uint8List.fromList(keys
+              .map(
+                (key) => key.publicKey.packetList,
+              )
+              .expand(
+                (packet) => packet.encode(),
+              )
+              .toList()));
 
   @override
   armor() => Armor.encode(ArmorType.publicKey, packetList.encode());
