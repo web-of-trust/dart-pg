@@ -11,14 +11,14 @@ import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/type/key.dart';
 import 'package:dart_pg/src/type/signature.dart';
 import 'package:dart_pg/src/type/signature_packet.dart';
-import 'package:dart_pg/src/type/signed_message.dart';
+import 'package:dart_pg/src/type/signed_cleartext_message.dart';
 
 import 'cleartext_message.dart';
 
 /// Signed message class that represents an OpenPGP cleartext signed message.
 /// See RFC 9580, section 7.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-final class SignedMessage extends CleartextMessage implements SignedMessageInterface {
+final class SignedMessage extends CleartextMessage implements SignedCleartextMessageInterface {
   @override
   final SignatureInterface signature;
 

@@ -8,7 +8,7 @@ import 'key.dart';
 import 'notation_data.dart';
 import 'private_key.dart';
 import 'signature.dart';
-import 'signed_message.dart';
+import 'signed_cleartext_message.dart';
 import 'verification.dart';
 
 /// Cleartext message interface
@@ -23,7 +23,7 @@ abstract interface class CleartextMessageInterface {
   String get normalizeText;
 
   /// Sign the message
-  SignedMessageInterface sign(
+  SignedCleartextMessageInterface sign(
     final Iterable<PrivateKeyInterface> signingKeys, {
     final Iterable<KeyInterface> recipients = const [],
     final NotationDataInterface? notationData,

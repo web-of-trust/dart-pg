@@ -25,6 +25,7 @@ import 'type/literal_message.dart';
 import 'type/notation_data.dart';
 import 'type/private_key.dart';
 import 'type/signature.dart';
+import 'type/signed_cleartext_message.dart';
 import 'type/signed_message.dart';
 import 'type/verification.dart';
 
@@ -143,7 +144,7 @@ final class OpenPGP {
 
   /// Sign a cleartext message.
   /// Return a signed message object.
-  static SignedMessageInterface signCleartext(
+  static SignedCleartextMessageInterface signCleartext(
     final String text,
     final Iterable<PrivateKeyInterface> signingKeys, {
     final Iterable<KeyInterface> recipients = const [],
