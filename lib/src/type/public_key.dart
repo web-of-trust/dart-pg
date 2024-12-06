@@ -60,6 +60,15 @@ class PublicKey extends Key {
           ),
         );
       }
+      else {
+        publicKeys.add(
+          PublicKey.fromPacketList(
+            PacketList(
+              packetList.packets.sublist(indexes[i]),
+            ),
+          ),
+        );
+      }
     }
     return publicKeys;
   }
