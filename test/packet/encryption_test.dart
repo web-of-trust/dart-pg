@@ -139,7 +139,7 @@ void main() {
 
       final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AZgYpj5gnPi7oX4MOUME6vk1FBe38okh/ibiY6UrIL+6otumcslkydOrejv0bEFN0h07OEdd8DempXiZPMU=',
-      )).decrypt(sessionKey.encryptionKey, symmetric: sessionKey.symmetric);
+      )).decrypt(sessionKey.encryptionKey, sessionKey.symmetric);
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
@@ -160,7 +160,7 @@ void main() {
 
       final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AdJ1Sw56PRYiKZjCvHg+2bnq02s33AJJoyBexBI4QKATFRkyez2gldJldRysLVg77Mwwfgl2n/d572WciAM=',
-      )).decrypt(sessionKey.encryptionKey, symmetric: sessionKey.symmetric);
+      )).decrypt(sessionKey.encryptionKey, sessionKey.symmetric);
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
@@ -181,7 +181,7 @@ void main() {
 
       final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AfirtbIE3SaPO19Vq7qe5dMCcqWZbNtVMHeu5vZKBetHnnx/yveQ9brJYlzhJvGskCUJma43+iur/T1sKjE=',
-      )).decrypt(sessionKey.encryptionKey, symmetric: sessionKey.symmetric);
+      )).decrypt(sessionKey.encryptionKey, sessionKey.symmetric);
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
@@ -209,7 +209,7 @@ void main() {
       expect(
         () => encrypt.decrypt(
           key,
-          symmetric: SymmetricAlgorithm.aes128,
+          SymmetricAlgorithm.aes128,
         ),
         throwsStateError,
       );
@@ -229,7 +229,7 @@ void main() {
         encrypted.data,
       ).decrypt(
         key,
-        symmetric: SymmetricAlgorithm.aes128,
+        SymmetricAlgorithm.aes128,
       );
       final ldPacket = decrypted.packets!.elementAt(0);
       expect(ldPacket.data, equals(literalData.data));
@@ -276,7 +276,7 @@ void main() {
       final decryptSkesk = packets.whereType<SymEncryptedSessionKeyPacket>().first.decrypt(password);
       final decryptSeipd = packets.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             decryptSkesk.sessionKey!.encryptionKey,
-            symmetric: decryptSkesk.sessionKey!.symmetric,
+            decryptSkesk.sessionKey!.symmetric,
           );
       final literalData = decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.text, literalText);
@@ -300,7 +300,7 @@ void main() {
       final decryptSkesk = packets.whereType<SymEncryptedSessionKeyPacket>().first.decrypt(password);
       final decryptSeipd = packets.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             decryptSkesk.sessionKey!.encryptionKey,
-            symmetric: decryptSkesk.sessionKey!.symmetric,
+            decryptSkesk.sessionKey!.symmetric,
           );
       final literalData = decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
       expect(
@@ -337,7 +337,7 @@ void main() {
       final decryptSkesk = packets.whereType<SymEncryptedSessionKeyPacket>().first.decrypt(password);
       final decryptSeipd = packets.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             decryptSkesk.sessionKey!.encryptionKey,
-            symmetric: decryptSkesk.sessionKey!.symmetric,
+            decryptSkesk.sessionKey!.symmetric,
           );
       final literalData = decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.text, literalText);
@@ -409,7 +409,7 @@ WUlZSqHRuD/11Hh9WQgbyikT0/HWN6MKUYaC5ozOr4w0KIsCOk2vdOU6ZCbwcZlm+ZJFfE8T1PGu
       final sessionKey = pkesk.sessionKey!;
       final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             sessionKey.encryptionKey,
-            symmetric: sessionKey.symmetric,
+            sessionKey.symmetric,
           );
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
@@ -480,7 +480,7 @@ heUWSSwsi+sdLtKcnQQfj/RDqmhO9tmfk8sRTu3Myp9tYJLnjngOxsNEMoRRgo7eBSLVjUQlQu8=
       final sessionKey = pkesk.sessionKey!;
       final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             sessionKey.encryptionKey,
-            symmetric: sessionKey.symmetric,
+            sessionKey.symmetric,
           );
       final comPacket = seipd.packets!.whereType<CompressedDataPacket>().first;
       final literalData = comPacket.packets.whereType<LiteralDataInterface>().first;
@@ -522,7 +522,7 @@ PXVtziQ8IyqoGshWNSwpWcPZl9KW2mUBGVIpOtCg0j8BYZTkYDl0D/a62/c1QUyqjpXqgGhzXvuS
       final sessionKey = pkesk.sessionKey!;
       final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             sessionKey.encryptionKey,
-            symmetric: sessionKey.symmetric,
+            sessionKey.symmetric,
           );
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
@@ -563,7 +563,7 @@ dJb40maS
       final sessionKey = pkesk.sessionKey!;
       final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             sessionKey.encryptionKey,
-            symmetric: sessionKey.symmetric,
+            sessionKey.symmetric,
           );
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
@@ -602,7 +602,7 @@ SdJraH1GfEeeMdV9t8623Gu3xkQ4hXf+figKNUWdq+kwHGqbQQNoeai1TYYNCuY=
       final sessionKey = pkesk.sessionKey!;
       final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             sessionKey.encryptionKey,
-            symmetric: sessionKey.symmetric,
+            sessionKey.symmetric,
           );
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
@@ -642,7 +642,7 @@ UQi6XlKOsfRPH6ozJjwLn7nPdfz5pHPtR0QljShJqeM=
       final sessionKey = pkesk.sessionKey!;
       final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             sessionKey.encryptionKey,
-            symmetric: sessionKey.symmetric,
+            sessionKey.symmetric,
           );
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
@@ -689,7 +689,7 @@ ExAnXHXIb8I=
       final sessionKey = pkesk.sessionKey!;
       final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
             sessionKey.encryptionKey,
-            symmetric: sessionKey.symmetric,
+            sessionKey.symmetric,
           );
       final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, 'Hello there'.toBytes());
