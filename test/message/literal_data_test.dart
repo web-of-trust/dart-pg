@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/openpgp.dart';
+import 'package:dart_pg/src/packet/base.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -290,7 +291,7 @@ NEJd3XZRzaXZE2aAMQ==
 
       var verifications = signature.verify(
         [OpenPGP.readPublicKey(publicKey)],
-        OpenPGP.createLiteralMessage(literalText.toBytes()).literalData,
+        LiteralDataPacket.fromText(literalText),
       );
       for (final verification in verifications) {
         expect(verification.isVerified, isTrue);
@@ -401,7 +402,7 @@ DAAKCRDyMVUMT0fjjlnQAQDFHUs6TIcxrNTtEZFjUFm1M0PJ1Dng/cDW4xN80fsn
 
       var verifications = signature.verify(
         [OpenPGP.readPublicKey(publicKey)],
-        OpenPGP.createLiteralMessage(literalText.toBytes()).literalData,
+        LiteralDataPacket.fromText(literalText),
       );
       for (final verification in verifications) {
         expect(verification.isVerified, isTrue);
@@ -504,7 +505,7 @@ I8kWVkXU6vFOi+HWvv/ira7ofJu16NnoUkhclkUrk0mXubZvyl4GBg==
 
       var verifications = signature.verify(
         [OpenPGP.readPublicKey(publicKey)],
-        OpenPGP.createLiteralMessage(literalText.toBytes()).literalData,
+        LiteralDataPacket.fromText(literalText),
       );
       for (final verification in verifications) {
         expect(verification.isVerified, isTrue);
