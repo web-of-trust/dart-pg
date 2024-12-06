@@ -4,8 +4,12 @@
 
 library;
 
+import 'dart:typed_data';
+
+import 'package:dart_pg/src/common/armor.dart';
 import 'package:dart_pg/src/common/config.dart';
 import 'package:dart_pg/src/common/helpers.dart';
+import 'package:dart_pg/src/enum/armor_type.dart';
 import 'package:dart_pg/src/enum/compression_algorithm.dart';
 import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
 import 'package:dart_pg/src/message/base_message.dart';
@@ -28,16 +32,37 @@ import 'package:dart_pg/src/type/verification.dart';
 /// OpenPGP literal message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class LiteralMessage extends BaseMessage implements LiteralMessageInterface, SignedMessageInterface {
-  LiteralMessage(super.packetList);
-
-  @override
-  get literalData {
-    final packets = packetList.whereType<LiteralDataInterface>();
-    if (packets.isEmpty) {
+  LiteralMessage(super.packetList) {
+    if (packetList.whereType<LiteralDataInterface>().isEmpty) {
       throw StateError('No literal data in packet list.');
     }
-    return packets.first;
   }
+
+  /// Read Literal message from armored string
+  factory LiteralMessage.fromArmored(final String armored) {
+    final armor = Armor.decode(armored);
+    if (armor.type != ArmorType.message) {
+      throw ArgumentError('Armored text not of message type');
+    }
+    return LiteralMessage(PacketList.decode(armor.data));
+  }
+
+  factory LiteralMessage.fromLiteralData(
+    final Uint8List literalData, {
+    final String filename = '',
+    final DateTime? time,
+  }) {
+    return LiteralMessage(PacketList([
+      LiteralDataPacket(
+        literalData,
+        filename: filename,
+        time: time,
+      )
+    ]));
+  }
+
+  @override
+  get literalData => packetList.whereType<LiteralDataInterface>().first;
 
   @override
   get signature => Signature(

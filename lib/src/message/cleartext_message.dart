@@ -13,7 +13,6 @@ import 'package:dart_pg/src/type/key.dart';
 import 'package:dart_pg/src/type/notation_data.dart';
 import 'package:dart_pg/src/type/private_key.dart';
 import 'package:dart_pg/src/type/signature.dart';
-import 'package:dart_pg/src/type/signed_message.dart';
 
 /// Cleartext message class that represents an OpenPGP cleartext message.
 /// See RFC 9580, section 7.
@@ -31,7 +30,7 @@ class CleartextMessage implements CleartextMessageInterface {
       );
 
   @override
-  SignedMessageInterface sign(
+  sign(
     Iterable<PrivateKeyInterface> signingKeys, {
     Iterable<KeyInterface> recipients = const [],
     NotationDataInterface? notationData,

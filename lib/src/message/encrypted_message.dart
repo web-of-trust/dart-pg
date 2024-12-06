@@ -4,13 +4,15 @@
 
 library;
 
+import 'package:dart_pg/src/common/armor.dart';
 import 'package:dart_pg/src/common/helpers.dart';
+import 'package:dart_pg/src/enum/armor_type.dart';
 import 'package:dart_pg/src/message/base_message.dart';
 import 'package:dart_pg/src/message/literal_message.dart';
 import 'package:dart_pg/src/packet/base.dart';
+import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/type/encrypted_data_packet.dart';
 import 'package:dart_pg/src/type/encrypted_message.dart';
-import 'package:dart_pg/src/type/literal_message.dart';
 import 'package:dart_pg/src/type/private_key.dart';
 import 'package:dart_pg/src/type/session_key.dart';
 
@@ -19,22 +21,29 @@ import 'package:dart_pg/src/type/session_key.dart';
 final class EncryptedMessage extends BaseMessage implements EncryptedMessageInterface {
   SessionKeyInterface? _sessionKey;
 
-  EncryptedMessage(super.packetList);
-
-  @override
-  EncryptedDataPacketInterface get encryptedPacket {
-    final packets = packetList.whereType<EncryptedDataPacketInterface>();
-    if (packets.isEmpty) {
+  EncryptedMessage(super.packetList) {
+    if (packetList.whereType<EncryptedDataPacketInterface>().isEmpty) {
       throw StateError('No encrypted data in packet list.');
     }
-    return packets.first;
+  }
+
+  /// Read Literal message from armored string
+  factory EncryptedMessage.fromArmored(final String armored) {
+    final armor = Armor.decode(armored);
+    if (armor.type != ArmorType.message) {
+      throw ArgumentError('Armored text not of message type');
+    }
+    return EncryptedMessage(PacketList.decode(armor.data));
   }
 
   @override
-  SessionKeyInterface? get sessionKey => _sessionKey;
+  get encryptedPacket => packetList.whereType<EncryptedDataPacketInterface>().first;
 
   @override
-  LiteralMessageInterface decrypt({
+  get sessionKey => _sessionKey;
+
+  @override
+  decrypt({
     final Iterable<PrivateKeyInterface> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
   }) {
