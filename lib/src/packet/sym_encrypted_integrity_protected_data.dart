@@ -193,9 +193,9 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
 
   @override
   SymEncryptedIntegrityProtectedDataPacket decrypt(
-    final Uint8List key, {
+    final Uint8List key, [
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) {
+  ]) {
     if (packets != null && packets!.isNotEmpty) {
       return this;
     } else {

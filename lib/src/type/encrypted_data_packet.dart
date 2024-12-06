@@ -20,7 +20,7 @@ abstract interface class EncryptedDataPacketInterface {
 
   /// Decrypt the encrypted data contained in the packet.
   EncryptedDataPacketInterface decrypt(
-    final Uint8List key, {
+    final Uint8List key, [
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  });
+  ]);
 }

@@ -116,9 +116,9 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
 
   @override
   decrypt(
-    final Uint8List key, {
+    final Uint8List key, [
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) {
+  ]) {
     final length = encrypted.length;
     final data = encrypted.sublist(0, length - aead.tagLength);
     final authTag = encrypted.sublist(length - aead.tagLength);

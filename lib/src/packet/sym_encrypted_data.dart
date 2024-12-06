@@ -69,9 +69,9 @@ class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketIn
 
   @override
   decrypt(
-    final Uint8List key, {
+    final Uint8List key, [
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) {
+  ]) {
     if (!Config.allowUnauthenticated) {
       throw StateError('Message is not authenticated.');
     }

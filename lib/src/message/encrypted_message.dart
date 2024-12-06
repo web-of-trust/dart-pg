@@ -43,7 +43,12 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
     }
     _sessionKey = _decryptSessionKey(decryptionKeys, passwords);
 
-    return LiteralMessage(encryptedPacket.decrypt(_sessionKey.encryptionKey).packets);
+    return LiteralMessage(encryptedPacket
+        .decrypt(
+          _sessionKey!.encryptionKey,
+          _sessionKey!.symmetric,
+        )
+        .packets!);
   }
 
   SessionKeyInterface _decryptSessionKey(
