@@ -4,14 +4,16 @@
 
 library;
 
+import 'armorable.dart';
 import 'encrypted_data_packet.dart';
 import 'literal_message.dart';
+import 'packet_container.dart';
 import 'private_key.dart';
 import 'session_key.dart';
 
 /// Encrypted message interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class EncryptedMessageInterface {
+abstract interface class EncryptedMessageInterface implements ArmorableInterface, PacketContainerInterface {
   /// Return encrypted packet.
   EncryptedDataPacketInterface get encryptedPacket;
 
