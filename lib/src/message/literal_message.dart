@@ -33,7 +33,7 @@ import '../type/verification.dart';
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class LiteralMessage extends BaseMessage implements LiteralMessageInterface, SignedMessageInterface {
   LiteralMessage(super.packetList) {
-    if (packetList.whereType<LiteralDataInterface>().isEmpty) {
+    if (_unwrapCompressed().whereType<LiteralDataInterface>().isEmpty) {
       throw StateError('No literal data in packet list.');
     }
   }
@@ -62,11 +62,11 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
   }
 
   @override
-  get literalData => packetList.whereType<LiteralDataInterface>().first;
+  get literalData => _unwrapCompressed().whereType<LiteralDataInterface>().first;
 
   @override
   get signature => Signature(
-        unwrapCompressed().whereType<SignaturePacketInterface>(),
+        _unwrapCompressed().whereType<SignaturePacketInterface>(),
       );
 
   @override
@@ -77,7 +77,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
         PacketList(
           [
             CompressedDataPacket.fromPacketList(
-              packetList,
+              _unwrapCompressed(),
               algorithm: algo,
             )
           ],
@@ -154,7 +154,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     final DateTime? time,
   }) {
     final signaturePackets = [
-      ...unwrapCompressed().whereType<SignaturePacketInterface>(),
+      ..._unwrapCompressed().whereType<SignaturePacketInterface>(),
       ...signDetached(
         signingKeys,
         recipients: recipients,
@@ -226,7 +226,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     );
   }
 
-  PacketListInterface unwrapCompressed() {
+  PacketListInterface _unwrapCompressed() {
     return packetList.whereType<CompressedDataPacket>().firstOrNull?.packets ?? packetList;
   }
 }
