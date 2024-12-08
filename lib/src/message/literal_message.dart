@@ -11,6 +11,7 @@ import '../common/config.dart';
 import '../common/helpers.dart';
 import '../enum/armor_type.dart';
 import '../enum/compression_algorithm.dart';
+import '../enum/preset_rfc.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../message/base_message.dart';
 import '../message/encrypted_message.dart';
@@ -96,14 +97,14 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No encryption keys or passwords provided.');
     }
-    var addPadding = false;
+    var addPadding = Config.presetRfc == PresetRfc.rfc9580;
     var aeadSupported = Config.aeadSupported;
     for (final key in encryptionKeys) {
       if (!key.aeadSupported) {
         aeadSupported = false;
       }
-      if (key.keyPacket.isV6Key) {
-        addPadding = true;
+      if (!key.keyPacket.isV6Key) {
+        addPadding = false;
       }
     }
     final sessionKey = SessionKey.produceKey(
