@@ -140,25 +140,6 @@ void main() {
     test('from Bob to Alice', () {
       final encrytpedMessage = OpenPGP.encryptBinaryData(
         literalData,
-        encryptionKeys: [OpenPGP.readPublicKey(bobPublicKey)],
-        signingKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
-      );
-      final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
-        decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
-      );
-      expect(literalMessage.literalData.binary, equals(literalData));
-
-      final verifications = literalMessage.verify(
-        [OpenPGP.readPublicKey(bobPublicKey)],
-      );
-      expect(verifications.first.isVerified, isTrue);
-      expect(verifications.first.keyID.toHexadecimal(), 'f231550c4f47e38e');
-    });
-
-    test('from Alice to Bob', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
-        literalData,
         encryptionKeys: [OpenPGP.readPublicKey(alicePublicKey)],
         signingKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
@@ -173,6 +154,25 @@ void main() {
       );
       expect(verifications.first.isVerified, isTrue);
       expect(verifications.first.keyID.toHexadecimal(), 'fbfcc82a015e7330');
+    });
+
+    test('from Alice to Bob', () {
+      final encrytpedMessage = OpenPGP.encryptBinaryData(
+        literalData,
+        encryptionKeys: [OpenPGP.readPublicKey(bobPublicKey)],
+        signingKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
+      );
+      final literalMessage = OpenPGP.decryptMessage(
+        encrytpedMessage.armor(),
+        decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
+      );
+      expect(literalMessage.literalData.binary, equals(literalData));
+
+      final verifications = literalMessage.verify(
+        [OpenPGP.readPublicKey(alicePublicKey)],
+      );
+      expect(verifications.first.isVerified, isTrue);
+      expect(verifications.first.keyID.toHexadecimal(), 'f231550c4f47e38e');
     });
 
     test('from Alice to rfc9580', () {
