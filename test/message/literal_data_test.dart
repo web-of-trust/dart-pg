@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:dart_pg/src/common/config.dart';
 import 'package:dart_pg/src/common/helpers.dart';
+import 'package:dart_pg/src/enum/preset_rfc.dart';
 import 'package:dart_pg/src/openpgp.dart';
 import 'package:dart_pg/src/packet/base.dart';
 import 'package:test/test.dart';
@@ -9,6 +11,7 @@ import '../data/key_data.dart';
 
 void main() {
   const literalText = 'Hello World :)';
+  final literalData = Helper.randomBytes(1024);
 
   group('Sign', () {
     test('with key Bob', () {
@@ -135,8 +138,84 @@ void main() {
     });
   });
 
+  group('Encrypt', () {
+    final password = Helper.generatePassword();
+
+    test('with password only', () {
+      final encrytpedMessage = OpenPGP.encryptBinaryData(
+        literalData,
+        passwords: [password],
+      );
+      final literalMessage = OpenPGP.decryptMessage(
+        encrytpedMessage.armor(),
+        passwords: [password],
+      );
+      expect(literalMessage.literalData.binary, equals(literalData));
+    });
+
+    test('with aead protect', () {
+      Config.presetRfc = PresetRfc.rfc9580;
+      Config.aeadProtect = true;
+
+      final encrytpedMessage = OpenPGP.encryptBinaryData(
+        literalData,
+        passwords: [password],
+      );
+
+      final encryptedPacket = encrytpedMessage.encryptedPacket as SymEncryptedIntegrityProtectedDataPacket;
+      expect(encryptedPacket.aead, Config.preferredAead);
+
+      final literalMessage = OpenPGP.decryptMessage(
+        encrytpedMessage.armor(),
+        passwords: [password],
+      );
+      expect(literalMessage.literalData.binary, equals(literalData));
+
+      Config.aeadProtect = false;
+      Config.presetRfc = PresetRfc.rfc4880;
+    });
+
+    test('to Alice', () {
+      final encrytpedMessage = OpenPGP.encryptBinaryData(
+        literalData,
+        encryptionKeys: [OpenPGP.readPublicKey(alicePublicKey)],
+        passwords: [password],
+      );
+      final literalMessage = OpenPGP.decryptMessage(
+        encrytpedMessage.armor(),
+        decryptionKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
+      );
+      expect(literalMessage.literalData.binary, equals(literalData));
+    });
+
+    test('to Bob', () {
+      final encrytpedMessage = OpenPGP.encryptBinaryData(
+        literalData,
+        encryptionKeys: [OpenPGP.readPublicKey(bobPublicKey)],
+        passwords: [password],
+      );
+      final literalMessage = OpenPGP.decryptMessage(
+        encrytpedMessage.armor(),
+        decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
+      );
+      expect(literalMessage.literalData.binary, equals(literalData));
+    });
+
+    test('to rfc9580', () {
+      final encrytpedMessage = OpenPGP.encryptBinaryData(
+        literalData,
+        encryptionKeys: [OpenPGP.readPublicKey(rfc9580PublicKey)],
+        passwords: [password],
+      );
+      final literalMessage = OpenPGP.decryptMessage(
+        encrytpedMessage.armor(),
+        decryptionKeys: [OpenPGP.readPrivateKey(rfc9580PrivateKey)],
+      );
+      expect(literalMessage.literalData.binary, equals(literalData));
+    });
+  });
+
   group('Sign & encrypt', () {
-    final literalData = Helper.randomBytes(1024);
     test('from Bob to Alice', () {
       final encrytpedMessage = OpenPGP.encryptBinaryData(
         literalData,
