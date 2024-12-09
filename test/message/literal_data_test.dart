@@ -143,25 +143,25 @@ void main() {
     final password = Helper.generatePassword();
 
     test('with password only', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         passwords: [password],
       );
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         passwords: [password],
       );
       expect(literalMessage.literalData.binary, equals(literalData));
     });
 
     test('with compression', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         passwords: [password],
         compression: CompressionAlgorithm.zlib,
       );
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         passwords: [password],
       );
       expect(
@@ -175,16 +175,16 @@ void main() {
       Config.presetRfc = PresetRfc.rfc9580;
       Config.aeadProtect = true;
 
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         passwords: [password],
       );
 
-      final encryptedPacket = encrytpedMessage.encryptedPacket as SymEncryptedIntegrityProtectedDataPacket;
+      final encryptedPacket = encryptedMessage.encryptedPacket as SymEncryptedIntegrityProtectedDataPacket;
       expect(encryptedPacket.aead, Config.preferredAead);
 
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         passwords: [password],
       );
       expect(literalMessage.literalData.binary, equals(literalData));
@@ -194,39 +194,39 @@ void main() {
     });
 
     test('to Alice', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         encryptionKeys: [OpenPGP.readPublicKey(alicePublicKey)],
         passwords: [password],
       );
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
       expect(literalMessage.literalData.binary, equals(literalData));
     });
 
     test('to Bob', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         encryptionKeys: [OpenPGP.readPublicKey(bobPublicKey)],
         passwords: [password],
       );
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
       expect(literalMessage.literalData.binary, equals(literalData));
     });
 
     test('to rfc9580', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         encryptionKeys: [OpenPGP.readPublicKey(rfc9580PublicKey)],
         passwords: [password],
       );
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(rfc9580PrivateKey)],
       );
       expect(literalMessage.literalData.binary, equals(literalData));
@@ -235,13 +235,13 @@ void main() {
 
   group('Sign & encrypt', () {
     test('from Bob to Alice', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         encryptionKeys: [OpenPGP.readPublicKey(alicePublicKey)],
         signingKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
       expect(literalMessage.literalData.binary, equals(literalData));
@@ -254,13 +254,13 @@ void main() {
     });
 
     test('from Alice to Bob', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         encryptionKeys: [OpenPGP.readPublicKey(bobPublicKey)],
         signingKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
       expect(literalMessage.literalData.binary, equals(literalData));
@@ -273,13 +273,13 @@ void main() {
     });
 
     test('from Alice to rfc9580', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         encryptionKeys: [OpenPGP.readPublicKey(rfc9580PublicKey)],
         signingKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(rfc9580PrivateKey)],
       );
       expect(literalMessage.literalData.binary, equals(literalData));
@@ -292,13 +292,13 @@ void main() {
     });
 
     test('from rfc9580 to Alice', () {
-      final encrytpedMessage = OpenPGP.encryptBinaryData(
+      final encryptedMessage = OpenPGP.encryptBinaryData(
         literalData,
         encryptionKeys: [OpenPGP.readPublicKey(alicePublicKey)],
         signingKeys: [OpenPGP.readPrivateKey(rfc9580PrivateKey)],
       );
       final literalMessage = OpenPGP.decryptMessage(
-        encrytpedMessage.armor(),
+        encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
       expect(literalMessage.literalData.binary, equals(literalData));
