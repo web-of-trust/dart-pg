@@ -61,3 +61,12 @@
 
 ## 1.5.2 (2024-11-15)
 - Fix encode SKESK packet to bytes
+
+## 1.5.3 (2024-11-18)
+- Refactor AEAD crypt
+
+## 1.5.4 (2024-11-27)
+- Fix ecdh ephemeral key for curve 25519
+
+## 1.5.5 (2024-12-6)
+- Fix read public key list ignore last index
