@@ -19,7 +19,7 @@ digital signatures, compression, and key management.
   [OCB](https://tools.ietf.org/html/rfc7253),
   [GCM](https://nvlpubs.nist.gov/nistpubs/legacy/sp/nistspecialpublication800-38d.pdf).
 * Support hash algorithms: SHA-256, SHA-384, SHA-512, SHA-224, SHA3-256, SHA3-512.
-* Support compression algorithms: Zip, Zlib, BZip2.
+* Support compression algorithms: Zip, Zlib.
 * Support [ECC](https://en.wikipedia.org/wiki/Elliptic-curve_cryptography) curves:
   [secp256r1, secp384r1, secp521r1](https://www.rfc-editor.org/rfc/rfc6090),
   [brainpoolP256r1, brainpoolP384r1, brainpoolP512r1](https://www.rfc-editor.org/rfc/rfc5639),
