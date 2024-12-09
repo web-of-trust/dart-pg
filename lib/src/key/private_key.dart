@@ -13,7 +13,6 @@ import '../enum/ecc.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/key_type.dart';
 import '../enum/rsa_key_size.dart';
-import 'base_key.dart';
 import '../key/public_key.dart';
 import '../key/subkey.dart';
 import '../packet/base.dart';
@@ -21,6 +20,7 @@ import '../packet/packet_list.dart';
 import '../type/packet.dart';
 import '../type/private_key.dart';
 import '../type/secret_key_packet.dart';
+import 'base_key.dart';
 
 final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   PrivateKey(super.packetList);
@@ -38,7 +38,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
     final Iterable<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
-    final RSAKeySize rsaKeySize = RSAKeySize.high,
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
     final int keyExpiry = 0,
     final bool signOnly = false,

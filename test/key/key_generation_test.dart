@@ -20,7 +20,7 @@ void main() {
       );
       expect(privateKey.version, KeyVersion.v4.value);
       expect(privateKey.keyAlgorithm, KeyAlgorithm.rsaEncryptSign);
-      expect(privateKey.keyStrength, RSAKeySize.high.bits);
+      expect(privateKey.keyStrength, RSAKeySize.normal.bits);
       expect(privateKey.users[0].userID, userID);
 
       final priKey = OpenPGP.readPrivateKey(

@@ -40,7 +40,7 @@ final class OpenPGP {
     final Iterable<String> userIDs,
     final String passphrase, {
     final KeyType type = KeyType.rsa,
-    final RSAKeySize rsaKeySize = RSAKeySize.high,
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
     final int keyExpiry = 0,
     final DateTime? time,

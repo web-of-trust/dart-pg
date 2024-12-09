@@ -41,14 +41,14 @@ dependencies:
 
 ### Encrypt and decrypt data with a password
 ```dart
-const text = 'Hello Dart PG!';
+const text = 'Hello Dart Privacy Guard!';
 const password = 'secret stuff';
 
-final encryptedMessage = await OpenPGP.encrypt(
+final encryptedMessage = OpenPGP.encrypt(
     OpenPGP.createTextMessage(text), passwords: [password]
 );
 final encrypted = encryptedMessage.armor();
-final decryptedMessage = await OpenPGP.decrypt(
+final decryptedMessage = OpenPGP.decrypt(
     OpenPGP.readMessage(encrypted), passwords: [password]
 );
 final decrypted = decryptedMessage.armor();
@@ -58,20 +58,20 @@ final decrypted = decryptedMessage.armor();
 Encryption will use the algorithm preferred by the public (encryption) key (defaults to aes256 for keys generated),
 and decryption will use the algorithm used for encryption.
 ```dart
-const text = 'Hello Dart PG!';
+const text = 'Hello Dart Privacy Guard!';
 const passphrase = 'secret stuff';
 const armoredPublicKey = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
 const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
-final publicKey = await OpenPGP.readPublicKey(armoredPublicKey);
-final privateKey = await OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
+final publicKey = OpenPGP.readPublicKey(armoredPublicKey);
+final privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
-final encryptedMessage = await OpenPGP.encrypt(
+final encryptedMessage = OpenPGP.encrypt(
     OpenPGP.createTextMessage(text), encryptionKeys: [publicKey]
 );
 final encrypted = encryptedMessage.armor();
 
-final decryptedMessage = await OpenPGP.decrypt(
+final decryptedMessage = OpenPGP.decrypt(
     OpenPGP.readMessage(encrypted), decryptionKeys: [privateKey]
 );
 final decrypted = decryptedMessage.armor();
@@ -79,17 +79,17 @@ final decrypted = decryptedMessage.armor();
 
 Sign message & encrypt with multiple public keys:
 ```dart
-final text = 'Hello Dart PG!';
+final text = 'Hello Dart Privacy Guard!';
 const passphrase = 'secret stuff';
 const armoredPublicKeys = ['-----BEGIN PGP PUBLIC KEY BLOCK-----'];
 const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
-final publicKeys = await Future.wait(
+final publicKeys = Future.wait(
     armoredPublicKeys.map((armored) => OpenPGP.readPublicKey(armored))
 );
-final privateKey = await OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
+final privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
-final encryptedMessage = await OpenPGP.encrypt(
+final encryptedMessage = OpenPGP.encrypt(
     OpenPGP.createTextMessage(text),
     encryptionKeys: publicKeys,
     signingKeys: [privateKey],
@@ -99,35 +99,35 @@ final encrypted = encryptedMessage.armor();
 
 ### Sign and verify cleartext
 ```dart
-const text = 'Hello Dart PG!';
+const text = 'Hello Dart Privacy Guard!';
 const passphrase = 'secret stuff';
 const armoredPublicKey = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
 const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
-final publicKey = await OpenPGP.readPublicKey(armoredPublicKey);
-final privateKey = await OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
+final publicKey = OpenPGP.readPublicKey(armoredPublicKey);
+final privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
-final signedMessage = await OpenPGP.sign(text, signingKeys: [privateKey]);
+final signedMessage = OpenPGP.sign(text, signingKeys: [privateKey]);
 final signed = signedMessage.armor();
 
-final verifiedMessage = await OpenPGP.verify(signed, verificationKeys: [publicKey]);
+final verifiedMessage = OpenPGP.verify(signed, verificationKeys: [publicKey]);
 final verifications = verifiedMessage.verifications;
 ```
 
 ### Detached sign and verify cleartext
 ```dart
-const text = 'Hello Dart PG!';
+const text = 'Hello Dart Privacy Guard!';
 const passphrase = 'secret stuff';
 const armoredPublicKey = '-----BEGIN PGP PUBLIC KEY BLOCK-----';
 const armoredPrivateKey = '-----BEGIN PGP PRIVATE KEY BLOCK-----';
 
-final publicKey = await OpenPGP.readPublicKey(armoredPublicKey);
-final privateKey = await OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
+final publicKey = OpenPGP.readPublicKey(armoredPublicKey);
+final privateKey = OpenPGP.decryptPrivateKey(armoredPrivateKey, passphrase);
 
-final signature = await OpenPGP.signDetached(text, signingKeys: [privateKey]);
+final signature = OpenPGP.signDetached(text, signingKeys: [privateKey]);
 final armored = signature.armor();
 
-final cleartextMessage = await OpenPGP.verifyDetached(
+final cleartextMessage = OpenPGP.verifyDetached(
     text, armored, verificationKeys: [publicKey]
 );
 final verifications = cleartextMessage.verifications;
@@ -138,24 +138,11 @@ rsa type:
 ```dart
 const passphrase = 'secret stuff';
 final userID = [name, '($comment)', '<$email>'].join(' ');
-final privateKey = await OpenPGP.generateKey(
+final privateKey = OpenPGP.generateKey(
     [userID],
     passphrase,
-    type: KeyGenerationType.rsa,
-    rsaKeySize: RSAKeySize.s4096,
-);
-final publicKey = privateKey.toPublic;
-```
-
-dsa type (uses DSA algorithm for signing & ElGamal algorithm for encryption):
-```dart
-const passphrase = 'secret stuff';
-final userID = [name, '($comment)', '<$email>'].join(' ');
-final privateKey = await OpenPGP.generateKey(
-    [userID],
-    passphrase,
-    type: KeyGenerationType.dsa,
-    dhKeySize: DHKeySize.l2048n224,
+    type: KeyType.rsa,
+    rsaKeySize: RSAKeySize.normal,
 );
 final publicKey = privateKey.toPublic;
 ```
@@ -165,10 +152,10 @@ secp256k1, secp384r1, secp521r1, brainpoolp256r1, brainpoolp384r1, brainpoolp512
 ```dart
 const passphrase = 'secret stuff';
 final userID = [name, '($comment)', '<$email>'].join(' ');
-final privateKey = await OpenPGP.generateKey(
+final privateKey = OpenPGP.generateKey(
     [userID],
     passphrase,
-    type: KeyGenerationType.ecdsa,
+    type: KeyType.ecc,
     curve: CurveInfo.secp521r1,
 );
 final publicKey = privateKey.toPublic;
@@ -178,10 +165,10 @@ eddsa type (uses EdDSA algorithm with ed25519 for signing & ECDH algorithm with 
 ```dart
 const passphrase = 'secret stuff';
 final userID = [name, '($comment)', '<$email>'].join(' ');
-final privateKey = await OpenPGP.generateKey(
+final privateKey = OpenPGP.generateKey(
     [userID],
     passphrase,
-    type: KeyGenerationType.eddsa,
+    type: KeyType.ecc,
 );
 final publicKey = privateKey.toPublic;
 ```
