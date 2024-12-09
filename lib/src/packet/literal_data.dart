@@ -10,7 +10,7 @@ import 'dart:typed_data';
 import '../common/helpers.dart';
 import '../enum/literal_format.dart';
 import '../type/literal_data.dart';
-import 'base.dart';
+import 'base_packet.dart';
 
 /// Implementation of the Literal Data (LIT) Packet - Type 11
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

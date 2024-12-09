@@ -16,7 +16,7 @@ import '../enum/symmetric_algorithm.dart';
 import '../message/base_message.dart';
 import '../message/encrypted_message.dart';
 import '../message/signature.dart';
-import '../packet/base.dart';
+import '../packet/base_packet.dart';
 import '../packet/key/session_key.dart';
 import '../packet/packet_list.dart';
 import '../type/key.dart';

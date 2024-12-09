@@ -29,7 +29,7 @@ import '../type/secret_key_packet.dart';
 import '../type/subkey_packet.dart';
 import 'key/public_material.dart';
 import 'key/secret_material.dart';
-import 'base.dart';
+import 'base_packet.dart';
 
 /// Implementation of the Secret Key (SECKEY) Packet - Type 5
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

@@ -6,7 +6,7 @@ import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/enum/aead_algorithm.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
-import 'package:dart_pg/src/packet/base.dart';
+import 'package:dart_pg/src/packet/base_packet.dart';
 import 'package:dart_pg/src/packet/key/session_key.dart';
 import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:dart_pg/src/type/literal_data.dart';

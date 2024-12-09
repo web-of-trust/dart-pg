@@ -6,13 +6,13 @@ library;
 
 import 'dart:typed_data';
 
-import 'base_key.dart';
 import '../packet/packet_list.dart';
 import '../packet/signature/key_flags.dart';
 import '../type/key.dart';
 import '../type/signature_packet.dart';
 import '../type/subkey.dart';
 import '../type/subkey_packet.dart';
+import 'base_key.dart';
 
 /// OpenPGP subkey class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

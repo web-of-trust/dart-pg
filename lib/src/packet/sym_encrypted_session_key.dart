@@ -16,7 +16,7 @@ import '../enum/s2k_type.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/s2k.dart';
 import '../type/session_key.dart';
-import 'base.dart';
+import 'base_packet.dart';
 import 'key/session_key.dart';
 
 /// Implementation of the Symmetric Key Encrypted Session Key (SKESK) Packet - Type 3

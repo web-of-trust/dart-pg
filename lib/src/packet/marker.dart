@@ -6,7 +6,7 @@ library;
 
 import 'dart:convert';
 
-import 'base.dart';
+import 'base_packet.dart';
 
 /// Implementation of the Marker (MARKER) Packet - Type 10
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

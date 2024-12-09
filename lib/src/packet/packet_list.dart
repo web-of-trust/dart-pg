@@ -9,7 +9,7 @@ import 'dart:typed_data';
 
 import '../type/packet.dart';
 import '../type/packet_list.dart';
-import 'base.dart';
+import 'base_packet.dart';
 
 /// This class represents a list of OpenPGP packets.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

@@ -6,11 +6,10 @@ library;
 
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/packet/signature/features.dart';
-
 import '../common/helpers.dart';
-import '../packet/base.dart';
+import '../packet/base_packet.dart';
 import '../packet/packet_list.dart';
+import '../packet/signature/features.dart';
 import '../type/key.dart';
 import '../type/key_packet.dart';
 import '../type/packet_list.dart';

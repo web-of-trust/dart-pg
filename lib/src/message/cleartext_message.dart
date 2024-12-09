@@ -7,7 +7,7 @@ library;
 import '../common/helpers.dart';
 import '../message/signature.dart';
 import '../message/signed_message.dart';
-import '../packet/base.dart';
+import '../packet/base_packet.dart';
 import '../type/cleartext_message.dart';
 import '../type/key.dart';
 import '../type/notation_data.dart';

@@ -12,7 +12,6 @@ import '../type/key.dart';
 import '../type/signature.dart';
 import '../type/signature_packet.dart';
 import '../type/signed_cleartext_message.dart';
-
 import 'cleartext_message.dart';
 
 /// Signed message class that represents an OpenPGP cleartext signed message.

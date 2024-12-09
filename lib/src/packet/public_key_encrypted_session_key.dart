@@ -12,7 +12,7 @@ import '../enum/montgomery_curve.dart';
 import '../type/secret_key_packet.dart';
 import '../type/session_key.dart';
 import '../type/session_key_cryptor.dart';
-import 'base.dart';
+import 'base_packet.dart';
 import 'key/public_material.dart';
 import 'key/session_key_cryptor.dart';
 

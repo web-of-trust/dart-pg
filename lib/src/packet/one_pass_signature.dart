@@ -10,7 +10,7 @@ import '../enum/hash_algorithm.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/signature_type.dart';
 import '../type/signature_packet.dart';
-import 'base.dart';
+import 'base_packet.dart';
 
 /// Implementation an OpenPGP One-Pass (OPS) Signature Packet - Type 4.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

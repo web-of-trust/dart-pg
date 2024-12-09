@@ -9,7 +9,7 @@ import 'dart:typed_data';
 
 import '../common/helpers.dart';
 import '../type/user_id_packet.dart';
-import 'base.dart';
+import 'base_packet.dart';
 
 /// Implementation of the User ID (UID) Packet - Type 13
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

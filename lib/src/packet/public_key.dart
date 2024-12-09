@@ -18,7 +18,7 @@ import '../type/key_material.dart';
 import '../type/key_packet.dart';
 import '../type/subkey_packet.dart';
 import 'key/public_material.dart';
-import 'base.dart';
+import 'base_packet.dart';
 
 /// Implementation of the Public Key (PUBKEY) Packet - Type 6
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

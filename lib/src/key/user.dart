@@ -7,7 +7,7 @@ library;
 import 'dart:typed_data';
 
 import '../common/helpers.dart';
-import '../packet/base.dart';
+import '../packet/base_packet.dart';
 import '../packet/packet_list.dart';
 import '../type/key.dart';
 import '../type/signature_packet.dart';

@@ -5,7 +5,7 @@ import 'package:dart_pg/src/enum/aead_algorithm.dart';
 import 'package:dart_pg/src/enum/ecc.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
-import 'package:dart_pg/src/packet/base.dart';
+import 'package:dart_pg/src/packet/base_packet.dart';
 import 'package:dart_pg/src/packet/key/public_material.dart';
 import 'package:test/test.dart';
 

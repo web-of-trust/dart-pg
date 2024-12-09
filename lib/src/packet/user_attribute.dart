@@ -8,7 +8,7 @@ import 'dart:typed_data';
 
 import '../type/user_id_packet.dart';
 import '../common/extensions.dart';
-import 'base.dart';
+import 'base_packet.dart';
 import 'image_user_attribute.dart';
 import 'subpacket_reader.dart';
 import 'user_attribute_subpacket.dart';

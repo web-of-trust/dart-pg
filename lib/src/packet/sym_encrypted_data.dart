@@ -13,7 +13,7 @@ import '../common/config.dart';
 import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/symmetric_algorithm.dart';
-import 'base.dart';
+import 'base_packet.dart';
 import 'packet_list.dart';
 
 /// Implementation of the Symmetrically Encrypted Data (SED) Packet - Type 9
