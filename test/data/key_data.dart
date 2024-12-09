@@ -467,7 +467,7 @@ CgkQunJ9D2tQwoHyvwEA6NmUz1wxurA5xPduxnsqHRbMoy5IZy2WCLV7bi8T8BsA
 -----END PGP PUBLIC KEY BLOCK-----
 ''';
 
-const lockDsaElGamalPrivateKey = '''
+const lockedDsaElGamalPrivateKey = '''
 -----BEGIN PGP PRIVATE KEY BLOCK-----
 
 lQOBBGc/4H8RCAD3gDG7FSfKWRy4/gNe0sgYYgZ4zAFZTLWneObcLYpY+kmwufUI

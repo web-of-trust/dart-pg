@@ -48,7 +48,7 @@ void main() {
 
     test('DSA & ElGamal key', () {
       final privateKey = OpenPGP.decryptPrivateKey(
-        lockDsaElGamalPrivateKey,
+        lockedDsaElGamalPrivateKey,
         passphrase,
       );
       final user = privateKey.users[0];
