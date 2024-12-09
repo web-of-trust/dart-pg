@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dart_pg/src/common/config.dart';
 import 'package:dart_pg/src/common/helpers.dart';
+import 'package:dart_pg/src/enum/compression_algorithm.dart';
 import 'package:dart_pg/src/enum/preset_rfc.dart';
 import 'package:dart_pg/src/openpgp.dart';
 import 'package:dart_pg/src/packet/base.dart';
@@ -149,6 +150,23 @@ void main() {
       final literalMessage = OpenPGP.decryptMessage(
         encrytpedMessage.armor(),
         passwords: [password],
+      );
+      expect(literalMessage.literalData.binary, equals(literalData));
+    });
+
+    test('with compression', () {
+      final encrytpedMessage = OpenPGP.encryptBinaryData(
+        literalData,
+        passwords: [password],
+        compression: CompressionAlgorithm.zlib,
+      );
+      final literalMessage = OpenPGP.decryptMessage(
+        encrytpedMessage.armor(),
+        passwords: [password],
+      );
+      expect(
+        literalMessage.packetList.whereType<CompressedDataPacket>().isNotEmpty,
+        isTrue,
       );
       expect(literalMessage.literalData.binary, equals(literalData));
     });
