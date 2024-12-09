@@ -27,10 +27,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
 
   /// Reads an armored OpenPGP private key and returns a PrivateKey object
   factory PrivateKey.fromArmored(final String armored) {
-    final armor = Armor.decode(armored);
-    if (armor.type != ArmorType.privateKey) {
-      throw ArgumentError('Armored text not of private key type');
-    }
+    final armor = Armor.decode(armored).assertType(ArmorType.privateKey);
     return PrivateKey(PacketList.decode(armor.data));
   }
 

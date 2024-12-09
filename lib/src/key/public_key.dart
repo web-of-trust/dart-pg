@@ -20,10 +20,7 @@ final class PublicKey extends BaseKey {
 
   /// Read public key from armored string
   factory PublicKey.fromArmored(final String armored) {
-    final armor = Armor.decode(armored);
-    if (armor.type != ArmorType.publicKey) {
-      throw ArgumentError('Armored text not of public key type');
-    }
+    final armor = Armor.decode(armored).assertType(ArmorType.publicKey);
     return PublicKey(PacketList.decode(armor.data));
   }
 

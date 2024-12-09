@@ -28,10 +28,7 @@ final class Signature implements SignatureInterface {
 
   /// Read signature from armored string
   factory Signature.fromArmored(final String armored) {
-    final armor = Armor.decode(armored);
-    if (armor.type != ArmorType.signature) {
-      throw ArgumentError('Armored text not of signature type');
-    }
+    final armor = Armor.decode(armored).assertType(ArmorType.signature);
     return Signature(
       PacketList.decode(armor.data).whereType<SignaturePacketInterface>(),
     );

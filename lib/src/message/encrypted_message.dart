@@ -29,10 +29,7 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
 
   /// Read Literal message from armored string
   factory EncryptedMessage.fromArmored(final String armored) {
-    final armor = Armor.decode(armored);
-    if (armor.type != ArmorType.message) {
-      throw ArgumentError('Armored text not of message type');
-    }
+    final armor = Armor.decode(armored).assertType(ArmorType.message);
     return EncryptedMessage(PacketList.decode(armor.data));
   }
 

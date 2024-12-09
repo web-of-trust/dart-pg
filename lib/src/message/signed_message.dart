@@ -26,10 +26,7 @@ final class SignedMessage extends CleartextMessage implements SignedCleartextMes
 
   /// Read signed message from armored string
   factory SignedMessage.fromArmored(final String armored) {
-    final armor = Armor.decode(armored);
-    if (armor.type != ArmorType.signedMessage) {
-      throw ArgumentError('Armored text not of signed message type');
-    }
+    final armor = Armor.decode(armored).assertType(ArmorType.signedMessage);
     return SignedMessage(
       armor.text,
       Signature(

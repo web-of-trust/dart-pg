@@ -117,6 +117,14 @@ class Armor {
     );
   }
 
+  /// Assert armor type
+  Armor assertType(ArmorType type) {
+    if (type != this.type) {
+      throw ArgumentError('Armored text not of ${type.name} type.');
+    }
+    return this;
+  }
+
   /// Armor an OpenPGP binary packet block
   static String encode(
     final ArmorType type,

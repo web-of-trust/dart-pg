@@ -41,10 +41,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
 
   /// Read Literal message from armored string
   factory LiteralMessage.fromArmored(final String armored) {
-    final armor = Armor.decode(armored);
-    if (armor.type != ArmorType.message) {
-      throw ArgumentError('Armored text not of message type');
-    }
+    final armor = Armor.decode(armored).assertType(ArmorType.message);
     return LiteralMessage(PacketList.decode(armor.data));
   }
 
