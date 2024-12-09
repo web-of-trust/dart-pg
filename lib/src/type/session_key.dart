@@ -6,6 +6,7 @@ library;
 
 import 'dart:typed_data';
 
+import '../enum/aead_algorithm.dart';
 import '../enum/symmetric_algorithm.dart';
 
 /// Session key interface
@@ -16,6 +17,9 @@ abstract interface class SessionKeyInterface {
 
   /// Get algorithm to encrypt the message with
   SymmetricAlgorithm get symmetric;
+
+  /// Get aead algorithm
+  AeadAlgorithm? get aead;
 
   /// Checksum the encryption key
   void checksum(final Uint8List checksum);

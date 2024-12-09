@@ -6,6 +6,7 @@ library;
 
 import 'dart:typed_data';
 
+import '../../enum/aead_algorithm.dart';
 import '../../type/session_key.dart';
 import '../../common/helpers.dart';
 import '../../enum/symmetric_algorithm.dart';
@@ -19,14 +20,23 @@ class SessionKey implements SessionKeyInterface {
   @override
   final Uint8List encryptionKey;
 
-  SessionKey(this.encryptionKey, [this.symmetric = SymmetricAlgorithm.aes128]);
+  @override
+  final AeadAlgorithm? aead;
+
+  SessionKey(
+    this.encryptionKey, [
+    this.symmetric = SymmetricAlgorithm.aes128,
+    this.aead,
+  ]);
 
   factory SessionKey.produceKey([
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final AeadAlgorithm? aead,
   ]) =>
       SessionKey(
         Helper.generateEncryptionKey(symmetric),
         symmetric,
+        aead,
       );
 
   factory SessionKey.fromBytes(final Uint8List data) {
