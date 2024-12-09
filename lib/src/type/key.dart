@@ -6,7 +6,9 @@ library;
 
 import 'dart:typed_data';
 
+import '../enum/aead_algorithm.dart';
 import '../enum/key_algorithm.dart';
+import '../enum/symmetric_algorithm.dart';
 import 'armorable.dart';
 import 'key_packet.dart';
 import 'packet_container.dart';
@@ -48,6 +50,9 @@ abstract interface class KeyInterface implements ArmorableInterface, PacketConta
   /// Return aead supported
   bool get aeadSupported;
 
+  /// Return preferred symmetrics
+  List<SymmetricAlgorithm> get preferredSymmetrics;
+
   /// Get revocation signatures
   List<SignaturePacketInterface> get revocationSignatures;
 
@@ -59,6 +64,12 @@ abstract interface class KeyInterface implements ArmorableInterface, PacketConta
 
   /// Get subkeys
   List<SubkeyInterface> get subkeys;
+
+  /// Return aead ciphers is preferred
+  bool isPreferredAeadCiphers([
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final AeadAlgorithm aead = AeadAlgorithm.gcm,
+  ]);
 
   /// Get encryption key packet
   KeyPacketInterface? getEncryptionKeyPacket([final Uint8List? keyID]);

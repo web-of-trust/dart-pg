@@ -17,7 +17,6 @@ import '../message/base_message.dart';
 import '../message/encrypted_message.dart';
 import '../message/signature.dart';
 import '../packet/base_packet.dart';
-import '../packet/key/session_key.dart';
 import '../packet/packet_list.dart';
 import '../type/key.dart';
 import '../type/literal_data.dart';
@@ -95,16 +94,13 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
       throw ArgumentError('No encryption keys or passwords provided.');
     }
     var addPadding = Config.presetRfc == PresetRfc.rfc9580;
-    var aeadSupported = Config.aeadSupported;
     for (final key in encryptionKeys) {
-      if (!key.aeadSupported) {
-        aeadSupported = false;
-      }
       if (!key.keyPacket.isV6Key) {
         addPadding = false;
       }
     }
-    final sessionKey = SessionKey.produceKey(
+    final sessionKey = BaseMessage.generateSessionKey(
+      encryptionKeys,
       symmetric ?? Config.preferredSymmetric,
     );
 
@@ -131,15 +127,13 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
             password,
             sessionKey: sessionKey,
             symmetric: symmetric ?? Config.preferredSymmetric,
-            aead: Config.preferredAead,
-            aeadProtect: aeadSupported && Config.aeadProtect,
+            aead: sessionKey.aead,
           )),
       SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         sessionKey.encryptionKey,
         packetList,
         symmetric: symmetric ?? Config.preferredSymmetric,
-        aead: Config.preferredAead,
-        aeadProtect: aeadSupported && Config.aeadProtect,
+        aead: sessionKey.aead,
       ),
     ]));
   }

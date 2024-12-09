@@ -7,9 +7,13 @@ library;
 import 'dart:typed_data';
 
 import '../common/helpers.dart';
+import '../enum/aead_algorithm.dart';
+import '../enum/symmetric_algorithm.dart';
 import '../packet/base_packet.dart';
 import '../packet/packet_list.dart';
 import '../packet/signature/features.dart';
+import '../packet/signature/preferred_aead_ciphers.dart';
+import '../packet/signature/preferred_symmetric_algorithms.dart';
 import '../type/key.dart';
 import '../type/key_packet.dart';
 import '../type/packet_list.dart';
@@ -79,8 +83,16 @@ abstract class BaseKey implements KeyInterface {
         keyPacket,
         ...revocationSignatures,
         ...directSignatures,
-        ...users.map((user) => user.packetList).expand((packet) => packet),
-        ...subkeys.map((subkey) => subkey.packetList).expand((packet) => packet),
+        ...users
+            .map(
+              (user) => user.packetList,
+            )
+            .expand((packet) => packet),
+        ...subkeys
+            .map(
+              (subkey) => subkey.packetList,
+            )
+            .expand((packet) => packet),
         ...keyPacket.isV6Key
             ? [
                 PaddingPacket.createPadding(
@@ -96,19 +108,54 @@ abstract class BaseKey implements KeyInterface {
   @override
   bool get aeadSupported {
     for (final signature in directSignatures) {
-      final features = signature.getSubpacket<Features>();
-      if (features != null && features.supportVersion2SEIPD) {
+      final subpacket = signature.getSubpacket<Features>();
+      if (subpacket?.supportVersion2SEIPD ?? false) {
         return true;
       }
     }
     for (final user in users) {
-      if (user.isPrimary) {
+      if (user.isPrimary && !user.isRevoked()) {
         for (final signature in user.selfSignatures) {
-          final features = signature.getSubpacket<Features>();
-          if (features != null && features.supportVersion2SEIPD) {
+          final subpacket = signature.getSubpacket<Features>();
+          if (subpacket?.supportVersion2SEIPD ?? false) {
             return true;
           }
         }
+      }
+    }
+    return false;
+  }
+
+  @override
+  get preferredSymmetrics {
+    for (final signature in directSignatures) {
+      final subpacket = signature.getSubpacket<PreferredSymmetricAlgorithms>();
+      if (subpacket?.preferences.isNotEmpty ?? false) {
+        return subpacket!.preferences;
+      }
+    }
+    for (final user in users) {
+      if (user.isPrimary && !user.isRevoked()) {
+        for (final signature in user.selfSignatures) {
+          final subpacket = signature.getSubpacket<PreferredSymmetricAlgorithms>();
+          if (subpacket?.preferences.isNotEmpty ?? false) {
+            return subpacket!.preferences;
+          }
+        }
+      }
+    }
+    return [];
+  }
+
+  @override
+  isPreferredAeadCiphers([
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final AeadAlgorithm aead = AeadAlgorithm.gcm,
+  ]) {
+    for (final signature in directSignatures) {
+      final subpacket = signature.getSubpacket<PreferredAeadCiphers>();
+      if (subpacket?.isPreferred(symmetric, aead) ?? false) {
+        return true;
       }
     }
     return false;
@@ -123,7 +170,7 @@ abstract class BaseKey implements KeyInterface {
     );
     for (final subkey in subkeys) {
       if (keyID == null || subkey.keyID.equals(keyID)) {
-        if (subkey.isEncryptionKey) {
+        if (subkey.isEncryptionKey && !subkey.isRevoked()) {
           return subkey.keyPacket;
         }
       }
@@ -182,11 +229,19 @@ abstract class BaseKey implements KeyInterface {
           return true;
         }
       }
-    }
-    for (var user in users) {
-      if (userID.isEmpty || user.userID == userID) {
+      for (var user in users) {
         if (user.verify(time)) {
           return true;
+        }
+      }
+    } else {
+      for (var user in users) {
+        if (user.userID == userID) {
+          if (user.isRevoked(time)) {
+            return false;
+          } else if (user.verify(time)) {
+            return true;
+          }
         }
       }
     }

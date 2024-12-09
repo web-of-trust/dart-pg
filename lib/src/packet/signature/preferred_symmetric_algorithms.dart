@@ -21,5 +21,11 @@ class PreferredSymmetricAlgorithms extends SignatureSubpacket {
   }) : super(SignatureSubpacketType.preferredSymmetricAlgorithms, data);
 
   List<SymmetricAlgorithm> get preferences =>
-      data.map((pref) => SymmetricAlgorithm.values.firstWhere((alg) => alg.value == pref)).toList(growable: false);
+      data
+      .map(
+        (pref) => SymmetricAlgorithm.values.firstWhere(
+          (alg) => alg.value == pref,
+        ),
+      )
+      .toList(growable: false);
 }

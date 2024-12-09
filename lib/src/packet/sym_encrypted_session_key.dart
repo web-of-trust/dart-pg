@@ -126,11 +126,11 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
     final String password, {
     final SessionKeyInterface? sessionKey,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final AeadAlgorithm aead = AeadAlgorithm.gcm,
-    final bool aeadProtect = false,
+    final AeadAlgorithm? aead,
   }) {
     Helper.assertSymmetric(symmetric);
 
+    final aeadProtect = aead != null;
     final version = aeadProtect && sessionKey != null ? 6 : 4;
     final s2k = version == 6
         ? Helper.stringToKey(

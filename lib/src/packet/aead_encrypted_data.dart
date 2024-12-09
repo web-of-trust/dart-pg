@@ -143,10 +143,10 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
 
   /// En/decrypt the payload.
   static Uint8List _crypt(
-    bool forEncryption,
-    Uint8List key,
-    Uint8List data, {
-    Uint8List? finalChunk,
+    final bool forEncryption,
+    final Uint8List key,
+    final Uint8List data, {
+    final Uint8List? finalChunk,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
     AeadAlgorithm aead = AeadAlgorithm.gcm,
     final chunkSizeByte = 0,
@@ -174,27 +174,28 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
     final crypted = Uint8List(
       processed + (forEncryption ? aead.tagLength : 0),
     );
-    for (var chunkIndex = 0; chunkIndex == 0 || data.isNotEmpty;) {
+    var chunkData = data;
+    for (var chunkIndex = 0; chunkIndex == 0 || chunkData.isNotEmpty;) {
       /// We take a chunk of data, en/decrypt it,
       /// and shift `data` to the next chunk.
       final chunkIndexData = adataBuffer.sublist(5, 13);
-      final size = chunkSize < data.length ? chunkSize : data.length;
+      final size = chunkSize < chunkData.length ? chunkSize : chunkData.length;
       crypted.setAll(
         chunkIndex * size,
         forEncryption
             ? cipher.encrypt(
-                data.sublist(0, size),
+                chunkData.sublist(0, size),
                 cipher.getNonce(iv ?? Uint8List(aead.ivLength), chunkIndexData),
                 adataBuffer,
               )
             : cipher.decrypt(
-                data.sublist(0, size),
+                chunkData.sublist(0, size),
                 cipher.getNonce(iv ?? Uint8List(aead.ivLength), chunkIndexData),
                 adataBuffer,
               ),
       );
 
-      data = data.sublist(size);
+      chunkData = chunkData.sublist(size);
       adataBuffer.setAll(9, (++chunkIndex).pack32());
     }
 

@@ -241,7 +241,6 @@ void main() {
         packets,
         symmetric: SymmetricAlgorithm.aes128,
         aead: AeadAlgorithm.gcm,
-        aeadProtect: true,
       );
       expect(encrypted.version, 2);
       expect(encrypted.symmetric, SymmetricAlgorithm.aes128);
@@ -317,14 +316,12 @@ void main() {
         sessionKey: sessionKey,
         symmetric: SymmetricAlgorithm.aes256,
         aead: Config.preferredAead,
-        aeadProtect: true,
       );
       final seipd = SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         sessionKey.encryptionKey,
         PacketList([LiteralDataPacket.fromText(literalText)]),
         symmetric: sessionKey.symmetric,
         aead: Config.preferredAead,
-        aeadProtect: true,
       );
       expect(skesk.version, 6);
       expect(skesk.symmetric, SymmetricAlgorithm.aes256);
