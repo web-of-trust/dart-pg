@@ -41,11 +41,9 @@ final class SignedMessage extends CleartextMessage implements SignedCleartextMes
       ArmorType.signedMessage,
       signature.packetList.encode(),
       text: text,
-      hashAlgo: signature.hashAlgorithms
-          .map(
-            (hash) => hash.name.toUpperCase(),
-          )
-          .join(', '),
+      hashAlgos: signature.hashAlgorithms.map(
+        (hash) => hash.name.toUpperCase(),
+      ),
     );
   }
 

@@ -130,7 +130,7 @@ class Armor {
     final ArmorType type,
     final Uint8List data, {
     final String text = '',
-    final String hashAlgo = '',
+    final Iterable<String> hashAlgos = const [],
     final int partIndex = 0,
     final int partTotal = 0,
     final String customComment = '',
@@ -156,9 +156,10 @@ class Armor {
         ];
         break;
       case ArmorType.signedMessage:
+        final hashHeaders = hashAlgos.map((hash) => 'Hash: $hash').join('\n');
         result = [
           '$signedMessageBegin$endOfLine',
-          'Hash: $hashAlgo\n\n',
+          hashHeaders.isNotEmpty ? '$hashHeaders\n\n' : '',
           '${text.replaceAll(RegExp(r'^-', multiLine: true), '- -')}\n',
           '$signatureBegin$endOfLine',
           _addHeader(customComment),

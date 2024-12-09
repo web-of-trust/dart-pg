@@ -61,7 +61,9 @@ void main() {
         ArmorType.signedMessage,
         bytes,
         text: text,
-        hashAlgo: HashAlgorithm.sha256.digestName,
+        hashAlgos: [
+          HashAlgorithm.sha256.digestName.toUpperCase(),
+        ],
       );
 
       final beginReg = RegExp(r'BEGIN PGP SIGNED MESSAGE');
