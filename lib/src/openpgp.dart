@@ -331,29 +331,29 @@ final class OpenPGP {
     );
   }
 
-  /// Decrypt a message with the user's private keys, or passwords.
+  /// Decrypt a armored encrypted message with
+  /// the user's private keys, or passwords.
   /// One of `decryptionKeys` or `passwords` must be specified.
   static LiteralMessageInterface decrypt(
-    final EncryptedMessageInterface message, {
+    final String armored, {
     final Iterable<PrivateKeyInterface> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
   }) {
-    return message.decrypt(
+    return decryptMessage(
+      readEncryptedMessage(armored),
       decryptionKeys: decryptionKeys,
       passwords: passwords,
     );
   }
 
-  /// Decrypt a armored encrypted string with
-  /// the user's private keys, or passwords.
+  /// Decrypt an encrypted message with the user's private keys, or passwords.
   /// One of `decryptionKeys` or `passwords` must be specified.
   static LiteralMessageInterface decryptMessage(
-    final String message, {
+    final EncryptedMessageInterface message, {
     final Iterable<PrivateKeyInterface> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
   }) {
-    return decrypt(
-      readEncryptedMessage(message),
+    return message.decrypt(
       decryptionKeys: decryptionKeys,
       passwords: passwords,
     );

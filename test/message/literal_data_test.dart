@@ -147,7 +147,7 @@ void main() {
         literalData,
         passwords: [password],
       );
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         passwords: [password],
       );
@@ -160,7 +160,7 @@ void main() {
         passwords: [password],
         compression: CompressionAlgorithm.zlib,
       );
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         passwords: [password],
       );
@@ -183,7 +183,7 @@ void main() {
       final encryptedPacket = encryptedMessage.encryptedPacket as SymEncryptedIntegrityProtectedDataPacket;
       expect(encryptedPacket.aead, Config.preferredAead);
 
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         passwords: [password],
       );
@@ -199,7 +199,7 @@ void main() {
         encryptionKeys: [OpenPGP.readPublicKey(alicePublicKey)],
         passwords: [password],
       );
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
@@ -212,7 +212,7 @@ void main() {
         encryptionKeys: [OpenPGP.readPublicKey(bobPublicKey)],
         passwords: [password],
       );
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
@@ -225,7 +225,7 @@ void main() {
         encryptionKeys: [OpenPGP.readPublicKey(rfc9580PublicKey)],
         passwords: [password],
       );
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(rfc9580PrivateKey)],
       );
@@ -240,7 +240,7 @@ void main() {
         encryptionKeys: [OpenPGP.readPublicKey(alicePublicKey)],
         signingKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
@@ -259,7 +259,7 @@ void main() {
         encryptionKeys: [OpenPGP.readPublicKey(bobPublicKey)],
         signingKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
@@ -278,7 +278,7 @@ void main() {
         encryptionKeys: [OpenPGP.readPublicKey(rfc9580PublicKey)],
         signingKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(rfc9580PrivateKey)],
       );
@@ -297,7 +297,7 @@ void main() {
         encryptionKeys: [OpenPGP.readPublicKey(alicePublicKey)],
         signingKeys: [OpenPGP.readPrivateKey(rfc9580PrivateKey)],
       );
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         encryptedMessage.armor(),
         decryptionKeys: [OpenPGP.readPrivateKey(alicePrivateKey)],
       );
@@ -341,7 +341,7 @@ lFiOpCG/SDaD4bl7BYYf9o6c6Gs9vKf9mShmWUO0tg2NDlFAzdQTBOzaxw==
 =BADY
 -----END PGP MESSAGE-----
 ''';
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         message,
         decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
@@ -377,7 +377,7 @@ wqP2oIPIsEeuMG40kub7RpJWnidJMnOoG7ZScRqbwkECF89DN4sYYREJkaaHFr8=
 =JDtL
 -----END PGP MESSAGE-----
 ''';
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         message,
         decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
@@ -414,7 +414,7 @@ xBfiBCSwAsSjvat9sW5YOIcqo6hUMnY804L61RklAJn93ohVOt0N
 =Bbti
 -----END PGP MESSAGE-----
 ''';
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         message,
         decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
@@ -464,7 +464,7 @@ vMq9yq4ffP8QAc1kwjaK9aJ/J45fPw==
 -----END PGP MESSAGE-----
 ''';
 
-      final literalMessage = OpenPGP.decryptMessage(
+      final literalMessage = OpenPGP.decrypt(
         message,
         decryptionKeys: [OpenPGP.readPrivateKey(bobPrivateKey)],
       );
