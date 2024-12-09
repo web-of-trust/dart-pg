@@ -77,11 +77,15 @@ final class Signature implements SignatureInterface {
           }
 
           verifications.add(Verification(
-            keyPacket.keyID,
-            packet,
-            isVerified,
-            verificationError,
-          ));
+              keyPacket.keyID,
+              packet,
+              isVerified,
+              verificationError,
+              key.users
+                  .where(
+                    (user) => user.userID.isNotEmpty,
+                  )
+                  .map((user) => user.userID)));
         }
       }
     }

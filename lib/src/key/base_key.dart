@@ -153,42 +153,45 @@ abstract class BaseKey implements KeyInterface {
   }
 
   @override
-  isCertified({
-    final KeyInterface? verifyKey,
+  isCertified(
+    final KeyInterface verifyKey, {
     final SignaturePacketInterface? certificate,
     final DateTime? time,
   }) {
     for (var user in users) {
-      if (user.isPrimary) {
-        return user.isCertified(
-          verifyKey: verifyKey,
-          certificate: certificate,
-          time: time,
-        );
+      if (user.isPrimary &&
+          user.isCertified(
+            verifyKey,
+            certificate: certificate,
+            time: time,
+          )) {
+        return true;
       }
     }
     return false;
   }
 
   @override
-  verify([final String userID = '', final DateTime? time]) {
-    for (final signature in directSignatures) {
-      if (!signature.verify(
-        publicKey.keyPacket,
-        keyPacket.signBytes,
-        time,
-      )) {
-        return false;
+  verify({final String userID = '', final DateTime? time}) {
+    if (userID.isEmpty) {
+      for (final signature in directSignatures) {
+        if (signature.verify(
+          publicKey.keyPacket,
+          keyPacket.signBytes,
+          time,
+        )) {
+          return true;
+        }
       }
     }
     for (var user in users) {
       if (userID.isEmpty || user.userID == userID) {
-        if (!user.verify(time)) {
-          return false;
+        if (user.verify(time)) {
+          return true;
         }
       }
     }
-    return true;
+    return false;
   }
 
   _readPacketList(final PacketListInterface packetList) {

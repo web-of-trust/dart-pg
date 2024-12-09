@@ -17,9 +17,12 @@ abstract interface class VerificationInterface {
   /// Get signature packet
   SignaturePacketInterface get signaturePacket;
 
-  /// GGet verification error
+  /// Get verification error
   String get verificationError;
 
   /// Is verified
   bool get isVerified;
+
+  /// Return verification user IDs
+  Iterable<String> get userIDs;
 }

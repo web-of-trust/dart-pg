@@ -38,8 +38,8 @@ abstract interface class UserInterface implements PacketContainerInterface {
   bool isRevoked([final DateTime? time]);
 
   /// Check if the key is certified
-  bool isCertified({
-    final KeyInterface? verifyKey,
+  bool isCertified(
+    final KeyInterface verifyKey, {
     final SignaturePacketInterface? certificate,
     final DateTime? time,
   });

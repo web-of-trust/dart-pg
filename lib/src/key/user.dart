@@ -85,14 +85,14 @@ final class User implements UserInterface {
   }
 
   @override
-  isCertified({
-    final KeyInterface? verifyKey,
+  isCertified(
+    final KeyInterface verifyKey, {
     final SignaturePacketInterface? certificate,
     final DateTime? time,
   }) {
     if (otherSignatures.isNotEmpty) {
       final keyID = certificate?.issuerKeyID;
-      final keyPacket = verifyKey?.publicKey.keyPacket ?? mainKey.keyPacket;
+      final keyPacket = verifyKey.publicKey.keyPacket;
       for (final signature in otherSignatures) {
         if (keyID == null || signature.issuerKeyID.equals(keyID)) {
           if (signature.verify(

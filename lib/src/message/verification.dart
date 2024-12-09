@@ -24,10 +24,14 @@ class Verification implements VerificationInterface {
   @override
   final String verificationError;
 
+  @override
+  final Iterable<String> userIDs;
+
   Verification(
     this.keyID,
     this.signaturePacket,
     this.isVerified,
-    this.verificationError,
-  );
+    this.verificationError, [
+    this.userIDs = const [],
+  ]);
 }

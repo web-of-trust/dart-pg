@@ -71,13 +71,13 @@ abstract interface class KeyInterface implements ArmorableInterface, PacketConta
   });
 
   /// Check if the key is certified
-  bool isCertified({
-    final KeyInterface? verifyKey,
+  bool isCertified(
+    final KeyInterface verifyKey, {
     final SignaturePacketInterface? certificate,
     final DateTime? time,
   });
 
   /// Verify the key.
   /// Check for existence and validity of direct & user signature.
-  bool verify([final String userID = '', final DateTime? time]);
+  bool verify({final String userID = '', final DateTime? time});
 }
