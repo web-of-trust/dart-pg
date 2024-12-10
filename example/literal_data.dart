@@ -188,7 +188,6 @@ dYZIvg0A1SCEq4w8mfkSbFRJrixxFabTL7COFHgvL25joDV8UIvxYg==
     passwords: [password],
   );
   var armored = encryptedMessage.armor();
-  print(armored);
   print('Decrypt with password:');
   var literalMessage = OpenPGP.decrypt(armored, passwords: [password]);
   print(utf8.decode(literalMessage.literalData.binary));
@@ -208,8 +207,8 @@ dYZIvg0A1SCEq4w8mfkSbFRJrixxFabTL7COFHgvL25joDV8UIvxYg==
       curve448PrivateKey,
     ],
   );
+  print('AEAD protected: ${encryptedMessage.aeadProtected}');
   armored = encryptedMessage.armor();
-  print(armored);
 
   print('\nDecrypt with passphrase & verify signatures:');
   literalMessage = OpenPGP.decrypt(armored, passwords: [password]);
