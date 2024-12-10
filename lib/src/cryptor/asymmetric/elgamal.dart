@@ -75,7 +75,7 @@ class ElGamalEngine implements AsymmetricBlockCipher {
     final int outOff,
   ) {
     if (_key == null) {
-      throw StateError('$algorithmName not initialised');
+      throw AssertionError('$algorithmName not initialised');
     }
 
     if (inLength > inputBlockSize) {

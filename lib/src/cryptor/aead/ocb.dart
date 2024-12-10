@@ -273,7 +273,7 @@ class OCBCipher implements AEADCipher {
 
       _xor(_mainBlock, pad);
       if (output.length < (outOff + _mainBlockPos)) {
-        throw StateError('Output buffer too short');
+        throw AssertionError('Output buffer too short');
       }
       output.setAll(outOff, _mainBlock.sublist(0, _mainBlockPos));
 
@@ -297,7 +297,7 @@ class OCBCipher implements AEADCipher {
 
     if (_forEncryption) {
       if (output.length < (outOff + resultLen + _macSize)) {
-        throw StateError('Output buffer too short');
+        throw AssertionError('Output buffer too short');
       }
 
       /// Append tag to the message
@@ -306,7 +306,7 @@ class OCBCipher implements AEADCipher {
     } else {
       /// Compare the tag from the message with the calculated one
       if (!_macBlock.equals(tag ?? Uint8List(0))) {
-        throw InvalidCipherTextException('Mac check in OCB failed');
+        throw AssertionError('Mac check in OCB failed');
       }
     }
 

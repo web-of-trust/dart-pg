@@ -239,7 +239,7 @@ class CamelliaEngine extends BaseEngine {
   @override
   init(final bool forEncryption, final CipherParameters? params) {
     if (params is! KeyParameter) {
-      throw Exception('only simple KeyParameter expected.');
+      throw AssertionError('only simple KeyParameter expected.');
     }
 
     _setKey(forEncryption, params.key);
@@ -255,14 +255,14 @@ class CamelliaEngine extends BaseEngine {
     final int outOff,
   ) {
     if (!initialised) {
-      throw Exception('Camellia engine not initialised');
+      throw AssertionError('Camellia engine not initialised');
     }
 
     if ((inOff + _blockSize) > input.length) {
-      throw Exception('input buffer too short');
+      throw AssertionError('input buffer too short');
     }
     if ((outOff + _blockSize) > output.length) {
-      throw Exception('output buffer too short');
+      throw AssertionError('output buffer too short');
     }
     if (_keyIs128) {
       return _processBlock128(input, inOff, output, outOff);
@@ -423,7 +423,7 @@ class CamelliaEngine extends BaseEngine {
         _keyIs128 = false;
         break;
       default:
-        throw Exception('key sizes are only 16/24/32 bytes.');
+        throw AssertionError('key sizes are only 16/24/32 bytes.');
     }
 
     for (var i = 0; i < 4; i++) {

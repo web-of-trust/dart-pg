@@ -89,7 +89,7 @@ abstract class KeyWrapper {
       }
     }
     if (!a.equals(Uint8List.fromList(iv))) {
-      throw StateError('Integrity check failed.');
+      throw AssertionError('Integrity check failed.');
     }
 
     return r;

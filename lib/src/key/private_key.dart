@@ -177,7 +177,7 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
       throw ArgumentError('Passphrase are required for key encryption.');
     }
     if (!secretKeyPacket.isDecrypted) {
-      throw StateError('Private key must be decrypted before encrypting.');
+      throw AssertionError('Private key must be decrypted before encrypting.');
     }
 
     final aead = aeadProtected && Config.aeadProtect ? Config.preferredAead : null;

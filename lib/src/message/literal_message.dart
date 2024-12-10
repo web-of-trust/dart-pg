@@ -29,7 +29,7 @@ import '../type/signature_packet.dart';
 final class LiteralMessage extends BaseMessage implements LiteralMessageInterface, SignedMessageInterface {
   LiteralMessage(super.packetList) {
     if (_unwrapCompressed().whereType<LiteralDataInterface>().isEmpty) {
-      throw StateError('No literal data in packet list.');
+      throw AssertionError('No literal data in packet list.');
     }
   }
 

@@ -23,7 +23,7 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
 
   EncryptedMessage(super.packetList) {
     if (packetList.whereType<EncryptedDataPacketInterface>().isEmpty) {
-      throw StateError('No encrypted data in packet list.');
+      throw AssertionError('No encrypted data in packet list.');
     }
   }
 

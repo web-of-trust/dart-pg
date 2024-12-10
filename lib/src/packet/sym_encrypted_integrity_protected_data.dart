@@ -236,7 +236,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
           Helper.hashDigest(toHash, HashAlgorithm.sha1),
         );
         if (!verifyHash) {
-          throw StateError('Modification detected.');
+          throw AssertionError('Modification detected.');
         }
         packetBytes = toHash.sublist(
           cipherSymmetric.blockSize + 2,

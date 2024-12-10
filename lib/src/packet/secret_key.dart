@@ -210,7 +210,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
         final checksum = keyData.sublist(keyData.length - 2);
         keyData = keyData.sublist(0, keyData.length - 2);
         if (!checksum.equals(_computeChecksum(keyData))) {
-          throw StateError('Key checksum mismatch!');
+          throw AssertionError('Key checksum mismatch!');
         }
       }
       keyMaterial = _readKeyMaterial(
@@ -549,7 +549,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     };
 
     if (!keyMaterial.isValid) {
-      throw StateError('Key material is not consistent.');
+      throw AssertionError('Key material is not consistent.');
     }
 
     return keyMaterial;

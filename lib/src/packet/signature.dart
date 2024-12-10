@@ -463,7 +463,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       );
     }
     if (isExpired(time)) {
-      throw StateError('Signature is expired.');
+      throw AssertionError('Signature is expired.');
     }
 
     final message = Uint8List.fromList([
@@ -478,7 +478,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
 
     final hash = Helper.hashDigest(message, hashAlgorithm);
     if (signedHashValue[0] != hash[0] || signedHashValue[1] != hash[1]) {
-      throw StateError('Signed digest did not match!');
+      throw AssertionError('Signed digest did not match!');
     }
 
     final keyMaterial = verifyKey.keyMaterial;

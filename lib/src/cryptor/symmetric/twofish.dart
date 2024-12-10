@@ -409,7 +409,7 @@ class TwofishEngine extends BaseEngine {
     int outOff,
   ) {
     if (_workingKey.isEmpty) {
-      throw StateError('algorithmName not initialised');
+      throw AssertionError('algorithmName not initialised');
     }
     if ((inOff + _blockSize) > input.length) {
       throw ArgumentError('input buffer too short for algorithmName engine');

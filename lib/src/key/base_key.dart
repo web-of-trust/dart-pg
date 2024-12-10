@@ -256,10 +256,10 @@ abstract class BaseKey implements KeyInterface {
     );
 
     if (keyPacketList.isEmpty) {
-      throw StateError('Key packet not found in packet list.');
+      throw AssertionError('Key packet not found in packet list.');
     }
     if (keyPacketList.length > 1) {
-      throw StateError('Key block contains multiple key packets.');
+      throw AssertionError('Key block contains multiple key packets.');
     }
     keyPacket = keyPacketList.whereType<KeyPacketInterface>().first;
 
