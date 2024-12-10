@@ -14,9 +14,7 @@ import '../enum/key_version.dart';
 import '../enum/montgomery_curve.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/rsa_key_size.dart';
-import '../type/key_material.dart';
 import '../type/key_packet.dart';
-import '../type/subkey_packet.dart';
 import 'key/public_material.dart';
 import 'base_packet.dart';
 

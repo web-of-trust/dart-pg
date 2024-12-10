@@ -11,7 +11,6 @@ import '../packet/base_packet.dart';
 import '../packet/packet_list.dart';
 import '../type/key.dart';
 import '../type/signature_packet.dart';
-import '../type/user.dart';
 import '../type/user_id_packet.dart';
 
 /// OpenPGP user class

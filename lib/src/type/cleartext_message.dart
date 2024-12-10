@@ -6,7 +6,6 @@ library;
 
 import 'key.dart';
 import 'notation_data.dart';
-import 'private_key.dart';
 import 'signature.dart';
 import 'signed_cleartext_message.dart';
 import 'verification.dart';

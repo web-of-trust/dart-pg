@@ -12,19 +12,14 @@ import 'enum/ecc.dart';
 import 'enum/key_type.dart';
 import 'enum/rsa_key_size.dart';
 import 'enum/symmetric_algorithm.dart';
-import 'key/private_key.dart';
-import 'key/public_key.dart';
-import 'message/cleartext_message.dart';
-import 'message/encrypted_message.dart';
-import 'message/literal_message.dart';
-import 'message/signature.dart';
-import 'message/signed_message.dart';
+import 'key/base_key.dart';
+import 'message/base_message.dart';
 import 'type/cleartext_message.dart';
 import 'type/encrypted_message.dart';
 import 'type/key.dart';
 import 'type/literal_message.dart';
 import 'type/notation_data.dart';
-import 'type/private_key.dart';
+import 'type/session_key.dart';
 import 'type/signature.dart';
 import 'type/signed_cleartext_message.dart';
 import 'type/signed_message.dart';
@@ -357,5 +352,12 @@ final class OpenPGP {
       decryptionKeys: decryptionKeys,
       passwords: passwords,
     );
+  }
+
+  static SessionKeyInterface generateSessionKey(
+    final Iterable<KeyInterface> encryptionKeys, [
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+  ]) {
+    return LiteralMessage.generateSessionKey(encryptionKeys, symmetric);
   }
 }

@@ -18,12 +18,14 @@ import '../type/key.dart';
 import '../type/key_packet.dart';
 import '../type/packet_list.dart';
 import '../type/signature_packet.dart';
-import '../type/subkey.dart';
-import '../type/subkey_packet.dart';
-import '../type/user.dart';
 import '../type/user_id_packet.dart';
 import 'subkey.dart';
 import 'user.dart';
+
+export 'private_key.dart';
+export 'public_key.dart';
+export 'subkey.dart';
+export 'user.dart';
 
 /// Base abstract OpenPGP key class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

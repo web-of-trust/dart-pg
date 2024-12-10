@@ -16,6 +16,10 @@ import 'signature_packet.dart';
 import 'subkey.dart';
 import 'user.dart';
 
+export 'private_key.dart';
+export 'subkey.dart';
+export 'user.dart';
+
 /// Transferable key interface
 /// That represents a key packet, the relevant signatures, users and subkeys.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

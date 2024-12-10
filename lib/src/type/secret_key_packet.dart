@@ -8,7 +8,6 @@ import '../enum/hash_algorithm.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../enum/aead_algorithm.dart';
 import 'key_packet.dart';
-import 'secret_key_material.dart';
 
 /// Secret key packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

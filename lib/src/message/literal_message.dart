@@ -14,16 +14,15 @@ import '../enum/compression_algorithm.dart';
 import '../enum/preset_rfc.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../message/base_message.dart';
-import '../message/encrypted_message.dart';
-import '../message/signature.dart';
 import '../packet/base_packet.dart';
+import '../packet/key/session_key.dart';
 import '../packet/packet_list.dart';
 import '../type/key.dart';
 import '../type/literal_data.dart';
 import '../type/literal_message.dart';
 import '../type/notation_data.dart';
 import '../type/packet_list.dart';
-import '../type/private_key.dart';
+import '../type/session_key.dart';
 import '../type/signature.dart';
 import '../type/signature_packet.dart';
 import '../type/signed_message.dart';
@@ -56,6 +55,32 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
         time: time,
       )
     ]));
+  }
+
+  /// Generate a new session key object, taking the algorithm preferences
+  /// of the passed public keys into account, if any.
+  static SessionKeyInterface generateSessionKey(
+    final Iterable<KeyInterface> encryptionKeys, [
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+  ]) {
+    var aeadProtect = Config.aeadProtect;
+    final aead = Config.preferredAead;
+    for (final key in encryptionKeys) {
+      if (key.aeadSupported) {
+        if (!key.isPreferredAeadCiphers(symmetric, aead)) {
+          throw AssertionError('Symmetric and aead not compatible with the given `encryptionKeys`');
+        }
+      } else {
+        if (key.preferredSymmetrics.isNotEmpty && !key.preferredSymmetrics.contains(symmetric)) {
+          throw AssertionError('Symmetric not compatible with the given `encryptionKeys`');
+        }
+        aeadProtect = false;
+      }
+    }
+    return SessionKey.produceKey(
+      symmetric,
+      aeadProtect ? aead : null,
+    );
   }
 
   @override
@@ -99,7 +124,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
         addPadding = false;
       }
     }
-    final sessionKey = BaseMessage.generateSessionKey(
+    final sessionKey = generateSessionKey(
       encryptionKeys,
       symmetric ?? Config.preferredSymmetric,
     );

@@ -12,7 +12,6 @@ import 'key.dart';
 import 'literal_data.dart';
 import 'notation_data.dart';
 import 'packet_container.dart';
-import 'private_key.dart';
 import 'signature.dart';
 import 'verification.dart';
 

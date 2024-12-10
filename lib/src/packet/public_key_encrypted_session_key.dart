@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import '../type/key_packet.dart';
 import '../enum/key_algorithm.dart';
 import '../enum/montgomery_curve.dart';
-import '../type/secret_key_packet.dart';
 import '../type/session_key.dart';
 import '../type/session_key_cryptor.dart';
 import 'base_packet.dart';

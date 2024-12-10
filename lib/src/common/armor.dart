@@ -106,7 +106,7 @@ class Armor {
     final data = base64.decode(dataLines.join().trim());
 
     if ((checksum != _crc24Checksum(data)) && (checksum.isNotEmpty || Config.checksumRequired)) {
-      throw StateError('Ascii armor integrity check failed');
+      throw AssertionError('Ascii armor integrity check failed');
     }
 
     return Armor(
@@ -120,7 +120,7 @@ class Armor {
   /// Assert armor type
   Armor assertType(ArmorType type) {
     if (type != this.type) {
-      throw ArgumentError('Armored text not of ${type.name} type.');
+      throw AssertionError('Armored text not of ${type.name} type.');
     }
     return this;
   }

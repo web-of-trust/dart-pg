@@ -10,6 +10,12 @@ import '../enum/key_algorithm.dart';
 import 'key_material.dart';
 import 'packet.dart';
 
+export 'key_material.dart';
+export 'secret_key_material.dart';
+export 'secret_key_packet.dart';
+export 'subkey_packet.dart';
+export 'verification_key_material.dart';
+
 /// Key packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class KeyPacketInterface implements PacketInterface {

@@ -5,15 +5,17 @@
 library;
 
 import '../common/armor.dart';
-import '../common/config.dart';
 import '../enum/armor_type.dart';
-import '../enum/symmetric_algorithm.dart';
-import '../packet/key/session_key.dart';
 import '../type/armorable.dart';
-import '../type/key.dart';
 import '../type/packet_container.dart';
 import '../type/packet_list.dart';
-import '../type/session_key.dart';
+
+export 'cleartext_message.dart';
+export 'encrypted_message.dart';
+export 'literal_message.dart';
+export 'signature.dart';
+export 'signed_message.dart';
+export 'verification.dart';
 
 /// Base abstract OpenPGP message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -25,28 +27,4 @@ abstract class BaseMessage implements ArmorableInterface, PacketContainerInterfa
 
   @override
   armor() => Armor.encode(ArmorType.message, packetList.encode());
-
-  static SessionKeyInterface generateSessionKey(
-    final Iterable<KeyInterface> encryptionKeys, [
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  ]) {
-    var aeadProtect = Config.aeadProtect;
-    final aead = Config.preferredAead;
-    for (final key in encryptionKeys) {
-      if (key.aeadSupported) {
-        if (!key.isPreferredAeadCiphers(symmetric, aead)) {
-          throw StateError('Symmetric and aead not compatible with the given `encryptionKeys`');
-        }
-      } else {
-        if (key.preferredSymmetrics.isNotEmpty && !key.preferredSymmetrics.contains(symmetric)) {
-          throw StateError('Symmetric not compatible with the given `encryptionKeys`');
-        }
-        aeadProtect = false;
-      }
-    }
-    return SessionKey.produceKey(
-      symmetric,
-      aeadProtect ? aead : null,
-    );
-  }
 }

@@ -10,7 +10,6 @@ import '../packet/packet_list.dart';
 import '../packet/signature/key_flags.dart';
 import '../type/key.dart';
 import '../type/signature_packet.dart';
-import '../type/subkey.dart';
 import '../type/subkey_packet.dart';
 import 'base_key.dart';
 
