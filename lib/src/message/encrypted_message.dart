@@ -83,6 +83,9 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
   get encryptedPacket => packetList.whereType<EncryptedDataPacketInterface>().first;
 
   @override
+  get aeadProtected => packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().firstOrNull?.aead != null;
+
+  @override
   get sessionKey => _sessionKey;
 
   @override

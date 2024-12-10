@@ -270,8 +270,9 @@ dYZIvg0A1SCEq4w8mfkSbFRJrixxFabTL7COFHgvL25joDV8UIvxYg==
     ],
     symmetric: SymmetricAlgorithm.aes256,
   );
-  Config.aeadProtect = false;
+  print('AEAD protected: ${encryptedMessage.aeadProtected}');
   armored = encryptedMessage.armor();
+  Config.aeadProtect = false;
 
   print('\nDecrypt with password & verify signatures:');
   literalMessage = OpenPGP.decrypt(armored, passwords: [password]);

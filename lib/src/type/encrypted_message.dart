@@ -17,6 +17,9 @@ abstract interface class EncryptedMessageInterface implements ArmorableInterface
   /// Return encrypted packet.
   EncryptedDataPacketInterface get encryptedPacket;
 
+  /// Return encrypted packet is aead protected.
+  bool get aeadProtected;
+
   /// Return session key.
   SessionKeyInterface? get sessionKey;
 
