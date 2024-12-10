@@ -79,6 +79,31 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     );
   }
 
+  /// Encrypt a session key either with public keys, passwords, or both at once.
+  static PacketListInterface encryptSessionKey(
+    SessionKeyInterface sessionKey, {
+    final Iterable<KeyInterface> encryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+  }) {
+    if (encryptionKeys.isEmpty && passwords.isEmpty) {
+      throw ArgumentError('No encryption keys or passwords provided.');
+    }
+    return PacketList([
+      ...encryptionKeys.map(
+        (key) => PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+          key.publicKey.getEncryptionKeyPacket()!,
+          sessionKey,
+        ),
+      ),
+      ...passwords.map((password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
+            password,
+            sessionKey: sessionKey,
+            symmetric: sessionKey.symmetric,
+            aead: sessionKey.aead,
+          )),
+    ]);
+  }
+
   @override
   get literalData => _unwrapCompressed().whereType<LiteralDataInterface>().first;
 
@@ -138,18 +163,11 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
         : this.packetList;
 
     return EncryptedMessage(PacketList([
-      ...encryptionKeys.map(
-        (key) => PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
-          key.publicKey.getEncryptionKeyPacket()!,
-          sessionKey,
-        ),
+      ...encryptSessionKey(
+        sessionKey,
+        encryptionKeys: encryptionKeys,
+        passwords: passwords,
       ),
-      ...passwords.map((password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
-            password,
-            sessionKey: sessionKey,
-            symmetric: symmetric ?? Config.preferredSymmetric,
-            aead: sessionKey.aead,
-          )),
       SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         sessionKey.encryptionKey,
         packetList,

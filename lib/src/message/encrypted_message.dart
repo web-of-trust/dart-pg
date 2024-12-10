@@ -12,6 +12,7 @@ import '../packet/base_packet.dart';
 import '../packet/packet_list.dart';
 import '../type/encrypted_data_packet.dart';
 import '../type/encrypted_message.dart';
+import '../type/packet_list.dart';
 import '../type/private_key.dart';
 import '../type/session_key.dart';
 
@@ -32,34 +33,15 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
     return EncryptedMessage(PacketList.decode(armor.data));
   }
 
-  @override
-  get encryptedPacket => packetList.whereType<EncryptedDataPacketInterface>().first;
-
-  @override
-  get sessionKey => _sessionKey;
-
-  @override
-  decrypt({
+  /// Decrypt symmetric session keys using private keys or passwords (not both).
+  static SessionKeyInterface decryptSessionKey(
+    final PacketListInterface packetList, {
     final Iterable<PrivateKeyInterface> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
   }) {
     if (decryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError('No decryption keys or passwords provided.');
     }
-    _sessionKey = _decryptSessionKey(decryptionKeys, passwords);
-
-    return LiteralMessage(encryptedPacket
-        .decrypt(
-          _sessionKey!.encryptionKey,
-          _sessionKey!.symmetric,
-        )
-        .packets!);
-  }
-
-  SessionKeyInterface _decryptSessionKey(
-    final Iterable<PrivateKeyInterface> decryptionKeys,
-    final Iterable<String> passwords,
-  ) {
     final errors = <String>[];
     final sessionKeys = <SessionKeyInterface>[];
     if (passwords.isNotEmpty) {
@@ -92,8 +74,33 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
     }
 
     if (sessionKeys.isEmpty) {
-      throw StateError('Session key decryption failed.\n${errors.join('\n')}');
+      throw AssertionError('Session key decryption failed.\n${errors.join('\n')}');
     }
     return sessionKeys.first;
+  }
+
+  @override
+  get encryptedPacket => packetList.whereType<EncryptedDataPacketInterface>().first;
+
+  @override
+  get sessionKey => _sessionKey;
+
+  @override
+  decrypt({
+    final Iterable<PrivateKeyInterface> decryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+  }) {
+    _sessionKey = decryptSessionKey(
+      packetList,
+      decryptionKeys: decryptionKeys,
+      passwords: passwords,
+    );
+
+    return LiteralMessage(encryptedPacket
+        .decrypt(
+          _sessionKey!.encryptionKey,
+          _sessionKey!.symmetric,
+        )
+        .packets!);
   }
 }

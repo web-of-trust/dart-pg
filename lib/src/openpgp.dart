@@ -18,6 +18,7 @@ import 'message/base_message.dart';
 import 'type/cleartext_message.dart';
 import 'type/key.dart';
 import 'type/literal_message.dart';
+import 'type/packet_list.dart';
 import 'type/session_key.dart';
 
 /// Export high level API for developers.
@@ -358,6 +359,32 @@ final class OpenPGP {
     return LiteralMessage.generateSessionKey(
       encryptionKeys,
       symmetric ?? Config.preferredSymmetric,
+    );
+  }
+
+  /// Encrypt a session key either with public keys, passwords, or both at once.
+  static PacketListInterface encryptSessionKey(
+    SessionKeyInterface sessionKey, {
+    final Iterable<KeyInterface> encryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+  }) {
+    return LiteralMessage.encryptSessionKey(
+      sessionKey,
+      encryptionKeys: encryptionKeys,
+      passwords: passwords,
+    );
+  }
+
+  /// Decrypt symmetric session keys using private keys or passwords (not both).
+  static SessionKeyInterface decryptSessionKey(
+    final PacketListInterface packetList, {
+    final Iterable<PrivateKeyInterface> decryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+  }) {
+    return EncryptedMessage.decryptSessionKey(
+      packetList,
+      decryptionKeys: decryptionKeys,
+      passwords: passwords,
     );
   }
 }
