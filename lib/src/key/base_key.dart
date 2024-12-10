@@ -111,7 +111,7 @@ abstract class BaseKey implements KeyInterface {
   bool get aeadSupported {
     for (final signature in directSignatures) {
       final subpacket = signature.getSubpacket<Features>();
-      if (subpacket?.supportVersion2SEIPD ?? false) {
+      if (subpacket?.seidpV2Supported ?? false) {
         return true;
       }
     }
@@ -119,7 +119,7 @@ abstract class BaseKey implements KeyInterface {
       if (user.isPrimary && !user.isRevoked()) {
         for (final signature in user.selfSignatures) {
           final subpacket = signature.getSubpacket<Features>();
-          if (subpacket?.supportVersion2SEIPD ?? false) {
+          if (subpacket?.seidpV2Supported ?? false) {
             return true;
           }
         }

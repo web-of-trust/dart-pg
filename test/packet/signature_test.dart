@@ -76,15 +76,15 @@ void main() {
 
     test('Features', () {
       final features = Features.fromFeatures(
-        SupportFeature.version1SEIPD.value |
-            SupportFeature.aeadEncrypted.value |
-            SupportFeature.version5PublicKey.value |
-            SupportFeature.version2SEIPD.value,
+        SupportFeature.seipdV1.value |
+            SupportFeature.aead.value |
+            SupportFeature.publicKeyV5.value |
+            SupportFeature.seipdV2.value,
       );
-      expect(features.supportVersion2SEIPD, isTrue);
-      expect(features.supportAeadEncrypted, isTrue);
-      expect(features.supportVersion5PublicKey, isTrue);
-      expect(features.supportVersion2SEIPD, isTrue);
+      expect(features.seidpV2Supported, isTrue);
+      expect(features.aeadSupported, isTrue);
+      expect(features.publicKeyV5Supported, isTrue);
+      expect(features.seidpV2Supported, isTrue);
     });
 
     test('Salt notation', () {

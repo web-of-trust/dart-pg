@@ -492,21 +492,24 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   }
 
   static List<SubpacketInterface> _keySubpackets(final int version) {
-    final symmetrics = Uint8List.fromList([
-      SymmetricAlgorithm.aes128.value,
-      SymmetricAlgorithm.aes256.value,
-    ]);
-    final aeads = Uint8List.fromList([
-      ...AeadAlgorithm.values.map((algo) => algo.value),
-    ]);
     final subpackets = [
-      KeyFlags.fromFlags(KeyFlag.certifyKeys.value | KeyFlag.signData.value),
-      PreferredSymmetricAlgorithms(symmetrics),
-      PreferredAeadAlgorithms(aeads),
+      KeyFlags.fromFlags(
+        KeyFlag.certifyKeys.value | KeyFlag.signData.value,
+      ),
+      PreferredSymmetricAlgorithms(Uint8List.fromList([
+        SymmetricAlgorithm.aes128.value,
+        SymmetricAlgorithm.aes192.value,
+        SymmetricAlgorithm.aes256.value,
+      ])),
+      PreferredAeadAlgorithms(Uint8List.fromList([
+        AeadAlgorithm.gcm.value,
+        AeadAlgorithm.ocb.value,
+        AeadAlgorithm.eax.value,
+      ])),
       PreferredHashAlgorithms(Uint8List.fromList([
         HashAlgorithm.sha256.value,
-        HashAlgorithm.sha3_256.value,
         HashAlgorithm.sha512.value,
+        HashAlgorithm.sha3_256.value,
         HashAlgorithm.sha3_512.value,
       ])),
       PreferredCompressionAlgorithms(Uint8List.fromList([
@@ -515,19 +518,32 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
         CompressionAlgorithm.zlib.value,
       ])),
       Features.fromFeatures(
-        SupportFeature.version1SEIPD.value | SupportFeature.aeadEncrypted.value | SupportFeature.version2SEIPD.value,
+        SupportFeature.seipdV1.value | SupportFeature.aead.value | SupportFeature.seipdV2.value,
       ),
     ];
     if (version == KeyVersion.v6.value) {
-      subpackets.add(PreferredAeadCiphers(Uint8List.fromList(aeads
-          .map((aead) => [
-                symmetrics[0],
-                aead,
-                symmetrics[1],
-                aead,
-              ])
-          .expand((ciphers) => ciphers)
-          .toList())));
+      subpackets.add(PreferredAeadCiphers(Uint8List.fromList([
+        ...[
+          SymmetricAlgorithm.aes128.value,
+          AeadAlgorithm.gcm.value,
+          SymmetricAlgorithm.aes128.value,
+          AeadAlgorithm.ocb.value,
+          SymmetricAlgorithm.aes128.value,
+          AeadAlgorithm.eax.value,
+        ],
+        ...[
+          SymmetricAlgorithm.aes192.value,
+          AeadAlgorithm.gcm.value,
+          SymmetricAlgorithm.aes192.value,
+          AeadAlgorithm.ocb.value,
+        ],
+        ...[
+          SymmetricAlgorithm.aes256.value,
+          AeadAlgorithm.gcm.value,
+          SymmetricAlgorithm.aes256.value,
+          AeadAlgorithm.ocb.value,
+        ],
+      ])));
     }
     return subpackets;
   }
