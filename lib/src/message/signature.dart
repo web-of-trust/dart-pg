@@ -10,7 +10,6 @@ import '../enum/armor_type.dart';
 import '../enum/hash_algorithm.dart';
 import '../message/verification.dart';
 import '../packet/base_packet.dart';
-import '../packet/packet_list.dart';
 import '../type/cleartext_message.dart';
 import '../type/key.dart';
 import '../type/literal_data.dart';

@@ -14,7 +14,6 @@ import '../common/helpers.dart';
 import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/symmetric_algorithm.dart';
 import 'base_packet.dart';
-import 'packet_list.dart';
 
 /// Implementation of the Symmetrically Encrypted Data (SED) Packet - Type 9
 /// The encrypted contents will consist of more OpenPGP packets.

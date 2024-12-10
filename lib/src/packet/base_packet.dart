@@ -17,6 +17,7 @@ export 'compressed_data.dart';
 export 'literal_data.dart';
 export 'marker.dart';
 export 'one_pass_signature.dart';
+export 'packet_list.dart';
 export 'packet_reader.dart';
 export 'padding.dart';
 export 'public_key.dart';

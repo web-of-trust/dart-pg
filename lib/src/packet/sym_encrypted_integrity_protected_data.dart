@@ -16,7 +16,6 @@ import '../enum/symmetric_algorithm.dart';
 import '../type/encrypted_data_packet.dart';
 import '../type/packet_list.dart';
 import 'base_packet.dart';
-import 'packet_list.dart';
 
 /// Symmetric Encrypted Integrity Protected Data (SEIPD) Packet - Type 18
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

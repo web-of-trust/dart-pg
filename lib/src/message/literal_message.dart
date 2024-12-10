@@ -16,7 +16,6 @@ import '../enum/symmetric_algorithm.dart';
 import '../message/base_message.dart';
 import '../packet/base_packet.dart';
 import '../packet/key/session_key.dart';
-import '../packet/packet_list.dart';
 import '../type/key.dart';
 import '../type/literal_data.dart';
 import '../type/literal_message.dart';

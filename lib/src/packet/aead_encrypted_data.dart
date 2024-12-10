@@ -12,7 +12,6 @@ import '../enum/symmetric_algorithm.dart';
 import '../type/encrypted_data_packet.dart';
 import '../type/packet_list.dart';
 import 'base_packet.dart';
-import 'packet_list.dart';
 
 /// Implementation of the Symmetrically Encrypted Authenticated Encryption with
 /// Additional Data (AEAD) Protected Data Packet - Type 20

@@ -9,7 +9,6 @@ import '../common/helpers.dart';
 import '../enum/armor_type.dart';
 import '../message/base_message.dart';
 import '../packet/base_packet.dart';
-import '../packet/packet_list.dart';
 import '../type/encrypted_data_packet.dart';
 import '../type/encrypted_message.dart';
 import '../type/packet_list.dart';

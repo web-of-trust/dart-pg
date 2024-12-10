@@ -10,7 +10,6 @@ import 'dart:typed_data';
 import '../enum/compression_algorithm.dart';
 import '../type/packet_list.dart';
 import 'base_packet.dart';
-import 'packet_list.dart';
 
 /// Implementation of the Compressed Data (COMP) Packet - Type 11
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

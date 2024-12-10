@@ -10,7 +10,6 @@ import '../common/helpers.dart';
 import '../enum/aead_algorithm.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../packet/base_packet.dart';
-import '../packet/packet_list.dart';
 import '../packet/signature/features.dart';
 import '../packet/signature/preferred_aead_ciphers.dart';
 import '../packet/signature/preferred_symmetric_algorithms.dart';

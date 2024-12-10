@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import '../common/armor.dart';
 import '../enum/armor_type.dart';
 import '../packet/base_packet.dart';
-import '../packet/packet_list.dart';
 import '../type/key.dart';
 import 'base_key.dart';
 

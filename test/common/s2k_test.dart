@@ -8,7 +8,6 @@ import 'package:dart_pg/src/enum/hash_algorithm.dart';
 import 'package:dart_pg/src/enum/s2k_type.dart';
 import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
 import 'package:dart_pg/src/packet/base_packet.dart';
-import 'package:dart_pg/src/packet/packet_list.dart';
 import 'package:test/test.dart';
 
 void main() {

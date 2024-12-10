@@ -14,7 +14,6 @@ import '../enum/key_algorithm.dart';
 import '../enum/key_type.dart';
 import '../enum/rsa_key_size.dart';
 import '../packet/base_packet.dart';
-import '../packet/packet_list.dart';
 import '../type/packet.dart';
 import '../type/private_key.dart';
 import '../type/secret_key_packet.dart';
