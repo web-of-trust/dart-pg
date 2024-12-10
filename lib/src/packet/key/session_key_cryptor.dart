@@ -11,11 +11,11 @@ import '../../type/session_key.dart';
 import '../../type/session_key_cryptor.dart';
 import 'session_key.dart';
 
-export 'session_key.dart';
 export 'ecdh_session_key_cryptor.dart';
 export 'elgamal_session_key_cryptor.dart';
 export 'montgomery_session_key_cryptor.dart';
 export 'rsa_session_key_cryptor.dart';
+export 'session_key.dart';
 
 /// Abstract session key cryptor class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
