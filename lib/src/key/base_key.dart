@@ -152,11 +152,11 @@ abstract class BaseKey implements KeyInterface {
   ]) {
     for (final signature in directSignatures) {
       final subpacket = signature.getSubpacket<PreferredAeadCiphers>();
-      if (subpacket?.isPreferred(symmetric, aead) ?? false) {
-        return true;
+      if (subpacket != null && !subpacket.isPreferred(symmetric, aead)) {
+        return false;
       }
     }
-    return false;
+    return true;
   }
 
   @override
