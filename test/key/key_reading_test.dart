@@ -1,5 +1,4 @@
 import 'package:dart_pg/src/common/armor.dart';
-import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/enum/armor_type.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
 import 'package:dart_pg/src/openpgp.dart';

@@ -1,5 +1,4 @@
 import 'package:dart_pg/dart_pg.dart';
-import 'package:dart_pg/src/common/helpers.dart';
 
 void main() {
   const passphrase = 'Ax@2bGh;SxD&"A_;El%mPIvLx_!#3Aik';

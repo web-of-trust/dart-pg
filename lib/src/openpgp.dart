@@ -21,6 +21,11 @@ import 'type/literal_message.dart';
 import 'type/packet_list.dart';
 import 'type/session_key.dart';
 
+export 'common/config.dart';
+export 'common/helpers.dart';
+export 'key/base_key.dart';
+export 'message/base_message.dart';
+
 /// Export high level API for developers.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class OpenPGP {

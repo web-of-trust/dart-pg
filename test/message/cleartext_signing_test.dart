@@ -1,4 +1,3 @@
-import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/openpgp.dart';
 import 'package:test/test.dart';
 
