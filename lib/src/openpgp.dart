@@ -6,6 +6,7 @@ library;
 
 import 'dart:typed_data';
 
+import 'common/config.dart';
 import 'common/extensions.dart';
 import 'enum/compression_algorithm.dart';
 import 'enum/ecc.dart';
@@ -15,15 +16,9 @@ import 'enum/symmetric_algorithm.dart';
 import 'key/base_key.dart';
 import 'message/base_message.dart';
 import 'type/cleartext_message.dart';
-import 'type/encrypted_message.dart';
 import 'type/key.dart';
 import 'type/literal_message.dart';
-import 'type/notation_data.dart';
 import 'type/session_key.dart';
-import 'type/signature.dart';
-import 'type/signed_cleartext_message.dart';
-import 'type/signed_message.dart';
-import 'type/verification.dart';
 
 /// Export high level API for developers.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -354,10 +349,15 @@ final class OpenPGP {
     );
   }
 
+  /// Generate a new session key object, taking the algorithm preferences
+  /// of the passed public keys into account, if any.
   static SessionKeyInterface generateSessionKey(
     final Iterable<KeyInterface> encryptionKeys, [
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm? symmetric,
   ]) {
-    return LiteralMessage.generateSessionKey(encryptionKeys, symmetric);
+    return LiteralMessage.generateSessionKey(
+      encryptionKeys,
+      symmetric ?? Config.preferredSymmetric,
+    );
   }
 }

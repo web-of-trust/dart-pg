@@ -20,13 +20,9 @@ import '../packet/packet_list.dart';
 import '../type/key.dart';
 import '../type/literal_data.dart';
 import '../type/literal_message.dart';
-import '../type/notation_data.dart';
 import '../type/packet_list.dart';
 import '../type/session_key.dart';
-import '../type/signature.dart';
 import '../type/signature_packet.dart';
-import '../type/signed_message.dart';
-import '../type/verification.dart';
 
 /// OpenPGP literal message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

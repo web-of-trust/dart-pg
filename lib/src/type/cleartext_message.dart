@@ -10,6 +10,8 @@ import 'signature.dart';
 import 'signed_cleartext_message.dart';
 import 'verification.dart';
 
+export 'signed_cleartext_message.dart';
+
 /// Cleartext message interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class CleartextMessageInterface {

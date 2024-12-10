@@ -15,6 +15,12 @@ import 'packet_container.dart';
 import 'signature.dart';
 import 'verification.dart';
 
+export 'encrypted_message.dart';
+export 'notation_data.dart';
+export 'signature.dart';
+export 'signed_message.dart';
+export 'verification.dart';
+
 /// Literal message interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract interface class LiteralMessageInterface implements ArmorableInterface, PacketContainerInterface {
