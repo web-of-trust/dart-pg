@@ -44,7 +44,9 @@ class UserAttributePacket extends BasePacket implements UserIDPacketInterface {
         ...data,
       ]);
 
-  static List<UserAttributeSubpacket> _readSubpackets(final Uint8List bytes) {
+  static List<UserAttributeSubpacket> _readSubpackets(
+    final Uint8List bytes,
+  ) {
     final attributes = <UserAttributeSubpacket>[];
     var offset = 0;
     while (offset < bytes.length) {

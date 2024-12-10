@@ -84,7 +84,8 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
         break;
       case Ecc.ed25519:
         throw UnsupportedError(
-          'Curve ${key.curve.name} is unsupported for ephemeral key generation.',
+          'Curve ${key.curve.name} '
+          'is unsupported for ephemeral key generation.',
         );
       default:
         final parameters = ECDomainParameters(
@@ -104,7 +105,9 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
           );
         sharedKey = agreement
             .calculateAgreement(ECPublicKey(
-              parameters.curve.decodePoint(key.q.toUnsignedBytes()),
+              parameters.curve.decodePoint(
+                key.q.toUnsignedBytes(),
+              ),
               parameters,
             ))
             .toUnsignedBytes();
@@ -142,7 +145,8 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
           break;
         case Ecc.ed25519:
           throw UnsupportedError(
-            'Curve ${key.publicMaterial.curve.name} is unsupported for key agreement calculation.',
+            'Curve ${key.publicMaterial.curve.name} '
+            'is unsupported for key agreement calculation.',
           );
         default:
           final parameters = ECDomainParameters(
@@ -153,13 +157,17 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
           sharedKey = agreement
               .calculateAgreement(
                 ECPublicKey(
-                  parameters.curve.decodePoint(ephemeralKey.toUnsignedBytes()),
+                  parameters.curve.decodePoint(
+                    ephemeralKey.toUnsignedBytes(),
+                  ),
                   parameters,
                 ),
               )
               .toUnsignedBytes();
       }
-      final keyWrapper = _selectKeyWrapper(key.publicMaterial.kdfSymmetric);
+      final keyWrapper = _selectKeyWrapper(
+        key.publicMaterial.kdfSymmetric,
+      );
       return _pkcs5Decode(
         keyWrapper.unwrap(
           _kdf(
@@ -172,7 +180,9 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
         ),
       );
     } else {
-      throw ArgumentError('Secret key material is not ECDH key.');
+      throw ArgumentError(
+        'Secret key material is not ECDH key.',
+      );
     }
   }
 
@@ -243,7 +253,9 @@ class ECDHSessionKeyCryptor extends SessionKeyCryptor {
     return Uint8List(0);
   }
 
-  static KeyWrapper _selectKeyWrapper(final SymmetricAlgorithm symmetric) {
+  static KeyWrapper _selectKeyWrapper(
+    final SymmetricAlgorithm symmetric,
+  ) {
     switch (symmetric) {
       case SymmetricAlgorithm.camellia128:
       case SymmetricAlgorithm.camellia192:

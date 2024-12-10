@@ -7,23 +7,12 @@ library;
 import 'dart:typed_data';
 
 import '../common/helpers.dart';
-import '../enum/aead_algorithm.dart';
-import '../enum/compression_algorithm.dart';
-import '../enum/key_flag.dart';
-import '../enum/key_version.dart';
-import '../enum/literal_format.dart';
-import '../enum/support_feature.dart';
-import '../enum/symmetric_algorithm.dart';
-import '../enum/hash_algorithm.dart';
-import '../enum/key_algorithm.dart';
-import '../enum/signature_subpacket_type.dart';
 import '../enum/signature_type.dart';
 import '../type/key.dart';
 import '../type/key_packet.dart';
 import '../type/literal_data.dart';
 import '../type/notation_data.dart';
 import '../type/signature_packet.dart';
-import '../type/signing_key_material.dart';
 import '../type/subpacket.dart';
 import '../type/user_id_packet.dart';
 import 'base_packet.dart';
@@ -113,7 +102,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     );
     pos++;
 
-    /// read hashed subpackets
+    /// Read hashed subpackets
     final hashedLength = isV6
         ? bytes
             .sublist(
@@ -133,7 +122,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     );
     pos += hashedLength;
 
-    /// read unhashed subpackets
+    /// Read unhashed subpackets
     final unhashedLength = isV6
         ? bytes
             .sublist(
@@ -197,7 +186,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       ...subpackets,
     ];
     if (version == 4) {
-      hashedSubpackets.add(NotationData.saltNotation(hashAlgorithm.saltSize));
+      hashedSubpackets.add(
+        NotationData.saltNotation(hashAlgorithm.saltSize),
+      );
     }
     final salt = version == 6
         ? Helper.randomBytes(
@@ -455,11 +446,13 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     final DateTime? time,
   ]) {
     if (!issuerKeyID.equals(verifyKey.keyID)) {
-      throw ArgumentError('Signature was not issued by the given public key.');
+      throw ArgumentError(
+        'Signature was not issued by the given public key.',
+      );
     }
     if (keyAlgorithm != verifyKey.keyAlgorithm) {
       throw ArgumentError(
-        'Public key algorithm used to sign signature does not match issuer key algorithm.',
+        'Key algorithm used to sign does not match issuer key algorithm.',
       );
     }
     if (isExpired(time)) {
@@ -478,7 +471,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
 
     final hash = Helper.hashDigest(message, hashAlgorithm);
     if (signedHashValue[0] != hash[0] || signedHashValue[1] != hash[1]) {
-      throw AssertionError('Signed digest did not match!');
+      throw AssertionError(
+        'Signed digest did not match!',
+      );
     }
 
     final keyMaterial = verifyKey.keyMaterial;
@@ -558,7 +553,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       return keyMaterial.sign(message, hash);
     } else {
       throw UnsupportedError(
-        'Unsupported public key algorithm for signing.',
+        'Unsupported key algorithm for signing.',
       );
     }
   }

@@ -61,7 +61,9 @@ class RSAPublicMaterial implements VerificationKeyMaterial {
       );
     return signer.verifySignature(
       message,
-      RSASignature(Helper.readMPI(signature).toUnsignedBytes()),
+      RSASignature(
+        Helper.readMPI(signature).toUnsignedBytes(),
+      ),
     );
   }
 }

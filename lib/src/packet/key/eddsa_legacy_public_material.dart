@@ -17,7 +17,9 @@ import 'ec_public_material.dart';
 class EdDSALegacyPublicMaterial extends ECPublicMaterial implements VerificationKeyMaterial {
   EdDSALegacyPublicMaterial(super.oid, super.q);
 
-  factory EdDSALegacyPublicMaterial.fromBytes(final Uint8List bytes) {
+  factory EdDSALegacyPublicMaterial.fromBytes(
+    final Uint8List bytes,
+  ) {
     final length = bytes[0];
     return EdDSALegacyPublicMaterial(
       ASN1ObjectIdentifier.fromBytes(Uint8List.fromList([

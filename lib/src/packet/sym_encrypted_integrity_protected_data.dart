@@ -18,7 +18,7 @@ import '../type/packet_list.dart';
 import 'base_packet.dart';
 import 'packet_list.dart';
 
-/// Implementation of the Sym. Encrypted Integrity Protected Data (SEIPD) Packet - Type 18
+/// Symmetric Encrypted Integrity Protected Data (SEIPD) Packet - Type 18
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements EncryptedDataPacketInterface {
   static const saltSize = 32;
@@ -79,7 +79,9 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
     }
   }
 
-  factory SymEncryptedIntegrityProtectedDataPacket.fromBytes(final Uint8List bytes) {
+  factory SymEncryptedIntegrityProtectedDataPacket.fromBytes(
+    final Uint8List bytes,
+  ) {
     var pos = 0;
 
     /// A one-octet version number.
@@ -296,13 +298,13 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
       processed + (forEncryption ? aead.tagLength : 0),
     );
     final cipher = aead.cipherEngine(kek, symmetric);
-    var chunkData = Uint8List.fromList(data);
-    for (var chunkIndex = 0; chunkIndex == 0 || chunkData.isNotEmpty;) {
+    var chunkData = data;
+    for (var index = 0; index == 0 || chunkData.isNotEmpty;) {
       // Take a chunk of `data`, en/decrypt it,
       // and shift `data` to the next chunk.
       final size = chunkSize < chunkData.length ? chunkSize : chunkData.length;
       crypted.setAll(
-        chunkIndex * size,
+        index * size,
         forEncryption
             ? cipher.encrypt(
                 chunkData.sublist(0, size),
@@ -317,7 +319,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
       );
 
       chunkData = chunkData.sublist(size);
-      nonce.setAll(ivLength - 4, (++chunkIndex).pack32());
+      nonce.setAll(ivLength - 4, (++index).pack32());
     }
 
     /// For encryption: empty final chunk

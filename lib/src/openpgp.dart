@@ -24,7 +24,8 @@ import 'type/session_key.dart';
 /// Export high level API for developers.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class OpenPGP {
-  /// Generate a new OpenPGP key pair. Support RSA, ECC, Curve25519 and Curve448 key types.
+  /// Generate a new OpenPGP key pair.
+  /// Support RSA, ECC, Curve25519 and Curve448 key types.
   /// The generated primary key will have signing capabilities.
   /// One subkey with encryption capabilities is also generated if `signOnly` is false.
   static PrivateKeyInterface generateKey(
@@ -34,6 +35,7 @@ final class OpenPGP {
     final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
     final int keyExpiry = 0,
+    final bool signOnly = false,
     final DateTime? time,
   }) {
     return PrivateKey.generate(
@@ -43,6 +45,7 @@ final class OpenPGP {
       rsaKeySize: rsaKeySize,
       curve: curve,
       keyExpiry: keyExpiry,
+      signOnly: signOnly,
       time: time,
     );
   }

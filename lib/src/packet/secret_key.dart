@@ -24,9 +24,7 @@ import '../enum/s2k_type.dart';
 import '../enum/s2k_usage.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../type/s2k.dart';
-import '../type/secret_key_material.dart';
-import '../type/secret_key_packet.dart';
-import '../type/subkey_packet.dart';
+import '../type/key_packet.dart';
 import 'key/public_material.dart';
 import 'key/secret_material.dart';
 import 'base_packet.dart';
@@ -116,11 +114,21 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
       KeyAlgorithm.ecdsa => ECDSASecretMaterial.generate(curve),
       KeyAlgorithm.ecdh => ECDHSecretMaterial.generate(curve),
       KeyAlgorithm.eddsaLegacy => EdDSALegacySecretMaterial.generate(),
-      KeyAlgorithm.x25519 => MontgomerySecretMaterial.generate(MontgomeryCurve.x25519),
-      KeyAlgorithm.x448 => MontgomerySecretMaterial.generate(MontgomeryCurve.x448),
-      KeyAlgorithm.ed25519 => EdDSASecretMaterial.generate(EdDSACurve.ed25519),
-      KeyAlgorithm.ed448 => EdDSASecretMaterial.generate(EdDSACurve.ed448),
-      _ => throw UnsupportedError("Key algorithm ${algorithm.name} is unsupported."),
+      KeyAlgorithm.x25519 => MontgomerySecretMaterial.generate(
+          MontgomeryCurve.x25519,
+        ),
+      KeyAlgorithm.x448 => MontgomerySecretMaterial.generate(
+          MontgomeryCurve.x448,
+        ),
+      KeyAlgorithm.ed25519 => EdDSASecretMaterial.generate(
+          EdDSACurve.ed25519,
+        ),
+      KeyAlgorithm.ed448 => EdDSASecretMaterial.generate(
+          EdDSACurve.ed448,
+        ),
+      _ => throw UnsupportedError(
+          'Key algorithm ${algorithm.name} is unsupported.',
+        ),
     };
   }
 
@@ -144,7 +152,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     );
     pos++;
 
-    // Only for a version 6 packet where the secret key material encrypted
+    /// Only for a version 6 packet where the secret key material encrypted
     if (isV6 && s2kUsage != S2kUsage.none) {
       pos++;
     }
@@ -161,7 +169,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
         );
         pos++;
 
-        // If s2k usage octet was 253, a one-octet AEAD algorithm.
+        /// If s2k usage octet was 253, a one-octet AEAD algorithm.
         if (s2kUsage == S2kUsage.aeadProtect) {
           aead = AeadAlgorithm.values.firstWhere(
             (usage) => usage.value == bytes[pos],
@@ -171,8 +179,8 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
           aead = null;
         }
 
-        // Only for a version 6 packet, and if string-to-key usage
-        // octet was 253 or 254, an one-octet count of the following field.
+        /// Only for a version 6 packet, and if string-to-key usage
+        /// octet was 253 or 254, an one-octet count of the following field.
         if (isV6 && (s2kUsage == S2kUsage.aeadProtect || s2kUsage == S2kUsage.cfb)) {
           pos++;
         }
@@ -281,14 +289,17 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     final AeadAlgorithm? aead,
   ]) {
     if (passphrase.isEmpty) {
-      throw ArgumentError('passphrase are required for key encryption');
+      throw ArgumentError(
+        'passphrase are required for key encryption',
+      );
     }
     Helper.assertSymmetric(symmetric);
     final aeadProtect = aead != null;
     final isV6 = keyVersion == KeyVersion.v6.value;
     if (aeadProtect && !isV6) {
       throw ArgumentError(
-        'Using AEAD with version $keyVersion of the key packet is not allowed.',
+        'Using AEAD with version $keyVersion '
+        'of the key packet is not allowed.',
       );
     }
     final s2k = aeadProtect || isV6

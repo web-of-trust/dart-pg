@@ -57,7 +57,9 @@ final class Signature implements SignatureInterface {
     final DateTime? time,
   ]) {
     if (verificationKeys.isEmpty) {
-      throw ArgumentError('No verification keys provided.');
+      throw ArgumentError(
+        'No verification keys provided.',
+      );
     }
     final verifications = <VerificationInterface>[];
     for (final packet in packets) {
@@ -76,16 +78,17 @@ final class Signature implements SignatureInterface {
             verificationError = error.toString();
           }
 
-          verifications.add(Verification(
+          verifications.add(
+            Verification(
               keyPacket.keyID,
               packet,
               isVerified,
               verificationError,
-              key.users
-                  .where(
-                    (user) => user.userID.isNotEmpty,
-                  )
-                  .map((user) => user.userID)));
+              key.users.where((user) => user.userID.isNotEmpty).map(
+                    (user) => user.userID,
+                  ),
+            ),
+          );
         }
       }
     }

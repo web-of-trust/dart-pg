@@ -49,12 +49,16 @@ class RSASessionKeyCryptor extends SessionKeyCryptor {
         AsymmetricBlockCipher('RSA/PKCS1')
           ..init(
             false,
-            PrivateKeyParameter<RSAPrivateKey>(key.privateKey),
+            PrivateKeyParameter<RSAPrivateKey>(
+              key.privateKey,
+            ),
           ),
         encrypted.toUnsignedBytes(),
       );
     } else {
-      throw ArgumentError('Secret key material is not RSA key.');
+      throw ArgumentError(
+        'Secret key material is not RSA key.',
+      );
     }
   }
 

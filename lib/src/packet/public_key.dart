@@ -67,7 +67,7 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
   }) parseBytes(final Uint8List bytes) {
     var pos = 0;
 
-    /// /// A one-octet version number (4 or 6).
+    /// A one-octet version number (4 or 6).
     final version = bytes[pos++];
 
     /// A four-octet number denoting the time that the key was created.
@@ -146,13 +146,15 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
         final curve = (keyMaterial as ECPublicMaterial).curve;
         if (curve == Ecc.ed25519 || curve == Ecc.curve25519) {
           throw ArgumentError(
-            'Legacy curve ${curve.name} cannot be used with v$keyVersion key packet.',
+            'Legacy curve ${curve.name} '
+            'cannot be used with v$keyVersion key packet.',
           );
         }
       }
       if (keyAlgorithm == KeyAlgorithm.dsa || keyAlgorithm == KeyAlgorithm.elgamal) {
         throw ArgumentError(
-          'Key algorithm ${keyAlgorithm.name} cannot be used with v$keyVersion key packet.',
+          'Key algorithm ${keyAlgorithm.name} '
+          'cannot be used with v$keyVersion key packet.',
         );
       }
     }
@@ -164,7 +166,8 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
       case KeyAlgorithm.elgamal:
         if (keyMaterial.keyStrength < RSAKeySize.normal.bits) {
           throw UnsupportedError(
-            'Key strength ${keyMaterial.keyStrength} of the algorithm ${keyAlgorithm.name} is unsupported.',
+            'Key strength ${keyMaterial.keyStrength} '
+            'of the algorithm ${keyAlgorithm.name} is unsupported.',
           );
         }
       default:

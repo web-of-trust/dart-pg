@@ -79,14 +79,20 @@ class PacketList extends ListBase<PacketInterface> implements PacketListInterfac
             .toList(growable: false),
       );
 
-  PacketListInterface filterByTypes([final List<PacketType> tags = const []]) {
+  PacketListInterface filterByTypes([
+    final List<PacketType> tags = const [],
+  ]) {
     if (tags.isNotEmpty) {
-      return PacketList(packets.where((packet) => tags.contains(packet.type)));
+      return PacketList(
+        packets.where((packet) => tags.contains(packet.type)),
+      );
     }
     return this;
   }
 
-  List<int> indexOfTypes([final List<PacketType> tags = const []]) {
+  List<int> indexOfTypes([
+    final List<PacketType> tags = const [],
+  ]) {
     final indexes = <int>[];
     for (var i = 0; i < packets.length; i++) {
       final packet = packets[i];

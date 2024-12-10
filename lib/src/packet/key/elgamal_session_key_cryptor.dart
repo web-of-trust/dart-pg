@@ -46,7 +46,9 @@ class ElGamalSessionKeyCryptor extends SessionKeyCryptor {
         ]),
       ));
     } else {
-      throw ArgumentError('Secret key material is not ElGamal key.');
+      throw ArgumentError(
+        'Secret key material is not ElGamal key.',
+      );
     }
   }
 

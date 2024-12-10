@@ -174,10 +174,14 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
     final Iterable<String> subkeyPassphrases = const [],
   ]) {
     if (passphrase.isEmpty) {
-      throw ArgumentError('Passphrase are required for key encryption.');
+      throw ArgumentError(
+        'Passphrase are required for key encryption.',
+      );
     }
     if (!secretKeyPacket.isDecrypted) {
-      throw AssertionError('Private key must be decrypted before encrypting.');
+      throw AssertionError(
+        'Private key must be decrypted before encrypting.',
+      );
     }
 
     final aead = aeadProtected && Config.aeadProtect ? Config.preferredAead : null;
@@ -220,7 +224,9 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
     final Iterable<String> subkeyPassphrases = const [],
   ]) {
     if (passphrase.isEmpty) {
-      throw ArgumentError('Passphrase are required for key decryption,');
+      throw ArgumentError(
+        'Passphrase are required for key decryption,',
+      );
     }
     final subkeys = this.subkeys.map((subkey) {
       final index = this.subkeys.indexOf(subkey);

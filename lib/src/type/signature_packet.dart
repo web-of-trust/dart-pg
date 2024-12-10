@@ -6,8 +6,6 @@ library;
 
 import 'dart:typed_data';
 
-import '../enum/hash_algorithm.dart';
-import '../enum/key_algorithm.dart';
 import '../enum/signature_type.dart';
 import 'key_packet.dart';
 import 'packet.dart';

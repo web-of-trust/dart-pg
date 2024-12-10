@@ -58,8 +58,12 @@ class ECDSASecretMaterial extends ECSecretMaterial implements SigningKeyMaterial
 
   @override
   get isValid {
-    final parameters = ECDomainParameters(publicMaterial.curve.name.toLowerCase());
-    final q = parameters.curve.decodePoint(publicMaterial.q.toUnsignedBytes());
+    final parameters = ECDomainParameters(
+      publicMaterial.curve.name.toLowerCase(),
+    );
+    final q = parameters.curve.decodePoint(
+      publicMaterial.q.toUnsignedBytes(),
+    );
     return q != null && !q.isInfinity && (parameters.G * d) == q;
   }
 

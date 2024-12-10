@@ -99,8 +99,12 @@ class ECDHSecretMaterial extends ECSecretMaterial implements SecretKeyMaterialIn
       case Ecc.ed25519:
         return false;
       default:
-        final parameters = ECDomainParameters(publicMaterial.curve.name.toLowerCase());
-        final q = parameters.curve.decodePoint(publicMaterial.q.toUnsignedBytes());
+        final parameters = ECDomainParameters(
+          publicMaterial.curve.name.toLowerCase(),
+        );
+        final q = parameters.curve.decodePoint(
+          publicMaterial.q.toUnsignedBytes(),
+        );
         return q != null && !q.isInfinity && (parameters.G * d) == q;
     }
   }

@@ -60,19 +60,19 @@ class DSASecretMaterial implements SigningKeyMaterialInterface {
 
   @override
   get isValid {
-    // Check that 1 < g < p
+    /// Check that 1 < g < p
     if (publicMaterial.generator.compareTo(BigInt.one) <= 0 ||
         publicMaterial.generator.compareTo(publicMaterial.prime) >= 0) {
       return false;
     }
 
-    // Check that subgroup order q divides p-1
+    /// Check that subgroup order q divides p-1
     if (((publicMaterial.prime - BigInt.one) % publicMaterial.order).sign != 0) {
       return false;
     }
 
-    // g has order q
-    // Check that g ** q = 1 mod p
+    /// g has order q
+    /// Check that g ** q = 1 mod p
     if (publicMaterial.generator
             .modPow(
               publicMaterial.order,
@@ -89,9 +89,9 @@ class DSASecretMaterial implements SigningKeyMaterialInterface {
       return false;
     }
 
-    // Re-derive public key y' = g ** x mod p
-    // Expect y == y'
-    // Blinded exponentiation computes g**{rq + x} to compare to y
+    /// Re-derive public key y' = g ** x mod p
+    /// Expect y == y'
+    /// Blinded exponentiation computes g**{rq + x} to compare to y
     final r = Helper.randomBigInt(
       BigInt.two << (qSize - 1),
       BigInt.two << qSize,

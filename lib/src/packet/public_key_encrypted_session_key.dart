@@ -48,12 +48,15 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
     }
     if (version == 6 && keyAlgorithm == KeyAlgorithm.elgamal) {
       throw ArgumentError(
-        'Key algorithm ${keyAlgorithm.name} cannot be used with version {$version} PKESK packet.',
+        'Key algorithm ${keyAlgorithm.name} '
+        'cannot be used with version {$version} PKESK packet.',
       );
     }
   }
 
-  factory PublicKeyEncryptedSessionKeyPacket.fromBytes(final Uint8List bytes) {
+  factory PublicKeyEncryptedSessionKeyPacket.fromBytes(
+    final Uint8List bytes,
+  ) {
     var pos = 0;
     final version = bytes[pos++];
 
@@ -98,7 +101,8 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
           MontgomeryCurve.x448,
         ),
       _ => throw UnsupportedError(
-          'Public key algorithm ${keyAlgorithm.name} of the PKESK packet is unsupported.',
+          'Key algorithm ${keyAlgorithm.name} '
+          'of the PKESK packet is unsupported.',
         )
     };
 
@@ -145,7 +149,8 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
           keyPacket.keyMaterial as MontgomeryPublicMaterial,
         ),
       _ => throw UnsupportedError(
-          'Public key algorithm ${keyPacket.keyAlgorithm.name} is unsupported for session key encryption.',
+          'Key algorithm ${keyPacket.keyAlgorithm.name} '
+          'is unsupported for session key encryption.',
         ),
     };
     return PublicKeyEncryptedSessionKeyPacket(

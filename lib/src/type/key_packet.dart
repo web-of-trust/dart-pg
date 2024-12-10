@@ -13,6 +13,7 @@ import 'packet.dart';
 export 'key_material.dart';
 export 'secret_key_material.dart';
 export 'secret_key_packet.dart';
+export 'signing_key_material.dart';
 export 'subkey_packet.dart';
 export 'verification_key_material.dart';
 

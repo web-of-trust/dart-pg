@@ -15,7 +15,10 @@ export 'camellia_key_wrapper.dart';
 /// An implementation of the key wrapper based on RFC 3394.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 abstract class KeyWrapper {
-  static const iv = [0xa6, 0xa6, 0xa6, 0xa6, 0xa6, 0xa6, 0xa6, 0xa6];
+  static const iv = [
+    0xa6, 0xa6, 0xa6, 0xa6, // 0 -3
+    0xa6, 0xa6, 0xa6, 0xa6
+  ];
 
   final BlockCipher cipher;
 
@@ -28,13 +31,19 @@ abstract class KeyWrapper {
     final Uint8List key,
   ) {
     if (kek.length != keySize) {
-      throw ArgumentError('Key encryption key size must be $keySize bytes.');
+      throw ArgumentError(
+        'Key encryption key size must be $keySize bytes.',
+      );
     }
     if (key.length < 16) {
-      throw ArgumentError('Key length must be at least 16 octets.');
+      throw ArgumentError(
+        'Key length must be at least 16 octets.',
+      );
     }
     if (key.length % 8 != 0) {
-      throw ArgumentError('Key length must be a multiple of 64 bits.');
+      throw ArgumentError(
+        'Key length must be a multiple of 64 bits.',
+      );
     }
 
     cipher.init(true, KeyParameter(kek));
@@ -62,13 +71,19 @@ abstract class KeyWrapper {
     final Uint8List wrappedKey,
   ) {
     if (kek.length != keySize) {
-      throw ArgumentError('Key encryption key size must be $keySize bytes.');
+      throw ArgumentError(
+        'Key encryption key size must be $keySize bytes.',
+      );
     }
     if (wrappedKey.length < 16) {
-      throw ArgumentError('Wrapped key length must be at least 16 octets.');
+      throw ArgumentError(
+        'Wrapped key length must be at least 16 octets.',
+      );
     }
     if (wrappedKey.length % 8 != 0) {
-      throw ArgumentError('Wrapped key length must be a multiple of 64 bits.');
+      throw ArgumentError(
+        'Wrapped key length must be a multiple of 64 bits.',
+      );
     }
 
     cipher.init(false, KeyParameter(kek));
@@ -89,7 +104,9 @@ abstract class KeyWrapper {
       }
     }
     if (!a.equals(Uint8List.fromList(iv))) {
-      throw AssertionError('Integrity check failed.');
+      throw AssertionError(
+        'Integrity check failed.',
+      );
     }
 
     return r;

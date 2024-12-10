@@ -27,10 +27,7 @@ final class PublicKey extends BaseKey {
   /// Read public keys from armored string
   /// Return one or multiple key objects
   static Iterable<KeyInterface> readPublicKeys(final String armored) {
-    final armor = Armor.decode(armored);
-    if (armor.type != ArmorType.publicKey) {
-      throw ArgumentError('Armored text not of public key type');
-    }
+    final armor = Armor.decode(armored).assertType(ArmorType.publicKey);
     final publicKeys = <KeyInterface>[];
     final packetList = PacketList.decode(armor.data);
     final indexes = packetList.indexOfTypes([PacketType.publicKey]);

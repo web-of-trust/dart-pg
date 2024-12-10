@@ -23,7 +23,9 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
 
   EncryptedMessage(super.packetList) {
     if (packetList.whereType<EncryptedDataPacketInterface>().isEmpty) {
-      throw AssertionError('No encrypted data in packet list.');
+      throw AssertionError(
+        'No encrypted data in packet list.',
+      );
     }
   }
 
@@ -40,7 +42,9 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
     final Iterable<String> passwords = const [],
   }) {
     if (decryptionKeys.isEmpty && passwords.isEmpty) {
-      throw ArgumentError('No decryption keys or passwords provided.');
+      throw ArgumentError(
+        'No decryption keys or passwords provided.',
+      );
     }
     final errors = <String>[];
     final sessionKeys = <SessionKeyInterface>[];
@@ -74,7 +78,9 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
     }
 
     if (sessionKeys.isEmpty) {
-      throw AssertionError('Session key decryption failed.\n${errors.join('\n')}');
+      throw AssertionError(
+        'Session key decryption failed.\n${errors.join('\n')}',
+      );
     }
     return sessionKeys.first;
   }

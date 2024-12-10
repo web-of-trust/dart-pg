@@ -73,7 +73,9 @@ class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketIn
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   ]) {
     if (!Config.allowUnauthenticated) {
-      throw AssertionError('Message is not authenticated.');
+      throw AssertionError(
+        'Message is not authenticated.',
+      );
     }
     final blockSize = symmetric.blockSize;
     final cipher = BufferedCipher(symmetric.cfbCipherEngine)

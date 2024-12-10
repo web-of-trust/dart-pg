@@ -7,10 +7,10 @@ library;
 import 'dart:typed_data';
 import 'package:pointycastle/pointycastle.dart';
 
-import 'ec_public_material.dart';
 import '../../common/helpers.dart';
 import '../../enum/hash_algorithm.dart';
 import '../../enum/symmetric_algorithm.dart';
+import 'ec_public_material.dart';
 
 /// ECDH public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

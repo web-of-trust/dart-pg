@@ -81,7 +81,9 @@ class MontgomerySessionKeyCryptor extends SessionKeyCryptor {
         wrappedKey,
       );
     } else {
-      throw ArgumentError('Secret key material is not Montgomery key.');
+      throw ArgumentError(
+        'Secret key material is not Montgomery key.',
+      );
     }
   }
 

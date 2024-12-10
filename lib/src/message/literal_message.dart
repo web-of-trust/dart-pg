@@ -29,7 +29,9 @@ import '../type/signature_packet.dart';
 final class LiteralMessage extends BaseMessage implements LiteralMessageInterface, SignedMessageInterface {
   LiteralMessage(super.packetList) {
     if (_unwrapCompressed().whereType<LiteralDataInterface>().isEmpty) {
-      throw AssertionError('No literal data in packet list.');
+      throw AssertionError(
+        'No literal data in packet list.',
+      );
     }
   }
 
@@ -64,11 +66,15 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     for (final key in encryptionKeys) {
       if (key.aeadSupported) {
         if (!key.isPreferredAeadCiphers(symmetric, aead)) {
-          throw AssertionError('Symmetric and aead not compatible with the given `encryptionKeys`');
+          throw AssertionError(
+            'Aead ciphers not compatible with the given `encryptionKeys`',
+          );
         }
       } else {
         if (key.preferredSymmetrics.isNotEmpty && !key.preferredSymmetrics.contains(symmetric)) {
-          throw AssertionError('Symmetric not compatible with the given `encryptionKeys`');
+          throw AssertionError(
+            'Symmetric not compatible with the given `encryptionKeys`',
+          );
         }
         aeadProtect = false;
       }
@@ -86,7 +92,9 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     final Iterable<String> passwords = const [],
   }) {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
-      throw ArgumentError('No encryption keys or passwords provided.');
+      throw ArgumentError(
+        'No encryption keys or passwords provided.',
+      );
     }
     return PacketList([
       ...encryptionKeys.map(
@@ -137,7 +145,9 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     final SymmetricAlgorithm? symmetric,
   }) {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
-      throw ArgumentError('No encryption keys or passwords provided.');
+      throw ArgumentError(
+        'No encryption keys or passwords provided.',
+      );
     }
     var addPadding = Config.presetRfc == PresetRfc.rfc9580;
     for (final key in encryptionKeys) {
@@ -194,6 +204,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
       ).packets,
     ];
     var index = 0;
+    /// innermost OPS refers to the first signature packet
     final opsPackets = signaturePackets
         .map((packet) {
           return OnePassSignaturePacket.fromSignature(
@@ -202,7 +213,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
           );
         })
         .toList()
-        .reversed; // innermost OPS refers to the first signature packet
+        .reversed;
 
     return LiteralMessage(PacketList([
       ...opsPackets,

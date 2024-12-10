@@ -49,7 +49,7 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
     final packetVersion = bytes[pos++];
     if (packetVersion != version) {
       throw UnsupportedError(
-        'Version $packetVersion of the AEAD-encrypted data packet is unsupported.',
+        'Version $packetVersion of the AEAD packet is unsupported.',
       );
     }
 
@@ -175,13 +175,13 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
       processed + (forEncryption ? aead.tagLength : 0),
     );
     var chunkData = data;
-    for (var chunkIndex = 0; chunkIndex == 0 || chunkData.isNotEmpty;) {
+    for (var index = 0; index == 0 || chunkData.isNotEmpty;) {
       /// We take a chunk of data, en/decrypt it,
       /// and shift `data` to the next chunk.
       final chunkIndexData = adataBuffer.sublist(5, 13);
       final size = chunkSize < chunkData.length ? chunkSize : chunkData.length;
       crypted.setAll(
-        chunkIndex * size,
+        index * size,
         forEncryption
             ? cipher.encrypt(
                 chunkData.sublist(0, size),
@@ -196,7 +196,7 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
       );
 
       chunkData = chunkData.sublist(size);
-      adataBuffer.setAll(9, (++chunkIndex).pack32());
+      adataBuffer.setAll(9, (++index).pack32());
     }
 
     /// After the final chunk, we either encrypt a final, empty data

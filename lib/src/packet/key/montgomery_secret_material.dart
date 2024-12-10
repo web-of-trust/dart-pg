@@ -32,7 +32,9 @@ class MontgomerySecretMaterial implements SecretKeyMaterialInterface {
         publicMaterial,
       );
 
-  factory MontgomerySecretMaterial.generate(final MontgomeryCurve curve) {
+  factory MontgomerySecretMaterial.generate(
+    final MontgomeryCurve curve,
+  ) {
     final secretKey = _generateSecretKey(curve);
     final publicKey = switch (curve) {
       MontgomeryCurve.x25519 => PrivateKey(
@@ -75,11 +77,16 @@ class MontgomerySecretMaterial implements SecretKeyMaterialInterface {
           secretKey,
           publicKey,
         ),
-      MontgomeryCurve.x448 => X448.scalarMult(secretKey, publicKey),
+      MontgomeryCurve.x448 => X448.scalarMult(
+          secretKey,
+          publicKey,
+        ),
     };
   }
 
-  static Uint8List _generateSecretKey(final MontgomeryCurve curve) {
+  static Uint8List _generateSecretKey(
+    final MontgomeryCurve curve,
+  ) {
     final payloadSize = curve.payloadSize;
     final key = Helper.randomBytes(payloadSize);
     switch (curve) {
