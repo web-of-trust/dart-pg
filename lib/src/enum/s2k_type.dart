@@ -1,29 +1,27 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
 
-/// A string to key specifier type
+library;
+
+/// String to key specifier types enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum S2kType {
   simple(0),
   salted(1),
   iterated(3),
+  argon2(4),
   gnu(101);
 
   final int value;
 
   const S2kType(this.value);
 
-  int get length {
-    switch (this) {
-      case simple:
-        return 2;
-      case salted:
-        return 10;
-      case iterated:
-        return 11;
-      case gnu:
-        return 6;
-    }
-  }
+  int get length => switch (this) {
+        simple => 2,
+        salted => 10,
+        iterated => 11,
+        argon2 => 20,
+        gnu => 6,
+      };
 }

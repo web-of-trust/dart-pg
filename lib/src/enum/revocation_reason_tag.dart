@@ -1,9 +1,10 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
 
-/// Reason for Revocation
-/// See https://tools.ietf.org/html/rfc4880#section-5.2.3.23
+library;
+
+/// Reason for revocation enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum RevocationReasonTag {
   /// No reason specified (key revocations or cert revocations)

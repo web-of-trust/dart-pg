@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/packet/key/aes_key_wrap.dart';
-import 'package:dart_pg/src/helpers.dart';
-import 'package:dart_pg/src/packet/key/camellia_key_wrap.dart';
+import 'package:dart_pg/src/common/helpers.dart';
+import 'package:dart_pg/src/packet/key/key_wrapper.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -77,7 +76,7 @@ void main() {
     ]);
 
     test('aes 128-bit test', () async {
-      final aes = AesKeyWrap(16);
+      final aes = AesKeyWrapper(16);
 
       final wrappedKey128128 = Uint8List.fromList([
         0x1f,
@@ -105,21 +104,21 @@ void main() {
         0xcf,
         0xe5,
       ]);
-      final wrappedKey128 = await aes.wrap(key128, keyData128);
-      final unwrappedKey128 = await aes.unwrap(key128, wrappedKey128);
+      final wrappedKey128 = aes.wrap(key128, keyData128);
+      final unwrappedKey128 = aes.unwrap(key128, wrappedKey128);
 
       expect(wrappedKey128, equals(wrappedKey128128));
       expect(unwrappedKey128, equals(keyData128));
 
-      final key = Helper.secureRandom().nextBytes(16);
-      final keyData = Helper.secureRandom().nextBytes(32);
-      final wrappedKey = await aes.wrap(key, keyData);
-      final unwrappedKey = await aes.unwrap(key, wrappedKey);
+      final key = Helper.randomBytes(16);
+      final keyData = Helper.randomBytes(32);
+      final wrappedKey = aes.wrap(key, keyData);
+      final unwrappedKey = aes.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
     test('aes 192-bit test', () async {
-      final aes = AesKeyWrap(24);
+      final aes = AesKeyWrapper(24);
       final wrappedKey128192 = Uint8List.fromList([
         0x96,
         0x77,
@@ -181,25 +180,25 @@ void main() {
         0xd2
       ]);
 
-      final wrappedKey128 = await aes.wrap(key192, keyData128);
-      final unwrappedKey128 = await aes.unwrap(key192, wrappedKey128);
+      final wrappedKey128 = aes.wrap(key192, keyData128);
+      final unwrappedKey128 = aes.unwrap(key192, wrappedKey128);
       expect(wrappedKey128, equals(wrappedKey128192));
       expect(unwrappedKey128, equals(keyData128));
 
-      final wrappedKey192 = await aes.wrap(key192, keyData192);
-      final unwrappedKey192 = await aes.unwrap(key192, wrappedKey192);
+      final wrappedKey192 = aes.wrap(key192, keyData192);
+      final unwrappedKey192 = aes.unwrap(key192, wrappedKey192);
       expect(wrappedKey192, equals(wrappedKey192192));
       expect(unwrappedKey192, equals(keyData192));
 
-      final key = Helper.secureRandom().nextBytes(24);
-      final keyData = Helper.secureRandom().nextBytes(32);
-      final wrappedKey = await aes.wrap(key, keyData);
-      final unwrappedKey = await aes.unwrap(key, wrappedKey);
+      final key = Helper.randomBytes(24);
+      final keyData = Helper.randomBytes(32);
+      final wrappedKey = aes.wrap(key, keyData);
+      final unwrappedKey = aes.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
     test('aes 256-bit test', () async {
-      final aes = AesKeyWrap(32);
+      final aes = AesKeyWrapper(32);
       final wrappedKey128256 = Uint8List.fromList([
         0x64,
         0xe8,
@@ -303,79 +302,79 @@ void main() {
         0x21,
       ]);
 
-      final wrappedKey128 = await aes.wrap(key256, keyData128);
-      final unwrappedKey128 = await aes.unwrap(key256, wrappedKey128);
+      final wrappedKey128 = aes.wrap(key256, keyData128);
+      final unwrappedKey128 = aes.unwrap(key256, wrappedKey128);
       expect(wrappedKey128, equals(wrappedKey128256));
       expect(unwrappedKey128, equals(keyData128));
 
-      final wrappedKey192 = await aes.wrap(key256, keyData192);
-      final unwrappedKey192 = await aes.unwrap(key256, wrappedKey192);
+      final wrappedKey192 = aes.wrap(key256, keyData192);
+      final unwrappedKey192 = aes.unwrap(key256, wrappedKey192);
       expect(wrappedKey192, equals(wrappedKey192256));
       expect(unwrappedKey192, equals(keyData192));
 
-      final wrappedKey256 = await aes.wrap(key256, keyData256);
-      final unwrappedKey256 = await aes.unwrap(key256, wrappedKey256);
+      final wrappedKey256 = aes.wrap(key256, keyData256);
+      final unwrappedKey256 = aes.unwrap(key256, wrappedKey256);
       expect(wrappedKey256, equals(wrappedKey256256));
       expect(unwrappedKey256, equals(keyData256));
 
-      final key = Helper.secureRandom().nextBytes(32);
-      final keyData = Helper.secureRandom().nextBytes(32);
-      final wrappedKey = await aes.wrap(key, keyData);
-      final unwrappedKey = await aes.unwrap(key, wrappedKey);
+      final key = Helper.randomBytes(32);
+      final keyData = Helper.randomBytes(32);
+      final wrappedKey = aes.wrap(key, keyData);
+      final unwrappedKey = aes.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
     test('camellia 128-bit test', () async {
-      final camellia = CamelliaKeyWrap(16);
+      final camellia = CamelliaKeyWrapper(16);
 
-      final wrappedKey128 = await camellia.wrap(key128, keyData128);
-      final unwrappedKey128 = await camellia.unwrap(key128, wrappedKey128);
+      final wrappedKey128 = camellia.wrap(key128, keyData128);
+      final unwrappedKey128 = camellia.unwrap(key128, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
 
-      final key = Helper.secureRandom().nextBytes(16);
-      final keyData = Helper.secureRandom().nextBytes(32);
-      final wrappedKey = await camellia.wrap(key, keyData);
-      final unwrappedKey = await camellia.unwrap(key, wrappedKey);
+      final key = Helper.randomBytes(16);
+      final keyData = Helper.randomBytes(32);
+      final wrappedKey = camellia.wrap(key, keyData);
+      final unwrappedKey = camellia.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
     test('camellia 192-bit test', () async {
-      final camellia = CamelliaKeyWrap(24);
+      final camellia = CamelliaKeyWrapper(24);
 
-      final wrappedKey128 = await camellia.wrap(key192, keyData128);
-      final unwrappedKey128 = await camellia.unwrap(key192, wrappedKey128);
+      final wrappedKey128 = camellia.wrap(key192, keyData128);
+      final unwrappedKey128 = camellia.unwrap(key192, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
 
-      final wrappedKey192 = await camellia.wrap(key192, keyData192);
-      final unwrappedKey192 = await camellia.unwrap(key192, wrappedKey192);
+      final wrappedKey192 = camellia.wrap(key192, keyData192);
+      final unwrappedKey192 = camellia.unwrap(key192, wrappedKey192);
       expect(unwrappedKey192, equals(keyData192));
 
-      final key = Helper.secureRandom().nextBytes(24);
-      final keyData = Helper.secureRandom().nextBytes(32);
-      final wrappedKey = await camellia.wrap(key, keyData);
-      final unwrappedKey = await camellia.unwrap(key, wrappedKey);
+      final key = Helper.randomBytes(24);
+      final keyData = Helper.randomBytes(32);
+      final wrappedKey = camellia.wrap(key, keyData);
+      final unwrappedKey = camellia.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
 
     test('camellia 256-bit test', () async {
-      final camellia = CamelliaKeyWrap(32);
+      final camellia = CamelliaKeyWrapper(32);
 
-      final wrappedKey128 = await camellia.wrap(key256, keyData128);
-      final unwrappedKey128 = await camellia.unwrap(key256, wrappedKey128);
+      final wrappedKey128 = camellia.wrap(key256, keyData128);
+      final unwrappedKey128 = camellia.unwrap(key256, wrappedKey128);
       expect(unwrappedKey128, equals(keyData128));
 
-      final wrappedKey192 = await camellia.wrap(key256, keyData192);
-      final unwrappedKey192 = await camellia.unwrap(key256, wrappedKey192);
+      final wrappedKey192 = camellia.wrap(key256, keyData192);
+      final unwrappedKey192 = camellia.unwrap(key256, wrappedKey192);
       expect(unwrappedKey192, equals(keyData192));
 
-      final wrappedKey256 = await camellia.wrap(key256, keyData256);
-      final unwrappedKey256 = await camellia.unwrap(key256, wrappedKey256);
+      final wrappedKey256 = camellia.wrap(key256, keyData256);
+      final unwrappedKey256 = camellia.unwrap(key256, wrappedKey256);
       expect(unwrappedKey256, equals(keyData256));
 
-      final key = Helper.secureRandom().nextBytes(32);
-      final keyData = Helper.secureRandom().nextBytes(32);
-      final wrappedKey = await camellia.wrap(key, keyData);
-      final unwrappedKey = await camellia.unwrap(key, wrappedKey);
+      final key = Helper.randomBytes(32);
+      final keyData = Helper.randomBytes(32);
+      final wrappedKey = camellia.wrap(key, keyData);
+      final unwrappedKey = camellia.unwrap(key, wrappedKey);
       expect(unwrappedKey, equals(keyData));
     });
   });

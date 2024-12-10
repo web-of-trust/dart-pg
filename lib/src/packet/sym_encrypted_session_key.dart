@@ -1,49 +1,40 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
-
 import 'package:pointycastle/api.dart';
 
-import '../crypto/symmetric/base_cipher.dart';
+import '../common/argon2_s2k.dart';
+import '../common/generic_s2k.dart';
+import '../common/helpers.dart';
+import '../cryptor/symmetric/buffered_cipher.dart';
 import '../enum/aead_algorithm.dart';
-import '../enum/hash_algorithm.dart';
-import '../enum/packet_tag.dart';
 import '../enum/s2k_type.dart';
 import '../enum/symmetric_algorithm.dart';
-import '../helpers.dart';
-import 'key/s2k.dart';
-import 'contained_packet.dart';
+import '../type/s2k.dart';
+import '../type/session_key.dart';
+import 'base_packet.dart';
 import 'key/session_key.dart';
 
-/// SymEncryptedSessionKey represents a Symmetric-Key Encrypted Session Key packet.
-///
-/// See RFC 4880, section 5.3.
-/// The Symmetric-Key Encrypted Session Key packet holds the
-/// symmetric-key encryption of a session key used to encrypt a message.
-/// Zero or more Public-Key Encrypted Session Key packets and/or
-/// Symmetric-Key Encrypted Session Key packets may precede a
-/// Symmetrically Encrypted Data packet that holds an encrypted message.
-/// The message is encrypted with a session key, and the session key is
-/// itself encrypted and stored in the Encrypted Session Key packet or
-/// the Symmetric-Key Encrypted Session Key packet.
+/// Implementation of the Symmetric Key Encrypted Session Key (SKESK) Packet - Type 3
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SymEncryptedSessionKeyPacket extends ContainedPacket {
+class SymEncryptedSessionKeyPacket extends BasePacket {
   final int version;
 
   final SymmetricAlgorithm symmetric;
 
   final AeadAlgorithm? aead;
 
-  final S2K s2k;
+  final S2kInterface s2k;
 
   final Uint8List iv;
 
   final Uint8List encrypted;
 
-  /// Session key
-  final SessionKey? sessionKey;
+  final SessionKeyInterface? sessionKey;
 
   bool get isDecrypted => sessionKey != null;
 
@@ -55,17 +46,32 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     this.symmetric = SymmetricAlgorithm.aes128,
     this.aead,
     this.sessionKey,
-  }) : super(PacketTag.symEncryptedSessionKey);
+  }) : super(PacketType.symEncryptedSessionKey) {
+    if (version != 4 && version != 5 && version != 6) {
+      throw UnsupportedError(
+        'Version $version of the SKESK packet is unsupported.',
+      );
+    }
+    if (version == 6) {
+      Helper.assertSymmetric(symmetric);
+    }
+    if (aead != null && version < 5) {
+      throw ArgumentError(
+        'Using AEAD with version $version SKESK packet is not allowed.',
+      );
+    }
+  }
 
-  factory SymEncryptedSessionKeyPacket.fromByteData(final Uint8List bytes) {
+  factory SymEncryptedSessionKeyPacket.fromBytes(final Uint8List bytes) {
     var pos = 0;
 
     /// A one-octet version number.
     final version = bytes[pos++];
-    if (version != 4 && version != 5) {
-      throw UnsupportedError(
-        'Version $version of the SKESK packet is unsupported.',
-      );
+    final isV6 = version == 6;
+
+    if (isV6) {
+      /// A one-octet scalar octet count of the following 5 fields.
+      pos++;
     }
 
     /// A one-octet number describing the symmetric algorithm used.
@@ -76,52 +82,65 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
 
     final int ivLength;
     final AeadAlgorithm? aead;
-    if (version == 5) {
+    if (version >= 5) {
       /// A one-octet number describing the aead algorithm used.
       aead = AeadAlgorithm.values.firstWhere(
         (algo) => algo.value == bytes[pos],
       );
       ivLength = aead.ivLength;
       pos++;
+      if (isV6) {
+        // A one-octet scalar octet count of the following field.
+        pos++;
+      }
     } else {
       ivLength = 0;
       aead = null;
     }
 
     /// A string-to-key (S2K) specifier, length as defined above.
-    final s2k = S2K.fromByteData(bytes.sublist(pos));
+    final s2kType = S2kType.values.firstWhere(
+      (type) => type.value == bytes[pos],
+    );
+    final s2k = switch (s2kType) {
+      S2kType.argon2 => Argon2S2k.fromBytes(bytes.sublist(pos)),
+      _ => GenericS2k.fromBytes(bytes.sublist(pos)),
+    };
     pos += s2k.length;
 
     /// A starting initialization vector of size specified by the AEAD algorithm.
     final iv = bytes.sublist(pos, pos + ivLength);
     pos += ivLength;
-    final encrypted = bytes.sublist(pos);
 
     return SymEncryptedSessionKeyPacket(
       version,
       s2k,
       iv,
-      encrypted,
+      bytes.sublist(pos),
       symmetric: symmetric,
       aead: aead,
     );
   }
 
-  static Future<SymEncryptedSessionKeyPacket> encryptSessionKey(
+  factory SymEncryptedSessionKeyPacket.encryptSessionKey(
     final String password, {
-    final SessionKey? sessionKey,
+    final SessionKeyInterface? sessionKey,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final AeadAlgorithm aead = AeadAlgorithm.ocb,
-    final bool aeadProtect = false,
-  }) async {
-    final version = aeadProtect && sessionKey != null ? 5 : 4;
-    final s2k = S2K(
-      Helper.secureRandom().nextBytes(S2K.saltLength),
-      hash: HashAlgorithm.sha256,
-      type: S2kType.iterated,
-    );
+    final AeadAlgorithm? aead,
+  }) {
+    Helper.assertSymmetric(symmetric);
 
-    final key = await s2k.produceKey(
+    final aeadProtect = aead != null;
+    final version = aeadProtect && sessionKey != null ? 6 : 4;
+    final s2k = version == 6
+        ? Helper.stringToKey(
+            S2kType.argon2,
+          )
+        : Helper.stringToKey(
+            S2kType.iterated,
+          );
+
+    final key = s2k.produceKey(
       password,
       symmetric.keySizeInByte,
     );
@@ -131,14 +150,17 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     if (sessionKey != null) {
       if (aeadProtect) {
         final adata = Uint8List.fromList([
-          0xC0 | PacketTag.symEncryptedSessionKey.value,
+          0xc0 | PacketType.symEncryptedSessionKey.value,
           version,
           symmetric.value,
           aead.value,
         ]);
-        iv = Helper.secureRandom().nextBytes(aead.ivLength);
-        final cipher = aead.cipherEngine(key, symmetric);
-        encrypted = cipher.encrypt(sessionKey.key, iv, adata);
+
+        final kek = Helper.hkdf(key, symmetric.keySizeInByte, info: adata);
+
+        iv = Helper.randomBytes(aead.ivLength);
+        final cipher = aead.cipherEngine(kek, symmetric);
+        encrypted = cipher.encrypt(sessionKey.encryptionKey, iv, adata);
       } else {
         final cipher = BufferedCipher(
           symmetric.cfbCipherEngine,
@@ -150,7 +172,7 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
             ),
           );
         iv = Uint8List(0);
-        encrypted = cipher.process(sessionKey.encode());
+        encrypted = cipher.process(sessionKey.toBytes());
       }
     } else {
       iv = Uint8List(0);
@@ -168,25 +190,34 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
     );
   }
 
-  Future<SymEncryptedSessionKeyPacket> decrypt(final String password) async {
+  SymEncryptedSessionKeyPacket decrypt(final String password) {
     if (isDecrypted) {
       return this;
     } else {
-      final key = await s2k.produceKey(
+      final key = s2k.produceKey(
         password,
         symmetric.keySizeInByte,
       );
 
       final SessionKey sessionKey;
       if (encrypted.isNotEmpty) {
-        if (version == 5) {
+        if (aead != null) {
           final adata = Uint8List.fromList([
-            0xC0 | tag.value,
+            0xC0 | type.value,
             version,
             symmetric.value,
             aead!.value,
           ]);
-          final cipher = aead!.cipherEngine(key, symmetric);
+
+          final Uint8List kek = version == 6
+              ? Helper.hkdf(
+                  key,
+                  symmetric.keySizeInByte,
+                  info: adata,
+                )
+              : key;
+
+          final cipher = aead!.cipherEngine(kek, symmetric);
           final decrypted = cipher.decrypt(encrypted, iv, adata);
           sessionKey = SessionKey(decrypted, symmetric);
         } else {
@@ -215,20 +246,21 @@ class SymEncryptedSessionKeyPacket extends ContainedPacket {
         iv,
         encrypted,
         symmetric: symmetric,
+        aead: aead,
         sessionKey: sessionKey,
       );
     }
   }
 
   @override
-  Uint8List toByteData() {
-    return Uint8List.fromList([
-      version,
-      symmetric.value,
-      ...aead != null ? [aead!.value] : [],
-      ...s2k.encode(),
-      ...iv,
-      ...encrypted,
-    ]);
-  }
+  get data => Uint8List.fromList([
+        version,
+        ...version == 6 ? [3 + s2k.length + iv.length] : [],
+        symmetric.value,
+        ...aead != null ? [aead!.value] : [],
+        ...version == 6 ? [s2k.length] : [],
+        ...s2k.toBytes,
+        ...iv,
+        ...encrypted,
+      ]);
 }

@@ -1,117 +1,50 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
 
-import '../packet/packet_list.dart';
-import '../packet/signature_packet.dart';
-import '../packet/user_attribute.dart';
-import '../packet/user_id.dart';
+library;
+
 import 'key.dart';
+import 'packet_container.dart';
+import 'signature_packet.dart';
+import 'user_id_packet.dart';
 
-/// Class that represents an user ID and the relevant signatures.
+/// OpenPGP user interface
+/// That represents an user ID or attribute packet and the relevant signatures.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class User {
-  final Key? mainKey;
+abstract interface class UserInterface implements PacketContainerInterface {
+  /// Get main key
+  KeyInterface get mainKey;
 
-  final UserIDPacket? userID;
+  /// Get user ID packet
+  UserIDPacketInterface get userIDPacket;
 
-  final UserAttributePacket? userAttribute;
+  /// Get user ID
+  String get userID;
 
-  final List<SignaturePacket> selfCertifications;
+  /// Return user is primary
+  bool get isPrimary;
 
-  final List<SignaturePacket> otherCertifications;
+  /// Get revocation signatures
+  List<SignaturePacketInterface> get revocationSignatures;
 
-  final List<SignaturePacket> revocationSignatures;
+  /// Get self signatures
+  List<SignaturePacketInterface> get selfSignatures;
 
-  User({
-    this.mainKey,
-    this.userID,
-    this.userAttribute,
-    this.selfCertifications = const [],
-    this.otherCertifications = const [],
-    this.revocationSignatures = const [],
+  /// Get other signatures
+  List<SignaturePacketInterface> get otherSignatures;
+
+  /// Check if a given certificate of the user is revoked
+  bool isRevoked([final DateTime? time]);
+
+  /// Check if the key is certified
+  bool isCertified(
+    final KeyInterface verifyKey, {
+    final SignaturePacketInterface? certificate,
+    final DateTime? time,
   });
 
-  /// Checks if a given certificate of the user is revoked
-  Future<bool> isRevoked({
-    final SignaturePacket? signature,
-    final DateTime? date,
-  }) async {
-    if (mainKey != null && revocationSignatures.isNotEmpty) {
-      final revocationKeyIDs = <String>[];
-      for (var revocation in revocationSignatures) {
-        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
-          if (await revocation.verifyUserCertification(
-            mainKey!.keyPacket,
-            userID: userID,
-            userAttribute: userAttribute,
-            date: date,
-          )) {
-            return true;
-          }
-        }
-        revocationKeyIDs.add(revocation.issuerKeyID.id);
-      }
-      return revocationKeyIDs.isNotEmpty;
-    }
-    return false;
-  }
-
-  Future<bool> verify({
-    final DateTime? date,
-  }) async {
-    if (await isRevoked(date: date)) {
-      return false;
-    }
-    if (mainKey != null) {
-      for (final signature in selfCertifications) {
-        if (!await signature.verifyUserCertification(
-          mainKey!.keyPacket,
-          userID: userID,
-          userAttribute: userAttribute,
-          date: date,
-        )) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  /// Generate third-party certifications over this user and its primary key
-  /// return new user with new certifications.
-  Future<User> certify(
-    List<PrivateKey> signingKeys, {
-    final DateTime? date,
-  }) async {
-    if (signingKeys.isNotEmpty) {
-      return User(
-        mainKey: mainKey,
-        userID: userID,
-        userAttribute: userAttribute,
-        selfCertifications: selfCertifications,
-        otherCertifications: await Future.wait(
-          signingKeys.map(
-            (key) async => SignaturePacket.createCertifySignature(
-              await key.getSigningKeyPacket(date: date),
-              userID: userID,
-              userAttribute: userAttribute,
-              date: date,
-            ),
-          ),
-        ),
-        revocationSignatures: revocationSignatures,
-      );
-    }
-    return this;
-  }
-
-  PacketList toPacketList() {
-    return PacketList([
-      userID ?? userAttribute!,
-      ...revocationSignatures,
-      ...selfCertifications,
-      ...otherCertifications,
-    ]);
-  }
+  /// Verify user.
+  /// Check for existence and validity of self signature.
+  bool verify([final DateTime? time]);
 }

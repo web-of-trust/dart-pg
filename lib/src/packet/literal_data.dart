@@ -1,45 +1,49 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../crypto/math/byte_ext.dart';
+import '../common/helpers.dart';
 import '../enum/literal_format.dart';
-import '../enum/packet_tag.dart';
-import '../helpers.dart';
-import 'contained_packet.dart';
+import '../type/literal_data.dart';
+import 'base_packet.dart';
 
-/// Implementation of the Literal Data Packet (Tag 11)
-///
-/// See RFC 4880, section 5.9.
-/// A Literal Data packet contains the body of a message; data that is not to be further interpreted.
+/// Implementation of the Literal Data (LIT) Packet - Type 11
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class LiteralDataPacket extends ContainedPacket {
+class LiteralDataPacket extends BasePacket implements LiteralDataInterface {
+  @override
   final LiteralFormat format;
 
+  @override
   final DateTime time;
 
-  final Uint8List data;
+  @override
+  final Uint8List binary;
 
+  @override
   final String text;
 
+  @override
   final String filename;
 
   LiteralDataPacket(
-    this.data, {
-    this.format = LiteralFormat.utf8,
+    this.binary, {
+    this.format = LiteralFormat.binary,
     final DateTime? time,
     this.text = '',
     this.filename = '',
   })  : time = time ?? DateTime.now(),
-        super(PacketTag.literalData);
+        super(PacketType.literalData);
 
-  factory LiteralDataPacket.fromByteData(final Uint8List bytes) {
+  factory LiteralDataPacket.fromBytes(final Uint8List bytes) {
     var pos = 0;
-    final format =
-        LiteralFormat.values.firstWhere((format) => format.value == bytes[pos]);
+    final format = LiteralFormat.values.firstWhere(
+      (format) => format.value == bytes[pos],
+    );
     pos++;
     final length = bytes[pos++];
     final filename = utf8.decode(bytes.sublist(pos, pos + length));
@@ -49,9 +53,10 @@ class LiteralDataPacket extends ContainedPacket {
 
     pos += 4;
     final data = bytes.sublist(pos);
-    final text = (format == LiteralFormat.text || format == LiteralFormat.utf8)
-        ? utf8.decode(data)
-        : '';
+    final text = switch (format) {
+      LiteralFormat.text || LiteralFormat.utf8 => utf8.decode(data),
+      _ => '',
+    };
 
     return LiteralDataPacket(
       data,
@@ -74,21 +79,27 @@ class LiteralDataPacket extends ContainedPacket {
       );
 
   @override
-  Uint8List toByteData() {
-    return Uint8List.fromList([
-      format.value,
-      filename.length,
-      ...filename.stringToBytes(),
-      ...time.toBytes(),
-      ...writeForSign(),
-    ]);
-  }
+  get data => Uint8List.fromList([
+        ...header,
+        ...signBytes,
+      ]);
 
-  Uint8List writeForSign() {
-    return data.isNotEmpty
-        ? data
-        : text
-            .replaceAll(RegExp(r'\r?\n', multiLine: true), '\r\n')
-            .stringToBytes();
-  }
+  @override
+  get signBytes => binary.isNotEmpty
+      ? binary
+      : text
+          .removeTrailingSpaces()
+          .replaceAll(
+            RegExp(r'\r?\n', multiLine: true),
+            '\r\n',
+          )
+          .toBytes();
+
+  @override
+  get header => Uint8List.fromList([
+        format.value,
+        filename.length,
+        ...filename.toBytes(),
+        ...time.toBytes(),
+      ]);
 }

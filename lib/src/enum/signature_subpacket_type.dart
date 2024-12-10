@@ -1,8 +1,10 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
 
-/// Signature subpacket type
+library;
+
+/// Signature subpacket types enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum SignatureSubpacketType {
   signatureCreationTime(2),
@@ -32,7 +34,9 @@ enum SignatureSubpacketType {
   issuerFingerprint(33),
   preferredAeadAlgorithms(34),
   intendedRecipientFingerprint(35),
-  attestedCertifications(37);
+  attestedCertifications(37),
+  keyBlock(38),
+  preferredAeadCiphers(39);
 
   final int value;
 

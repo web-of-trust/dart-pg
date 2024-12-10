@@ -1,184 +1,220 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
-import '../crypto/asymmetric/elgamal.dart';
+import '../type/key_packet.dart';
 import '../enum/key_algorithm.dart';
-import '../enum/packet_tag.dart';
-import '../helpers.dart';
-import 'contained_packet.dart';
-import 'key/key_id.dart';
-import 'key/key_params.dart';
-import 'key/session_key.dart';
-import 'key/session_key_params.dart';
-import 'key_packet.dart';
+import '../enum/montgomery_curve.dart';
+import '../type/session_key.dart';
+import '../type/session_key_cryptor.dart';
+import 'base_packet.dart';
+import 'key/public_material.dart';
+import 'key/session_key_cryptor.dart';
 
-/// PublicKeyEncryptedSessionKey represents a Public-Key Encrypted Session Key packet.
-///
-/// See RFC 4880, section 5.1.
-/// A Public-Key Encrypted Session Key packet holds the session key used to encrypt a message.
-/// Zero or more Public-Key Encrypted Session Key packets and/or Symmetric-Key Encrypted Session Key
-/// packets may precede a Symmetrically Encrypted Data Packet, which holds an encrypted message.
-/// The message is encrypted with the session key, and the session key is itself
-/// encrypted and stored in the Encrypted Session Key packet(s).
-/// The Symmetrically Encrypted Data Packet is preceded by one Public-Key Encrypted
-/// Session Key packet for each OpenPGP key to which the message is encrypted.
-/// The recipient of the message finds a session key that is encrypted to their public key,
-/// decrypts the session key, and then uses the session key to decrypt the message.
+/// Implementation of the Public-Key Encrypted Session Key (PKESK) Packet - Type 1
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PublicKeyEncryptedSessionKeyPacket extends ContainedPacket {
-  static const version = 3;
+class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
+  final int version;
 
-  final KeyID publicKeyID;
+  final int keyVersion;
 
-  final KeyAlgorithm publicKeyAlgorithm;
+  final Uint8List keyFingerprint;
 
-  /// Encrypted session key params
-  final SessionKeyParams sessionKeyParams;
+  final Uint8List keyID;
 
-  /// Session key
-  final SessionKey? sessionKey;
+  final KeyAlgorithm keyAlgorithm;
 
-  bool get isDecrypted => sessionKey != null;
+  final SessionKeyCryptorInterface cryptor;
+
+  final SessionKeyInterface? sessionKey;
 
   PublicKeyEncryptedSessionKeyPacket(
-    this.publicKeyID,
-    this.publicKeyAlgorithm,
-    this.sessionKeyParams, {
+    this.version,
+    this.keyVersion,
+    this.keyFingerprint,
+    this.keyID,
+    this.keyAlgorithm,
+    this.cryptor, {
     this.sessionKey,
-  }) : super(PacketTag.publicKeyEncryptedSessionKey);
-
-  factory PublicKeyEncryptedSessionKeyPacket.fromByteData(
-      final Uint8List bytes) {
-    var pos = 0;
-    final pkeskVersion = bytes[pos++];
-    if (pkeskVersion != version) {
+  }) : super(PacketType.publicKeyEncryptedSessionKey) {
+    if (version != 3 && version != 6) {
       throw UnsupportedError(
-        'Version $pkeskVersion of the PKESK packet is unsupported.',
+        'Version $version of the PKESK packet is unsupported.',
       );
     }
+    if (version == 6 && keyAlgorithm == KeyAlgorithm.elgamal) {
+      throw ArgumentError(
+        'Key algorithm ${keyAlgorithm.name} cannot be used with version {$version} PKESK packet.',
+      );
+    }
+  }
 
-    final keyID = bytes.sublist(pos, pos + 8);
-    pos += 8;
+  factory PublicKeyEncryptedSessionKeyPacket.fromBytes(final Uint8List bytes) {
+    var pos = 0;
+    final version = bytes[pos++];
 
-    final keyAlgorithm =
-        KeyAlgorithm.values.firstWhere((algo) => algo.value == bytes[pos]);
+    final int keyVersion;
+    final Uint8List keyFingerprint;
+    final Uint8List keyID;
+    if (version == 6) {
+      final length = bytes[pos++];
+      keyVersion = bytes[pos++];
+      keyFingerprint = bytes.sublist(pos, pos + length - 1);
+      pos += length - 1;
+      keyID = keyVersion == 6
+          ? keyFingerprint.sublist(0, PublicKeyPacket.keyIDSize)
+          : keyFingerprint.sublist(12, 12 + PublicKeyPacket.keyIDSize);
+    } else {
+      keyVersion = 0;
+      keyFingerprint = Uint8List(0);
+      keyID = bytes.sublist(pos, pos + PublicKeyPacket.keyIDSize);
+      pos += PublicKeyPacket.keyIDSize;
+    }
+    final keyAlgorithm = KeyAlgorithm.values.firstWhere(
+      (algo) => algo.value == bytes[pos],
+    );
     pos++;
 
-    final SessionKeyParams params;
-    switch (keyAlgorithm) {
-      case KeyAlgorithm.rsaEncryptSign:
-      case KeyAlgorithm.rsaEncrypt:
-        params = RSASessionKeyParams.fromByteData(bytes.sublist(pos));
-        break;
-      case KeyAlgorithm.elgamal:
-        params = ElGamalSessionKeyParams.fromByteData(bytes.sublist(pos));
-        break;
-      case KeyAlgorithm.ecdh:
-        params = ECDHSessionKeyParams.fromByteData(bytes.sublist(pos));
-        break;
-      default:
-        throw UnsupportedError(
+    final sessionKeyCryptor = switch (keyAlgorithm) {
+      KeyAlgorithm.rsaEncryptSign || KeyAlgorithm.rsaEncrypt => RSASessionKeyCryptor.fromBytes(
+          bytes.sublist(pos),
+        ),
+      KeyAlgorithm.elgamal => ElGamalSessionKeyCryptor.fromBytes(
+          bytes.sublist(pos),
+        ),
+      KeyAlgorithm.ecdh => ECDHSessionKeyCryptor.fromBytes(
+          bytes.sublist(pos),
+        ),
+      KeyAlgorithm.x25519 => MontgomerySessionKeyCryptor.fromBytes(
+          bytes.sublist(pos),
+          MontgomeryCurve.x25519,
+        ),
+      KeyAlgorithm.x448 => MontgomerySessionKeyCryptor.fromBytes(
+          bytes.sublist(pos),
+          MontgomeryCurve.x448,
+        ),
+      _ => throw UnsupportedError(
           'Public key algorithm ${keyAlgorithm.name} of the PKESK packet is unsupported.',
-        );
-    }
+        )
+    };
 
     return PublicKeyEncryptedSessionKeyPacket(
-      KeyID(keyID),
+      version,
+      keyVersion,
+      keyFingerprint,
+      keyID,
       keyAlgorithm,
-      params,
+      sessionKeyCryptor,
     );
   }
 
-  static Future<PublicKeyEncryptedSessionKeyPacket> encryptSessionKey(
-    final PublicKeyPacket publicKey,
-    final SessionKey sessionKey,
-  ) async {
-    final SessionKeyParams params;
-    final keyParams = publicKey.publicParams;
-    if (keyParams is RSAPublicParams) {
-      params = await RSASessionKeyParams.encryptSessionKey(
-        keyParams.publicKey,
-        sessionKey,
-      );
-    } else if (keyParams is ElGamalPublicParams) {
-      params = await ElGamalSessionKeyParams.encryptSessionKey(
-        keyParams.publicKey,
-        sessionKey,
-      );
-    } else if (keyParams is ECDHPublicParams) {
-      params = await ECDHSessionKeyParams.encryptSessionKey(
-        keyParams,
-        sessionKey,
-        publicKey.fingerprint.hexToBytes(),
-      );
-    } else {
-      throw UnsupportedError(
-        'Public key algorithm ${publicKey.algorithm.name} is unsupported for session key encryption.',
-      );
-    }
+  factory PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+    KeyPacketInterface keyPacket,
+    SessionKeyInterface sessionKey,
+  ) {
+    final version = keyPacket.keyVersion == 6 ? 6 : 3;
+    final keyData = switch (keyPacket.keyAlgorithm) {
+      KeyAlgorithm.x25519 || KeyAlgorithm.x448 => sessionKey.encryptionKey,
+      _ => version == 3
+          ? Uint8List.fromList([
+              ...sessionKey.toBytes(),
+              ...sessionKey.computeChecksum(),
+            ])
+          : Uint8List.fromList([
+              ...sessionKey.encryptionKey,
+              ...sessionKey.computeChecksum(),
+            ]),
+    };
+
+    final cryptor = switch (keyPacket.keyAlgorithm) {
+      KeyAlgorithm.rsaEncryptSign || KeyAlgorithm.rsaEncrypt => RSASessionKeyCryptor.encryptSessionKey(
+          keyData,
+          keyPacket.keyMaterial as RSAPublicMaterial,
+        ),
+      KeyAlgorithm.ecdh => ECDHSessionKeyCryptor.encryptSessionKey(
+          keyData,
+          keyPacket.keyMaterial as ECDHPublicMaterial,
+          keyPacket.fingerprint,
+        ),
+      KeyAlgorithm.x25519 || KeyAlgorithm.x448 => MontgomerySessionKeyCryptor.encryptSessionKey(
+          keyData,
+          keyPacket.keyMaterial as MontgomeryPublicMaterial,
+        ),
+      _ => throw UnsupportedError(
+          'Public key algorithm ${keyPacket.keyAlgorithm.name} is unsupported for session key encryption.',
+        ),
+    };
     return PublicKeyEncryptedSessionKeyPacket(
-      publicKey.keyID,
-      publicKey.algorithm,
-      params,
-      sessionKey: sessionKey,
+      version,
+      keyPacket.keyVersion,
+      keyPacket.fingerprint,
+      keyPacket.keyID,
+      keyPacket.keyAlgorithm,
+      cryptor,
     );
   }
 
   @override
-  Uint8List toByteData() {
-    return Uint8List.fromList([
-      version,
-      ...publicKeyID.bytes,
-      publicKeyAlgorithm.value,
-      ...sessionKeyParams.encode(),
-    ]);
-  }
+  get data => Uint8List.fromList([
+        version,
+        ...version == 6 ? [keyFingerprint.length + 1] : [],
+        ...version == 6 ? [keyVersion] : [],
+        ...version == 6 ? keyFingerprint : [],
+        ...version == 3 ? keyID : [],
+        keyAlgorithm.value,
+        ...cryptor.toBytes(),
+      ]);
 
-  Future<PublicKeyEncryptedSessionKeyPacket> decrypt(
-      final SecretKeyPacket key) async {
-    if (isDecrypted) {
+  PublicKeyEncryptedSessionKeyPacket decrypt(
+    final SecretKeyPacketInterface key,
+  ) {
+    if (sessionKey != null) {
       return this;
     } else {
-      // check that session key algo matches the secret key algo and secret key is decrypted
-      if (publicKeyAlgorithm != key.algorithm || !key.isDecrypted) {
+      if (keyAlgorithm != key.keyAlgorithm || !key.isDecrypted) {
         throw ArgumentError(
           'Secret key packet is invalid for session key decryption',
         );
       }
-
-      final SessionKey? sessionKey;
-      final keyParams = sessionKeyParams;
-      if (keyParams is RSASessionKeyParams) {
-        final privateKey = (key.secretParams as RSASecretParams).privateKey;
-        sessionKey = await keyParams.decrypt(privateKey);
-      } else if (keyParams is ElGamalSessionKeyParams) {
-        final publicKey = (key.publicParams as ElGamalPublicParams).publicKey;
-        sessionKey = await keyParams.decrypt(
-          ElGamalPrivateKey(
-            (key.secretParams as ElGamalSecretParams).exponent,
-            publicKey.prime,
-            publicKey.generator,
-          ),
-        );
-      } else if (keyParams is ECDHSessionKeyParams) {
-        sessionKey = await keyParams.decrypt(
-          key.secretParams as ECSecretParams,
-          key.publicParams as ECDHPublicParams,
-          key.fingerprint.hexToBytes(),
-        );
+      if (cryptor is ECDHSessionKeyCryptor) {
+        (cryptor as ECDHSessionKeyCryptor).fingerprint = key.fingerprint;
+      }
+      final keyData = cryptor.decrypt(key.secretKeyMaterial!);
+      final SessionKeyInterface sessionKey;
+      if (version == 3) {
+        sessionKey = SessionKey.fromBytes(keyData);
       } else {
-        throw UnsupportedError(
-          'Public key algorithm ${key.algorithm.name} is unsupported for session key decryption.',
-        );
+        switch (keyAlgorithm) {
+          case KeyAlgorithm.x25519:
+            sessionKey = SessionKey(
+              keyData,
+              MontgomeryCurve.x25519.symmetric,
+            );
+            break;
+          case KeyAlgorithm.x448:
+            sessionKey = SessionKey(
+              keyData,
+              MontgomeryCurve.x448.symmetric,
+            );
+            break;
+          default:
+            final keyLength = keyData.length - 2;
+            sessionKey = SessionKey(keyData.sublist(0, keyLength));
+            sessionKey.checksum(keyData.sublist(keyLength));
+        }
       }
 
       return PublicKeyEncryptedSessionKeyPacket(
-        publicKeyID,
-        publicKeyAlgorithm,
-        sessionKeyParams,
+        version,
+        keyVersion,
+        keyFingerprint,
+        keyID,
+        keyAlgorithm,
+        cryptor,
         sessionKey: sessionKey,
       );
     }

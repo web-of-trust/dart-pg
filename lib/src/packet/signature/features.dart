@@ -1,6 +1,8 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
@@ -10,7 +12,6 @@ import '../signature_subpacket.dart';
 
 /// The Features subpacket denotes which advanced OpenPGP features a
 /// user's implementation supports.
-/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.24
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class Features extends SignatureSubpacket {
   Features(
@@ -25,15 +26,11 @@ class Features extends SignatureSubpacket {
   }) =>
       Features(Uint8List.fromList([features]), critical: critical);
 
-  bool get supprtModificationDetection =>
-      (data[0] & SupportFeature.modificationDetection.value) ==
-      SupportFeature.modificationDetection.value;
+  bool get seipdV1Supported => (data[0] & SupportFeature.seipdV1.value) == SupportFeature.seipdV1.value;
 
-  bool get supportAeadEncryptedData =>
-      (data[0] & SupportFeature.aeadEncryptedData.value) ==
-      SupportFeature.aeadEncryptedData.value;
+  bool get aeadSupported => (data[0] & SupportFeature.aead.value) == SupportFeature.aead.value;
 
-  bool get supportVersion5PublicKey =>
-      (data[0] & SupportFeature.version5PublicKey.value) ==
-      SupportFeature.version5PublicKey.value;
+  bool get publicKeyV5Supported => (data[0] & SupportFeature.publicKeyV5.value) == SupportFeature.publicKeyV5.value;
+
+  bool get seidpV2Supported => (data[0] & SupportFeature.seipdV2.value) == SupportFeature.seipdV2.value;
 }

@@ -1,6 +1,8 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
@@ -9,7 +11,6 @@ import '../signature_subpacket.dart';
 
 /// This is a flag in a User ID's self-signature that states whether this
 /// User ID is the main User ID for this key.
-/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.19
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class PrimaryUserID extends SignatureSubpacket {
   PrimaryUserID(final Uint8List data, {super.critical, super.isLong})
@@ -19,8 +20,7 @@ class PrimaryUserID extends SignatureSubpacket {
     final bool isPrimary, {
     final bool critical = false,
   }) =>
-      PrimaryUserID(Uint8List.fromList([isPrimary ? 1 : 0]),
-          critical: critical);
+      PrimaryUserID(Uint8List.fromList([isPrimary ? 1 : 0]), critical: critical);
 
   bool get isPrimary => data[0] != 0;
 }

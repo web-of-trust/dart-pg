@@ -1,6 +1,8 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
@@ -9,7 +11,6 @@ import '../../enum/signature_subpacket_type.dart';
 import '../signature_subpacket.dart';
 
 /// This subpacket contains a list of binary flags that hold information about a key.
-/// See https://www.rfc-editor.org/rfc/rfc4880#section-5.2.3.21
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class KeyFlags extends SignatureSubpacket {
   KeyFlags(
@@ -34,18 +35,13 @@ class KeyFlags extends SignatureSubpacket {
     return value;
   }
 
-  bool get isCertifyKeys =>
-      flags & KeyFlag.certifyKeys.value == KeyFlag.certifyKeys.value;
+  bool get isCertifyKeys => flags & KeyFlag.certifyKeys.value == KeyFlag.certifyKeys.value;
 
-  bool get isSignData =>
-      flags & KeyFlag.signData.value == KeyFlag.signData.value;
+  bool get isSignData => flags & KeyFlag.signData.value == KeyFlag.signData.value;
 
-  bool get isEncryptCommunication =>
-      flags & KeyFlag.encryptCommunication.value ==
-      KeyFlag.encryptCommunication.value;
+  bool get isEncryptCommunication => flags & KeyFlag.encryptCommunication.value == KeyFlag.encryptCommunication.value;
 
-  bool get isEncryptStorage =>
-      flags & KeyFlag.encryptStorage.value == KeyFlag.encryptStorage.value;
+  bool get isEncryptStorage => flags & KeyFlag.encryptStorage.value == KeyFlag.encryptStorage.value;
 
   static Uint8List _flagsToBytes(final int flags) {
     final bytes = Uint8List(4);

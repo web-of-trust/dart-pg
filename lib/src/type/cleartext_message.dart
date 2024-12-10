@@ -1,50 +1,48 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
 
-import '../packet/literal_data.dart';
+library;
+
 import 'key.dart';
+import 'notation_data.dart';
 import 'signature.dart';
+import 'signed_cleartext_message.dart';
 import 'verification.dart';
 
-/// Class that represents a cleartext message.
+export 'signed_cleartext_message.dart';
+
+/// Cleartext message interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class CleartextMessage {
-  /// The cleartext of the message
-  final String _text;
+abstract interface class CleartextMessageInterface {
+  /// Get cleartext
+  String get text;
 
-  final List<Verification> verifications;
+  /// Get normalized cleartext
+  /// Remove trailing whitespace and
+  /// normalize EOL to canonical form <CR><LF>
+  String get normalizeText;
 
-  CleartextMessage(
-    final String text, [
-    final Iterable<Verification> verifications = const [],
-  ])  : _text = text.trimRight().replaceAll(
-              RegExp(r'\r?\n', multiLine: true),
-              '\r\n',
-            ),
-        verifications = verifications.toList(growable: false);
+  /// Sign the message
+  SignedCleartextMessageInterface sign(
+    final Iterable<PrivateKeyInterface> signingKeys, {
+    final Iterable<KeyInterface> recipients = const [],
+    final NotationDataInterface? notationData,
+    final DateTime? time,
+  });
 
-  String get text => _text;
+  /// Sign the message
+  SignatureInterface signDetached(
+    final Iterable<PrivateKeyInterface> signingKeys, {
+    final Iterable<KeyInterface> recipients = const [],
+    final NotationDataInterface? notationData,
+    final DateTime? time,
+  });
 
-  String get normalizeText => _text.replaceAll(
-        RegExp(r'\r\n', multiLine: true),
-        '\n',
-      );
-
-  /// Verify detached signature
-  /// Return cleartext message with verifications
-  Future<CleartextMessage> verifySignature(
-    final Signature signature,
-    final Iterable<PublicKey> verificationKeys, {
-    final DateTime? date,
-  }) async =>
-      CleartextMessage(
-        text,
-        await Verification.createVerifications(
-          LiteralDataPacket.fromText(text),
-          signature.packets,
-          verificationKeys,
-          date: date,
-        ),
-      );
+  /// Verify detached signature & return verification array
+  Iterable<VerificationInterface> verifyDetached(
+    final Iterable<KeyInterface> verificationKeys,
+    final SignatureInterface signature, [
+    final DateTime? time,
+  ]);
 }

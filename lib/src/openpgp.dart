@@ -1,233 +1,390 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
+import 'common/config.dart';
+import 'common/extensions.dart';
 import 'enum/compression_algorithm.dart';
-import 'enum/curve_info.dart';
-import 'enum/dh_key_size.dart';
-import 'enum/key_generation_type.dart';
+import 'enum/ecc.dart';
+import 'enum/key_type.dart';
 import 'enum/rsa_key_size.dart';
 import 'enum/symmetric_algorithm.dart';
-
+import 'key/base_key.dart';
+import 'message/base_message.dart';
 import 'type/cleartext_message.dart';
-import 'type/message.dart';
-import 'type/private_key.dart';
-import 'type/public_key.dart';
-import 'type/signature.dart';
-import 'type/signed_message.dart';
+import 'type/key.dart';
+import 'type/literal_message.dart';
+import 'type/packet_list.dart';
+import 'type/session_key.dart';
 
-export 'enum/compression_algorithm.dart';
-export 'enum/curve_info.dart';
-export 'enum/dh_key_size.dart';
-export 'enum/key_generation_type.dart';
-export 'enum/rsa_key_size.dart';
-export 'enum/symmetric_algorithm.dart';
-
-export 'type/cleartext_message.dart';
-export 'type/message.dart';
-export 'type/private_key.dart';
-export 'type/public_key.dart';
-export 'type/signature.dart';
-export 'type/signed_message.dart';
-
-/// Export high level API for Dart developers.
+/// Export high level API for developers.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class OpenPGP {
-  /// Generate a new OpenPGP key pair. Supports RSA and ECC keys.
-  /// By default, primary and subkeys will be of same type.
+final class OpenPGP {
+  /// Generate a new OpenPGP key pair. Support RSA, ECC, Curve25519 and Curve448 key types.
   /// The generated primary key will have signing capabilities.
-  /// By default, one subkey with encryption capabilities is also generated.
-  static Future<PrivateKey> generateKey(
+  /// One subkey with encryption capabilities is also generated if `signOnly` is false.
+  static PrivateKeyInterface generateKey(
     final Iterable<String> userIDs,
     final String passphrase, {
-    final KeyGenerationType type = KeyGenerationType.rsa,
-    final RSAKeySize rsaKeySize = RSAKeySize.s4096,
-    final DHKeySize dhKeySize = DHKeySize.l2048n224,
-    final CurveInfo curve = CurveInfo.secp521r1,
-    final int keyExpirationTime = 0,
-    final String? subkeyPassphrase,
-    final DateTime? date,
-  }) async =>
-      PrivateKey.generate(
-        userIDs,
-        passphrase,
-        type: type,
-        rsaKeySize: rsaKeySize,
-        dhKeySize: dhKeySize,
-        curve: curve,
-        keyExpirationTime: keyExpirationTime,
-        subkeyPassphrase: subkeyPassphrase,
-        date: date,
-      );
+    final KeyType type = KeyType.rsa,
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
+    final Ecc curve = Ecc.secp521r1,
+    final int keyExpiry = 0,
+    final DateTime? time,
+  }) {
+    return PrivateKey.generate(
+      userIDs,
+      passphrase,
+      type: type,
+      rsaKeySize: rsaKeySize,
+      curve: curve,
+      keyExpiry: keyExpiry,
+      time: time,
+    );
+  }
 
-  /// Read an armored & unlock OpenPGP private key with the given passphrase.
-  static Future<PrivateKey> decryptPrivateKey(
-    final String armoredPrivateKey,
+  /// Read OpenPGP public key from armored string.
+  /// Return a public key object.
+  static KeyInterface readPublicKey(final String armored) {
+    return PublicKey.fromArmored(armored);
+  }
+
+  /// Read OpenPGP public key list from armored string.
+  /// Return iterator of public key objects.
+  static Iterable<KeyInterface> readPublicKeys(final String armored) {
+    return PublicKey.readPublicKeys(armored);
+  }
+
+  /// Armor multiple public key.
+  static String armorPublicKeys(final Iterable<KeyInterface> keys) {
+    return PublicKey.armorPublicKeys(keys);
+  }
+
+  /// Read OpenPGP private key from armored string.
+  /// Return a private key object.
+  static PrivateKeyInterface readPrivateKey(final String armored) {
+    return PrivateKey.fromArmored(armored);
+  }
+
+  /// Lock a private key with the given passphrase.
+  /// The private key must be decrypted.
+  static PrivateKeyInterface encryptPrivateKey(
+    final PrivateKeyInterface privateKey,
     final String passphrase, [
     final Iterable<String> subkeyPassphrases = const [],
-  ]) async =>
-      PrivateKey.fromArmored(armoredPrivateKey).decrypt(
-        passphrase,
-        subkeyPassphrases,
-      );
+  ]) {
+    return privateKey.encrypt(passphrase, subkeyPassphrases);
+  }
 
-  /// Read an armored OpenPGP private key and returns a PrivateKey object
-  static Future<PrivateKey> readPrivateKey(
-    final String armoredPrivateKey,
-  ) async =>
-      PrivateKey.fromArmored(armoredPrivateKey);
+  /// Read & unlock OpenPGP private key with the given passphrase.
+  static PrivateKeyInterface decryptPrivateKey(
+    final String armored,
+    final String passphrase, [
+    final Iterable<String> subkeyPassphrases = const [],
+  ]) {
+    return PrivateKey.fromArmored(armored).decrypt(
+      passphrase,
+      subkeyPassphrases,
+    );
+  }
 
-  /// Read an armored OpenPGP public key and returns a PublicKey object
-  static Future<PublicKey> readPublicKey(
-    final String armoredPublicKey,
-  ) async =>
-      PublicKey.fromArmored(armoredPublicKey);
+  /// Read OpenPGP signature from armored string.
+  /// Return a signature object.
+  static SignatureInterface readSignature(final String armored) {
+    return Signature.fromArmored(armored);
+  }
 
-  /// Read an armored OpenPGP public key list.
-  static List<PublicKey> readPublicKeys(final String armoredPublicKeys) {
-    return PublicKey.readPublicKeys(armoredPublicKeys);
+  /// Read OpenPGP signed message from armored string.
+  /// Return a signed message object.
+  static SignedMessageInterface readSignedMessage(final String armored) {
+    return SignedMessage.fromArmored(armored);
+  }
+
+  /// Read OpenPGP literal message from armored string.
+  /// Return a literal message object.
+  static LiteralMessageInterface readLiteralMessage(final String armored) {
+    return LiteralMessage.fromArmored(armored);
+  }
+
+  /// Read OpenPGP encrypted message from armored string.
+  /// Return an encrypted message object.
+  static EncryptedMessageInterface readEncryptedMessage(final String armored) {
+    return EncryptedMessage.fromArmored(armored);
+  }
+
+  /// Create new cleartext message object from text.
+  static CleartextMessageInterface createCleartextMessage(final String text) {
+    return CleartextMessage(text);
+  }
+
+  /// Create new literal message object from literal data.
+  static LiteralMessageInterface createLiteralMessage(
+    final Uint8List literalData, {
+    final String filename = '',
+    final DateTime? time,
+  }) {
+    return LiteralMessage.fromLiteralData(
+      literalData,
+      filename: filename,
+      time: time,
+    );
   }
 
   /// Sign a cleartext message.
-  static Future<SignedMessage> sign(
-    final String cleartext,
-    final Iterable<PrivateKey> signingKeys, {
-    final DateTime? date,
-  }) async =>
-      SignedMessage.signCleartext(cleartext, signingKeys, date: date);
-
-  /// Sign a cleartext message & return detached signature
-  static Future<Signature> signDetached(
-    final String cleartext,
-    final Iterable<PrivateKey> signingKeys, {
-    final DateTime? date,
-  }) async =>
-      SignedMessage.signCleartext(
-        cleartext,
-        signingKeys,
-        date: date,
-      ).then((signedMessage) => signedMessage.signature);
-
-  /// Verify signatures of cleartext signed message
-  /// Return signed message with verifications
-  static Future<SignedMessage> verify(
-    final String armoredSignedMessage,
-    final Iterable<PublicKey> verificationKeys, {
-    final DateTime? date,
-  }) async =>
-      SignedMessage.fromArmored(armoredSignedMessage).verify(
-        verificationKeys,
-        date: date,
-      );
-
-  /// Verify detached signatures of cleartext message
-  /// Returns cleartext message with verifications
-  static Future<CleartextMessage> verifyDetached(
-    final String cleartext,
-    final String armoredSignature,
-    final Iterable<PublicKey> verificationKeys, {
-    final DateTime? date,
-  }) async =>
-      CleartextMessage(cleartext).verifySignature(
-        Signature.fromArmored(armoredSignature),
-        verificationKeys,
-        date: date,
-      );
-
-  /// Read an armored OpenPGP signature and returns a Signature object
-  static Future<Signature> readSignature(
-    final String armoredSignature,
-  ) async =>
-      Signature.fromArmored(armoredSignature);
-
-  /// Read an armored OpenPGP signed message and returns a SignedMessage object
-  static Future<SignedMessage> readSignedMessage(
-    final String armoredSignedMessage,
-  ) async =>
-      SignedMessage.fromArmored(armoredSignedMessage);
-
-  /// Read an armored OpenPGP message and returns a Message object
-  static Future<Message> readMessage(
-    final String armoredMessage,
-  ) async =>
-      Message.fromArmored(armoredMessage);
-
-  /// Create new message object from cleartext
-  static Future<Message> createTextMessage(
-    final String cleartext, {
+  /// Return a signed message object.
+  static SignedCleartextMessageInterface signCleartext(
+    final String text,
+    final Iterable<PrivateKeyInterface> signingKeys, {
+    final Iterable<KeyInterface> recipients = const [],
+    final NotationDataInterface? notationData,
     final DateTime? time,
-  }) async =>
-      Message.createTextMessage(cleartext, time: time);
+  }) {
+    return CleartextMessage(text).sign(
+      signingKeys,
+      recipients: recipients,
+      notationData: notationData,
+      time: time,
+    );
+  }
 
-  /// Create new message object from binary data.
-  static Future<Message> createBinaryMessage(
-    final Uint8List data, {
-    final String filename = '',
+  /// Sign a cleartext message & return detached signature.
+  static SignatureInterface signDetachedCleartext(
+    final String text,
+    final Iterable<PrivateKeyInterface> signingKeys, {
+    final Iterable<KeyInterface> recipients = const [],
+    final NotationDataInterface? notationData,
     final DateTime? time,
-  }) async =>
-      Message.createBinaryMessage(data, filename: filename, time: time);
+  }) {
+    return CleartextMessage(text).signDetached(
+      signingKeys,
+      recipients: recipients,
+      notationData: notationData,
+      time: time,
+    );
+  }
+
+  /// Sign a message & return signed literal message.
+  static LiteralMessageInterface sign(
+    final LiteralMessageInterface message,
+    final Iterable<PrivateKeyInterface> signingKeys, {
+    final Iterable<KeyInterface> recipients = const [],
+    final NotationDataInterface? notationData,
+    final DateTime? time,
+  }) {
+    return message.sign(
+      signingKeys,
+      recipients: recipients,
+      notationData: notationData,
+      time: time,
+    );
+  }
+
+  /// Sign a message & return detached signature.
+  static SignatureInterface signDetached(
+    final LiteralMessageInterface message,
+    final Iterable<PrivateKeyInterface> signingKeys, {
+    final Iterable<KeyInterface> recipients = const [],
+    final NotationDataInterface? notationData,
+    final DateTime? time,
+  }) {
+    return message.signDetached(
+      signingKeys,
+      recipients: recipients,
+      notationData: notationData,
+      time: time,
+    );
+  }
+
+  /// Verify signatures of cleartext signed message.
+  /// Return verification array.
+  static Iterable<VerificationInterface> verify(
+    final String armored,
+    final Iterable<KeyInterface> verificationKeys, [
+    final DateTime? time,
+  ]) {
+    return readSignedMessage(armored).verify(
+      verificationKeys,
+      time,
+    );
+  }
+
+  /// Verify detached signatures of cleartext message.
+  /// Return verification array.
+  static Iterable<VerificationInterface> verifyDetached(
+    final String text,
+    final String signature,
+    final Iterable<KeyInterface> verificationKeys, [
+    final DateTime? time,
+  ]) {
+    return createCleartextMessage(text).verifyDetached(
+      verificationKeys,
+      readSignature(signature),
+      time,
+    );
+  }
+
+  /// Verify signatures of signed literal message.
+  /// Return verification array.
+  static Iterable<VerificationInterface> verifyInline(
+    final String armored,
+    final Iterable<KeyInterface> verificationKeys, [
+    final DateTime? time,
+  ]) {
+    return readLiteralMessage(armored).verify(
+      verificationKeys,
+      time,
+    );
+  }
 
   /// Encrypt a message using public keys, passwords or both at once.
   /// At least one of `encryptionKeys`, `passwords`must be specified.
   /// If signing keys are specified, those will be used to sign the message.
-  static Future<Message> encrypt(
-    final Message message, {
-    final Iterable<PublicKey> encryptionKeys = const [],
-    final Iterable<PrivateKey> signingKeys = const [],
+  static EncryptedMessageInterface encrypt(
+    final LiteralMessageInterface message, {
+    final Iterable<KeyInterface> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm sessionKeySymmetric = SymmetricAlgorithm.aes128,
-    final SymmetricAlgorithm encryptionKeySymmetric = SymmetricAlgorithm.aes128,
-    final CompressionAlgorithm compression = CompressionAlgorithm.uncompressed,
-    final bool aeadProtect = false,
-    final DateTime? date,
-  }) async =>
-      (signingKeys.isNotEmpty)
-          ? message
-              .sign(signingKeys, date: date)
-              .then(
-                (message) => message.compress(compression),
-              )
-              .then(
-                (message) => message.encrypt(
-                  encryptionKeys: encryptionKeys,
-                  passwords: passwords,
-                  sessionKeySymmetric: sessionKeySymmetric,
-                  encryptionKeySymmetric: encryptionKeySymmetric,
-                  aeadProtect: aeadProtect,
-                ),
-              )
-          : message.compress(compression).then((message) => message.encrypt(
-                encryptionKeys: encryptionKeys,
-                passwords: passwords,
-                sessionKeySymmetric: sessionKeySymmetric,
-                encryptionKeySymmetric: encryptionKeySymmetric,
-                aeadProtect: aeadProtect,
-              ));
-
-  /// Decrypt a message with the user's private key, or a password.
-  /// One of `decryptionKeys` or `passwords` must be specified
-  /// return object containing decrypted message with verifications
-  static Future<Message> decrypt(
-    final Message message, {
-    final Iterable<PrivateKey> decryptionKeys = const [],
-    final Iterable<PublicKey> verificationKeys = const [],
-    final Iterable<String> passwords = const [],
-    final bool allowUnauthenticatedMessages = false,
-    final DateTime? date,
-  }) async =>
-      (verificationKeys.isNotEmpty)
-          ? message
-              .decrypt(
-                decryptionKeys: decryptionKeys,
-                passwords: passwords,
-                allowUnauthenticatedMessages: allowUnauthenticatedMessages,
-              )
-              .then((message) => message.verify(verificationKeys, date: date))
-          : message.decrypt(
-              decryptionKeys: decryptionKeys,
+    final Iterable<PrivateKeyInterface> signingKeys = const [],
+    final SymmetricAlgorithm? symmetric,
+    final CompressionAlgorithm? compression,
+    final NotationDataInterface? notationData,
+    final DateTime? time,
+  }) {
+    return signingKeys.isEmpty
+        ? message.compress(compression).encrypt(
+              encryptionKeys: encryptionKeys,
               passwords: passwords,
-              allowUnauthenticatedMessages: allowUnauthenticatedMessages,
+              symmetric: symmetric,
+            )
+        : message
+            .sign(
+              signingKeys,
+              recipients: encryptionKeys,
+              notationData: notationData,
+              time: time,
+            )
+            .compress(compression)
+            .encrypt(
+              encryptionKeys: encryptionKeys,
+              passwords: passwords,
+              symmetric: symmetric,
             );
+  }
+
+  /// Encrypt binary data using public keys, passwords or both at once.
+  /// At least one of `encryptionKeys`, `passwords`must be specified.
+  /// If signing keys are specified, those will be used to sign the message.
+  static EncryptedMessageInterface encryptBinaryData(
+    final Uint8List bytes, {
+    final Iterable<KeyInterface> encryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+    final Iterable<PrivateKeyInterface> signingKeys = const [],
+    final SymmetricAlgorithm? symmetric,
+    final CompressionAlgorithm? compression,
+    final NotationDataInterface? notationData,
+    final DateTime? time,
+  }) {
+    return encrypt(
+      createLiteralMessage(bytes),
+      encryptionKeys: encryptionKeys,
+      passwords: passwords,
+      signingKeys: signingKeys,
+      symmetric: symmetric,
+      notationData: notationData,
+      time: time,
+    );
+  }
+
+  /// Encrypt cleartext using public keys, passwords or both at once.
+  /// At least one of `encryptionKeys`, `passwords`must be specified.
+  /// If signing keys are specified, those will be used to sign the message.
+  static EncryptedMessageInterface encryptCleartext(
+    final String cleartext, {
+    final Iterable<KeyInterface> encryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+    final Iterable<PrivateKeyInterface> signingKeys = const [],
+    final SymmetricAlgorithm? symmetric,
+    final CompressionAlgorithm? compression,
+    final NotationDataInterface? notationData,
+    final DateTime? time,
+  }) {
+    return encrypt(
+      createLiteralMessage(cleartext.toBytes()),
+      encryptionKeys: encryptionKeys,
+      passwords: passwords,
+      signingKeys: signingKeys,
+      symmetric: symmetric,
+      notationData: notationData,
+      time: time,
+    );
+  }
+
+  /// Decrypt a armored encrypted message with
+  /// the user's private keys, or passwords.
+  /// One of `decryptionKeys` or `passwords` must be specified.
+  static LiteralMessageInterface decrypt(
+    final String armored, {
+    final Iterable<PrivateKeyInterface> decryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+  }) {
+    return decryptMessage(
+      readEncryptedMessage(armored),
+      decryptionKeys: decryptionKeys,
+      passwords: passwords,
+    );
+  }
+
+  /// Decrypt an encrypted message with the user's private keys, or passwords.
+  /// One of `decryptionKeys` or `passwords` must be specified.
+  static LiteralMessageInterface decryptMessage(
+    final EncryptedMessageInterface message, {
+    final Iterable<PrivateKeyInterface> decryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+  }) {
+    return message.decrypt(
+      decryptionKeys: decryptionKeys,
+      passwords: passwords,
+    );
+  }
+
+  /// Generate a new session key object.
+  /// Checking the algorithm preferences of the passed encryption keys.
+  static SessionKeyInterface generateSessionKey(
+    final Iterable<KeyInterface> encryptionKeys, [
+    final SymmetricAlgorithm? symmetric,
+  ]) {
+    return LiteralMessage.generateSessionKey(
+      encryptionKeys,
+      symmetric ?? Config.preferredSymmetric,
+    );
+  }
+
+  /// Encrypt a session key either with public keys, passwords, or both at once.
+  static PacketListInterface encryptSessionKey(
+    SessionKeyInterface sessionKey, {
+    final Iterable<KeyInterface> encryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+  }) {
+    return LiteralMessage.encryptSessionKey(
+      sessionKey,
+      encryptionKeys: encryptionKeys,
+      passwords: passwords,
+    );
+  }
+
+  /// Decrypt symmetric session keys using private keys or passwords (not both).
+  static SessionKeyInterface decryptSessionKey(
+    final PacketListInterface packetList, {
+    final Iterable<PrivateKeyInterface> decryptionKeys = const [],
+    final Iterable<String> passwords = const [],
+  }) {
+    return EncryptedMessage.decryptSessionKey(
+      packetList,
+      decryptionKeys: decryptionKeys,
+      passwords: passwords,
+    );
+  }
 }

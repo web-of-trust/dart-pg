@@ -1,33 +1,45 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
 
-import '../armor/armor.dart';
-import '../enum/armor_type.dart';
-import '../packet/packet_list.dart';
-import '../packet/signature_packet.dart';
+library;
 
-/// Class that represents an OpenPGP signature.
+import 'dart:typed_data';
+
+import '../enum/hash_algorithm.dart';
+import 'armorable.dart';
+import 'cleartext_message.dart';
+import 'key.dart';
+import 'literal_data.dart';
+import 'packet_container.dart';
+import 'signature_packet.dart';
+import 'verification.dart';
+
+/// Signature interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Signature {
-  final List<SignaturePacket> packets;
+abstract interface class SignatureInterface implements ArmorableInterface, PacketContainerInterface {
+  /// Get hash algorithms
+  Iterable<HashAlgorithm> get hashAlgorithms;
 
-  Signature(PacketList packetList)
-      : packets =
-            packetList.whereType<SignaturePacket>().toList(growable: false);
+  /// Get signing key IDs
+  Iterable<Uint8List> get signingKeyIDs;
 
-  factory Signature.fromArmored(final String armored) {
-    final armor = Armor.decode(armored);
-    if (armor.type != ArmorType.signature) {
-      throw ArgumentError('Armored text not of signature type');
-    }
-    return Signature(PacketList.packetDecode(armor.data));
-  }
+  /// Get signature packets
+  Iterable<SignaturePacketInterface> get packets;
 
-  List<String> get signingKeyIDs =>
-      packets.map((packet) => packet.issuerKeyID.id).toList(growable: false);
+  /// Verify signature with literal data
+  /// Return verification iterable
+  Iterable<VerificationInterface> verify(
+    final Iterable<KeyInterface> verificationKeys,
+    final LiteralDataInterface literalData, [
+    final DateTime? time,
+  ]);
 
-  /// Returns ASCII armored text of signature
-  String armor() =>
-      Armor.encode(ArmorType.signature, PacketList(packets).encode());
+  /// Verify signature with cleartext
+  /// Return verification iterable
+  Iterable<VerificationInterface> verifyCleartext(
+    final Iterable<KeyInterface> verificationKeys,
+    final CleartextMessageInterface cleartext, [
+    final DateTime? time,
+  ]);
 }

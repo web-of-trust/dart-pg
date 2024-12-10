@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:dart_pg/src/packet/image_attribute.dart';
+import 'package:dart_pg/src/packet/image_user_attribute.dart';
 import 'package:dart_pg/src/packet/user_attribute.dart';
 import 'package:dart_pg/src/packet/user_attribute_subpacket.dart';
 import 'package:dart_pg/src/packet/user_id.dart';
@@ -20,28 +20,26 @@ void main() {
       expect(userID.email, email);
       expect(userID.comment, comment);
 
-      final cloneUserId = UserIDPacket.fromByteData(userID.toByteData());
+      final cloneUserId = UserIDPacket.fromBytes(userID.data);
       expect(userID.name, cloneUserId.name);
       expect(userID.email, cloneUserId.email);
       expect(userID.comment, cloneUserId.comment);
     }));
 
     test('user attribute test', (() {
-      final imageData =
-          Uint8List.fromList(faker.randomGenerator.numbers(255, 100));
+      final imageData = Uint8List.fromList(faker.randomGenerator.numbers(255, 100));
       final subpacketType = faker.randomGenerator.integer(100);
-      final subpacketData =
-          utf8.encoder.convert(faker.lorem.words(100).join(' '));
+      final subpacketData = utf8.encoder.convert(faker.lorem.words(100).join(' '));
 
-      final userAttr = UserAttributePacket.fromByteData(UserAttributePacket([
-        ImageAttributeSubpacket.fromImageData(imageData),
+      final userAttr = UserAttributePacket.fromBytes(UserAttributePacket([
+        ImageUserAttribute.fromBytes(imageData),
         UserAttributeSubpacket(subpacketType, subpacketData),
-      ]).toByteData());
-      final imageAttr = userAttr.attributes[0] as ImageAttributeSubpacket;
+      ]).data);
+      final imageAttr = userAttr.attributes[0] as ImageUserAttribute;
       final subpacket = userAttr.attributes[1];
 
       expect(imageAttr.version, 0x01);
-      expect(imageAttr.encoding, ImageAttributeSubpacket.jpeg);
+      expect(imageAttr.encoding, ImageUserAttribute.jpeg);
       expect(imageAttr.imageData, imageData);
 
       expect(subpacket.type, subpacketType);

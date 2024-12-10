@@ -1,56 +1,28 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
 
-import 'dart:developer';
+library;
 
-import '../packet/literal_data.dart';
-import '../packet/packet_list.dart';
-import '../packet/signature_packet.dart';
-import 'key.dart';
-import 'signature.dart';
+import 'dart:typed_data';
 
-/// Class that represents validity of signature.
+import 'signature_packet.dart';
+
+/// Verification interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Verification {
-  final String keyID;
+abstract interface class VerificationInterface {
+  /// Get verification key ID
+  Uint8List get keyID;
 
-  final Signature signature;
+  /// Get signature packet
+  SignaturePacketInterface get signaturePacket;
 
-  final bool verified;
+  /// Get verification error
+  String get verificationError;
 
-  Verification(this.keyID, this.signature, this.verified);
+  /// Is verified
+  bool get isVerified;
 
-  static Future<List<Verification>> createVerifications(
-    final LiteralDataPacket literalData,
-    final Iterable<SignaturePacket> signaturePackets,
-    final Iterable<PublicKey> verificationKeys, {
-    final DateTime? date,
-  }) async {
-    if (verificationKeys.isEmpty) {
-      throw ArgumentError('No verification keys provided');
-    }
-    final verifications = <Verification>[];
-    for (var signaturePacket in signaturePackets) {
-      for (final key in verificationKeys) {
-        try {
-          final keyPacket = await key.getVerificationKeyPacket(
-            keyID: signaturePacket.issuerKeyID.id,
-          );
-          verifications.add(Verification(
-            keyPacket.keyID.id,
-            Signature(PacketList([signaturePacket])),
-            await signaturePacket.verifyLiteralData(
-              keyPacket,
-              literalData,
-              date: date,
-            ),
-          ));
-        } on Error catch (e) {
-          log(e.toString(), error: e, stackTrace: e.stackTrace);
-        }
-      }
-    }
-    return verifications;
-  }
+  /// Return verification user IDs
+  Iterable<String> get userIDs;
 }

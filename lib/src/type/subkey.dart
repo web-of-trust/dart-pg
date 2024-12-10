@@ -1,166 +1,64 @@
-// Copyright 2022-present by Dart Privacy Guard project. All rights reserved.
-// For the full copyright and license information, please view the LICENSE
-// file that was distributed with this source code.
+/// Copyright 2024-present by Dart Privacy Guard project. All rights reserved.
+/// For the full copyright and license information, please view the LICENSE
+/// file that was distributed with this source code.
+
+library;
 
 import 'dart:typed_data';
 
 import '../enum/key_algorithm.dart';
-import '../enum/revocation_reason_tag.dart';
-import '../packet/key/key_id.dart';
-import '../packet/key/key_params.dart';
-import '../packet/packet_list.dart';
-import '../packet/signature_packet.dart';
-import '../packet/subkey_packet.dart';
 import 'key.dart';
+import 'packet_container.dart';
+import 'signature_packet.dart';
+import 'subkey_packet.dart';
 
-/// Class that represents a subkey packet and the relevant signatures.
+/// Subkey interface
+/// That represents a subkey packet and the relevant signatures.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Subkey {
-  /// subkey packet to hold in the Subkey
-  final SubkeyPacket keyPacket;
+abstract interface class SubkeyInterface implements PacketContainerInterface {
+  /// Get main key
+  KeyInterface get mainKey;
 
-  final Key? mainKey;
+  /// Get key packet
+  SubkeyPacketInterface get keyPacket;
 
-  final List<SignaturePacket> revocationSignatures;
+  /// Return key version
+  int get version;
 
-  final List<SignaturePacket> bindingSignatures;
+  /// Get creation time
+  DateTime get creationTime;
 
-  Subkey(
-    this.keyPacket, {
-    this.mainKey,
-    this.revocationSignatures = const [],
-    this.bindingSignatures = const [],
-  });
+  /// Get the expiration time of the subkey or null if subkey does not expire.
+  DateTime? get expirationTime;
 
-  DateTime get creationTime => keyPacket.creationTime;
+  /// Get key algorithm
+  KeyAlgorithm get keyAlgorithm;
 
-  KeyAlgorithm get algorithm => keyPacket.algorithm;
+  /// Get fingerprint
+  Uint8List get fingerprint;
 
-  String get fingerprint => keyPacket.fingerprint;
+  /// Get key ID
+  Uint8List get keyID;
 
-  KeyID get keyID => keyPacket.keyID;
+  /// Get key strength
+  int get keyStrength;
 
-  KeyParams get publicParams => keyPacket.publicParams;
+  /// Return subkey is signing or verification key
+  bool get isSigningKey;
 
-  int get keyStrength => keyPacket.keyStrength;
+  /// Return subkey is encryption or decryption key
+  bool get isEncryptionKey;
 
-  PacketList toPacketList() {
-    return PacketList([
-      keyPacket,
-      ...revocationSignatures,
-      ...bindingSignatures,
-    ]);
-  }
+  /// Get revocation signatures
+  List<SignaturePacketInterface> get revocationSignatures;
 
-  bool get isEncryptionKey {
-    if (keyPacket.isEncryptionKey) {
-      for (final signature in bindingSignatures) {
-        if (signature.keyFlags != null &&
-            !(signature.keyFlags!.isEncryptStorage || signature.keyFlags!.isEncryptCommunication)) {
-          return false;
-        }
-      }
-    }
-    return keyPacket.isEncryptionKey;
-  }
+  /// Get binding signatures
+  List<SignaturePacketInterface> get bindingSignatures;
 
-  bool get isSigningKey {
-    if (keyPacket.isSigningKey) {
-      for (final signature in bindingSignatures) {
-        if (signature.keyFlags != null && !signature.keyFlags!.isSignData) {
-          return false;
-        }
-      }
-    }
-    return keyPacket.isSigningKey;
-  }
+  /// Check if the subkey is revoked
+  bool isRevoked([final DateTime? time]);
 
-  Future<bool> verify({
-    final DateTime? date,
-  }) async {
-    if (await isRevoked(date: date)) {
-      return false;
-    }
-    if (mainKey != null) {
-      for (final signature in bindingSignatures) {
-        if (!await signature.verify(
-          mainKey!.keyPacket,
-          Uint8List.fromList([
-            ...mainKey!.keyPacket.writeForSign(),
-            ...keyPacket.writeForSign(),
-          ]),
-          date: date,
-        )) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  Future<bool> isRevoked({
-    final SignaturePacket? signature,
-    final DateTime? date,
-  }) async {
-    if (mainKey != null && revocationSignatures.isNotEmpty) {
-      final revocationKeyIDs = <String>[];
-      for (final revocation in revocationSignatures) {
-        if (signature == null || revocation.issuerKeyID.id == signature.issuerKeyID.id) {
-          if (await revocation.verify(
-            mainKey!.keyPacket,
-            Uint8List.fromList([
-              ...mainKey!.keyPacket.writeForSign(),
-              ...keyPacket.writeForSign(),
-            ]),
-            date: date,
-          )) {
-            return true;
-          }
-        }
-        revocationKeyIDs.add(revocation.issuerKeyID.id);
-      }
-      return revocationKeyIDs.isNotEmpty;
-    }
-    return false;
-  }
-
-  Future<Subkey> revoke({
-    RevocationReasonTag reason = RevocationReasonTag.noReason,
-    String description = '',
-    final DateTime? date,
-  }) async {
-    if (mainKey != null && mainKey is PrivateKey) {
-      return Subkey(
-        keyPacket,
-        mainKey: mainKey,
-        revocationSignatures: [
-          await SignaturePacket.createSubkeyRevocation(
-            (mainKey as PrivateKey).keyPacket,
-            keyPacket,
-            reason: reason,
-            description: description,
-            date: date,
-          )
-        ],
-        bindingSignatures: bindingSignatures,
-      );
-    }
-    return this;
-  }
-
-  DateTime? getExpirationTime() {
-    bindingSignatures.sort(
-      (a, b) => b.creationTime.creationTime.compareTo(
-        a.creationTime.creationTime,
-      ),
-    );
-    for (final signature in bindingSignatures) {
-      if (signature.keyExpirationTime != null) {
-        final expirationTime = signature.keyExpirationTime!.time;
-        final creationTime = signature.creationTime.creationTime;
-        return creationTime.add(Duration(seconds: expirationTime));
-      }
-    }
-    return null;
-  }
+  /// Verify subkey.
+  /// Check for existence and validity of binding signature.
+  bool verify([final DateTime? time]);
 }

@@ -7,8 +7,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Compression', () {
-    final literalData =
-        LiteralDataPacket.fromText(faker.randomGenerator.string(10000));
+    final literalData = LiteralDataPacket.fromText(faker.randomGenerator.string(10000));
 
     test('zip test', () {
       final compressedPacket = CompressedDataPacket.fromPacketList(
@@ -16,15 +15,22 @@ void main() {
         algorithm: CompressionAlgorithm.zip,
       );
 
-      final compressedData = compressedPacket.toByteData();
-      final decompressedPacket =
-          CompressedDataPacket.fromByteData(compressedData);
+      final decompressedPacket = CompressedDataPacket.fromBytes(
+        compressedPacket.data,
+      );
 
-      expect(compressedPacket.algorithm, equals(decompressedPacket.algorithm));
       expect(
-          compressedPacket.compressed, equals(decompressedPacket.compressed));
-      expect(compressedPacket.packets[0].toByteData(),
-          equals(literalData.toByteData()));
+        compressedPacket.algorithm,
+        equals(decompressedPacket.algorithm),
+      );
+      expect(
+        compressedPacket.compressed,
+        equals(decompressedPacket.compressed),
+      );
+      expect(
+        compressedPacket.packets[0].encode(),
+        equals(literalData.encode()),
+      );
     });
 
     test('zlib test', () {
@@ -33,15 +39,22 @@ void main() {
         algorithm: CompressionAlgorithm.zlib,
       );
 
-      final compressedData = compressedPacket.toByteData();
-      final decompressedPacket =
-          CompressedDataPacket.fromByteData(compressedData);
+      final decompressedPacket = CompressedDataPacket.fromBytes(
+        compressedPacket.data,
+      );
 
-      expect(compressedPacket.algorithm, equals(decompressedPacket.algorithm));
       expect(
-          compressedPacket.compressed, equals(decompressedPacket.compressed));
-      expect(compressedPacket.packets[0].toByteData(),
-          equals(literalData.toByteData()));
+        compressedPacket.algorithm,
+        equals(decompressedPacket.algorithm),
+      );
+      expect(
+        compressedPacket.compressed,
+        equals(decompressedPacket.compressed),
+      );
+      expect(
+        compressedPacket.packets[0].encode(),
+        equals(literalData.encode()),
+      );
     });
 
     test('bzip2 test', () {
