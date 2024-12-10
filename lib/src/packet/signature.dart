@@ -492,12 +492,12 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       ),
       PreferredSymmetricAlgorithms(Uint8List.fromList([
         SymmetricAlgorithm.aes128.value,
-        SymmetricAlgorithm.aes192.value,
         SymmetricAlgorithm.aes256.value,
+        SymmetricAlgorithm.aes192.value,
       ])),
       PreferredAeadAlgorithms(Uint8List.fromList([
-        AeadAlgorithm.gcm.value,
         AeadAlgorithm.ocb.value,
+        AeadAlgorithm.gcm.value,
         AeadAlgorithm.eax.value,
       ])),
       PreferredHashAlgorithms(Uint8List.fromList([
@@ -519,23 +519,23 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       subpackets.add(PreferredAeadCiphers(Uint8List.fromList([
         ...[
           SymmetricAlgorithm.aes128.value,
-          AeadAlgorithm.gcm.value,
-          SymmetricAlgorithm.aes128.value,
           AeadAlgorithm.ocb.value,
+          SymmetricAlgorithm.aes128.value,
+          AeadAlgorithm.gcm.value,
           SymmetricAlgorithm.aes128.value,
           AeadAlgorithm.eax.value,
         ],
         ...[
-          SymmetricAlgorithm.aes192.value,
-          AeadAlgorithm.gcm.value,
-          SymmetricAlgorithm.aes192.value,
+          SymmetricAlgorithm.aes256.value,
           AeadAlgorithm.ocb.value,
+          SymmetricAlgorithm.aes256.value,
+          AeadAlgorithm.gcm.value,
         ],
         ...[
-          SymmetricAlgorithm.aes256.value,
-          AeadAlgorithm.gcm.value,
-          SymmetricAlgorithm.aes256.value,
+          SymmetricAlgorithm.aes192.value,
           AeadAlgorithm.ocb.value,
+          SymmetricAlgorithm.aes192.value,
+          AeadAlgorithm.gcm.value,
         ],
       ])));
     }

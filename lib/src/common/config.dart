@@ -33,5 +33,5 @@ final class Config {
 
   static CompressionAlgorithm preferredCompression = CompressionAlgorithm.uncompressed;
 
-  static AeadAlgorithm preferredAead = AeadAlgorithm.gcm;
+  static AeadAlgorithm preferredAead = AeadAlgorithm.ocb;
 }
