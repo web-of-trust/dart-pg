@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dart_pg/src/enum/compression_algorithm.dart';
 import 'package:dart_pg/src/enum/preset_rfc.dart';
 import 'package:dart_pg/src/openpgp.dart';
-import 'package:dart_pg/src/packet/base_packet.dart';
 import 'package:test/test.dart';
 
 import '../data/key_data.dart';

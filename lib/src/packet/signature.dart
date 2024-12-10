@@ -16,7 +16,6 @@ import '../type/signature_packet.dart';
 import '../type/subpacket.dart';
 import '../type/user_id_packet.dart';
 import 'base_packet.dart';
-import 'signature_subpacket.dart';
 import 'subpacket_reader.dart';
 
 /// Implementation of the Signature (SIG) Packet - Type 2

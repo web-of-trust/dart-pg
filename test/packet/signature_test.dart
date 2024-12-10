@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:dart_pg/src/common/helpers.dart';
 import 'package:dart_pg/src/enum/signature_type.dart';
 import 'package:dart_pg/src/packet/base_packet.dart';
-import 'package:dart_pg/src/packet/signature_subpacket.dart';
 import 'package:dart_pg/src/packet/subpacket_reader.dart';
 import 'package:test/test.dart';
 

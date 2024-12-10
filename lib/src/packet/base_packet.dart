@@ -26,6 +26,7 @@ export 'public_subkey.dart';
 export 'secret_key.dart';
 export 'secret_subkey.dart';
 export 'signature.dart';
+export 'signature_subpacket.dart';
 export 'sym_encrypted_data.dart';
 export 'sym_encrypted_integrity_protected_data.dart';
 export 'sym_encrypted_session_key.dart';
