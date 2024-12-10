@@ -23,6 +23,32 @@ class PreferredAeadCiphers extends SignatureSubpacket {
           data,
         );
 
+  List<AeadAlgorithm> preferredAeads(
+    final SymmetricAlgorithm symmetric,
+  ) {
+    final aeads = <AeadAlgorithm>[];
+    if (data.isNotEmpty) {
+      const chunkSize = 2;
+      var data = this.data;
+      while (data.isNotEmpty) {
+        final size = chunkSize < data.length ? chunkSize : data.length;
+        final ciphers = data.sublist(0, size);
+        if (ciphers.elementAtOrNull(1) != null) {
+          final preferredSymmetric = SymmetricAlgorithm.values.firstWhere(
+            (alg) => alg.value == ciphers.elementAt(0),
+          );
+          if (symmetric == preferredSymmetric) {
+            aeads.add(AeadAlgorithm.values.firstWhere(
+              (alg) => alg.value == ciphers.elementAt(1),
+            ));
+          }
+        }
+        data = data.sublist(size);
+      }
+    }
+    return aeads;
+  }
+
   bool isPreferred(
     final SymmetricAlgorithm symmetric,
     final AeadAlgorithm aead,

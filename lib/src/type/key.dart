@@ -69,6 +69,11 @@ abstract interface class KeyInterface implements ArmorableInterface, PacketConta
   /// Get subkeys
   List<SubkeyInterface> get subkeys;
 
+  /// Return preferred aead algorithms
+  List<AeadAlgorithm> preferredAeads([
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+  ]);
+
   /// Return aead ciphers is preferred
   bool isPreferredAeadCiphers([
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,

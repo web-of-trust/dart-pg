@@ -63,18 +63,18 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     var aeadProtect = Config.aeadProtect;
     final aead = Config.preferredAead;
     for (final key in encryptionKeys) {
+      final symmetrics = key.preferredSymmetrics;
+      if (symmetrics.isNotEmpty && !symmetrics.contains(symmetric)) {
+        throw AssertionError(
+          'Symmetric not compatible with the given `encryptionKeys`',
+        );
+      }
       if (key.aeadSupported) {
-        if (!key.isPreferredAeadCiphers(symmetric, aead)) {
-          throw AssertionError(
-            'Aead ciphers not compatible with the given `encryptionKeys`',
-          );
+        final aeads = key.preferredAeads(symmetric);
+        if (!aeads.contains(aead)) {
+          aeadProtect = false;
         }
       } else {
-        if (key.preferredSymmetrics.isNotEmpty && !key.preferredSymmetrics.contains(symmetric)) {
-          throw AssertionError(
-            'Symmetric not compatible with the given `encryptionKeys`',
-          );
-        }
         aeadProtect = false;
       }
     }
@@ -203,6 +203,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
       ).packets,
     ];
     var index = 0;
+
     /// innermost OPS refers to the first signature packet
     final opsPackets = signaturePackets
         .map((packet) {
