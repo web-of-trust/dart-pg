@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dart_pg/dart_pg.dart';
-import 'package:dart_pg/src/enum/symmetric_algorithm.dart';
 
 void main() {
   const passphrase = 'NU=WM<;ev3(^^M@)dIt,O|9k*<xLpv7v';

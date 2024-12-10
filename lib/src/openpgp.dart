@@ -23,6 +23,12 @@ import 'type/session_key.dart';
 
 export 'common/config.dart';
 export 'common/helpers.dart';
+
+export 'enum/ecc.dart';
+export 'enum/key_type.dart';
+export 'enum/rsa_key_size.dart';
+export 'enum/symmetric_algorithm.dart';
+
 export 'key/base_key.dart';
 export 'message/base_message.dart';
 export 'packet/base_packet.dart';

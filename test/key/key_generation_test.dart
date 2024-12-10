@@ -1,8 +1,5 @@
-import 'package:dart_pg/src/enum/ecc.dart';
 import 'package:dart_pg/src/enum/key_algorithm.dart';
-import 'package:dart_pg/src/enum/key_type.dart';
 import 'package:dart_pg/src/enum/key_version.dart';
-import 'package:dart_pg/src/enum/rsa_key_size.dart';
 import 'package:dart_pg/src/openpgp.dart';
 import 'package:test/test.dart';
 
