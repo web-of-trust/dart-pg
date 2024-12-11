@@ -106,7 +106,7 @@ final class EncryptedMessage extends BaseMessage
     final Iterable<PrivateKeyInterface> decryptionKeys = const [],
     final Iterable<String> passwords = const [],
   }) {
-    _sessionKey = decryptSessionKey(
+    _sessionKey ??= decryptSessionKey(
       packetList,
       decryptionKeys: decryptionKeys,
       passwords: passwords,
