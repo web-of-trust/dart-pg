@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dart_pg/src/enum/compression_algorithm.dart';
-import 'package:dart_pg/src/enum/preset_rfc.dart';
 import 'package:dart_pg/src/openpgp.dart';
 import 'package:test/test.dart';
 
@@ -169,7 +168,6 @@ void main() {
     });
 
     test('with aead protect', () {
-      Config.presetRfc = PresetRfc.rfc9580;
       Config.aeadProtect = true;
 
       final encryptedMessage = OpenPGP.encryptBinaryData(
@@ -187,7 +185,6 @@ void main() {
       expect(literalMessage.literalData.binary, equals(literalData));
 
       Config.aeadProtect = false;
-      Config.presetRfc = PresetRfc.rfc4880;
     });
 
     test('to Alice', () {

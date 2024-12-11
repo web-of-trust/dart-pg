@@ -12,7 +12,6 @@ import '../common/helpers.dart';
 import '../enum/aead_algorithm.dart';
 import '../enum/armor_type.dart';
 import '../enum/compression_algorithm.dart';
-import '../enum/preset_rfc.dart';
 import '../enum/symmetric_algorithm.dart';
 import '../message/base_message.dart';
 import '../packet/base_packet.dart';
@@ -166,7 +165,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
         'No encryption keys or passwords provided.',
       );
     }
-    var addPadding = Config.presetRfc == PresetRfc.rfc9580;
+    var addPadding = true;
     for (final key in encryptionKeys) {
       if (!key.keyPacket.isV6Key) {
         addPadding = false;
@@ -179,7 +178,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
 
     final packetList = addPadding
         ? PacketList([
-            ...this.packetList.packets,
+            ...this.packetList,
             PaddingPacket.createPadding(
               Helper.randomInt(
                 PaddingPacket.paddingMin,

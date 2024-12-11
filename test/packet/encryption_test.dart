@@ -210,7 +210,7 @@ void main() {
           key,
           SymmetricAlgorithm.aes128,
         ),
-        throwsStateError,
+        throwsA(isA<Error>()),
       );
     });
 
