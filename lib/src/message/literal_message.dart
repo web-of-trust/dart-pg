@@ -61,15 +61,20 @@ final class LiteralMessage extends BaseMessage
     final Iterable<KeyInterface> encryptionKeys, [
     final SymmetricAlgorithm defaultSymmetric = SymmetricAlgorithm.aes128,
   ]) {
-    var preferredSymmetrics = SymmetricAlgorithm.preferredSymmetrics;
-    for (final key in encryptionKeys) {
-      preferredSymmetrics = preferredSymmetrics
-          .where(
-            (symmetric) => key.preferredSymmetrics.contains(symmetric),
-          )
-          .toList();
+    final SymmetricAlgorithm symmetric;
+    if (encryptionKeys.isNotEmpty) {
+      var preferredSymmetrics = SymmetricAlgorithm.preferredSymmetrics;
+      for (final key in encryptionKeys) {
+        preferredSymmetrics = preferredSymmetrics
+            .where(
+              (symmetric) => key.preferredSymmetrics.contains(symmetric),
+            )
+            .toList();
+      }
+      symmetric = preferredSymmetrics.firstOrNull ?? defaultSymmetric;
+    } else {
+      symmetric = defaultSymmetric;
     }
-    final symmetric = preferredSymmetrics.firstOrNull ?? defaultSymmetric;
 
     var preferredAeads = [
       AeadAlgorithm.ocb,
