@@ -134,15 +134,10 @@ final class Helper {
   }
 
   static assertSymmetric(final SymmetricAlgorithm symmetric) {
-    switch (symmetric) {
-      case SymmetricAlgorithm.plaintext:
-      case SymmetricAlgorithm.cast5:
-      case SymmetricAlgorithm.idea:
-      case SymmetricAlgorithm.tripledes:
+    if (!SymmetricAlgorithm.preferredSymmetrics.contains(symmetric)) {
         throw UnsupportedError(
           'Symmetric ${symmetric.name} is unsupported.',
-        );
-      default:
+      );
     }
   }
 }
