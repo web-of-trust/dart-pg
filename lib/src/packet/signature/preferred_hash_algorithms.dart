@@ -20,8 +20,7 @@ class PreferredHashAlgorithms extends SignatureSubpacket {
     super.isLong,
   }) : super(SignatureSubpacketType.preferredHashAlgorithms, data);
 
-  List<HashAlgorithm> get preferences =>
-      data
+  List<HashAlgorithm> get preferences => data
       .map(
         (pref) => HashAlgorithm.values.firstWhere(
           (alg) => alg.value == pref,

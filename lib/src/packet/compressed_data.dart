@@ -65,7 +65,9 @@ class CompressedDataPacket extends BasePacket {
     final CompressionAlgorithm algorithm,
   ) =>
       switch (algorithm) {
-        CompressionAlgorithm.zip || CompressionAlgorithm.zlib => Uint8List.fromList(
+        CompressionAlgorithm.zip ||
+        CompressionAlgorithm.zlib =>
+          Uint8List.fromList(
             ZLibCodec(
               level: deflateLevel,
               raw: algorithm == CompressionAlgorithm.zip,
@@ -82,7 +84,9 @@ class CompressedDataPacket extends BasePacket {
     final CompressionAlgorithm algorithm,
   ) =>
       switch (algorithm) {
-        CompressionAlgorithm.zip || CompressionAlgorithm.zlib => PacketList.decode(
+        CompressionAlgorithm.zip ||
+        CompressionAlgorithm.zlib =>
+          PacketList.decode(
             Uint8List.fromList(ZLibCodec(
               level: deflateLevel,
               raw: algorithm == CompressionAlgorithm.zip,

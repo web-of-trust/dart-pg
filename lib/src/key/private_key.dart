@@ -53,7 +53,8 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
     }
     final KeyAlgorithm keyAlgorithm = switch (type) {
       KeyType.rsa => KeyAlgorithm.rsaEncryptSign,
-      KeyType.ecc => curve == Ecc.ed25519 ? KeyAlgorithm.eddsaLegacy : KeyAlgorithm.ecdsa,
+      KeyType.ecc =>
+        curve == Ecc.ed25519 ? KeyAlgorithm.eddsaLegacy : KeyAlgorithm.ecdsa,
       KeyType.curve25519 => KeyAlgorithm.ed25519,
       KeyType.curve448 => KeyAlgorithm.ed448,
     };
@@ -64,7 +65,8 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
       curve: curve,
       time: time,
     );
-    final aead = secretKey.isV6Key && Config.aeadProtect ? Config.preferredAead : null;
+    final aead =
+        secretKey.isV6Key && Config.aeadProtect ? Config.preferredAead : null;
     final packets = <PacketInterface>[
       secretKey.encrypt(
         passphrase,
@@ -106,7 +108,8 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
         KeyType.curve25519 => KeyAlgorithm.x25519,
         KeyType.curve448 => KeyAlgorithm.x448,
       };
-      final subkeyCurve = keyAlgorithm == KeyAlgorithm.eddsaLegacy ? Ecc.curve25519 : curve;
+      final subkeyCurve =
+          keyAlgorithm == KeyAlgorithm.eddsaLegacy ? Ecc.curve25519 : curve;
       final secretSubkey = SecretSubkeyPacket.generate(
         subkeyAlgorithm,
         rsaKeySize: rsaKeySize,
@@ -162,7 +165,8 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   }
 
   @override
-  getDecryptionKeyPacket([Uint8List? keyID]) => getEncryptionKeyPacket(keyID) as SecretKeyPacketInterface;
+  getDecryptionKeyPacket([Uint8List? keyID]) =>
+      getEncryptionKeyPacket(keyID) as SecretKeyPacketInterface;
 
   @override
   armor() => Armor.encode(ArmorType.privateKey, packetList.encode());
@@ -183,7 +187,8 @@ final class PrivateKey extends BaseKey implements PrivateKeyInterface {
       );
     }
 
-    final aead = aeadProtected && Config.aeadProtect ? Config.preferredAead : null;
+    final aead =
+        aeadProtected && Config.aeadProtect ? Config.preferredAead : null;
     final subkeys = this.subkeys.map((subkey) {
       final index = this.subkeys.indexOf(subkey);
       final subkeyPass = subkeyPassphrases.elementAtOrNull(index) ?? passphrase;

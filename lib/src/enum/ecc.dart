@@ -36,7 +36,11 @@ enum Ecc {
       };
 
   SymmetricAlgorithm get symmetricAlgorithm => switch (this) {
-        brainpoolP256r1 || curve25519 || ed25519 || secp256r1 => SymmetricAlgorithm.aes128,
+        brainpoolP256r1 ||
+        curve25519 ||
+        ed25519 ||
+        secp256r1 =>
+          SymmetricAlgorithm.aes128,
         brainpoolP384r1 || secp384r1 => SymmetricAlgorithm.aes192,
         brainpoolP512r1 || secp521r1 => SymmetricAlgorithm.aes256,
       };

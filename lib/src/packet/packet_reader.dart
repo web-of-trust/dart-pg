@@ -24,7 +24,9 @@ final class PacketReader {
     final Uint8List bytes, [
     final int offset = 0,
   ]) {
-    if (bytes.length <= offset || bytes.sublist(offset).length < 2 || (bytes[offset] & 0x80) == 0) {
+    if (bytes.length <= offset ||
+        bytes.sublist(offset).length < 2 ||
+        (bytes[offset] & 0x80) == 0) {
       throw ArgumentError(
         'Error during parsing.'
         'This data probably does not conform to a valid OpenPGP format.',
@@ -78,7 +80,8 @@ final class PacketReader {
             partialPos += partialLen;
             break;
           } else if (partialLen < 224) {
-            partialLen = ((partialLen - 192) << 8) + (bytes[partialPos++]) + 192;
+            partialLen =
+                ((partialLen - 192) << 8) + (bytes[partialPos++]) + 192;
             partialData.add(
               bytes.sublist(partialPos, partialPos + partialLen),
             );

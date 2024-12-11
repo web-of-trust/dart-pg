@@ -23,7 +23,8 @@ export 'user.dart';
 /// Transferable key interface
 /// That represents a key packet, the relevant signatures, users and subkeys.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class KeyInterface implements ArmorableInterface, PacketContainerInterface {
+abstract interface class KeyInterface
+    implements ArmorableInterface, PacketContainerInterface {
   /// Return key packet
   KeyPacketInterface get keyPacket;
 

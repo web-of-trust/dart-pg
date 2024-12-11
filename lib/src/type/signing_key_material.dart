@@ -11,8 +11,9 @@ import '../enum/hash_algorithm.dart';
 
 /// Signing key material interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class SigningKeyMaterialInterface implements SecretKeyMaterialInterface {
-    /// Sign a message and return signature
+abstract interface class SigningKeyMaterialInterface
+    implements SecretKeyMaterialInterface {
+  /// Sign a message and return signature
   Uint8List sign(
     final Uint8List message,
     final HashAlgorithm hash,

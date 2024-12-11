@@ -23,7 +23,8 @@ export 'verification.dart';
 
 /// Literal message interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class LiteralMessageInterface implements ArmorableInterface, PacketContainerInterface {
+abstract interface class LiteralMessageInterface
+    implements ArmorableInterface, PacketContainerInterface {
   /// Get literal data
   LiteralDataInterface get literalData;
 

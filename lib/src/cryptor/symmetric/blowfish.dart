@@ -356,7 +356,9 @@ class BlowfishEngine extends BaseEngine {
   }
 
   int _f(final int x) {
-    return ((_s0[(x >> 24) & 0xff] + _s1[(x >> 16) & 0xff]) ^ _s2[(x >> 8) & 0xff]) + _s3[x & 0xff];
+    return ((_s0[(x >> 24) & 0xff] + _s1[(x >> 16) & 0xff]) ^
+            _s2[(x >> 8) & 0xff]) +
+        _s3[x & 0xff];
   }
 
   /// apply the encryption cycle to each value pair in the table.

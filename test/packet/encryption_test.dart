@@ -27,8 +27,10 @@ void main() {
       expect(aepd.chunkSize, 14);
       expect(aepd.iv.toHexadecimal(), 'b732379f73c4928de25facfe6517ec10');
 
-      final decryptAepd = aepd.decrypt('86f1efb86952329f24acd3bfd0e5346d'.hexToBytes());
-      final literalData = decryptAepd.packets!.whereType<LiteralDataInterface>().first;
+      final decryptAepd =
+          aepd.decrypt('86f1efb86952329f24acd3bfd0e5346d'.hexToBytes());
+      final literalData =
+          decryptAepd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -43,8 +45,10 @@ void main() {
       expect(aepd.chunkSize, 14);
       expect(aepd.iv.toHexadecimal(), '5ed2bc1e470abe8f1d644c7a6c8a56');
 
-      final decryptAepd = aepd.decrypt('d1f01ba30e130aa7d2582c16e050ae44'.hexToBytes());
-      final literalData = decryptAepd.packets!.whereType<LiteralDataInterface>().first;
+      final decryptAepd =
+          aepd.decrypt('d1f01ba30e130aa7d2582c16e050ae44'.hexToBytes());
+      final literalData =
+          decryptAepd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
   });
@@ -66,13 +70,15 @@ void main() {
         '3881bafe985412459b86c36f98cb9a5e'.hexToBytes(),
       );
 
-      final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
+      final seipd =
+          SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AgcBBp/5DjsyGWTzpCkTyNzGYZMlAVIn77fq6qSfBMLmdBddSj0ibtavy5yprBIsFHDhHGPUwKskHGqTitSL+ZpambkLuoMl3mEEdUAlireVmpWtBR3alusVQx3+9fXiJVyngmFUbjOa',
       )).decrypt(sessionKey.encryptionKey);
       expect(seipd.symmetric, SymmetricAlgorithm.aes128);
       expect(seipd.aead, AeadAlgorithm.eax);
 
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -89,13 +95,15 @@ void main() {
         '28e79ab82397d3c63de24ac217d7b791'.hexToBytes(),
       );
 
-      final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
+      final seipd =
+          SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AgcCBiCmYfcx/JowMrViMyYCfjpdjbV0jr7/CwxZENCezdZB/5/ThWJ1gDW8SXVM4b8//6fa0KO4EE9RM89CpBAKg+70yhtIAaiEa/QrzafIzp1l4hLzAcvNmP3K3mlKh3rUJHMj9uhX',
       )).decrypt(sessionKey.encryptionKey);
       expect(seipd.symmetric, SymmetricAlgorithm.aes128);
       expect(seipd.aead, AeadAlgorithm.ocb);
 
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -112,13 +120,15 @@ void main() {
         '1936fc8568980274bb900d8319360c77'.hexToBytes(),
       );
 
-      final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
+      final seipd =
+          SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AgcDBvy5RJC8uYu9ydEGxgkCZpQPcuie3CG1WWsVdrEB7Q+f/G/G1lu/0k3NB5CWbm0ehaMAU3hMsdi2oGme8SFVp7KtYlhTG1dlH9d3eRL6leNdm0Ahb2mkwkjbKP9DMfFjKQc5nm/5',
       )).decrypt(sessionKey.encryptionKey);
       expect(seipd.symmetric, SymmetricAlgorithm.aes128);
       expect(seipd.aead, AeadAlgorithm.gcm);
 
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -136,10 +146,12 @@ void main() {
       );
       expect(sessionKey.symmetric, SymmetricAlgorithm.aes128);
 
-      final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
+      final seipd =
+          SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AZgYpj5gnPi7oX4MOUME6vk1FBe38okh/ibiY6UrIL+6otumcslkydOrejv0bEFN0h07OEdd8DempXiZPMU=',
       )).decrypt(sessionKey.encryptionKey, sessionKey.symmetric);
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -157,10 +169,12 @@ void main() {
       );
       expect(sessionKey.symmetric, SymmetricAlgorithm.aes192);
 
-      final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
+      final seipd =
+          SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AdJ1Sw56PRYiKZjCvHg+2bnq02s33AJJoyBexBI4QKATFRkyez2gldJldRysLVg77Mwwfgl2n/d572WciAM=',
       )).decrypt(sessionKey.encryptionKey, sessionKey.symmetric);
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -174,14 +188,17 @@ void main() {
       final sessionKey = skesk.sessionKey!;
       expect(
         sessionKey.encryptionKey,
-        'bbeda55b9aae63dac45d4f49d89dacf4af37fefc13bab2f1f8e18fb74580d8b0'.hexToBytes(),
+        'bbeda55b9aae63dac45d4f49d89dacf4af37fefc13bab2f1f8e18fb74580d8b0'
+            .hexToBytes(),
       );
       expect(sessionKey.symmetric, SymmetricAlgorithm.aes256);
 
-      final seipd = SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
+      final seipd =
+          SymEncryptedIntegrityProtectedDataPacket.fromBytes(base64.decode(
         'AfirtbIE3SaPO19Vq7qe5dMCcqWZbNtVMHeu5vZKBetHnnx/yveQ9brJYlzhJvGskCUJma43+iur/T1sKjE=',
       )).decrypt(sessionKey.encryptionKey, sessionKey.symmetric);
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
   });
@@ -271,12 +288,19 @@ void main() {
       expect(sessionKey.symmetric, skesk.symmetric);
 
       final packets = PacketList.decode(PacketList([skesk, seipd]).encode());
-      final decryptSkesk = packets.whereType<SymEncryptedSessionKeyPacket>().first.decrypt(password);
-      final decryptSeipd = packets.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final decryptSkesk = packets
+          .whereType<SymEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(password);
+      final decryptSeipd = packets
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             decryptSkesk.sessionKey!.encryptionKey,
             decryptSkesk.sessionKey!.symmetric,
           );
-      final literalData = decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.text, literalText);
     });
 
@@ -295,12 +319,19 @@ void main() {
       expect(skesk.symmetric, SymmetricAlgorithm.aes256);
 
       final packets = PacketList.decode(PacketList([skesk, seipd]).encode());
-      final decryptSkesk = packets.whereType<SymEncryptedSessionKeyPacket>().first.decrypt(password);
-      final decryptSeipd = packets.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final decryptSkesk = packets
+          .whereType<SymEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(password);
+      final decryptSeipd = packets
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             decryptSkesk.sessionKey!.encryptionKey,
             decryptSkesk.sessionKey!.symmetric,
           );
-      final literalData = decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
       expect(
         decryptSkesk.symmetric,
         SymmetricAlgorithm.aes256,
@@ -330,12 +361,19 @@ void main() {
       expect(seipd.aead, Config.preferredAead);
 
       final packets = PacketList.decode(PacketList([skesk, seipd]).encode());
-      final decryptSkesk = packets.whereType<SymEncryptedSessionKeyPacket>().first.decrypt(password);
-      final decryptSeipd = packets.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final decryptSkesk = packets
+          .whereType<SymEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(password);
+      final decryptSeipd = packets
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             decryptSkesk.sessionKey!.encryptionKey,
             decryptSkesk.sessionKey!.symmetric,
           );
-      final literalData = decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          decryptSeipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.text, literalText);
     });
   });
@@ -401,13 +439,20 @@ WUlZSqHRuD/11Hh9WQgbyikT0/HWN6MKUYaC5ozOr4w0KIsCOk2vdOU6ZCbwcZlm+ZJFfE8T1PGu
           ),
         ),
       );
-      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final pkesk = packetList
+          .whereType<PublicKeyEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(subkey);
       final sessionKey = pkesk.sessionKey!;
-      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final seipd = packetList
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             sessionKey.encryptionKey,
             sessionKey.symmetric,
           );
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -472,14 +517,21 @@ heUWSSwsi+sdLtKcnQQfj/RDqmhO9tmfk8sRTu3Myp9tYJLnjngOxsNEMoRRgo7eBSLVjUQlQu8=
           ),
         ),
       );
-      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final pkesk = packetList
+          .whereType<PublicKeyEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(subkey);
       final sessionKey = pkesk.sessionKey!;
-      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final seipd = packetList
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             sessionKey.encryptionKey,
             sessionKey.symmetric,
           );
       final comPacket = seipd.packets!.whereType<CompressedDataPacket>().first;
-      final literalData = comPacket.packets.whereType<LiteralDataInterface>().first;
+      final literalData =
+          comPacket.packets.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -514,13 +566,20 @@ PXVtziQ8IyqoGshWNSwpWcPZl9KW2mUBGVIpOtCg0j8BYZTkYDl0D/a62/c1QUyqjpXqgGhzXvuS
           ),
         ),
       );
-      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final pkesk = packetList
+          .whereType<PublicKeyEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(subkey);
       final sessionKey = pkesk.sessionKey!;
-      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final seipd = packetList
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             sessionKey.encryptionKey,
             sessionKey.symmetric,
           );
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -555,13 +614,20 @@ dJb40maS
           ),
         ),
       );
-      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final pkesk = packetList
+          .whereType<PublicKeyEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(subkey);
       final sessionKey = pkesk.sessionKey!;
-      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final seipd = packetList
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             sessionKey.encryptionKey,
             sessionKey.symmetric,
           );
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -594,13 +660,20 @@ SdJraH1GfEeeMdV9t8623Gu3xkQ4hXf+figKNUWdq+kwHGqbQQNoeai1TYYNCuY=
           ),
         ),
       );
-      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final pkesk = packetList
+          .whereType<PublicKeyEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(subkey);
       final sessionKey = pkesk.sessionKey!;
-      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final seipd = packetList
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             sessionKey.encryptionKey,
             sessionKey.symmetric,
           );
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -634,13 +707,20 @@ UQi6XlKOsfRPH6ozJjwLn7nPdfz5pHPtR0QljShJqeM=
           ),
         ),
       );
-      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final pkesk = packetList
+          .whereType<PublicKeyEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(subkey);
       final sessionKey = pkesk.sessionKey!;
-      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final seipd = packetList
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             sessionKey.encryptionKey,
             sessionKey.symmetric,
           );
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
     });
 
@@ -681,13 +761,20 @@ ExAnXHXIb8I=
           ),
         ),
       );
-      final pkesk = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>().first.decrypt(subkey);
+      final pkesk = packetList
+          .whereType<PublicKeyEncryptedSessionKeyPacket>()
+          .first
+          .decrypt(subkey);
       final sessionKey = pkesk.sessionKey!;
-      final seipd = packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().first.decrypt(
+      final seipd = packetList
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .first
+          .decrypt(
             sessionKey.encryptionKey,
             sessionKey.symmetric,
           );
-      final literalData = seipd.packets!.whereType<LiteralDataInterface>().first;
+      final literalData =
+          seipd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, 'Hello there'.toBytes());
     });
 
@@ -747,14 +834,16 @@ EWbTE/ndfIE+i/dP8vgD2SGqAKyz4XmyABqt/Ry5idusd89FgIK6QNZDbI1xF5KImRjyyiBqHt4a
       expect(publicSubkey.keyAlgorithm, KeyAlgorithm.rsaEncryptSign);
       expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
 
-      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final encryptedPkesk =
+          PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
         publicSubkey,
         sessionKey,
       );
       final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
         encryptedPkesk.data,
       ).decrypt(secretSubkey);
-      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+      expect(
+          decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
     });
 
     test('Encrypt session key with ECDH NIST P-384 subkey', () {
@@ -788,14 +877,16 @@ CQABf19UJNkpedSjrDT3bwSSzOlI8/uyJzKkqF5z26O2i+UbQ/VYIK78pSWB5/YNCfpTHRn5
       expect(publicSubkey.keyAlgorithm, KeyAlgorithm.ecdh);
       expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
 
-      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final encryptedPkesk =
+          PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
         publicSubkey,
         sessionKey,
       );
       final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
         encryptedPkesk.data,
       ).decrypt(secretSubkey);
-      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+      expect(
+          decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
     });
 
     test('Encrypt session key with ECDH Brainpool P-256  subkey', () {
@@ -828,14 +919,16 @@ JezusZoe4R0RBg==
       expect(publicSubkey.keyAlgorithm, KeyAlgorithm.ecdh);
       expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
 
-      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final encryptedPkesk =
+          PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
         publicSubkey,
         sessionKey,
       );
       final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
         encryptedPkesk.data,
       ).decrypt(secretSubkey);
-      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+      expect(
+          decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
     });
 
     test('Encrypt session key with ECDH x25519 subkey', () {
@@ -866,14 +959,16 @@ AP9/8RTxulNe64U7qvtO4JhL2hWCn8UQerIAGIlukzE6UBCu
       expect(publicSubkey.keyAlgorithm, KeyAlgorithm.ecdh);
       expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
 
-      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final encryptedPkesk =
+          PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
         publicSubkey,
         sessionKey,
       );
       final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
         encryptedPkesk.data,
       ).decrypt(secretSubkey);
-      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+      expect(
+          decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
     });
 
     test('Encrypt session key with x25519 rfc9580 subkey', () {
@@ -904,14 +999,16 @@ BmOHf+MZAAAAIIaTJINn+eUBXbki+PSAld2nhJh/LVmFsS+60WyvXkQ1AE1gCk95TUR3XFeibg/u
       expect(publicSubkey.keyAlgorithm, KeyAlgorithm.x25519);
       expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
 
-      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final encryptedPkesk =
+          PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
         publicSubkey,
         sessionKey,
       );
       final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
         encryptedPkesk.data,
       ).decrypt(secretSubkey);
-      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+      expect(
+          decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
     });
 
     test('Encrypt session key with x448 rfc9580 subkey', () {
@@ -944,14 +1041,16 @@ BsL8GXscLICI
       expect(publicSubkey.keyAlgorithm, KeyAlgorithm.x448);
       expect(publicSubkey.fingerprint, secretSubkey.fingerprint);
 
-      final encryptedPkesk = PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
+      final encryptedPkesk =
+          PublicKeyEncryptedSessionKeyPacket.encryptSessionKey(
         publicSubkey,
         sessionKey,
       );
       final decryptedPkesk = PublicKeyEncryptedSessionKeyPacket.fromBytes(
         encryptedPkesk.data,
       ).decrypt(secretSubkey);
-      expect(decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
+      expect(
+          decryptedPkesk.sessionKey!.encryptionKey, sessionKey.encryptionKey);
     });
   });
 }

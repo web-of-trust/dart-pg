@@ -163,11 +163,14 @@ final class Fp448 {
     final t7 = y7 + v7;
 
     final f0 = x0 * y0;
-    final f8 = x7 * y1 + x6 * y2 + x5 * y3 + x4 * y4 + x3 * y5 + x2 * y6 + x1 * y7;
+    final f8 =
+        x7 * y1 + x6 * y2 + x5 * y3 + x4 * y4 + x3 * y5 + x2 * y6 + x1 * y7;
     final g0 = u0 * v0;
-    final g8 = u7 * v1 + u6 * v2 + u5 * v3 + u4 * v4 + u3 * v5 + u2 * v6 + u1 * v7;
+    final g8 =
+        u7 * v1 + u6 * v2 + u5 * v3 + u4 * v4 + u3 * v5 + u2 * v6 + u1 * v7;
     final h0 = s0 * t0;
-    final h8 = s7 * t1 + s6 * t2 + s5 * t3 + s4 * t4 + s3 * t5 + s2 * t6 + s1 * t7;
+    final h8 =
+        s7 * t1 + s6 * t2 + s5 * t3 + s4 * t4 + s3 * t5 + s2 * t6 + s1 * t7;
 
     var c = f0 + g0 + h8 - f8;
     var z0 = c & m28;
@@ -246,11 +249,14 @@ final class Fp448 {
     var z13 = d & m28;
     d >>>= 28;
 
-    final f6 = x6 * y0 + x5 * y1 + x4 * y2 + x3 * y3 + x2 * y4 + x1 * y5 + x0 * y6;
+    final f6 =
+        x6 * y0 + x5 * y1 + x4 * y2 + x3 * y3 + x2 * y4 + x1 * y5 + x0 * y6;
     final f14 = x7 * y7;
-    final g6 = u6 * v0 + u5 * v1 + u4 * v2 + u3 * v3 + u2 * v4 + u1 * v5 + u0 * v6;
+    final g6 =
+        u6 * v0 + u5 * v1 + u4 * v2 + u3 * v3 + u2 * v4 + u1 * v5 + u0 * v6;
     final g14 = u7 * v7;
-    final h6 = s6 * t0 + s5 * t1 + s4 * t2 + s3 * t3 + s2 * t4 + s1 * t5 + s0 * t6;
+    final h6 =
+        s6 * t0 + s5 * t1 + s4 * t2 + s3 * t3 + s2 * t4 + s1 * t5 + s0 * t6;
     final h14 = s7 * t7;
 
     c += f6 + g6 + h14 - f14;
@@ -260,9 +266,30 @@ final class Fp448 {
     var z14 = d & m28;
     d >>>= 28;
 
-    final f7 = x7 * y0 + x6 * y1 + x5 * y2 + x4 * y3 + x3 * y4 + x2 * y5 + x1 * y6 + x0 * y7;
-    final g7 = u7 * v0 + u6 * v1 + u5 * v2 + u4 * v3 + u3 * v4 + u2 * v5 + u1 * v6 + u0 * v7;
-    final h7 = s7 * t0 + s6 * t1 + s5 * t2 + s4 * t3 + s3 * t4 + s2 * t5 + s1 * t6 + s0 * t7;
+    final f7 = x7 * y0 +
+        x6 * y1 +
+        x5 * y2 +
+        x4 * y3 +
+        x3 * y4 +
+        x2 * y5 +
+        x1 * y6 +
+        x0 * y7;
+    final g7 = u7 * v0 +
+        u6 * v1 +
+        u5 * v2 +
+        u4 * v3 +
+        u3 * v4 +
+        u2 * v5 +
+        u1 * v6 +
+        u0 * v7;
+    final h7 = s7 * t0 +
+        s6 * t1 +
+        s5 * t2 +
+        s4 * t3 +
+        s3 * t4 +
+        s2 * t5 +
+        s1 * t6 +
+        s0 * t7;
 
     c += f7 + g7;
     var z7 = c & m28;

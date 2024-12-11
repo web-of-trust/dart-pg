@@ -63,7 +63,9 @@ final class User implements UserInterface {
       ]);
 
   @override
-  get userID => (userIDPacket is UserIDPacket) ? (userIDPacket as UserIDPacket).userID : "";
+  get userID => (userIDPacket is UserIDPacket)
+      ? (userIDPacket as UserIDPacket).userID
+      : "";
 
   @override
   isRevoked([final DateTime? time]) {

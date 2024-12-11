@@ -58,7 +58,8 @@ final class Subkey implements SubkeyInterface {
     if (keyPacket.isEncryptionKey) {
       for (final signature in bindingSignatures) {
         final keyFlags = signature.getSubpacket<KeyFlags>();
-        if (keyFlags != null && !(keyFlags.isEncryptStorage || keyFlags.isEncryptCommunication)) {
+        if (keyFlags != null &&
+            !(keyFlags.isEncryptStorage || keyFlags.isEncryptCommunication)) {
           return false;
         }
       }

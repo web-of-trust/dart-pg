@@ -9,4 +9,5 @@ import 'signed_message.dart';
 
 /// Signed cleartext message interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class SignedCleartextMessageInterface implements CleartextMessageInterface, SignedMessageInterface {}
+abstract interface class SignedCleartextMessageInterface
+    implements CleartextMessageInterface, SignedMessageInterface {}

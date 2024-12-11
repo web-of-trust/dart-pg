@@ -12,7 +12,8 @@ import 'public_key.dart';
 
 /// Implementation of the Public Subkey (PUBSUBKEY) Packet - Type 14
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PublicSubkeyPacket extends PublicKeyPacket implements SubkeyPacketInterface {
+class PublicSubkeyPacket extends PublicKeyPacket
+    implements SubkeyPacketInterface {
   @override
   get type => PacketType.publicSubkey;
 

@@ -135,7 +135,8 @@ abstract class BaseKey implements KeyInterface {
     for (final user in users) {
       if (user.isPrimary && !user.isRevoked()) {
         for (final signature in user.selfSignatures) {
-          final subpacket = signature.getSubpacket<PreferredSymmetricAlgorithms>();
+          final subpacket =
+              signature.getSubpacket<PreferredSymmetricAlgorithms>();
           if (subpacket?.preferences.isNotEmpty ?? false) {
             return subpacket!.preferences;
           }

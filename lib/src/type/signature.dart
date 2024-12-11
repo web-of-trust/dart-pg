@@ -17,7 +17,8 @@ import 'verification.dart';
 
 /// Signature interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class SignatureInterface implements ArmorableInterface, PacketContainerInterface {
+abstract interface class SignatureInterface
+    implements ArmorableInterface, PacketContainerInterface {
   /// Get hash algorithms
   Iterable<HashAlgorithm> get hashAlgorithms;
 

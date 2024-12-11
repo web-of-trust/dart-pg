@@ -136,7 +136,8 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
       ]);
 
   void _assertKey() {
-    if (keyVersion != KeyVersion.v4.value && keyVersion != KeyVersion.v6.value) {
+    if (keyVersion != KeyVersion.v4.value &&
+        keyVersion != KeyVersion.v6.value) {
       throw UnsupportedError(
         'Version $keyVersion of the key packet is unsupported.',
       );
@@ -151,7 +152,8 @@ class PublicKeyPacket extends BasePacket implements KeyPacketInterface {
           );
         }
       }
-      if (keyAlgorithm == KeyAlgorithm.dsa || keyAlgorithm == KeyAlgorithm.elgamal) {
+      if (keyAlgorithm == KeyAlgorithm.dsa ||
+          keyAlgorithm == KeyAlgorithm.elgamal) {
         throw ArgumentError(
           'Key algorithm ${keyAlgorithm.name} '
           'cannot be used with v$keyVersion key packet.',

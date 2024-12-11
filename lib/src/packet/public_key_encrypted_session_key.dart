@@ -83,7 +83,9 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
     pos++;
 
     final sessionKeyCryptor = switch (keyAlgorithm) {
-      KeyAlgorithm.rsaEncryptSign || KeyAlgorithm.rsaEncrypt => RSASessionKeyCryptor.fromBytes(
+      KeyAlgorithm.rsaEncryptSign ||
+      KeyAlgorithm.rsaEncrypt =>
+        RSASessionKeyCryptor.fromBytes(
           bytes.sublist(pos),
         ),
       KeyAlgorithm.elgamal => ElGamalSessionKeyCryptor.fromBytes(
@@ -135,7 +137,9 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
     };
 
     final cryptor = switch (keyPacket.keyAlgorithm) {
-      KeyAlgorithm.rsaEncryptSign || KeyAlgorithm.rsaEncrypt => RSASessionKeyCryptor.encryptSessionKey(
+      KeyAlgorithm.rsaEncryptSign ||
+      KeyAlgorithm.rsaEncrypt =>
+        RSASessionKeyCryptor.encryptSessionKey(
           keyData,
           keyPacket.keyMaterial as RSAPublicMaterial,
         ),
@@ -144,7 +148,9 @@ class PublicKeyEncryptedSessionKeyPacket extends BasePacket {
           keyPacket.keyMaterial as ECDHPublicMaterial,
           keyPacket.fingerprint,
         ),
-      KeyAlgorithm.x25519 || KeyAlgorithm.x448 => MontgomerySessionKeyCryptor.encryptSessionKey(
+      KeyAlgorithm.x25519 ||
+      KeyAlgorithm.x448 =>
+        MontgomerySessionKeyCryptor.encryptSessionKey(
           keyData,
           keyPacket.keyMaterial as MontgomeryPublicMaterial,
         ),

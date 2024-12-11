@@ -37,7 +37,8 @@ class Armor {
   static const endOfLine = '-----\n';
 
   static const splitPattern = r'^-----[^-]+-----$';
-  static const emptyLinePattern = r'^[ \f\r\t\u00a0\u2000-\u200a\u202f\u205f\u3000]*$';
+  static const emptyLinePattern =
+      r'^[ \f\r\t\u00a0\u2000-\u200a\u202f\u205f\u3000]*$';
   static const headerPattern = r'^([^\s:]|[^\s:][^:]*[^\s:]): .+$';
 
   static const base64Chunk = 76;
@@ -105,7 +106,8 @@ class Armor {
     final text = textLines.join('\r\n');
     final data = base64.decode(dataLines.join().trim());
 
-    if ((checksum != _crc24Checksum(data)) && (checksum.isNotEmpty || Config.checksumRequired)) {
+    if ((checksum != _crc24Checksum(data)) &&
+        (checksum.isNotEmpty || Config.checksumRequired)) {
       throw AssertionError('Ascii armor integrity check failed');
     }
 

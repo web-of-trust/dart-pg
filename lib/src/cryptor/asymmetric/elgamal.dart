@@ -52,11 +52,13 @@ class ElGamalEngine implements AsymmetricBlockCipher {
 
   /// Return the maximum size for an input block to this engine.
   @override
-  get inputBlockSize => _forEncryption ? (_bitSize - 1) ~/ 8 : 2 * ((_bitSize + 7) >> 3);
+  get inputBlockSize =>
+      _forEncryption ? (_bitSize - 1) ~/ 8 : 2 * ((_bitSize + 7) >> 3);
 
   /// Return the maximum size for an output block to this engine.
   @override
-  get outputBlockSize => _forEncryption ? 2 * ((_bitSize + 7) >> 3) : (_bitSize - 1) ~/ 8;
+  get outputBlockSize =>
+      _forEncryption ? 2 * ((_bitSize + 7) >> 3) : (_bitSize - 1) ~/ 8;
 
   @override
   process(final Uint8List data) {
@@ -89,14 +91,17 @@ class ElGamalEngine implements AsymmetricBlockCipher {
       final phi = input.sublist(inLength ~/ 2).toBigIntWithSign(1);
 
       final priv = _key as ElGamalPrivateKey;
-      final m = (gamma.modPow(prime - (BigInt.one + priv.x), prime) * phi) % prime;
+      final m =
+          (gamma.modPow(prime - (BigInt.one + priv.x), prime) * phi) % prime;
       output.setAll(
         outOff,
         m.toUnsignedBytes().sublist(0, output.length - outOff),
       );
     } else {
       /// encryption
-      final block = (inOff != 0 || inLength != input.length) ? input.sublist(0, inLength) : input;
+      final block = (inOff != 0 || inLength != input.length)
+          ? input.sublist(0, inLength)
+          : input;
       final inp = block.toBigIntWithSign(1);
 
       if (inp > prime) {

@@ -17,7 +17,8 @@ import 'cleartext_message.dart';
 /// Signed message class that represents an OpenPGP cleartext signed message.
 /// See RFC 9580, section 7.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-final class SignedMessage extends CleartextMessage implements SignedCleartextMessageInterface {
+final class SignedMessage extends CleartextMessage
+    implements SignedCleartextMessageInterface {
   @override
   final SignatureInterface signature;
 

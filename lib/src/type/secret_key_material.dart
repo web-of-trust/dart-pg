@@ -8,7 +8,8 @@ import 'key_material.dart';
 
 /// Secret key material interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class SecretKeyMaterialInterface implements KeyMaterialInterface {
+abstract interface class SecretKeyMaterialInterface
+    implements KeyMaterialInterface {
   /// Get public key material
   KeyMaterialInterface get publicMaterial;
 

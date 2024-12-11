@@ -25,7 +25,8 @@ import '../type/signature_packet.dart';
 
 /// OpenPGP literal message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-final class LiteralMessage extends BaseMessage implements LiteralMessageInterface, SignedMessageInterface {
+final class LiteralMessage extends BaseMessage
+    implements LiteralMessageInterface, SignedMessageInterface {
   LiteralMessage(super.packetList) {
     if (_unwrapCompressed().whereType<LiteralDataInterface>().isEmpty) {
       throw AssertionError(
@@ -114,17 +115,19 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
           sessionKey,
         ),
       ),
-      ...passwords.map((password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
-            password,
-            sessionKey: sessionKey,
-            symmetric: sessionKey.symmetric,
-            aead: sessionKey.aead,
-          )),
+      ...passwords
+          .map((password) => SymEncryptedSessionKeyPacket.encryptSessionKey(
+                password,
+                sessionKey: sessionKey,
+                symmetric: sessionKey.symmetric,
+                aead: sessionKey.aead,
+              )),
     ]);
   }
 
   @override
-  get literalData => _unwrapCompressed().whereType<LiteralDataInterface>().first;
+  get literalData =>
+      _unwrapCompressed().whereType<LiteralDataInterface>().first;
 
   @override
   get signature => Signature(
@@ -282,6 +285,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
   }
 
   PacketListInterface _unwrapCompressed() {
-    return packetList.whereType<CompressedDataPacket>().firstOrNull?.packets ?? packetList;
+    return packetList.whereType<CompressedDataPacket>().firstOrNull?.packets ??
+        packetList;
   }
 }

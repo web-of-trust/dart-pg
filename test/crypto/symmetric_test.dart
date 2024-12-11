@@ -132,8 +132,12 @@ void main() {
       '9acc237dff16d76c20ef7c919e3a7509',
     );
 
-    _blockCipherTest(7, CamelliaEngine(), _kp('4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a'),
-        '057764fe3a500edbd988c5c3b56cba9a', '4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a');
+    _blockCipherTest(
+        7,
+        CamelliaEngine(),
+        _kp('4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a'),
+        '057764fe3a500edbd988c5c3b56cba9a',
+        '4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a');
 
     _blockCipherTest(
       8,

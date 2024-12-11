@@ -11,7 +11,8 @@ import 'key_packet.dart';
 
 /// Secret key packet interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class SecretKeyPacketInterface implements KeyPacketInterface {
+abstract interface class SecretKeyPacketInterface
+    implements KeyPacketInterface {
   /// Get public key packet
   KeyPacketInterface get publicKey;
 

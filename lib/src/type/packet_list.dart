@@ -10,7 +10,8 @@ import 'packet.dart';
 
 /// Packet list interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class PacketListInterface<T extends PacketInterface> implements List<T> {
+abstract interface class PacketListInterface<T extends PacketInterface>
+    implements List<T> {
   /// Get packets
   List<PacketInterface> get packets;
 

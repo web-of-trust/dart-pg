@@ -28,16 +28,15 @@ abstract class SessionKeyCryptor implements SessionKeyCryptorInterface {
     final AsymmetricBlockCipher engine,
     final Uint8List input,
   ) {
-    final numBlocks =
-        input.length ~/ engine.inputBlockSize + ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
+    final numBlocks = input.length ~/ engine.inputBlockSize +
+        ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
 
     final output = Uint8List(numBlocks * engine.outputBlockSize);
 
     var inpOff = 0;
     var outOff = 0;
     while (inpOff < input.length) {
-      final chunkSize =
-          (inpOff + engine.inputBlockSize <= input.length)
+      final chunkSize = (inpOff + engine.inputBlockSize <= input.length)
           ? engine.inputBlockSize
           : input.length - inpOff;
 

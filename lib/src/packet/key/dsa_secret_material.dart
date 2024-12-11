@@ -67,7 +67,8 @@ class DSASecretMaterial implements SigningKeyMaterialInterface {
     }
 
     /// Check that subgroup order q divides p-1
-    if (((publicMaterial.prime - BigInt.one) % publicMaterial.order).sign != 0) {
+    if (((publicMaterial.prime - BigInt.one) % publicMaterial.order).sign !=
+        0) {
       return false;
     }
 

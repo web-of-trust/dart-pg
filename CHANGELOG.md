@@ -70,3 +70,6 @@
 
 ## 1.5.5 (2024-12-6)
 - Fix read public key list ignore last index
+
+## 2.0.0 (2024-12-11)
+- Release to major version 2

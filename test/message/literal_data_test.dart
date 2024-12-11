@@ -175,7 +175,8 @@ void main() {
         passwords: [password],
       );
 
-      final encryptedPacket = encryptedMessage.encryptedPacket as SymEncryptedIntegrityProtectedDataPacket;
+      final encryptedPacket = encryptedMessage.encryptedPacket
+          as SymEncryptedIntegrityProtectedDataPacket;
       expect(encryptedPacket.aead, Config.preferredAead);
 
       final literalMessage = OpenPGP.decrypt(

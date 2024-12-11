@@ -13,7 +13,8 @@ import 'base_packet.dart';
 
 /// This class represents a list of OpenPGP packets.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PacketList extends ListBase<PacketInterface> implements PacketListInterface {
+class PacketList extends ListBase<PacketInterface>
+    implements PacketListInterface {
   @override
   final List<PacketInterface> packets;
 
@@ -30,11 +31,13 @@ class PacketList extends ListBase<PacketInterface> implements PacketListInterfac
       final reader = PacketReader.read(bytes, offset);
       offset = reader.offset;
       final packet = switch (reader.type) {
-        PacketType.publicKeyEncryptedSessionKey => PublicKeyEncryptedSessionKeyPacket.fromBytes(
+        PacketType.publicKeyEncryptedSessionKey =>
+          PublicKeyEncryptedSessionKeyPacket.fromBytes(
             reader.data,
           ),
         PacketType.signature => SignaturePacket.fromBytes(reader.data),
-        PacketType.symEncryptedSessionKey => SymEncryptedSessionKeyPacket.fromBytes(
+        PacketType.symEncryptedSessionKey =>
+          SymEncryptedSessionKeyPacket.fromBytes(
             reader.data,
           ),
         PacketType.onePassSignature => OnePassSignaturePacket.fromBytes(

@@ -303,7 +303,8 @@ void main() {
 
     test('4 iterations 10mb 32 keylength', () {
       const salt = "KtPeAgudgN7xrgUK";
-      const hash = "66b3d1c15f544eae5810c29381ad477167d5a1d5360c9b97340bd5b8b06c589b";
+      const hash =
+          "66b3d1c15f544eae5810c29381ad477167d5a1d5360c9b97340bd5b8b06c589b";
 
       final s2k = Argon2S2k(salt.toBytes(), 4, 1, 10);
       final key = s2k.produceKey(passphrase, 32);
@@ -315,7 +316,8 @@ void main() {
 
     test('4 iterations 64 mb 32 key length', () {
       const salt = "D85Euo8RwvlkUxb5";
-      const hash = "cb1f8f04ec5ecb681e4ffb2665af6e4ad6aed540b5e62f625f48c834e8b88fa6";
+      const hash =
+          "cb1f8f04ec5ecb681e4ffb2665af6e4ad6aed540b5e62f625f48c834e8b88fa6";
 
       final s2k = Argon2S2k(salt.toBytes(), 4, 1, 16);
       final key = s2k.produceKey(passphrase, 32);

@@ -71,16 +71,20 @@ class NotationData extends SignatureSubpacket implements NotationDataInterface {
   bool get humanReadable => data[0] == 0x80;
 
   Uint8List get nameData {
-    final nameLength = (((data[headerFlagLength] & 0xff) << 8) + (data[headerFlagLength + 1] & 0xff));
+    final nameLength = (((data[headerFlagLength] & 0xff) << 8) +
+        (data[headerFlagLength + 1] & 0xff));
     final nameOffset = headerFlagLength + headerNameLength + headerValueLength;
     return data.sublist(nameOffset, nameOffset + nameLength);
   }
 
   Uint8List get valueData {
-    final nameLength = (((data[headerFlagLength] & 0xff) << 8) + (data[headerFlagLength + 1] & 0xff));
-    final valueLength = (((data[headerFlagLength + headerNameLength] & 0xff) << 8) +
-        (data[headerFlagLength + headerNameLength + 1] & 0xff));
-    final valueOffset = headerFlagLength + headerNameLength + headerValueLength + nameLength;
+    final nameLength = (((data[headerFlagLength] & 0xff) << 8) +
+        (data[headerFlagLength + 1] & 0xff));
+    final valueLength =
+        (((data[headerFlagLength + headerNameLength] & 0xff) << 8) +
+            (data[headerFlagLength + headerNameLength + 1] & 0xff));
+    final valueOffset =
+        headerFlagLength + headerNameLength + headerValueLength + nameLength;
     return data.sublist(valueOffset, valueOffset + valueLength);
   }
 

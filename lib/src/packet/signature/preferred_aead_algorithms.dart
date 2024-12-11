@@ -22,8 +22,7 @@ class PreferredAeadAlgorithms extends SignatureSubpacket {
           data,
         );
 
-  List<AeadAlgorithm> get preferences =>
-      data
+  List<AeadAlgorithm> get preferences => data
       .map(
         (pref) => AeadAlgorithm.values.firstWhere(
           (alg) => alg.value == pref,

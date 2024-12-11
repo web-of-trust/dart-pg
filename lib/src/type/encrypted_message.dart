@@ -13,7 +13,8 @@ import 'session_key.dart';
 
 /// Encrypted message interface
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract interface class EncryptedMessageInterface implements ArmorableInterface, PacketContainerInterface {
+abstract interface class EncryptedMessageInterface
+    implements ArmorableInterface, PacketContainerInterface {
   /// Return encrypted packet.
   EncryptedDataPacketInterface get encryptedPacket;
 

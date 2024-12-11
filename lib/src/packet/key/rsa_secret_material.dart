@@ -120,7 +120,8 @@ class RSASecretMaterial implements SigningKeyMaterialInterface {
     final sizeOver3 = (publicMaterial.modulus.bitLength / 3).floor();
     final r = Helper.randomBigInt(BigInt.two, BigInt.two << sizeOver3);
     final rde = r * exponent * publicMaterial.exponent;
-    return (rde % (primeP - BigInt.one)).compareTo(r) == 0 && (rde % (primeQ - BigInt.one)).compareTo(r) == 0;
+    return (rde % (primeP - BigInt.one)).compareTo(r) == 0 &&
+        (rde % (primeQ - BigInt.one)).compareTo(r) == 0;
   }
 
   @override

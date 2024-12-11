@@ -527,13 +527,18 @@ class TwofishEngine extends BaseEngine {
         );
 
         for (var i = 0, j = 1; i < 40; i += 2, j += 2) {
-          var a = _m0[_q0[_q0[_q1[_q1[i] ^ key[24]] ^ key[16]] ^ key[8]] ^ key[0]] ^
+          var a = _m0[
+                  _q0[_q0[_q1[_q1[i] ^ key[24]] ^ key[16]] ^ key[8]] ^ key[0]] ^
               _m1[_q0[_q1[_q1[_q0[i] ^ key[25]] ^ key[17]] ^ key[9]] ^ key[1]] ^
-              _m2[_q1[_q0[_q0[_q0[i] ^ key[26]] ^ key[18]] ^ key[10]] ^ key[2]] ^
+              _m2[_q1[_q0[_q0[_q0[i] ^ key[26]] ^ key[18]] ^ key[10]] ^
+                  key[2]] ^
               _m3[_q1[_q1[_q0[_q1[i] ^ key[27]] ^ key[19]] ^ key[11]] ^ key[3]];
-          var b = _m0[_q0[_q0[_q1[_q1[j] ^ key[28]] ^ key[20]] ^ key[12]] ^ key[4]] ^
-              _m1[_q0[_q1[_q1[_q0[j] ^ key[29]] ^ key[21]] ^ key[13]] ^ key[5]] ^
-              _m2[_q1[_q0[_q0[_q0[j] ^ key[30]] ^ key[22]] ^ key[14]] ^ key[6]] ^
+          var b = _m0[_q0[_q0[_q1[_q1[j] ^ key[28]] ^ key[20]] ^ key[12]] ^
+                  key[4]] ^
+              _m1[_q0[_q1[_q1[_q0[j] ^ key[29]] ^ key[21]] ^ key[13]] ^
+                  key[5]] ^
+              _m2[_q1[_q0[_q0[_q0[j] ^ key[30]] ^ key[22]] ^ key[14]] ^
+                  key[6]] ^
               _m3[_q1[_q1[_q0[_q1[j] ^ key[31]] ^ key[23]] ^ key[15]] ^ key[7]];
           b = (b << 8) | (b >> 24 & 0xff);
           a = a + b;
@@ -543,10 +548,18 @@ class TwofishEngine extends BaseEngine {
         }
 
         for (var i = 0; i < 256; ++i) {
-          _sTable0[i] = _m0[_q0[_q0[_q1[_q1[i] ^ list1[3]] ^ list2[3]] ^ list3[3]] ^ list4[3]];
-          _sTable1[i] = _m1[_q0[_q1[_q1[_q0[i] ^ list1[2]] ^ list2[2]] ^ list3[2]] ^ list4[2]];
-          _sTable2[i] = _m2[_q1[_q0[_q0[_q0[i] ^ list1[1]] ^ list2[1]] ^ list3[1]] ^ list4[1]];
-          _sTable3[i] = _m3[_q1[_q1[_q0[_q1[i] ^ list1[0]] ^ list2[0]] ^ list3[0]] ^ list4[0]];
+          _sTable0[i] = _m0[
+              _q0[_q0[_q1[_q1[i] ^ list1[3]] ^ list2[3]] ^ list3[3]] ^
+                  list4[3]];
+          _sTable1[i] = _m1[
+              _q0[_q1[_q1[_q0[i] ^ list1[2]] ^ list2[2]] ^ list3[2]] ^
+                  list4[2]];
+          _sTable2[i] = _m2[
+              _q1[_q0[_q0[_q0[i] ^ list1[1]] ^ list2[1]] ^ list3[1]] ^
+                  list4[1]];
+          _sTable3[i] = _m3[
+              _q1[_q1[_q0[_q1[i] ^ list1[0]] ^ list2[0]] ^ list3[0]] ^
+                  list4[0]];
         }
         break;
       default:
@@ -569,17 +582,27 @@ class TwofishEngine extends BaseEngine {
 
     var ki = 7;
     while (ki < 39) {
-      var t0 =
-          _sTable0[r0 & 0xff] ^ _sTable1[(r0 >> 8) & 0xff] ^ _sTable2[(r0 >> 16) & 0xff] ^ _sTable3[(r0 >> 24) & 0xff];
-      var t1 =
-          _sTable0[(r1 >> 24) & 0xff] ^ _sTable1[r1 & 0xff] ^ _sTable2[(r1 >> 8) & 0xff] ^ _sTable3[(r1 >> 16) & 0xff];
+      var t0 = _sTable0[r0 & 0xff] ^
+          _sTable1[(r0 >> 8) & 0xff] ^
+          _sTable2[(r0 >> 16) & 0xff] ^
+          _sTable3[(r0 >> 24) & 0xff];
+      var t1 = _sTable0[(r1 >> 24) & 0xff] ^
+          _sTable1[r1 & 0xff] ^
+          _sTable2[(r1 >> 8) & 0xff] ^
+          _sTable3[(r1 >> 16) & 0xff];
 
       r2 ^= t0 + t1 + _subKey[++ki];
       r2 = (r2 >> 1 & 0x7fffffff) | (r2 << 31);
       r3 = (((r3 >> 31) & 1) | (r3 << 1)) ^ (t0 + (t1 << 1) + _subKey[++ki]);
 
-      t0 = _sTable0[r2 & 0xff] ^ _sTable1[(r2 >> 8) & 0xff] ^ _sTable2[(r2 >> 16) & 0xff] ^ _sTable3[(r2 >> 24) & 0xff];
-      t1 = _sTable0[(r3 >> 24) & 0xff] ^ _sTable1[r3 & 0xff] ^ _sTable2[(r3 >> 8) & 0xff] ^ _sTable3[(r3 >> 16) & 0xff];
+      t0 = _sTable0[r2 & 0xff] ^
+          _sTable1[(r2 >> 8) & 0xff] ^
+          _sTable2[(r2 >> 16) & 0xff] ^
+          _sTable3[(r2 >> 24) & 0xff];
+      t1 = _sTable0[(r3 >> 24) & 0xff] ^
+          _sTable1[r3 & 0xff] ^
+          _sTable2[(r3 >> 8) & 0xff] ^
+          _sTable3[(r3 >> 16) & 0xff];
 
       r0 ^= t0 + t1 + _subKey[++ki];
       r0 = (r0 >> 1 & 0x7fffffff) | (r0 << 31);
@@ -608,15 +631,27 @@ class TwofishEngine extends BaseEngine {
 
     var ki = 40;
     while (ki > 8) {
-      var t0 = _sTable0[r0 & 0xff] ^ _sTable1[r0 >> 8 & 0xff] ^ _sTable2[r0 >> 16 & 0xff] ^ _sTable3[r0 >> 24 & 0xff];
-      var t1 = _sTable0[r1 >> 24 & 0xff] ^ _sTable1[r1 & 0xff] ^ _sTable2[r1 >> 8 & 0xff] ^ _sTable3[r1 >> 16 & 0xff];
+      var t0 = _sTable0[r0 & 0xff] ^
+          _sTable1[r0 >> 8 & 0xff] ^
+          _sTable2[r0 >> 16 & 0xff] ^
+          _sTable3[r0 >> 24 & 0xff];
+      var t1 = _sTable0[r1 >> 24 & 0xff] ^
+          _sTable1[r1 & 0xff] ^
+          _sTable2[r1 >> 8 & 0xff] ^
+          _sTable3[r1 >> 16 & 0xff];
 
       r3 ^= t0 + (t1 << 1) + _subKey[--ki];
       r3 = r3 >> 1 & 0x7fffffff | r3 << 31;
       r2 = (r2 >> 31 & 0x1 | r2 << 1) ^ (t0 + t1 + _subKey[--ki]);
 
-      t0 = _sTable0[r2 & 0xff] ^ _sTable1[r2 >> 8 & 0xff] ^ _sTable2[r2 >> 16 & 0xff] ^ _sTable3[r2 >> 24 & 0xff];
-      t1 = _sTable0[r3 >> 24 & 0xff] ^ _sTable1[r3 & 0xff] ^ _sTable2[r3 >> 8 & 0xff] ^ _sTable3[r3 >> 16 & 0xff];
+      t0 = _sTable0[r2 & 0xff] ^
+          _sTable1[r2 >> 8 & 0xff] ^
+          _sTable2[r2 >> 16 & 0xff] ^
+          _sTable3[r2 >> 24 & 0xff];
+      t1 = _sTable0[r3 >> 24 & 0xff] ^
+          _sTable1[r3 & 0xff] ^
+          _sTable2[r3 >> 8 & 0xff] ^
+          _sTable3[r3 >> 16 & 0xff];
 
       r1 ^= t0 + (t1 << 1) + _subKey[--ki];
       r1 = r1 >> 1 & 0x7fffffff | r1 << 31;

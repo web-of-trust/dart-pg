@@ -17,7 +17,8 @@ import 'ecdh_public_material.dart';
 
 /// ECDH secret key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ECDHSecretMaterial extends ECSecretMaterial implements SecretKeyMaterialInterface {
+class ECDHSecretMaterial extends ECSecretMaterial
+    implements SecretKeyMaterialInterface {
   @override
   final ECDHPublicMaterial publicMaterial;
 

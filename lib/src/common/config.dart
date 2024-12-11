@@ -31,7 +31,8 @@ final class Config {
 
   static SymmetricAlgorithm preferredSymmetric = SymmetricAlgorithm.aes128;
 
-  static CompressionAlgorithm preferredCompression = CompressionAlgorithm.uncompressed;
+  static CompressionAlgorithm preferredCompression =
+      CompressionAlgorithm.uncompressed;
 
   static AeadAlgorithm preferredAead = AeadAlgorithm.ocb;
 }

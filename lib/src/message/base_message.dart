@@ -19,7 +19,8 @@ export 'verification.dart';
 
 /// Base abstract OpenPGP message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-abstract class BaseMessage implements ArmorableInterface, PacketContainerInterface {
+abstract class BaseMessage
+    implements ArmorableInterface, PacketContainerInterface {
   @override
   final PacketListInterface packetList;
 

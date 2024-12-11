@@ -16,7 +16,8 @@ import 'ecdsa_public_material.dart';
 
 /// ECDSA secret key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ECDSASecretMaterial extends ECSecretMaterial implements SigningKeyMaterialInterface {
+class ECDSASecretMaterial extends ECSecretMaterial
+    implements SigningKeyMaterialInterface {
   @override
   final ECDSAPublicMaterial publicMaterial;
 

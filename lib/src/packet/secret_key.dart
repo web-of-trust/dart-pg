@@ -181,7 +181,8 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
 
         /// Only for a version 6 packet, and if string-to-key usage
         /// octet was 253 or 254, an one-octet count of the following field.
-        if (isV6 && (s2kUsage == S2kUsage.aeadProtect || s2kUsage == S2kUsage.cfb)) {
+        if (isV6 &&
+            (s2kUsage == S2kUsage.aeadProtect || s2kUsage == S2kUsage.cfb)) {
           pos++;
         }
 
@@ -206,7 +207,8 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     if (aead != null) {
       iv = bytes.sublist(pos, pos + aead.ivLength);
       pos += aead.ivLength;
-    } else if (!(s2k != null && s2k.type == S2kType.gnu) && s2kUsage != S2kUsage.none) {
+    } else if (!(s2k != null && s2k.type == S2kType.gnu) &&
+        s2kUsage != S2kUsage.none) {
       iv = bytes.sublist(pos, pos + symmetric.blockSize);
       pos += symmetric.blockSize;
     }
@@ -454,7 +456,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
 
   @override
   get isSubkey => this is SubkeyPacketInterface;
-  
+
   @override
   bool get isV6Key => publicKey.isV6Key;
 
@@ -524,7 +526,10 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     final PublicKeyPacket publicKey,
   ) {
     final keyMaterial = switch (publicKey.keyAlgorithm) {
-      KeyAlgorithm.rsaEncryptSign || KeyAlgorithm.rsaSign || KeyAlgorithm.rsaEncrypt => RSASecretMaterial.fromBytes(
+      KeyAlgorithm.rsaEncryptSign ||
+      KeyAlgorithm.rsaSign ||
+      KeyAlgorithm.rsaEncrypt =>
+        RSASecretMaterial.fromBytes(
           keyData,
           publicKey.keyMaterial as RSAPublicMaterial,
         ),
@@ -548,11 +553,15 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
           keyData,
           publicKey.keyMaterial as EdDSALegacyPublicMaterial,
         ),
-      KeyAlgorithm.x25519 || KeyAlgorithm.x448 => MontgomerySecretMaterial.fromBytes(
+      KeyAlgorithm.x25519 ||
+      KeyAlgorithm.x448 =>
+        MontgomerySecretMaterial.fromBytes(
           keyData,
           publicKey.keyMaterial as MontgomeryPublicMaterial,
         ),
-      KeyAlgorithm.ed25519 || KeyAlgorithm.ed448 => EdDSASecretMaterial.fromBytes(
+      KeyAlgorithm.ed25519 ||
+      KeyAlgorithm.ed448 =>
+        EdDSASecretMaterial.fromBytes(
           keyData,
           publicKey.keyMaterial as EdDSAPublicMaterial,
         ),

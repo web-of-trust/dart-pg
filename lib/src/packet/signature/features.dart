@@ -26,11 +26,16 @@ class Features extends SignatureSubpacket {
   }) =>
       Features(Uint8List.fromList([features]), critical: critical);
 
-  bool get seipdV1Supported => (data[0] & SupportFeature.seipdV1.value) == SupportFeature.seipdV1.value;
+  bool get seipdV1Supported =>
+      (data[0] & SupportFeature.seipdV1.value) == SupportFeature.seipdV1.value;
 
-  bool get aeadSupported => (data[0] & SupportFeature.aead.value) == SupportFeature.aead.value;
+  bool get aeadSupported =>
+      (data[0] & SupportFeature.aead.value) == SupportFeature.aead.value;
 
-  bool get publicKeyV5Supported => (data[0] & SupportFeature.publicKeyV5.value) == SupportFeature.publicKeyV5.value;
+  bool get publicKeyV5Supported =>
+      (data[0] & SupportFeature.publicKeyV5.value) ==
+      SupportFeature.publicKeyV5.value;
 
-  bool get seidpV2Supported => (data[0] & SupportFeature.seipdV2.value) == SupportFeature.seipdV2.value;
+  bool get seidpV2Supported =>
+      (data[0] & SupportFeature.seipdV2.value) == SupportFeature.seipdV2.value;
 }

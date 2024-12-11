@@ -17,7 +17,8 @@ import '../type/session_key.dart';
 
 /// OpenPGP encrypted message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-final class EncryptedMessage extends BaseMessage implements EncryptedMessageInterface {
+final class EncryptedMessage extends BaseMessage
+    implements EncryptedMessageInterface {
   SessionKeyInterface? _sessionKey;
 
   EncryptedMessage(super.packetList) {
@@ -61,7 +62,8 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
       }
     }
     if (sessionKeys.isEmpty && decryptionKeys.isNotEmpty) {
-      final pkeskPackets = packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
+      final pkeskPackets =
+          packetList.whereType<PublicKeyEncryptedSessionKeyPacket>();
       for (final pkesk in pkeskPackets) {
         for (final key in decryptionKeys) {
           final keyPacket = key.getDecryptionKeyPacket();
@@ -85,10 +87,16 @@ final class EncryptedMessage extends BaseMessage implements EncryptedMessageInte
   }
 
   @override
-  get encryptedPacket => packetList.whereType<EncryptedDataPacketInterface>().first;
+  get encryptedPacket =>
+      packetList.whereType<EncryptedDataPacketInterface>().first;
 
   @override
-  get aeadProtected => packetList.whereType<SymEncryptedIntegrityProtectedDataPacket>().firstOrNull?.aead != null;
+  get aeadProtected =>
+      packetList
+          .whereType<SymEncryptedIntegrityProtectedDataPacket>()
+          .firstOrNull
+          ?.aead !=
+      null;
 
   @override
   get sessionKey => _sessionKey;

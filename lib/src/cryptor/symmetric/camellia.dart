@@ -278,10 +278,14 @@ class CamelliaEngine extends BaseEngine {
     List<int> ko,
     int outOff,
   ) {
-    ko[outOff] = _shiftLeft32(ki[inOff], rot) | _shiftRight32(ki[1 + inOff], 32 - rot);
-    ko[1 + outOff] = _shiftLeft32(ki[1 + inOff], rot) | _shiftRight32(ki[2 + inOff], 32 - rot);
-    ko[2 + outOff] = _shiftLeft32(ki[2 + inOff], rot) | _shiftRight32(ki[3 + inOff], 32 - rot);
-    ko[3 + outOff] = _shiftLeft32(ki[3 + inOff], rot) | _shiftRight32(ki[inOff], 32 - rot);
+    ko[outOff] =
+        _shiftLeft32(ki[inOff], rot) | _shiftRight32(ki[1 + inOff], 32 - rot);
+    ko[1 + outOff] = _shiftLeft32(ki[1 + inOff], rot) |
+        _shiftRight32(ki[2 + inOff], 32 - rot);
+    ko[2 + outOff] = _shiftLeft32(ki[2 + inOff], rot) |
+        _shiftRight32(ki[3 + inOff], 32 - rot);
+    ko[3 + outOff] =
+        _shiftLeft32(ki[3 + inOff], rot) | _shiftRight32(ki[inOff], 32 - rot);
     ki[inOff] = ko[outOff];
     ki[1 + inOff] = ko[1 + outOff];
     ki[2 + inOff] = ko[2 + outOff];
@@ -295,10 +299,14 @@ class CamelliaEngine extends BaseEngine {
     List<int> ko,
     int outOff,
   ) {
-    ko[2 + outOff] = _shiftLeft32(ki[inOff], rot) | _shiftRight32(ki[1 + inOff], 32 - rot);
-    ko[3 + outOff] = _shiftLeft32(ki[1 + inOff], rot) | _shiftRight32(ki[2 + inOff], 32 - rot);
-    ko[outOff] = _shiftLeft32(ki[2 + inOff], rot) | _shiftRight32(ki[3 + inOff], 32 - rot);
-    ko[1 + outOff] = _shiftLeft32(ki[3 + inOff], rot) | _shiftRight32(ki[inOff], 32 - rot);
+    ko[2 + outOff] =
+        _shiftLeft32(ki[inOff], rot) | _shiftRight32(ki[1 + inOff], 32 - rot);
+    ko[3 + outOff] = _shiftLeft32(ki[1 + inOff], rot) |
+        _shiftRight32(ki[2 + inOff], 32 - rot);
+    ko[outOff] = _shiftLeft32(ki[2 + inOff], rot) |
+        _shiftRight32(ki[3 + inOff], 32 - rot);
+    ko[1 + outOff] =
+        _shiftLeft32(ki[3 + inOff], rot) | _shiftRight32(ki[inOff], 32 - rot);
     ki[inOff] = ko[2 + outOff];
     ki[1 + inOff] = ko[3 + outOff];
     ki[2 + inOff] = ko[outOff];
@@ -312,10 +320,14 @@ class CamelliaEngine extends BaseEngine {
     List<int> ko,
     int outOff,
   ) {
-    ko[outOff] = _shiftLeft32(ki[1 + inOff], rot - 32) | _shiftRight32(ki[2 + inOff], 64 - rot);
-    ko[1 + outOff] = _shiftLeft32(ki[2 + inOff], rot - 32) | _shiftRight32(ki[3 + inOff], 64 - rot);
-    ko[2 + outOff] = _shiftLeft32(ki[3 + inOff], rot - 32) | _shiftRight32(ki[inOff], 64 - rot);
-    ko[3 + outOff] = _shiftLeft32(ki[inOff], rot - 32) | _shiftRight32(ki[1 + inOff], 64 - rot);
+    ko[outOff] = _shiftLeft32(ki[1 + inOff], rot - 32) |
+        _shiftRight32(ki[2 + inOff], 64 - rot);
+    ko[1 + outOff] = _shiftLeft32(ki[2 + inOff], rot - 32) |
+        _shiftRight32(ki[3 + inOff], 64 - rot);
+    ko[2 + outOff] = _shiftLeft32(ki[3 + inOff], rot - 32) |
+        _shiftRight32(ki[inOff], 64 - rot);
+    ko[3 + outOff] = _shiftLeft32(ki[inOff], rot - 32) |
+        _shiftRight32(ki[1 + inOff], 64 - rot);
     ki[inOff] = ko[outOff];
     ki[1 + inOff] = ko[1 + outOff];
     ki[2 + inOff] = ko[2 + outOff];
@@ -329,10 +341,14 @@ class CamelliaEngine extends BaseEngine {
     List<int> ko,
     int outOff,
   ) {
-    ko[2 + outOff] = _shiftLeft32(ki[1 + inOff], rot - 32) | _shiftRight32(ki[2 + inOff], 64 - rot);
-    ko[3 + outOff] = _shiftLeft32(ki[2 + inOff], rot - 32) | _shiftRight32(ki[3 + inOff], 64 - rot);
-    ko[outOff] = _shiftLeft32(ki[3 + inOff], rot - 32) | _shiftRight32(ki[inOff], 64 - rot);
-    ko[1 + outOff] = _shiftLeft32(ki[inOff], rot - 32) | _shiftRight32(ki[1 + inOff], 64 - rot);
+    ko[2 + outOff] = _shiftLeft32(ki[1 + inOff], rot - 32) |
+        _shiftRight32(ki[2 + inOff], 64 - rot);
+    ko[3 + outOff] = _shiftLeft32(ki[2 + inOff], rot - 32) |
+        _shiftRight32(ki[3 + inOff], 64 - rot);
+    ko[outOff] = _shiftLeft32(ki[3 + inOff], rot - 32) |
+        _shiftRight32(ki[inOff], 64 - rot);
+    ko[1 + outOff] = _shiftLeft32(ki[inOff], rot - 32) |
+        _shiftRight32(ki[1 + inOff], 64 - rot);
     ki[inOff] = ko[2 + outOff];
     ki[1 + inOff] = ko[3 + outOff];
     ki[2 + inOff] = ko[outOff];

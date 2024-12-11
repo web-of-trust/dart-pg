@@ -374,7 +374,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       ]);
 
   @override
-  get creationTime => getSubpacket<SignatureCreationTime>()?.creationTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+  get creationTime =>
+      getSubpacket<SignatureCreationTime>()?.creationTime ??
+      DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
   get expirationTime => getSubpacket<SignatureExpirationTime>()?.expirationTime;
@@ -411,7 +413,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   get isSubkeyRevocation => signatureType == SignatureType.subkeyRevocation;
 
   @override
-  get issuerFingerprint => getSubpacket<IssuerFingerprint>()?.fingerprint ?? Uint8List(version == 6 ? 32 : 20);
+  get issuerFingerprint =>
+      getSubpacket<IssuerFingerprint>()?.fingerprint ??
+      Uint8List(version == 6 ? 32 : 20);
 
   @override
   get issuerKeyID {
@@ -427,14 +431,17 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
 
   @override
   getSubpacket<T extends SubpacketInterface>() {
-    return hashedSubpackets.whereType<T>().elementAtOrNull(0) ?? unhashedSubpackets.whereType<T>().elementAtOrNull(0);
+    return hashedSubpackets.whereType<T>().elementAtOrNull(0) ??
+        unhashedSubpackets.whereType<T>().elementAtOrNull(0);
   }
 
   @override
   isExpired([final DateTime? time]) {
-    final timestamp = time?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+    final timestamp =
+        time?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
     final creation = creationTime.millisecondsSinceEpoch;
-    final expiration = expirationTime?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch;
+    final expiration = expirationTime?.millisecondsSinceEpoch ??
+        DateTime.now().millisecondsSinceEpoch;
     return !(creation <= timestamp && timestamp <= expiration);
   }
 
@@ -513,7 +520,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
         CompressionAlgorithm.zlib.value,
       ])),
       Features.fromFeatures(
-        SupportFeature.seipdV1.value | SupportFeature.aead.value | SupportFeature.seipdV2.value,
+        SupportFeature.seipdV1.value |
+            SupportFeature.aead.value |
+            SupportFeature.seipdV2.value,
       ),
     ];
     if (version == KeyVersion.v6.value) {

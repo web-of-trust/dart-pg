@@ -27,9 +27,11 @@ void main() {
     }));
 
     test('user attribute test', (() {
-      final imageData = Uint8List.fromList(faker.randomGenerator.numbers(255, 100));
+      final imageData =
+          Uint8List.fromList(faker.randomGenerator.numbers(255, 100));
       final subpacketType = faker.randomGenerator.integer(100);
-      final subpacketData = utf8.encoder.convert(faker.lorem.words(100).join(' '));
+      final subpacketData =
+          utf8.encoder.convert(faker.lorem.words(100).join(' '));
 
       final userAttr = UserAttributePacket.fromBytes(UserAttributePacket([
         ImageUserAttribute.fromBytes(imageData),

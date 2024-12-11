@@ -60,7 +60,8 @@ class DSASigner implements Signer {
   @override
   DSASignature generateSignature(final Uint8List message) {
     if (!_forSigning) {
-      throw AssertionError('DSA signer not initialised for signature generation');
+      throw AssertionError(
+          'DSA signer not initialised for signature generation');
     }
 
     final pri = _key as DSAPrivateKey;

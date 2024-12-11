@@ -15,7 +15,6 @@ export 'hash_algorithm.dart';
 export 'key_algorithm.dart';
 export 'signature_subpacket_type.dart';
 
-
 ///Signature types enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 enum SignatureType {

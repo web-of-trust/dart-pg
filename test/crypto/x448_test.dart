@@ -304,15 +304,18 @@ void checkX448Vector(String sk, String su, String se, String text) {
   });
 }
 
-void checkECDHVector(String sA, String sAPub, String sB, String sBPub, String sK, String text) {
+void checkECDHVector(
+    String sA, String sAPub, String sB, String sBPub, String sK, String text) {
   test(text, () {
     final a = sA.hexToBytes();
     final aPub = X448.scalarMultBase(a);
-    expect(aPub, equals(sAPub.hexToBytes()), reason: 'Public key did not match');
+    expect(aPub, equals(sAPub.hexToBytes()),
+        reason: 'Public key did not match');
 
     final b = sB.hexToBytes();
     final bPub = X448.scalarMultBase(b);
-    expect(bPub, equals(sBPub.hexToBytes()), reason: 'Public key did not match');
+    expect(bPub, equals(sBPub.hexToBytes()),
+        reason: 'Public key did not match');
 
     final aK = X448.scalarMult(a, bPub);
     expect(aK, equals(sK.hexToBytes()), reason: 'Shared secret did not match');

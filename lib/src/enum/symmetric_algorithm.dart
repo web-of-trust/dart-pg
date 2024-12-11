@@ -53,18 +53,29 @@ enum SymmetricAlgorithm {
   int get blockSize => switch (this) {
         plaintext => 0,
         blowfish || cast5 || idea || tripledes => 8,
-        aes128 || aes192 || aes256 || camellia128 || camellia192 || camellia256 || twofish => 16,
+        aes128 ||
+        aes192 ||
+        aes256 ||
+        camellia128 ||
+        camellia192 ||
+        camellia256 ||
+        twofish =>
+          16,
       };
 
   BlockCipher get cfbCipherEngine => switch (this) {
         aes128 || aes192 || aes256 => BlockCipher('AES/CFB-${blockSize * 8}'),
         blowfish => CFBBlockCipher(BlowfishEngine(), blockSize),
-        camellia128 || camellia192 || camellia256 => CFBBlockCipher(CamelliaEngine(), blockSize),
+        camellia128 ||
+        camellia192 ||
+        camellia256 =>
+          CFBBlockCipher(CamelliaEngine(), blockSize),
         cast5 => CFBBlockCipher(CAST5Engine(), blockSize),
         idea => CFBBlockCipher(IDEAEngine(), blockSize),
         tripledes => BlockCipher('DESede/CFB-${blockSize * 8}'),
         twofish => CFBBlockCipher(TwofishEngine(), blockSize),
-        _ => throw UnsupportedError('Unsupported symmetric algorithm encountered'),
+        _ =>
+          throw UnsupportedError('Unsupported symmetric algorithm encountered'),
       };
 
   BlockCipher get cipherEngine => switch (this) {
@@ -75,6 +86,7 @@ enum SymmetricAlgorithm {
         idea => IDEAEngine(),
         tripledes => DESedeEngine(),
         twofish => TwofishEngine(),
-        _ => throw UnsupportedError('Unsupported symmetric algorithm encountered'),
+        _ =>
+          throw UnsupportedError('Unsupported symmetric algorithm encountered'),
       };
 }

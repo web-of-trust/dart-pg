@@ -16,7 +16,8 @@ import 'base_packet.dart';
 /// Implementation of the Symmetrically Encrypted Authenticated Encryption with
 /// Additional Data (AEAD) Protected Data Packet - Type 20
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketInterface {
+class AeadEncryptedDataPacket extends BasePacket
+    implements EncryptedDataPacketInterface {
   static const version = 1;
 
   final SymmetricAlgorithm symmetric;

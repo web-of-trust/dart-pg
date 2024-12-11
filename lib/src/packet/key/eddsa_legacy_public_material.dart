@@ -14,7 +14,8 @@ import 'ec_public_material.dart';
 
 /// EdDSA legacy public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class EdDSALegacyPublicMaterial extends ECPublicMaterial implements VerificationKeyMaterial {
+class EdDSALegacyPublicMaterial extends ECPublicMaterial
+    implements VerificationKeyMaterial {
   EdDSALegacyPublicMaterial(super.oid, super.q);
 
   factory EdDSALegacyPublicMaterial.fromBytes(
