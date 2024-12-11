@@ -56,7 +56,7 @@ final class LiteralMessage extends BaseMessage
   }
 
   /// Generate a new session key object.
-  /// Checking the algorithm preferences of the passed encryption keys.
+  /// Taking the algorithm preferences of the passed encryption keys, if any.
   static SessionKeyInterface generateSessionKey(
     final Iterable<KeyInterface> encryptionKeys, [
     final SymmetricAlgorithm defaultSymmetric = SymmetricAlgorithm.aes128,

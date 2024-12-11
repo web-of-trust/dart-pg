@@ -374,7 +374,7 @@ final class OpenPGP {
   }
 
   /// Generate a new session key object.
-  /// Checking the algorithm preferences of the passed encryption keys.
+  /// Taking the algorithm preferences of the passed encryption keys, if any.
   static SessionKeyInterface generateSessionKey(
     final Iterable<KeyInterface> encryptionKeys, [
     final SymmetricAlgorithm? symmetric,
