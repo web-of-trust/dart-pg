@@ -15,7 +15,7 @@ import 'session_key_cryptor.dart';
 
 /// ElGamal session key cryptor class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ElGamalSessionKeyCryptor extends SessionKeyCryptor {
+final class ElGamalSessionKeyCryptor extends SessionKeyCryptor {
   /// MPI of ElGamal (Diffie-Hellman) value g**k mod p.
   final BigInt gamma;
 

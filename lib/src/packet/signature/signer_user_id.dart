@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 /// This subpacket allows a keyholder to state which User ID is
 /// responsible for the signing.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SignerUserID extends SignatureSubpacket {
+final class SignerUserID extends SignatureSubpacket {
   SignerUserID(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.signerUserID, data);
 

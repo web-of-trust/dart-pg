@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 /// The Features subpacket denotes which advanced OpenPGP features a
 /// user's implementation supports.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Features extends SignatureSubpacket {
+final class Features extends SignatureSubpacket {
   Features(
     final Uint8List data, {
     super.critical,

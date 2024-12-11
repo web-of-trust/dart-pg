@@ -13,7 +13,7 @@ import '../../type/verification_key_material.dart';
 
 /// RSA public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class RSAPublicMaterial implements VerificationKeyMaterial {
+final class RSAPublicMaterial implements VerificationKeyMaterial {
   /// RSA modulus n
   final BigInt modulus;
 

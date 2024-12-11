@@ -15,7 +15,7 @@ import 'session_key_cryptor.dart';
 
 /// RSA session key cryptor class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class RSASessionKeyCryptor extends SessionKeyCryptor {
+final class RSASessionKeyCryptor extends SessionKeyCryptor {
   /// multiprecision integer (MPI) of RSA encrypted value m**e mod n.
   final BigInt encrypted;
 

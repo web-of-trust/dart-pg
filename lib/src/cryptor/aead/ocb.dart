@@ -13,7 +13,7 @@ import '../../type/aead.dart';
 
 /// OCB Authenticated-Encryption class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Ocb implements AeadInterface {
+final class Ocb implements AeadInterface {
   final Uint8List key;
   final SymmetricAlgorithm symmetric;
 
@@ -81,7 +81,7 @@ class Ocb implements AeadInterface {
 /// An implementation of RFC 7253 on The OCB Authenticated-Encryption Algorithm.
 /// See https://tools.ietf.org/html/rfc7253
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class OCBCipher implements AEADCipher {
+final class OCBCipher implements AEADCipher {
   static const _blockSize = 16;
 
   final BlockCipher _hashCipher;

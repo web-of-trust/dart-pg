@@ -16,7 +16,7 @@ import 'rsa_public_material.dart';
 
 /// RSA secret key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class RSASecretMaterial implements SigningKeyMaterialInterface {
+final class RSASecretMaterial implements SigningKeyMaterialInterface {
   static const publicExponent = 65537;
   static const mrTests = 64;
 

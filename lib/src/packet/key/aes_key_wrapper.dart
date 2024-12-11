@@ -10,7 +10,7 @@ import 'key_wrapper.dart';
 
 /// An implementation of the AES Key Wrapper from the NIST Key Wrap Specification.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class AesKeyWrapper extends KeyWrapper {
+final class AesKeyWrapper extends KeyWrapper {
   AesKeyWrapper(final int keySize)
       : super(
           BlockCipher('AES/ECB'),

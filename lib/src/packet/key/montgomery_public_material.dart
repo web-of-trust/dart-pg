@@ -11,7 +11,7 @@ import '../../enum/montgomery_curve.dart';
 
 /// Montgomery public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class MontgomeryPublicMaterial implements KeyMaterialInterface {
+final class MontgomeryPublicMaterial implements KeyMaterialInterface {
   final Uint8List publicKey;
 
   final MontgomeryCurve curve;

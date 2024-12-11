@@ -13,7 +13,7 @@ import 'base_packet.dart';
 
 /// Implementation of the Compressed Data (COMP) Packet - Type 11
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class CompressedDataPacket extends BasePacket {
+final class CompressedDataPacket extends BasePacket {
   /// Default zip/zlib compression level, between 1 and 9
   static const deflateLevel = 6;
 

@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 
 /// The OpenPGP Key fingerprint of the key issuing the signature.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class IssuerFingerprint extends SignatureSubpacket {
+final class IssuerFingerprint extends SignatureSubpacket {
   IssuerFingerprint(
     final Uint8List data, {
     super.critical,

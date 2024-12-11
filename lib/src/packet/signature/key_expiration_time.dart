@@ -16,7 +16,7 @@ import '../signature_subpacket.dart';
 /// or has a value of zero, the key never expires. This is found only on
 /// a self-signature.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class KeyExpirationTime extends SignatureSubpacket {
+final class KeyExpirationTime extends SignatureSubpacket {
   KeyExpirationTime(
     final Uint8List data, {
     super.critical,

@@ -10,7 +10,7 @@ import 'base_packet.dart';
 
 /// Implementation of the Marker (MARKER) Packet - Type 10
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class MarkerPacket extends BasePacket {
+final class MarkerPacket extends BasePacket {
   static const marker = 'PGP';
 
   MarkerPacket() : super(PacketType.marker);

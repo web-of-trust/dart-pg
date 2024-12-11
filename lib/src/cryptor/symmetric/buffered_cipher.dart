@@ -10,7 +10,7 @@ import 'package:pointycastle/api.dart';
 
 /// Buffered cipher.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class BufferedCipher {
+final class BufferedCipher {
   final BlockCipher _underlyingCipher;
 
   final Uint8List _buffer;

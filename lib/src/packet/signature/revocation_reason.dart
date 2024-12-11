@@ -14,7 +14,7 @@ import '../signature_subpacket.dart';
 /// This subpacket is used only in key revocation and certification
 /// revocation signatures.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class RevocationReason extends SignatureSubpacket {
+final class RevocationReason extends SignatureSubpacket {
   RevocationReason(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.revocationReason, data);
 

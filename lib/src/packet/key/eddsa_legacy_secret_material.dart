@@ -17,7 +17,7 @@ import 'eddsa_legacy_public_material.dart';
 
 /// EdDSA legacy secret key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class EdDSALegacySecretMaterial implements SigningKeyMaterialInterface {
+final class EdDSALegacySecretMaterial implements SigningKeyMaterialInterface {
   /// Ed's seed parameter
   final BigInt seed;
 

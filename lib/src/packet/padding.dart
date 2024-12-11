@@ -11,7 +11,7 @@ import 'base_packet.dart';
 
 /// Implementation of the Padding (PADDING) Packet - Type 21.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PaddingPacket extends BasePacket {
+final class PaddingPacket extends BasePacket {
   static const paddingMin = 16;
   static const paddingMax = 32;
 

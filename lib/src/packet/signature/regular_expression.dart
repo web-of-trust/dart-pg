@@ -14,7 +14,7 @@ import '../signature_subpacket.dart';
 /// Used in conjunction with trust Signature packets (of level > 0) to
 /// limit the scope of trust that is extended.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class RegularExpression extends SignatureSubpacket {
+final class RegularExpression extends SignatureSubpacket {
   RegularExpression(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.revocable, data);
 

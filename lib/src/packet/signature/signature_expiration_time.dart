@@ -14,7 +14,7 @@ import '../signature_subpacket.dart';
 /// after the signature creation time that the signature expires.
 /// If this is not present or has a value of zero, it never expires.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SignatureExpirationTime extends SignatureSubpacket {
+final class SignatureExpirationTime extends SignatureSubpacket {
   SignatureExpirationTime(
     final Uint8List data, {
     super.critical,

@@ -12,7 +12,7 @@ import '../signature_subpacket.dart';
 
 /// The OpenPGP Key ID of the key issuing the signature.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class IssuerKeyID extends SignatureSubpacket {
+final class IssuerKeyID extends SignatureSubpacket {
   IssuerKeyID(
     final Uint8List data, {
     super.critical,

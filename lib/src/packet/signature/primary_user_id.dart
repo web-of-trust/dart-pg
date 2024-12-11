@@ -12,7 +12,7 @@ import '../signature_subpacket.dart';
 /// This is a flag in a User ID's self-signature that states whether this
 /// User ID is the main User ID for this key.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PrimaryUserID extends SignatureSubpacket {
+final class PrimaryUserID extends SignatureSubpacket {
   PrimaryUserID(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.primaryUserID, data);
 

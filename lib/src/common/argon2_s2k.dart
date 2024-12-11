@@ -13,7 +13,7 @@ import 'helpers.dart';
 
 /// Implementation of the Argon2 string-to-key specifier
 /// See https://www.rfc-editor.org/rfc/rfc9580#section-3.7
-class Argon2S2k implements S2kInterface {
+final class Argon2S2k implements S2kInterface {
   /// Default salt length
   static const saltLength = 16;
 

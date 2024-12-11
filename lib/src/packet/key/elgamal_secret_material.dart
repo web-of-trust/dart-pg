@@ -11,7 +11,9 @@ import '../../cryptor/asymmetric/elgamal.dart';
 import '../../type/secret_key_material.dart';
 import 'elgamal_public_material.dart';
 
-class ElGamalSecretMaterial implements SecretKeyMaterialInterface {
+/// ElGamal secret key material
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
+final class ElGamalSecretMaterial implements SecretKeyMaterialInterface {
   /// Elgamal secret exponent x.
   final BigInt exponent;
 

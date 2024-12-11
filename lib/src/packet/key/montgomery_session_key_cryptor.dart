@@ -14,7 +14,9 @@ import 'montgomery_public_material.dart';
 import 'montgomery_secret_material.dart';
 import 'session_key_cryptor.dart';
 
-class MontgomerySessionKeyCryptor extends SessionKeyCryptor {
+/// Montgomery session key cryptor
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
+final class MontgomerySessionKeyCryptor extends SessionKeyCryptor {
   /// The ephemeral key used to establish the shared secret
   final Uint8List ephemeralKey;
 

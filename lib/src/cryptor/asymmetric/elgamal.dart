@@ -11,7 +11,7 @@ import '../../common/helpers.dart';
 
 /// Asymmetric block cipher using basic ElGamal algorithm.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ElGamalEngine implements AsymmetricBlockCipher {
+final class ElGamalEngine implements AsymmetricBlockCipher {
   late ElGamalAsymmetricKey? _key;
 
   late SecureRandom _random;
@@ -149,14 +149,15 @@ abstract class ElGamalAsymmetricKey implements AsymmetricKey {
   ElGamalAsymmetricKey(this.prime, this.generator);
 }
 
-class ElGamalPublicKey extends ElGamalAsymmetricKey implements PublicKey {
+final class ElGamalPublicKey extends ElGamalAsymmetricKey implements PublicKey {
   /// public exponent y = g ** x mod p
   final BigInt y;
 
   ElGamalPublicKey(this.y, super.prime, super.generator);
 }
 
-class ElGamalPrivateKey extends ElGamalAsymmetricKey implements PrivateKey {
+final class ElGamalPrivateKey extends ElGamalAsymmetricKey
+    implements PrivateKey {
   /// secret exponent
   final BigInt x;
 

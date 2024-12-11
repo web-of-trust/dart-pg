@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 /// Symmetric algorithm numbers that indicate which algorithms the key
 /// holder prefers to use.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PreferredSymmetricAlgorithms extends SignatureSubpacket {
+final class PreferredSymmetricAlgorithms extends SignatureSubpacket {
   PreferredSymmetricAlgorithms(
     final Uint8List data, {
     super.critical,

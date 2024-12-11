@@ -14,7 +14,7 @@ import 'ec_public_material.dart';
 
 /// ECDH public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ECDHPublicMaterial extends ECPublicMaterial {
+final class ECDHPublicMaterial extends ECPublicMaterial {
   final int reserved;
 
   /// Hash algorithm used with the KDF

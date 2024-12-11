@@ -12,7 +12,7 @@ import '../../common/extensions.dart';
 
 /// Camellia - based on RFC 3713.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class CamelliaEngine extends BaseEngine {
+final class CamelliaEngine extends BaseEngine {
   static const _blockSize = 16;
 
   static const _mask8 = 0xff;

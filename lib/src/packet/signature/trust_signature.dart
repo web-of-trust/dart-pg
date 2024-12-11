@@ -12,7 +12,7 @@ import '../signature_subpacket.dart';
 /// Signer asserts that the key is not only valid but also trustworthy at
 /// the specified level.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class TrustSignature extends SignatureSubpacket {
+final class TrustSignature extends SignatureSubpacket {
   TrustSignature(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.trustSignature, data);
 

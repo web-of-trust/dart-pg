@@ -15,7 +15,7 @@ import 'montgomery_public_material.dart';
 
 /// Montgomery secret key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class MontgomerySecretMaterial implements SecretKeyMaterialInterface {
+final class MontgomerySecretMaterial implements SecretKeyMaterialInterface {
   final Uint8List secretKey;
 
   @override

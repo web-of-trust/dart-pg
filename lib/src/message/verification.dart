@@ -11,7 +11,7 @@ import '../type/verification.dart';
 
 /// Verification class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Verification implements VerificationInterface {
+final class Verification implements VerificationInterface {
   @override
   final Uint8List keyID;
 

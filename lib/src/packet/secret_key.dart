@@ -29,7 +29,7 @@ import 'key/public_material.dart';
 import 'key/secret_material.dart';
 import 'base_packet.dart';
 
-/// Implementation of the Secret Key (SECKEY) Packet - Type 5
+/// Secret Key (SECKEY) Packet - Type 5
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   @override

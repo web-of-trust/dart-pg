@@ -15,7 +15,7 @@ import 'dsa_public_material.dart';
 
 /// DSA secret key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class DSASecretMaterial implements SigningKeyMaterialInterface {
+final class DSASecretMaterial implements SigningKeyMaterialInterface {
   /// DSA secret exponent x
   final BigInt exponent;
 

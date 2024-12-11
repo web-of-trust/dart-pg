@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 
 /// This is a URI of a key server that the key holder prefers be used for updates.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PreferredKeyServer extends SignatureSubpacket {
+final class PreferredKeyServer extends SignatureSubpacket {
   PreferredKeyServer(
     final Uint8List data, {
     super.critical,

@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 
 /// The PreferredAeadCiphers sub-packet class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PreferredAeadCiphers extends SignatureSubpacket {
+final class PreferredAeadCiphers extends SignatureSubpacket {
   PreferredAeadCiphers(
     final Uint8List data, {
     super.critical,

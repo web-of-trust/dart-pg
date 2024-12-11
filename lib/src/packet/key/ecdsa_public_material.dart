@@ -14,7 +14,7 @@ import '../../type/verification_key_material.dart';
 
 /// ECDSA public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ECDSAPublicMaterial extends ECPublicMaterial
+final class ECDSAPublicMaterial extends ECPublicMaterial
     implements VerificationKeyMaterial {
   ECDSAPublicMaterial(super.oid, super.q);
 

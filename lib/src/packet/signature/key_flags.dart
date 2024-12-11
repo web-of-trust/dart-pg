@@ -12,7 +12,7 @@ import '../signature_subpacket.dart';
 
 /// This subpacket contains a list of binary flags that hold information about a key.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class KeyFlags extends SignatureSubpacket {
+final class KeyFlags extends SignatureSubpacket {
   KeyFlags(
     final Uint8List data, {
     super.critical,

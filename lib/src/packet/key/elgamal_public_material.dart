@@ -12,7 +12,7 @@ import '../../type/key_material.dart';
 
 /// ElGamal public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ElGamalPublicMaterial implements KeyMaterialInterface {
+final class ElGamalPublicMaterial implements KeyMaterialInterface {
   /// Elgamal prime p
   final BigInt prime;
 

@@ -16,7 +16,8 @@ import '../signature_subpacket.dart';
 /// This subpacket describes a "notation" on the signature that the issuer wishes to make.
 /// The notation has a name and a value, each of which are strings of octets.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class NotationData extends SignatureSubpacket implements NotationDataInterface {
+final class NotationData extends SignatureSubpacket
+    implements NotationDataInterface {
   static const saltName = "salt@notations.dart-pg.org";
 
   static const headerFlagLength = 4;

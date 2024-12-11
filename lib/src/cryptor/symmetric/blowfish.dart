@@ -15,7 +15,7 @@ import 'base_engine.dart';
 /// All the algorithms herein are from Applied Cryptography
 /// and implement a simplified cryptography interface.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class BlowfishEngine extends BaseEngine {
+final class BlowfishEngine extends BaseEngine {
   static const _kp = [
     0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344, // 0 - 3
     0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,

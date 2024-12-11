@@ -13,7 +13,7 @@ import '../../enum/symmetric_algorithm.dart';
 
 /// Session key class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SessionKey implements SessionKeyInterface {
+final class SessionKey implements SessionKeyInterface {
   @override
   final SymmetricAlgorithm symmetric;
 

@@ -16,7 +16,7 @@ import '../../type/verification_key_material.dart';
 
 /// EdDSA public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class EdDSAPublicMaterial implements VerificationKeyMaterial {
+final class EdDSAPublicMaterial implements VerificationKeyMaterial {
   final Uint8List publicKey;
 
   final EdDSACurve curve;

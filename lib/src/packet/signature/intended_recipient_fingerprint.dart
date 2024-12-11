@@ -14,7 +14,7 @@ import '../signature_subpacket.dart';
 /// The IntendedRecipientFingerprint sub-packet class
 /// Giving the intended recipient fingerprint.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class IntendedRecipientFingerprint extends SignatureSubpacket {
+final class IntendedRecipientFingerprint extends SignatureSubpacket {
   IntendedRecipientFingerprint(
     final Uint8List data, {
     super.critical,

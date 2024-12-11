@@ -12,7 +12,7 @@ import 'base_packet.dart';
 
 /// Implementation an OpenPGP One-Pass (OPS) Signature Packet - Type 4.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class OnePassSignaturePacket extends BasePacket {
+final class OnePassSignaturePacket extends BasePacket {
   final int version;
 
   final SignatureType signatureType;

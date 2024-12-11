@@ -10,7 +10,7 @@ import 'user_attribute_subpacket.dart';
 
 /// Implementation of the Image User Attribute Subpacket
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ImageUserAttribute extends UserAttributeSubpacket {
+final class ImageUserAttribute extends UserAttributeSubpacket {
   static const jpeg = 1;
 
   ImageUserAttribute(

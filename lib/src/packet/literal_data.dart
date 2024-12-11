@@ -14,7 +14,8 @@ import 'base_packet.dart';
 
 /// Implementation of the Literal Data (LIT) Packet - Type 11
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class LiteralDataPacket extends BasePacket implements LiteralDataInterface {
+final class LiteralDataPacket extends BasePacket
+    implements LiteralDataInterface {
   @override
   final LiteralFormat format;
 

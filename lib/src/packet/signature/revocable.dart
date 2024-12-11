@@ -12,7 +12,7 @@ import '../signature_subpacket.dart';
 /// Signature's revocability status. The packet body contains a
 /// Boolean flag indicating whether the signature is revocable.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Revocable extends SignatureSubpacket {
+final class Revocable extends SignatureSubpacket {
   Revocable(
     final Uint8List data, {
     super.critical,

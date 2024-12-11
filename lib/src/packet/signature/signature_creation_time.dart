@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 /// The time the signature was made.
 /// MUST be present in the hashed area.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SignatureCreationTime extends SignatureSubpacket {
+final class SignatureCreationTime extends SignatureSubpacket {
   SignatureCreationTime(
     final Uint8List data, {
     super.critical,

@@ -17,7 +17,7 @@ import 'helpers.dart';
 /// encoding of the binary data and a checksum.
 /// See https://www.rfc-editor.org/rfc/rfc9580#section-6
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Armor {
+final class Armor {
   static const version = 'Dart PG v2';
   static const comment = 'The Dart OpenPGP library';
 

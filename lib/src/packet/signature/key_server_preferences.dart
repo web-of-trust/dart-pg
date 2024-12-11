@@ -15,7 +15,7 @@ import '../signature_subpacket.dart';
 /// key holder has about how the key is handled on a key server.
 /// All undefined flags MUST be zero.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class KeyServerPreferences extends SignatureSubpacket {
+final class KeyServerPreferences extends SignatureSubpacket {
   KeyServerPreferences(
     final Uint8List data, {
     super.critical,

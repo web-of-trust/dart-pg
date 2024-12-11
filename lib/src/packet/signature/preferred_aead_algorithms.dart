@@ -12,7 +12,7 @@ import '../signature_subpacket.dart';
 
 /// PreferredAeadAlgorithms sub-packet class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PreferredAeadAlgorithms extends SignatureSubpacket {
+final class PreferredAeadAlgorithms extends SignatureSubpacket {
   PreferredAeadAlgorithms(
     final Uint8List data, {
     super.critical,

@@ -12,7 +12,7 @@ import '../../common/extensions.dart';
 
 /// A class that provides a basic International Data Encryption Algorithm (IDEA) engine.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class IDEAEngine extends BaseEngine {
+final class IDEAEngine extends BaseEngine {
   static const _mask = 0xffff;
   static const _base = 0x10001;
 

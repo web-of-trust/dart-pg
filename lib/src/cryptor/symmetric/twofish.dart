@@ -12,7 +12,7 @@ import '../../common/extensions.dart';
 
 /// A class that provides Twofish encryption operations.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class TwofishEngine extends BaseEngine {
+final class TwofishEngine extends BaseEngine {
   /// Q-Table 0
   static const _q0 = [
     0xa9, 0x67, 0xb3, 0xe8, 0x04, 0xfd, 0xa3, 0x76, // 0 - 7

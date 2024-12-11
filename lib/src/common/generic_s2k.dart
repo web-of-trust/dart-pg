@@ -14,7 +14,7 @@ import 'helpers.dart';
 
 /// Implementation of the string-to-key specifier
 /// See https://www.rfc-editor.org/rfc/rfc9580#section-3.7
-class GenericS2k implements S2kInterface {
+final class GenericS2k implements S2kInterface {
   /// Default salt length
   static const saltLength = 8;
 

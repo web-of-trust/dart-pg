@@ -15,7 +15,7 @@ import '../../type/verification_key_material.dart';
 
 /// DSA public key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class DSAPublicMaterial implements VerificationKeyMaterial {
+final class DSAPublicMaterial implements VerificationKeyMaterial {
   /// DSA prime p
   final BigInt prime;
 

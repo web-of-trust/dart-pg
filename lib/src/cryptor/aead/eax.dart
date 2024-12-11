@@ -13,7 +13,7 @@ import '../../type/aead.dart';
 
 /// EAX Authenticated-Encryption class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Eax implements AeadInterface {
+final class Eax implements AeadInterface {
   final Uint8List key;
   final SymmetricAlgorithm symmetric;
 

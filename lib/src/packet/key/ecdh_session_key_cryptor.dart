@@ -23,7 +23,7 @@ import 'session_key_cryptor.dart';
 
 /// ECDH session key cryptor class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class ECDHSessionKeyCryptor extends SessionKeyCryptor {
+final class ECDHSessionKeyCryptor extends SessionKeyCryptor {
   /// 20 octets representing the UTF-8 encoding of the string 'Anonymous Sender    '
   static const _anonymousSender = [
     0x41, 0x6e, 0x6f, 0x6e, // 0 - 3

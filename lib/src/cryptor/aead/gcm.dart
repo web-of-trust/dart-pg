@@ -13,7 +13,7 @@ import '../../type/aead.dart';
 
 /// GCM Authenticated-Encryption class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class Gcm implements AeadInterface {
+final class Gcm implements AeadInterface {
   final Uint8List key;
   final SymmetricAlgorithm symmetric;
 

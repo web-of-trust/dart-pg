@@ -16,7 +16,7 @@ import 'eddsa_public_material.dart';
 
 /// EdDSA secret key material
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class EdDSASecretMaterial implements SigningKeyMaterialInterface {
+final class EdDSASecretMaterial implements SigningKeyMaterialInterface {
   final Uint8List secretKey;
 
   @override

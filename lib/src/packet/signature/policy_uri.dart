@@ -14,7 +14,7 @@ import '../signature_subpacket.dart';
 /// This subpacket contains a URI of a document that describes the policy
 /// under which the signature was issued.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PolicyURI extends SignatureSubpacket {
+final class PolicyURI extends SignatureSubpacket {
   PolicyURI(
     final Uint8List data, {
     super.critical,

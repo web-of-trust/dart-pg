@@ -19,7 +19,7 @@ import 'base_packet.dart';
 
 /// Symmetric Encrypted Integrity Protected Data (SEIPD) Packet - Type 18
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class SymEncryptedIntegrityProtectedDataPacket extends BasePacket
+final class SymEncryptedIntegrityProtectedDataPacket extends BasePacket
     implements EncryptedDataPacketInterface {
   static const saltSize = 32;
   static const mdcSuffix = [0xd3, 0x14];

@@ -19,6 +19,8 @@ import '../type/private_key.dart';
 import '../type/secret_key_packet.dart';
 import 'base_key.dart';
 
+/// OpenPGP private key class
+/// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class PrivateKey extends BaseKey implements PrivateKeyInterface {
   PrivateKey(super.packetList);
 

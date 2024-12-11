@@ -14,7 +14,7 @@ import '../signature_subpacket.dart';
 
 /// Authorizes the specified key to issue revocation signatures for this key.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class RevocationKey extends SignatureSubpacket {
+final class RevocationKey extends SignatureSubpacket {
   RevocationKey(final Uint8List data, {super.critical, super.isLong})
       : super(SignatureSubpacketType.revocationKey, data);
 

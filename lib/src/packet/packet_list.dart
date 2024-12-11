@@ -13,7 +13,7 @@ import 'base_packet.dart';
 
 /// This class represents a list of OpenPGP packets.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class PacketList extends ListBase<PacketInterface>
+final class PacketList extends ListBase<PacketInterface>
     implements PacketListInterface {
   @override
   final List<PacketInterface> packets;

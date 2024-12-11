@@ -12,7 +12,7 @@ import '../../common/helpers.dart';
 
 /// Implementation of DSA (digital signature algorithm)
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
-class DSASigner implements Signer {
+final class DSASigner implements Signer {
   final Digest? _digest;
 
   late DSAAsymmetricKey? _key;
@@ -150,7 +150,7 @@ class DSASigner implements Signer {
   }
 }
 
-class DSASignature implements Signature {
+final class DSASignature implements Signature {
   final BigInt r;
   final BigInt s;
 
@@ -191,14 +191,14 @@ abstract class DSAAsymmetricKey implements AsymmetricKey {
   DSAAsymmetricKey(this.prime, this.order, this.generator);
 }
 
-class DSAPublicKey extends DSAAsymmetricKey implements PublicKey {
+final class DSAPublicKey extends DSAAsymmetricKey implements PublicKey {
   /// public exponent y = g ** x mod p
   final BigInt y;
 
   DSAPublicKey(this.y, super.prime, super.order, super.generator);
 }
 
-class DSAPrivateKey extends DSAAsymmetricKey implements PrivateKey {
+final class DSAPrivateKey extends DSAAsymmetricKey implements PrivateKey {
   /// secret exponent
   final BigInt x;
 
