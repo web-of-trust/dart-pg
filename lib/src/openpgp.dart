@@ -398,7 +398,8 @@ final class OpenPGP {
     );
   }
 
-  /// Decrypt symmetric session keys using private keys or passwords (not both).
+  /// Decrypt symmetric encrypted session keys.
+  /// Using private keys or passwords (not both).
   static SessionKeyInterface decryptSessionKey(
     final PacketListInterface packetList, {
     final Iterable<PrivateKeyInterface> decryptionKeys = const [],
