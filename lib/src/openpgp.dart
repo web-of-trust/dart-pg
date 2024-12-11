@@ -398,7 +398,7 @@ final class OpenPGP {
     );
   }
 
-  /// Decrypt symmetric encrypted session keys.
+  /// Decrypt encrypted session keys.
   /// Using private keys or passwords (not both).
   static SessionKeyInterface decryptSessionKey(
     final PacketListInterface packetList, {

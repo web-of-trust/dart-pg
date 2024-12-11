@@ -35,7 +35,7 @@ final class EncryptedMessage extends BaseMessage
     return EncryptedMessage(PacketList.decode(armor.data));
   }
 
-  /// Decrypt symmetric encrypted session keys.
+  /// Decrypt encrypted session keys.
   /// Using private keys or passwords (not both).
   static SessionKeyInterface decryptSessionKey(
     final PacketListInterface packetList, {
