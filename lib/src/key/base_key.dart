@@ -162,7 +162,7 @@ abstract class BaseKey implements KeyInterface {
   @override
   isPreferredAeadCiphers([
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final AeadAlgorithm aead = AeadAlgorithm.gcm,
+    final AeadAlgorithm aead = AeadAlgorithm.ocb,
   ]) {
     for (final signature in directSignatures) {
       final subpacket = signature.getSubpacket<PreferredAeadCiphers>();
