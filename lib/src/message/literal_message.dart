@@ -165,11 +165,6 @@ final class LiteralMessage extends BaseMessage
     final Iterable<String> passwords = const [],
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) {
-    if (encryptionKeys.isEmpty && passwords.isEmpty) {
-      throw ArgumentError(
-        'No encryption keys or passwords provided.',
-      );
-    }
     var addPadding = true;
     for (final key in encryptionKeys) {
       if (!key.keyPacket.isV6Key) {
@@ -202,7 +197,7 @@ final class LiteralMessage extends BaseMessage
       SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         sessionKey.encryptionKey,
         packetList,
-        symmetric: symmetric,
+        symmetric: sessionKey.symmetric,
         aead: sessionKey.aead,
       ),
     ]));
