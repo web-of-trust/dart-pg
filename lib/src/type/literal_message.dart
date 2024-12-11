@@ -61,10 +61,12 @@ abstract interface class LiteralMessageInterface implements ArmorableInterface, 
   EncryptedMessageInterface encrypt({
     final Iterable<KeyInterface> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm? symmetric,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   });
 
   /// Compress the message (the literal and signature packets of the message)
   /// Return new message with compressed content.
-  LiteralMessageInterface compress([final CompressionAlgorithm? algorithm]);
+  LiteralMessageInterface compress([
+    final CompressionAlgorithm algorithm = CompressionAlgorithm.uncompressed,
+  ]);
 }

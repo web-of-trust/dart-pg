@@ -9,6 +9,7 @@ import 'dart:typed_data';
 import '../common/armor.dart';
 import '../common/config.dart';
 import '../common/helpers.dart';
+import '../enum/aead_algorithm.dart';
 import '../enum/armor_type.dart';
 import '../enum/compression_algorithm.dart';
 import '../enum/preset_rfc.dart';
@@ -58,26 +59,42 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
   /// Checking the algorithm preferences of the passed encryption keys.
   static SessionKeyInterface generateSessionKey(
     final Iterable<KeyInterface> encryptionKeys, [
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm defaultSymmetric = SymmetricAlgorithm.aes128,
   ]) {
-    var aeadProtect = Config.aeadProtect;
-    final aead = Config.preferredAead;
+    var desiredSymmetrics = [
+      SymmetricAlgorithm.aes128,
+      SymmetricAlgorithm.aes192,
+      SymmetricAlgorithm.aes256,
+    ];
     for (final key in encryptionKeys) {
-      final symmetrics = key.preferredSymmetrics;
-      if (symmetrics.isNotEmpty && !symmetrics.contains(symmetric)) {
-        throw AssertionError(
-          'Symmetric not compatible with the given `encryptionKeys`',
-        );
-      }
+      desiredSymmetrics = desiredSymmetrics
+          .where(
+            (symmetric) => key.preferredSymmetrics.contains(symmetric),
+          )
+          .toList();
+    }
+    final symmetric = desiredSymmetrics.firstOrNull ?? defaultSymmetric;
+
+    var desiredAeads = [
+      AeadAlgorithm.ocb,
+      AeadAlgorithm.gcm,
+      AeadAlgorithm.eax,
+    ];
+    var aeadProtect = Config.aeadProtect;
+    for (final key in encryptionKeys) {
       if (key.aeadSupported) {
-        final aeads = key.preferredAeads(symmetric);
-        if (!aeads.contains(aead)) {
-          aeadProtect = false;
-        }
+        desiredAeads = desiredAeads
+            .where(
+              (aead) => key.preferredAeads(symmetric).contains(aead),
+            )
+            .toList();
       } else {
         aeadProtect = false;
+        break;
       }
     }
+    final aead = desiredAeads.firstOrNull ?? Config.preferredAead;
+
     return SessionKey.produceKey(
       symmetric,
       aeadProtect ? aead : null,
@@ -120,15 +137,16 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
       );
 
   @override
-  compress([final CompressionAlgorithm? algorithm]) {
-    final algo = algorithm ?? Config.preferredCompression;
-    if (algo != CompressionAlgorithm.uncompressed) {
+  compress([
+    final CompressionAlgorithm algorithm = CompressionAlgorithm.uncompressed,
+  ]) {
+    if (algorithm != CompressionAlgorithm.uncompressed) {
       return LiteralMessage(
         PacketList(
           [
             CompressedDataPacket.fromPacketList(
               _unwrapCompressed(),
-              algorithm: algo,
+              algorithm: algorithm,
             )
           ],
         ),
@@ -141,7 +159,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
   encrypt({
     final Iterable<KeyInterface> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm? symmetric,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) {
     if (encryptionKeys.isEmpty && passwords.isEmpty) {
       throw ArgumentError(
@@ -156,7 +174,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     }
     final sessionKey = generateSessionKey(
       encryptionKeys,
-      symmetric ?? Config.preferredSymmetric,
+      symmetric,
     );
 
     final packetList = addPadding
@@ -180,7 +198,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
       SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
         sessionKey.encryptionKey,
         packetList,
-        symmetric: symmetric ?? Config.preferredSymmetric,
+        symmetric: symmetric,
         aead: sessionKey.aead,
       ),
     ]));

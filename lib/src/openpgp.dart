@@ -269,10 +269,14 @@ final class OpenPGP {
     final DateTime? time,
   }) {
     return signingKeys.isEmpty
-        ? message.compress(compression).encrypt(
+        ? message
+            .compress(
+              compression ?? Config.preferredCompression,
+            )
+            .encrypt(
               encryptionKeys: encryptionKeys,
               passwords: passwords,
-              symmetric: symmetric,
+              symmetric: symmetric ?? Config.preferredSymmetric,
             )
         : message
             .sign(
@@ -281,11 +285,13 @@ final class OpenPGP {
               notationData: notationData,
               time: time,
             )
-            .compress(compression)
+            .compress(
+              compression ?? Config.preferredCompression,
+            )
             .encrypt(
               encryptionKeys: encryptionKeys,
               passwords: passwords,
-              symmetric: symmetric,
+              symmetric: symmetric ?? Config.preferredSymmetric,
             );
   }
 
@@ -308,6 +314,7 @@ final class OpenPGP {
       passwords: passwords,
       signingKeys: signingKeys,
       symmetric: symmetric,
+      compression: compression,
       notationData: notationData,
       time: time,
     );
@@ -332,6 +339,7 @@ final class OpenPGP {
       passwords: passwords,
       signingKeys: signingKeys,
       symmetric: symmetric,
+      compression: compression,
       notationData: notationData,
       time: time,
     );

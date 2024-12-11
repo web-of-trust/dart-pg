@@ -493,7 +493,6 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
       PreferredSymmetricAlgorithms(Uint8List.fromList([
         SymmetricAlgorithm.aes128.value,
         SymmetricAlgorithm.aes256.value,
-        SymmetricAlgorithm.aes192.value,
       ])),
       PreferredAeadAlgorithms(Uint8List.fromList([
         AeadAlgorithm.ocb.value,
@@ -529,12 +528,6 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
           SymmetricAlgorithm.aes256.value,
           AeadAlgorithm.ocb.value,
           SymmetricAlgorithm.aes256.value,
-          AeadAlgorithm.gcm.value,
-        ],
-        ...[
-          SymmetricAlgorithm.aes192.value,
-          AeadAlgorithm.ocb.value,
-          SymmetricAlgorithm.aes192.value,
           AeadAlgorithm.gcm.value,
         ],
       ])));
