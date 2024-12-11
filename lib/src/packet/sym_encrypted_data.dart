@@ -37,9 +37,9 @@ class SymEncryptedDataPacket extends BasePacket implements EncryptedDataPacketIn
 
   factory SymEncryptedDataPacket.encryptPackets(
     final Uint8List key,
-    final PacketListInterface packets, {
+    final PacketListInterface packets, [
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-  }) {
+  ]) {
     final cipher = BufferedCipher(symmetric.cfbCipherEngine)
       ..init(
         true,

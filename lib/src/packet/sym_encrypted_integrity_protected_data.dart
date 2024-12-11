@@ -262,7 +262,7 @@ class SymEncryptedIntegrityProtectedDataPacket extends BasePacket implements Enc
     final Uint8List data, {
     final Uint8List? finalChunk,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    final AeadAlgorithm aead = AeadAlgorithm.gcm,
+    final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final chunkSizeByte = 0,
     final Uint8List? salt,
   }) {

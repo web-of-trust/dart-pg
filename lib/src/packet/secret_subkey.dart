@@ -55,14 +55,14 @@ class SecretSubkeyPacket extends SecretKeyPacket implements SubkeyPacketInterfac
   /// Generate secret subkey packet
   factory SecretSubkeyPacket.generate(
     final KeyAlgorithm algorithm, {
-    final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final DateTime? time,
   }) {
     final keyMaterial = SecretKeyPacket.generateKeyMaterial(
       algorithm,
-      rsaKeySize: rsaKeySize,
       curve: curve,
+      rsaKeySize: rsaKeySize,
     );
     return SecretSubkeyPacket(
       PublicSubkeyPacket(

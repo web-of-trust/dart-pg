@@ -62,7 +62,9 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
     }
   }
 
-  factory SymEncryptedSessionKeyPacket.fromBytes(final Uint8List bytes) {
+  factory SymEncryptedSessionKeyPacket.fromBytes(
+    final Uint8List bytes,
+  ) {
     var pos = 0;
 
     /// A one-octet version number.
@@ -185,7 +187,7 @@ class SymEncryptedSessionKeyPacket extends BasePacket {
       iv,
       encrypted,
       symmetric: symmetric,
-      aead: aeadProtect ? aead : null,
+      aead: aead,
       sessionKey: sessionKey ?? SessionKey(key, symmetric),
     );
   }

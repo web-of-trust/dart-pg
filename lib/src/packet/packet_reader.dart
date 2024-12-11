@@ -20,7 +20,10 @@ final class PacketReader {
 
   PacketReader(this.type, this.data, this.offset);
 
-  factory PacketReader.read(final Uint8List bytes, [final int offset = 0]) {
+  factory PacketReader.read(
+    final Uint8List bytes, [
+    final int offset = 0,
+  ]) {
     if (bytes.length <= offset || bytes.sublist(offset).length < 2 || (bytes[offset] & 0x80) == 0) {
       throw ArgumentError(
         'Error during parsing.'

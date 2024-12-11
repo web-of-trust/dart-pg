@@ -12,7 +12,7 @@ void main() {
     test('zip test', () {
       final compressedPacket = CompressedDataPacket.fromPacketList(
         PacketList([literalData]),
-        algorithm: CompressionAlgorithm.zip,
+        CompressionAlgorithm.zip,
       );
 
       final decompressedPacket = CompressedDataPacket.fromBytes(
@@ -36,7 +36,7 @@ void main() {
     test('zlib test', () {
       final compressedPacket = CompressedDataPacket.fromPacketList(
         PacketList([literalData]),
-        algorithm: CompressionAlgorithm.zlib,
+        CompressionAlgorithm.zlib,
       );
 
       final decompressedPacket = CompressedDataPacket.fromBytes(
@@ -61,7 +61,7 @@ void main() {
       expect(
         () => CompressedDataPacket.fromPacketList(
           PacketList([literalData]),
-          algorithm: CompressionAlgorithm.bzip2,
+          CompressionAlgorithm.bzip2,
         ),
         throwsUnsupportedError,
       );

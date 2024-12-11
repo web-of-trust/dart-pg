@@ -23,9 +23,7 @@ class UserAttributePacket extends BasePacket implements UserIDPacketInterface {
   factory UserAttributePacket.fromBytes(
     final Uint8List bytes,
   ) =>
-      UserAttributePacket(
-        _readSubpackets(bytes),
-      );
+      UserAttributePacket(_readSubpackets(bytes));
 
   @override
   get data => Uint8List.fromList(

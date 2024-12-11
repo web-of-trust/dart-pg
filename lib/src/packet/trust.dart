@@ -19,9 +19,10 @@ class TrustPacket extends BasePacket {
         Uint8List.fromList([trustCode & 0xff]),
       );
 
-  factory TrustPacket.fromBytes(final Uint8List bytes) => TrustPacket.fromTrustCode(
-        bytes[0],
-      );
+  factory TrustPacket.fromBytes(
+    final Uint8List bytes,
+  ) =>
+      TrustPacket.fromTrustCode(bytes[0]);
 
   @override
   get data => levelAndTrustAmount;

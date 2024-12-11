@@ -108,15 +108,15 @@ class PacketList extends ListBase<PacketInterface> implements PacketListInterfac
   get length => packets.length;
 
   @override
-  operator [](int index) => packets[index];
+  operator [](final int index) => packets[index];
 
   @override
-  operator []=(int index, PacketInterface packet) {
+  operator []=(final int index, PacketInterface packet) {
     packets[index] = packet;
   }
 
   @override
-  set length(int newLength) {
+  set length(final int newLength) {
     packets.length = newLength;
   }
 }

@@ -45,9 +45,9 @@ class CompressedDataPacket extends BasePacket {
   }
 
   factory CompressedDataPacket.fromPacketList(
-    final PacketListInterface packets, {
+    final PacketListInterface packets, [
     final CompressionAlgorithm algorithm = CompressionAlgorithm.uncompressed,
-  }) =>
+  ]) =>
       CompressedDataPacket(
         _compress(packets, algorithm),
         packets,

@@ -68,9 +68,9 @@ class LiteralDataPacket extends BasePacket implements LiteralDataInterface {
   }
 
   factory LiteralDataPacket.fromText(
-    final String text, {
+    final String text, [
     final DateTime? time,
-  }) =>
+  ]) =>
       LiteralDataPacket(
         Uint8List(0),
         text: text,

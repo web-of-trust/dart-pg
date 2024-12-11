@@ -79,14 +79,14 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
   /// Generate secret key packet
   factory SecretKeyPacket.generate(
     final KeyAlgorithm algorithm, {
-    final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final DateTime? time,
   }) {
     final keyMaterial = generateKeyMaterial(
       algorithm,
-      rsaKeySize: rsaKeySize,
       curve: curve,
+      rsaKeySize: rsaKeySize,
     );
 
     return SecretKeyPacket(
@@ -103,8 +103,8 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
 
   static SecretKeyMaterialInterface generateKeyMaterial(
     final KeyAlgorithm algorithm, {
-    final RSAKeySize rsaKeySize = RSAKeySize.normal,
     final Ecc curve = Ecc.secp521r1,
+    final RSAKeySize rsaKeySize = RSAKeySize.normal,
   }) {
     return switch (algorithm) {
       KeyAlgorithm.rsaEncryptSign ||
@@ -353,7 +353,9 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     );
   }
 
-  SecretKeyMaterialInterface decryptKeyData(final String passphrase) {
+  SecretKeyMaterialInterface decryptKeyData(
+    final String passphrase,
+  ) {
     final Uint8List clearText;
     if (isEncrypted) {
       final kek = _produceEncryptionKey(
@@ -566,7 +568,7 @@ class SecretKeyPacket extends BasePacket implements SecretKeyPacketInterface {
     return keyMaterial;
   }
 
-  static Uint8List _computeChecksum(Uint8List keyData) {
+  static Uint8List _computeChecksum(final Uint8List keyData) {
     var sum = 0;
     for (var i = 0; i < keyData.length; i++) {
       sum = (sum + keyData[i]) & 0xffff;

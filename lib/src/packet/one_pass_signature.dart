@@ -46,7 +46,9 @@ class OnePassSignaturePacket extends BasePacket {
     }
   }
 
-  factory OnePassSignaturePacket.fromBytes(final Uint8List bytes) {
+  factory OnePassSignaturePacket.fromBytes(
+    final Uint8List bytes,
+  ) {
     var pos = 0;
 
     /// A one-octet version number (4 or 6).

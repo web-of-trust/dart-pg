@@ -147,7 +147,7 @@ class AeadEncryptedDataPacket extends BasePacket implements EncryptedDataPacketI
     final Uint8List data, {
     final Uint8List? finalChunk,
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
-    AeadAlgorithm aead = AeadAlgorithm.gcm,
+    final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final chunkSizeByte = 0,
     final Uint8List? iv,
   }) {

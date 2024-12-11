@@ -19,9 +19,9 @@ class ImageUserAttribute extends UserAttributeSubpacket {
   }) : super(jpeg, data);
 
   factory ImageUserAttribute.fromBytes(
-    final Uint8List imageData, {
+    final Uint8List imageData, [
     final int imageType = jpeg,
-  }) {
+  ]) {
     return ImageUserAttribute(Uint8List.fromList([
       0x10,
       0x00,

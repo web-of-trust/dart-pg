@@ -19,7 +19,7 @@ class PaddingPacket extends BasePacket {
 
   PaddingPacket(this.padding) : super(PacketType.marker);
 
-  factory PaddingPacket.createPadding(int lengh) {
+  factory PaddingPacket.createPadding(final int lengh) {
     assert(paddingMin <= lengh && lengh <= paddingMax);
     return PaddingPacket(Helper.randomBytes(lengh));
   }

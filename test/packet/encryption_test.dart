@@ -199,7 +199,7 @@ void main() {
       final encrypted = SymEncryptedDataPacket.encryptPackets(
         key,
         packets,
-        symmetric: SymmetricAlgorithm.aes128,
+        SymmetricAlgorithm.aes128,
       );
       final encrypt = SymEncryptedDataPacket.fromBytes(
         encrypted.data,

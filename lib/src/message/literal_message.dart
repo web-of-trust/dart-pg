@@ -145,7 +145,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
           [
             CompressedDataPacket.fromPacketList(
               _unwrapCompressed(),
-              algorithm: algorithm,
+              algorithm,
             )
           ],
         ),

@@ -166,9 +166,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
 
   /// Create signature
   factory SignaturePacket.createSignature(
-    SecretKeyPacketInterface signKey,
-    SignatureType signatureType,
-    Uint8List dataToSign, {
+    final SecretKeyPacketInterface signKey,
+    final SignatureType signatureType,
+    final Uint8List dataToSign, {
     final HashAlgorithm? preferredHash,
     final Iterable<SubpacketInterface> subpackets = const [],
     final DateTime? time,
@@ -227,9 +227,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
 
   /// Create direct key signature
   factory SignaturePacket.createDirectKeySignature(
-    SecretKeyPacketInterface signKey, {
-    int keyExpiry = 0,
-    DateTime? time,
+    final SecretKeyPacketInterface signKey, {
+    final int keyExpiry = 0,
+    final DateTime? time,
   }) {
     final subpackets = _keySubpackets(signKey.keyVersion);
     if (keyExpiry > 0) {
@@ -246,11 +246,11 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
 
   /// Create self signature
   factory SignaturePacket.createSelfCertificate(
-    SecretKeyPacketInterface signKey,
-    UserIDPacketInterface userID, {
-    bool isPrimaryUser = false,
-    int keyExpiry = 0,
-    DateTime? time,
+    final SecretKeyPacketInterface signKey,
+    final UserIDPacketInterface userID, {
+    final bool isPrimaryUser = false,
+    final int keyExpiry = 0,
+    final DateTime? time,
   }) {
     final subpackets = signKey.keyVersion == KeyVersion.v4.value
         ? _keySubpackets(
@@ -277,11 +277,11 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
 
   /// Create subkey binding signature
   factory SignaturePacket.createSubkeyBinding(
-    SecretKeyPacketInterface signKey,
-    SubkeyPacketInterface subkey, {
-    int keyExpiry = 0,
-    bool forSigning = false,
-    DateTime? time,
+    final SecretKeyPacketInterface signKey,
+    final SubkeyPacketInterface subkey, {
+    final int keyExpiry = 0,
+    final bool forSigning = false,
+    final DateTime? time,
   }) {
     final subpackets = <SubpacketInterface>[];
     if (keyExpiry > 0) {
@@ -325,11 +325,11 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
 
   /// Create literal data signature
   factory SignaturePacket.createLiteralData(
-    SecretKeyPacketInterface signKey,
-    LiteralDataInterface literalData, {
-    Iterable<KeyInterface> recipients = const [],
-    NotationDataInterface? notationData,
-    DateTime? time,
+    final SecretKeyPacketInterface signKey,
+    final LiteralDataInterface literalData, {
+    final Iterable<KeyInterface> recipients = const [],
+    final NotationDataInterface? notationData,
+    final DateTime? time,
   }) {
     final signatureType = switch (literalData.format) {
       LiteralFormat.text || LiteralFormat.utf8 => SignatureType.text,
@@ -485,7 +485,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     }
   }
 
-  static List<SubpacketInterface> _keySubpackets(final int version) {
+  static List<SubpacketInterface> _keySubpackets(
+    final int version,
+  ) {
     final subpackets = [
       KeyFlags.fromFlags(
         KeyFlag.certifyKeys.value | KeyFlag.signData.value,
@@ -550,7 +552,9 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
     }
   }
 
-  static List<SubpacketInterface> _readSubpackets(final Uint8List bytes) {
+  static List<SubpacketInterface> _readSubpackets(
+    final Uint8List bytes,
+  ) {
     final subpackets = <SubpacketInterface>[];
     var offset = 0;
     while (offset < bytes.length) {
@@ -775,7 +779,7 @@ class SignaturePacket extends BasePacket implements SignaturePacketInterface {
   /// Encode subpacket to bytes
   static Uint8List _encodeSubpackets(
     final Iterable<SubpacketInterface> subpackets,
-    bool isV6,
+    final bool isV6,
   ) {
     final bytes = subpackets
         .map(
