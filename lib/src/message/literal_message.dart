@@ -220,9 +220,8 @@ final class LiteralMessage extends BaseMessage
         time: time,
       ).packets,
     ];
-    var index = 0;
 
-    /// innermost OPS refers to the first signature packet
+    var index = 0;
     final opsPackets = signaturePackets
         .map((packet) {
           return OnePassSignaturePacket.fromSignature(
@@ -232,6 +231,7 @@ final class LiteralMessage extends BaseMessage
         })
         .toList()
         .reversed;
+    /// innermost OPS refers to the first signature packet
 
     return LiteralMessage(PacketList([
       ...opsPackets,
