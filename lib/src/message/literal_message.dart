@@ -165,16 +165,17 @@ final class LiteralMessage extends BaseMessage
     final Iterable<String> passwords = const [],
     final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
   }) {
-    var addPadding = true;
-    for (final key in encryptionKeys) {
-      if (!key.keyPacket.isV6Key) {
-        addPadding = false;
-      }
-    }
     final sessionKey = generateSessionKey(
       encryptionKeys,
       symmetric,
     );
+    var addPadding = sessionKey.aead != null;
+    for (final key in encryptionKeys) {
+      if (!key.keyPacket.isV6Key) {
+        addPadding = false;
+        break;
+      }
+    }
 
     final packetList = addPadding
         ? PacketList([
