@@ -135,8 +135,8 @@ final class Helper {
 
   static assertSymmetric(final SymmetricAlgorithm symmetric) {
     if (!SymmetricAlgorithm.preferredSymmetrics.contains(symmetric)) {
-        throw UnsupportedError(
-          'Symmetric ${symmetric.name} is unsupported.',
+      throw UnsupportedError(
+        'Symmetric ${symmetric.name} is unsupported.',
       );
     }
   }

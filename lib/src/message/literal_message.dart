@@ -89,6 +89,7 @@ final class LiteralMessage extends BaseMessage
               (aead) => key.preferredAeads(symmetric).contains(aead),
             )
             .toList();
+        aeadProtect = true;
       } else {
         aeadProtect = false;
         break;
