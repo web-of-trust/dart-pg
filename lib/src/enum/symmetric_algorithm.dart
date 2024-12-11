@@ -30,6 +30,17 @@ enum SymmetricAlgorithm {
 
   const SymmetricAlgorithm(this.value);
 
+  static List<SymmetricAlgorithm> get preferredSymmetrics => [
+        aes128,
+        aes192,
+        aes256,
+        camellia128,
+        camellia192,
+        camellia256,
+        blowfish,
+        twofish,
+      ];
+
   int get keySize => switch (this) {
         plaintext => 0,
         idea || cast5 || blowfish || aes128 || camellia128 => 128,

@@ -60,21 +60,17 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     final Iterable<KeyInterface> encryptionKeys, [
     final SymmetricAlgorithm defaultSymmetric = SymmetricAlgorithm.aes128,
   ]) {
-    var desiredSymmetrics = [
-      SymmetricAlgorithm.aes128,
-      SymmetricAlgorithm.aes192,
-      SymmetricAlgorithm.aes256,
-    ];
+    var preferredSymmetrics = SymmetricAlgorithm.preferredSymmetrics;
     for (final key in encryptionKeys) {
-      desiredSymmetrics = desiredSymmetrics
+      preferredSymmetrics = preferredSymmetrics
           .where(
             (symmetric) => key.preferredSymmetrics.contains(symmetric),
           )
           .toList();
     }
-    final symmetric = desiredSymmetrics.firstOrNull ?? defaultSymmetric;
+    final symmetric = preferredSymmetrics.firstOrNull ?? defaultSymmetric;
 
-    var desiredAeads = [
+    var preferredAeads = [
       AeadAlgorithm.ocb,
       AeadAlgorithm.gcm,
       AeadAlgorithm.eax,
@@ -82,7 +78,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
     var aeadProtect = Config.aeadProtect;
     for (final key in encryptionKeys) {
       if (key.aeadSupported) {
-        desiredAeads = desiredAeads
+        preferredAeads = preferredAeads
             .where(
               (aead) => key.preferredAeads(symmetric).contains(aead),
             )
@@ -92,7 +88,7 @@ final class LiteralMessage extends BaseMessage implements LiteralMessageInterfac
         break;
       }
     }
-    final aead = desiredAeads.firstOrNull ?? Config.preferredAead;
+    final aead = preferredAeads.firstOrNull ?? Config.preferredAead;
 
     return SessionKey.produceKey(
       symmetric,
