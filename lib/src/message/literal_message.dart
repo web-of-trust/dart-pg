@@ -231,7 +231,6 @@ final class LiteralMessage extends BaseMessage
         })
         .toList()
         .reversed;
-    /// innermost OPS refers to the first signature packet
 
     return LiteralMessage(PacketList([
       ...opsPackets,

@@ -290,6 +290,12 @@ abstract class BaseKey implements KeyInterface {
           return false;
         })
         .whereType<SignaturePacketInterface>()
+        .where((signature) => signature.verify(
+              (keyPacket is SecretKeyPacketInterface)
+                  ? (keyPacket as SecretKeyPacketInterface).publicKey
+                  : keyPacket,
+              keyPacket.signBytes,
+            ))
         .toList();
     remainPackets = remainPackets.skipWhile((packet) {
       if (packet is SignaturePacketInterface) {
