@@ -7,13 +7,13 @@ library;
 import '../common/armor.dart';
 import '../common/helpers.dart';
 import '../enum/armor_type.dart';
-import '../message/base_message.dart';
 import '../packet/base_packet.dart';
 import '../type/encrypted_data_packet.dart';
 import '../type/encrypted_message.dart';
 import '../type/packet_list.dart';
 import '../type/private_key.dart';
 import '../type/session_key.dart';
+import 'base_message.dart';
 
 /// OpenPGP encrypted message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

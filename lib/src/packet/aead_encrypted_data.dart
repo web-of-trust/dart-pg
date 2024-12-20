@@ -81,7 +81,7 @@ final class AeadEncryptedDataPacket extends BasePacket
   factory AeadEncryptedDataPacket.encryptPackets(
     final Uint8List key,
     final PacketListInterface packets, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final int chunkSize = 12,
   }) {
@@ -117,7 +117,7 @@ final class AeadEncryptedDataPacket extends BasePacket
   @override
   decrypt(
     final Uint8List key, [
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
   ]) {
     final length = encrypted.length;
     final data = encrypted.sublist(0, length - aead.tagLength);
@@ -147,7 +147,7 @@ final class AeadEncryptedDataPacket extends BasePacket
     final Uint8List key,
     final Uint8List data, {
     final Uint8List? finalChunk,
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final AeadAlgorithm aead = AeadAlgorithm.ocb,
     final chunkSizeByte = 0,
     final Uint8List? iv,

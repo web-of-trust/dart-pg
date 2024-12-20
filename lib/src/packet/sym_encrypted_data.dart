@@ -70,7 +70,7 @@ final class SymEncryptedDataPacket extends BasePacket
   @override
   decrypt(
     final Uint8List key, [
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
   ]) {
     if (!Config.allowUnauthenticated) {
       throw AssertionError(

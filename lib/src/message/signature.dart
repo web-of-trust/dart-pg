@@ -8,7 +8,6 @@ import '../common/armor.dart';
 import '../common/helpers.dart';
 import '../enum/armor_type.dart';
 import '../enum/hash_algorithm.dart';
-import '../message/verification.dart';
 import '../packet/base_packet.dart';
 import '../type/cleartext_message.dart';
 import '../type/key.dart';
@@ -16,6 +15,7 @@ import '../type/literal_data.dart';
 import '../type/signature.dart';
 import '../type/signature_packet.dart';
 import '../type/verification.dart';
+import 'verification.dart';
 
 /// Signature class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

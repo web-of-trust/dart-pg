@@ -43,7 +43,7 @@ final class SymEncryptedSessionKeyPacket extends BasePacket {
     this.s2k,
     this.iv,
     this.encrypted, {
-    this.symmetric = SymmetricAlgorithm.aes128,
+    this.symmetric = SymmetricAlgorithm.aes256,
     this.aead,
     this.sessionKey,
   }) : super(PacketType.symEncryptedSessionKey) {
@@ -126,9 +126,9 @@ final class SymEncryptedSessionKeyPacket extends BasePacket {
 
   factory SymEncryptedSessionKeyPacket.encryptSessionKey(
     final String password, {
-    final SessionKeyInterface? sessionKey,
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final AeadAlgorithm? aead,
+    final SessionKeyInterface? sessionKey,
   }) {
     Helper.assertSymmetric(symmetric);
 

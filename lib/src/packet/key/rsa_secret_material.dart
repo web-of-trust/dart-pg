@@ -5,7 +5,6 @@
 library;
 
 import 'dart:typed_data';
-
 import 'package:pointycastle/pointycastle.dart';
 
 import '../../common/helpers.dart';

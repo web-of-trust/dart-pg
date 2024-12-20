@@ -13,7 +13,6 @@ import '../enum/aead_algorithm.dart';
 import '../enum/armor_type.dart';
 import '../enum/compression_algorithm.dart';
 import '../enum/symmetric_algorithm.dart';
-import '../message/base_message.dart';
 import '../packet/base_packet.dart';
 import '../packet/key/session_key.dart';
 import '../type/key.dart';
@@ -22,6 +21,7 @@ import '../type/literal_message.dart';
 import '../type/packet_list.dart';
 import '../type/session_key.dart';
 import '../type/signature_packet.dart';
+import 'base_message.dart';
 
 /// OpenPGP literal message class
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
@@ -59,7 +59,7 @@ final class LiteralMessage extends BaseMessage
   /// Taking the algorithm preferences of the passed encryption keys, if any.
   static SessionKeyInterface generateSessionKey(
     final Iterable<KeyInterface> encryptionKeys, [
-    final SymmetricAlgorithm defaultSymmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm defaultSymmetric = SymmetricAlgorithm.aes256,
   ]) {
     final SymmetricAlgorithm symmetric;
     if (encryptionKeys.isNotEmpty) {
@@ -163,7 +163,7 @@ final class LiteralMessage extends BaseMessage
   encrypt({
     final Iterable<KeyInterface> encryptionKeys = const [],
     final Iterable<String> passwords = const [],
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
   }) {
     final sessionKey = generateSessionKey(
       encryptionKeys,

@@ -6,13 +6,13 @@ library;
 
 import '../common/armor.dart';
 import '../enum/armor_type.dart';
-import '../message/signature.dart';
 import '../packet/packet_list.dart';
 import '../type/key.dart';
 import '../type/signature.dart';
 import '../type/signature_packet.dart';
 import '../type/signed_cleartext_message.dart';
 import 'cleartext_message.dart';
+import 'signature.dart';
 
 /// Signed message class that represents an OpenPGP cleartext signed message.
 /// See RFC 9580, section 7.

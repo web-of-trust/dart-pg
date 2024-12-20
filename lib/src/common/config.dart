@@ -29,7 +29,7 @@ final class Config {
 
   static HashAlgorithm preferredHash = HashAlgorithm.sha256;
 
-  static SymmetricAlgorithm preferredSymmetric = SymmetricAlgorithm.aes128;
+  static SymmetricAlgorithm preferredSymmetric = SymmetricAlgorithm.aes256;
 
   static CompressionAlgorithm preferredCompression =
       CompressionAlgorithm.uncompressed;

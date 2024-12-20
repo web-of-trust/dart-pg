@@ -5,13 +5,13 @@
 library;
 
 import '../common/helpers.dart';
-import '../message/signature.dart';
-import '../message/signed_message.dart';
 import '../packet/base_packet.dart';
 import '../type/cleartext_message.dart';
 import '../type/key.dart';
 import '../type/notation_data.dart';
 import '../type/signature.dart';
+import 'signature.dart';
+import 'signed_message.dart';
 
 /// Cleartext message class that represents an OpenPGP cleartext message.
 /// See RFC 9580, section 7.

@@ -501,8 +501,8 @@ final class SignaturePacket extends BasePacket
         KeyFlag.certifyKeys.value | KeyFlag.signData.value,
       ),
       PreferredSymmetricAlgorithms(Uint8List.fromList([
-        SymmetricAlgorithm.aes128.value,
         SymmetricAlgorithm.aes256.value,
+        SymmetricAlgorithm.aes128.value,
       ])),
       PreferredAeadAlgorithms(Uint8List.fromList([
         AeadAlgorithm.ocb.value,
@@ -529,18 +529,18 @@ final class SignaturePacket extends BasePacket
     if (version == KeyVersion.v6.value) {
       subpackets.add(PreferredAeadCiphers(Uint8List.fromList([
         ...[
+          SymmetricAlgorithm.aes256.value,
+          AeadAlgorithm.ocb.value,
+          SymmetricAlgorithm.aes256.value,
+          AeadAlgorithm.gcm.value,
+        ],
+        ...[
           SymmetricAlgorithm.aes128.value,
           AeadAlgorithm.ocb.value,
           SymmetricAlgorithm.aes128.value,
           AeadAlgorithm.gcm.value,
           SymmetricAlgorithm.aes128.value,
           AeadAlgorithm.eax.value,
-        ],
-        ...[
-          SymmetricAlgorithm.aes256.value,
-          AeadAlgorithm.ocb.value,
-          SymmetricAlgorithm.aes256.value,
-          AeadAlgorithm.gcm.value,
         ],
       ])));
     }

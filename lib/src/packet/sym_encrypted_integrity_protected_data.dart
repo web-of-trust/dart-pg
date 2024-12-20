@@ -131,7 +131,7 @@ final class SymEncryptedIntegrityProtectedDataPacket extends BasePacket
   factory SymEncryptedIntegrityProtectedDataPacket.encryptPackets(
     final Uint8List key,
     final PacketListInterface packets, {
-    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes128,
+    final SymmetricAlgorithm symmetric = SymmetricAlgorithm.aes256,
     final AeadAlgorithm? aead,
   }) {
     Helper.assertSymmetric(symmetric);

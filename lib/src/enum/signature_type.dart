@@ -6,14 +6,14 @@ library;
 
 export 'aead_algorithm.dart';
 export 'compression_algorithm.dart';
+export 'hash_algorithm.dart';
+export 'key_algorithm.dart';
 export 'key_flag.dart';
 export 'key_version.dart';
 export 'literal_format.dart';
+export 'signature_subpacket_type.dart';
 export 'support_feature.dart';
 export 'symmetric_algorithm.dart';
-export 'hash_algorithm.dart';
-export 'key_algorithm.dart';
-export 'signature_subpacket_type.dart';
 
 ///Signature types enum
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

@@ -7,8 +7,8 @@ library;
 import 'dart:typed_data';
 import 'package:pointycastle/api.dart';
 
-import 'base_engine.dart';
 import '../../common/extensions.dart';
+import 'base_engine.dart';
 
 /// Camellia - based on RFC 3713.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>

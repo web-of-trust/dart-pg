@@ -7,8 +7,8 @@ library;
 import 'dart:typed_data';
 import 'package:pointycastle/api.dart';
 
-import 'base_engine.dart';
 import '../../common/extensions.dart';
+import 'base_engine.dart';
 
 /// A class that provides CAST key encryption operations, such as encoding data and generating keys.
 /// All the algorithms herein are from the Internet RFC's

@@ -7,8 +7,8 @@ library;
 import 'dart:typed_data';
 import 'package:pointycastle/api.dart';
 
-import 'base_engine.dart';
 import '../../common/extensions.dart';
+import 'base_engine.dart';
 
 /// A class that provides a basic International Data Encryption Algorithm (IDEA) engine.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
