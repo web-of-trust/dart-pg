@@ -22,7 +22,7 @@ void main() {
               .hexToBytes();
 
       final aepd = AeadEncryptedDataPacket.fromBytes(bytes);
-      expect(aepd.symmetric, SymmetricAlgorithm.aes128);
+      expect(aepd.symmetric, SymmetricAlgorithm.aes256);
       expect(aepd.aead, AeadAlgorithm.eax);
       expect(aepd.chunkSize, 14);
       expect(aepd.iv.toHexadecimal(), 'b732379f73c4928de25facfe6517ec10');
@@ -40,7 +40,7 @@ void main() {
               .hexToBytes();
 
       final aepd = AeadEncryptedDataPacket.fromBytes(bytes);
-      expect(aepd.symmetric, SymmetricAlgorithm.aes128);
+      expect(aepd.symmetric, SymmetricAlgorithm.aes256);
       expect(aepd.aead, AeadAlgorithm.ocb);
       expect(aepd.chunkSize, 14);
       expect(aepd.iv.toHexadecimal(), '5ed2bc1e470abe8f1d644c7a6c8a56');
