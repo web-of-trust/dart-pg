@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   pinenacl: ^0.6.0
-  pointycastle: ^3.9.1
+  pointycastle: ^4.0.0
   sign_dart: ^1.0.0
 
 dev_dependencies:
