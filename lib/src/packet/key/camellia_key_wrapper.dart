@@ -4,9 +4,9 @@
 
 library;
 
+import 'package:pointycastle/block/camellia.dart';
 import 'package:pointycastle/block/modes/ecb.dart';
 
-import '../../cryptor/symmetric/camellia.dart';
 import 'key_wrapper.dart';
 
 /// An implementation of the Camellia key wrapper based on RFC 3657/RFC 3394.
