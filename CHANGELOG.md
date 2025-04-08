@@ -73,3 +73,7 @@
 
 ## 2.0.0 (2024-12-11)
 - Release to major version 2
+
+## 2.1.0 (2025-04-08)
+- Update pointycastle to version 4.0.0
+- Remove Blowfish, Camellia, Twofish cipher engines
