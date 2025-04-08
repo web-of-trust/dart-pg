@@ -22,13 +22,16 @@ void main() {
               .hexToBytes();
 
       final aepd = AeadEncryptedDataPacket.fromBytes(bytes);
-      expect(aepd.symmetric, SymmetricAlgorithm.aes256);
+      expect(aepd.symmetric, SymmetricAlgorithm.aes128);
       expect(aepd.aead, AeadAlgorithm.eax);
       expect(aepd.chunkSize, 14);
       expect(aepd.iv.toHexadecimal(), 'b732379f73c4928de25facfe6517ec10');
 
       final decryptAepd =
-          aepd.decrypt('86f1efb86952329f24acd3bfd0e5346d'.hexToBytes());
+          aepd.decrypt(
+        '86f1efb86952329f24acd3bfd0e5346d'.hexToBytes(),
+        SymmetricAlgorithm.aes128,
+      );
       final literalData =
           decryptAepd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
@@ -40,13 +43,16 @@ void main() {
               .hexToBytes();
 
       final aepd = AeadEncryptedDataPacket.fromBytes(bytes);
-      expect(aepd.symmetric, SymmetricAlgorithm.aes256);
+      expect(aepd.symmetric, SymmetricAlgorithm.aes128);
       expect(aepd.aead, AeadAlgorithm.ocb);
       expect(aepd.chunkSize, 14);
       expect(aepd.iv.toHexadecimal(), '5ed2bc1e470abe8f1d644c7a6c8a56');
 
       final decryptAepd =
-          aepd.decrypt('d1f01ba30e130aa7d2582c16e050ae44'.hexToBytes());
+          aepd.decrypt(
+        'd1f01ba30e130aa7d2582c16e050ae44'.hexToBytes(),
+        SymmetricAlgorithm.aes128,
+      );
       final literalData =
           decryptAepd.packets!.whereType<LiteralDataInterface>().first;
       expect(literalData.binary, literalText.toBytes());
