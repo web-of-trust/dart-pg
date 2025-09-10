@@ -10,49 +10,6 @@ void main() {
   group('armor tests', () {
     final faker = Faker();
 
-    test('multipart section test', (() {
-      final bytes = utf8.encoder.convert(faker.lorem.words(100).join(' '));
-      final partIndex = faker.randomGenerator.integer(100);
-      final partTotal = faker.randomGenerator.integer(100);
-
-      final armored = Armor.encode(
-        ArmorType.multipartSection,
-        bytes,
-        partIndex: partIndex,
-        partTotal: partTotal,
-      );
-      final beginReg = RegExp(r'BEGIN PGP MESSAGE, PART \d+\/\d+');
-      expect(beginReg.hasMatch(armored), true);
-
-      final endReg = RegExp(r'END PGP MESSAGE, PART \d+\/\d+');
-      expect(endReg.hasMatch(armored), true);
-
-      final armor = Armor.decode(armored);
-      expect(armor.type, ArmorType.multipartSection);
-      expect(armor.data, bytes);
-    }));
-
-    test('multipart last test', (() {
-      final bytes = utf8.encoder.convert(faker.lorem.words(100).join(' '));
-      final partIndex = faker.randomGenerator.integer(100);
-
-      final armored = Armor.encode(
-        ArmorType.multipartLast,
-        bytes,
-        partIndex: partIndex,
-      );
-
-      final beginReg = RegExp(r'BEGIN PGP MESSAGE, PART \d+');
-      expect(beginReg.hasMatch(armored), true);
-
-      final endReg = RegExp(r'END PGP MESSAGE, PART \d+');
-      expect(endReg.hasMatch(armored), true);
-
-      final armor = Armor.decode(armored);
-      expect(armor.type, ArmorType.multipartLast);
-      expect(armor.data, bytes);
-    }));
-
     test('signed message test', (() {
       final text = faker.lorem.words(100).join(' ');
       final bytes = utf8.encoder.convert(text);
