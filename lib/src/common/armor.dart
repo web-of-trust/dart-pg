@@ -112,7 +112,7 @@ final class Armor {
     }
 
     return Armor(
-      type ?? ArmorType.multipartSection,
+      type ?? ArmorType.message,
       data,
       headers: headers,
       text: text,
@@ -133,30 +133,10 @@ final class Armor {
     final Uint8List data, {
     final String text = '',
     final Iterable<String> hashAlgos = const [],
-    final int partIndex = 0,
-    final int partTotal = 0,
     final String customComment = '',
   }) {
     final List<String> result;
     switch (type) {
-      case ArmorType.multipartSection:
-        result = [
-          '$messageBegin, PART $partIndex/$partTotal$endOfLine',
-          _addHeader(customComment),
-          '${_base64Encode(data)}\n',
-          '=${_crc24Checksum(data)}\n',
-          '$messageEnd, PART $partIndex/$partTotal$endOfLine',
-        ];
-        break;
-      case ArmorType.multipartLast:
-        result = [
-          '$messageBegin, PART $partIndex$endOfLine',
-          _addHeader(customComment),
-          '${_base64Encode(data)}\n',
-          '=${_crc24Checksum(data)}\n',
-          '$messageEnd, PART $partIndex$endOfLine',
-        ];
-        break;
       case ArmorType.signedMessage:
         final hashHeaders = hashAlgos.map((hash) => 'Hash: $hash').join('\n');
         result = [
