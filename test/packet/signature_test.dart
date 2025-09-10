@@ -38,7 +38,6 @@ void main() {
             type,
             data,
             critical: critical,
-            isLong: reader.isLong,
           ));
         }
       }

@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 /// This subpacket contains a complete Signature packet body specified
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class EmbeddedSignature extends SignatureSubpacket {
-  EmbeddedSignature(final Uint8List data, {super.critical, super.isLong})
+  EmbeddedSignature(final Uint8List data, {super.critical})
       : super(SignatureSubpacketType.embeddedSignature, data);
 
   factory EmbeddedSignature.fromSignature(

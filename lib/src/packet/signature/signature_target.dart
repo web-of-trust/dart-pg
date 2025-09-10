@@ -14,7 +14,7 @@ import '../signature_subpacket.dart';
 /// This subpacket identifies a specific target signature to which a signature refers.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class SignatureTarget extends SignatureSubpacket {
-  SignatureTarget(final Uint8List data, {super.critical, super.isLong})
+  SignatureTarget(final Uint8List data, {super.critical})
       : super(SignatureSubpacketType.signatureTarget, data);
 
   factory SignatureTarget.fromHashData(

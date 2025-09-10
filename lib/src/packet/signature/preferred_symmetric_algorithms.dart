@@ -17,7 +17,6 @@ final class PreferredSymmetricAlgorithms extends SignatureSubpacket {
   PreferredSymmetricAlgorithms(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(SignatureSubpacketType.preferredSymmetricAlgorithms, data);
 
   List<SymmetricAlgorithm> get preferences => data

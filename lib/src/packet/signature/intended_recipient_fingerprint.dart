@@ -18,7 +18,6 @@ final class IntendedRecipientFingerprint extends SignatureSubpacket {
   IntendedRecipientFingerprint(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(
           SignatureSubpacketType.intendedRecipientFingerprint,
           data,

@@ -19,7 +19,6 @@ final class KeyServerPreferences extends SignatureSubpacket {
   KeyServerPreferences(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(SignatureSubpacketType.keyServerPreferences, data);
 
   factory KeyServerPreferences.fromServerPreferences(

@@ -18,7 +18,6 @@ final class PolicyURI extends SignatureSubpacket {
   PolicyURI(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(SignatureSubpacketType.policyURI, data);
 
   factory PolicyURI.fromURI(

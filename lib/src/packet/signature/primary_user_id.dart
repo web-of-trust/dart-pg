@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 /// User ID is the main User ID for this key.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class PrimaryUserID extends SignatureSubpacket {
-  PrimaryUserID(final Uint8List data, {super.critical, super.isLong})
+  PrimaryUserID(final Uint8List data, {super.critical})
       : super(SignatureSubpacketType.primaryUserID, data);
 
   factory PrimaryUserID.fromIsPrimary(

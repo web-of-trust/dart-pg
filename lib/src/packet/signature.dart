@@ -581,105 +581,90 @@ final class SignaturePacket extends BasePacket
             subpackets.add(SignatureCreationTime(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.signatureExpirationTime:
             subpackets.add(SignatureExpirationTime(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.exportableCertification:
             subpackets.add(ExportableCertification(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.trustSignature:
             subpackets.add(TrustSignature(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.regularExpression:
             subpackets.add(RegularExpression(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.revocable:
             subpackets.add(Revocable(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.keyExpirationTime:
             subpackets.add(KeyExpirationTime(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.preferredSymmetricAlgorithms:
             subpackets.add(PreferredSymmetricAlgorithms(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.revocationKey:
             subpackets.add(RevocationKey(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.issuerKeyID:
             subpackets.add(IssuerKeyID(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.notationData:
             subpackets.add(NotationData(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.preferredHashAlgorithms:
             subpackets.add(PreferredHashAlgorithms(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.preferredCompressionAlgorithms:
             subpackets.add(PreferredCompressionAlgorithms(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.keyServerPreferences:
             subpackets.add(KeyServerPreferences(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.preferredKeyServer:
             subpackets.add(PreferredKeyServer(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.primaryUserID:
@@ -689,77 +674,66 @@ final class SignaturePacket extends BasePacket
             subpackets.add(PolicyURI(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.keyFlags:
             subpackets.add(KeyFlags(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.signerUserID:
             subpackets.add(SignerUserID(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.revocationReason:
             subpackets.add(RevocationReason(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.features:
             subpackets.add(Features(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.signatureTarget:
             subpackets.add(SignatureTarget(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.embeddedSignature:
             subpackets.add(EmbeddedSignature(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.issuerFingerprint:
             subpackets.add(IssuerFingerprint(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.preferredAeadAlgorithms:
             subpackets.add(PreferredAeadAlgorithms(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.intendedRecipientFingerprint:
             subpackets.add(IntendedRecipientFingerprint(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           case SignatureSubpacketType.preferredAeadCiphers:
             subpackets.add(PreferredAeadCiphers(
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
             break;
           default:
@@ -767,7 +741,6 @@ final class SignaturePacket extends BasePacket
               type,
               data,
               critical: critical,
-              isLong: reader.isLong,
             ));
         }
       }

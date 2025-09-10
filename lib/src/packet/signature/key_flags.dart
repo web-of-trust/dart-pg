@@ -16,7 +16,6 @@ final class KeyFlags extends SignatureSubpacket {
   KeyFlags(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(SignatureSubpacketType.keyFlags, data);
 
   factory KeyFlags.fromFlags(

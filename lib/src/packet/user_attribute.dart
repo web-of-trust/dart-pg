@@ -56,14 +56,12 @@ final class UserAttributePacket extends BasePacket
           case ImageUserAttribute.jpeg:
             attributes.add(ImageUserAttribute(
               reader.data,
-              isLong: reader.isLong,
             ));
             break;
           default:
             attributes.add(UserAttributeSubpacket(
               reader.type,
               reader.data,
-              isLong: reader.isLong,
             ));
         }
       }

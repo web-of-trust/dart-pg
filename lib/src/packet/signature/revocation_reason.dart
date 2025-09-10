@@ -15,7 +15,7 @@ import '../signature_subpacket.dart';
 /// revocation signatures.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class RevocationReason extends SignatureSubpacket {
-  RevocationReason(final Uint8List data, {super.critical, super.isLong})
+  RevocationReason(final Uint8List data, {super.critical})
       : super(SignatureSubpacketType.revocationReason, data);
 
   factory RevocationReason.fromRevocation(

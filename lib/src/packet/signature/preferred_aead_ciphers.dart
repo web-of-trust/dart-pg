@@ -17,7 +17,6 @@ final class PreferredAeadCiphers extends SignatureSubpacket {
   PreferredAeadCiphers(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(
           SignatureSubpacketType.preferredAeadCiphers,
           data,

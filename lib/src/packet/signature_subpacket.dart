@@ -45,9 +45,6 @@ class SignatureSubpacket implements SubpacketInterface {
   final SignatureSubpacketType type;
 
   @override
-  final bool isLong;
-
-  @override
   final Uint8List data;
 
   final bool critical;
@@ -56,7 +53,6 @@ class SignatureSubpacket implements SubpacketInterface {
     this.type,
     this.data, {
     this.critical = false,
-    this.isLong = false,
   });
 
   @override
@@ -64,9 +60,6 @@ class SignatureSubpacket implements SubpacketInterface {
     final List<int> header;
     final bodyLen = data.length + 1;
 
-    if (isLong) {
-      header = [0xff, ...bodyLen.pack32()];
-    } else {
       if (bodyLen < 192) {
         header = [bodyLen];
       } else if (bodyLen <= 8383) {
@@ -74,7 +67,6 @@ class SignatureSubpacket implements SubpacketInterface {
       } else {
         header = [0xff, ...bodyLen.pack32()];
       }
-    }
 
     return Uint8List.fromList([
       ...header,

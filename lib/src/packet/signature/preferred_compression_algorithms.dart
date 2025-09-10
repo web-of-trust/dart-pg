@@ -17,7 +17,6 @@ final class PreferredCompressionAlgorithms extends SignatureSubpacket {
   PreferredCompressionAlgorithms(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(
           SignatureSubpacketType.preferredCompressionAlgorithms,
           data,

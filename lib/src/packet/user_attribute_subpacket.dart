@@ -15,17 +15,15 @@ class UserAttributeSubpacket {
 
   final Uint8List data;
 
-  final bool isLong;
-
-  UserAttributeSubpacket(this.type, this.data, {this.isLong = false});
+  UserAttributeSubpacket(this.type, this.data);
 
   Uint8List encode() {
     final List<int> header;
     final bodyLen = data.length + 1;
 
-    if (bodyLen < 192 && !isLong) {
+    if (bodyLen < 192) {
       header = [bodyLen];
-    } else if (bodyLen <= 8383 && !isLong) {
+    } else if (bodyLen <= 8383) {
       header = [(((bodyLen - 192) >> 8) & 0xff) + 192, bodyLen - 192];
     } else {
       header = [0xff, ...bodyLen.pack32()];

@@ -14,7 +14,7 @@ import '../signature_subpacket.dart';
 /// responsible for the signing.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class SignerUserID extends SignatureSubpacket {
-  SignerUserID(final Uint8List data, {super.critical, super.isLong})
+  SignerUserID(final Uint8List data, {super.critical})
       : super(SignatureSubpacketType.signerUserID, data);
 
   factory SignerUserID.fromUserID(

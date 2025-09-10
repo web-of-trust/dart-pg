@@ -17,14 +17,7 @@ final class SubpacketReader {
 
   final int offset;
 
-  final bool isLong;
-
-  SubpacketReader(
-    this.type,
-    this.data,
-    this.offset, [
-    this.isLong = false,
-  ]);
+  SubpacketReader(this.type, this.data, this.offset);
 
   factory SubpacketReader.read(
     final Uint8List bytes, [
@@ -52,7 +45,6 @@ final class SubpacketReader {
         bytes[pos],
         bytes.sublist(pos + 1, pos + length),
         pos + length,
-        true,
       );
     }
     return SubpacketReader(0, Uint8List(0), offset);

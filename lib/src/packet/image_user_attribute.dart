@@ -14,9 +14,7 @@ final class ImageUserAttribute extends UserAttributeSubpacket {
   static const jpeg = 1;
 
   ImageUserAttribute(
-    final Uint8List data, {
-    super.isLong,
-  }) : super(jpeg, data);
+    final Uint8List data) : super(jpeg, data);
 
   factory ImageUserAttribute.fromBytes(
     final Uint8List imageData, [

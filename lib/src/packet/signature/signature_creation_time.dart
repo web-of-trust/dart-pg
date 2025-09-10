@@ -17,7 +17,6 @@ final class SignatureCreationTime extends SignatureSubpacket {
   SignatureCreationTime(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(SignatureSubpacketType.signatureCreationTime, data);
 
   factory SignatureCreationTime.fromTime(

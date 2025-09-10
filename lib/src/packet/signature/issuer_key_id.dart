@@ -16,7 +16,6 @@ final class IssuerKeyID extends SignatureSubpacket {
   IssuerKeyID(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(SignatureSubpacketType.issuerKeyID, data);
 
   factory IssuerKeyID.fromString(

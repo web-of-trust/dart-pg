@@ -17,7 +17,6 @@ final class IssuerFingerprint extends SignatureSubpacket {
   IssuerFingerprint(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(
           SignatureSubpacketType.issuerFingerprint,
           data,

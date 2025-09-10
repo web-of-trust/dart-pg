@@ -13,7 +13,7 @@ import '../signature_subpacket.dart';
 /// the specified level.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class TrustSignature extends SignatureSubpacket {
-  TrustSignature(final Uint8List data, {super.critical, super.isLong})
+  TrustSignature(final Uint8List data, {super.critical})
       : super(SignatureSubpacketType.trustSignature, data);
 
   factory TrustSignature.fromTrust(

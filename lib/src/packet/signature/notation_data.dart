@@ -27,7 +27,6 @@ final class NotationData extends SignatureSubpacket
   NotationData(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(SignatureSubpacketType.notationData, data);
 
   factory NotationData.fromNotation(

@@ -16,7 +16,6 @@ final class PreferredAeadAlgorithms extends SignatureSubpacket {
   PreferredAeadAlgorithms(
     final Uint8List data, {
     super.critical,
-    super.isLong,
   }) : super(
           SignatureSubpacketType.preferredAeadAlgorithms,
           data,

@@ -15,7 +15,7 @@ import '../signature_subpacket.dart';
 /// limit the scope of trust that is extended.
 /// Author Nguyen Van Nguyen <nguyennv1981@gmail.com>
 final class RegularExpression extends SignatureSubpacket {
-  RegularExpression(final Uint8List data, {super.critical, super.isLong})
+  RegularExpression(final Uint8List data, {super.critical})
       : super(SignatureSubpacketType.revocable, data);
 
   factory RegularExpression.fromExpression(

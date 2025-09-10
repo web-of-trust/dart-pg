@@ -17,9 +17,6 @@ abstract interface class SubpacketInterface {
   /// Get sub-packet data
   Uint8List get data;
 
-  /// Is long
-  bool get isLong;
-
   /// Serialize sub-packet to bytes
   Uint8List encode();
 }
