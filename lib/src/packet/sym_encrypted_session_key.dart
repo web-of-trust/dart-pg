@@ -220,8 +220,7 @@ final class SymEncryptedSessionKeyPacket extends BasePacket {
               : key;
 
           final cipher = aead!.cipherEngine(kek, symmetric);
-          final decrypted = cipher.decrypt(encrypted, iv, adata);
-          sessionKey = SessionKey(decrypted, symmetric);
+          sessionKey = SessionKey(cipher.decrypt(encrypted, iv, adata), symmetric);
         } else {
           final cipher = BufferedCipher(
             symmetric.cfbCipherEngine,
