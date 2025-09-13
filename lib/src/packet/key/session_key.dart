@@ -60,9 +60,9 @@ final class SessionKey implements SessionKeyInterface {
   computeChecksum() {
     var sum = 0;
     for (var i = 0; i < encryptionKey.length; i++) {
-      sum = (sum + encryptionKey[i]) & 0xffff;
+      sum += encryptionKey[i];
     }
-    return sum.pack16();
+    return (sum & 0xffff).pack16();
   }
 
   @override
