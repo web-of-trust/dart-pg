@@ -240,6 +240,7 @@ final class SymEncryptedIntegrityProtectedDataPacket extends BasePacket
         if (!verifyHash) {
           throw AssertionError('Modification detected.');
         }
+        // Remove random prefix & MDC packet
         packetBytes = toHash.sublist(
           cipherSymmetric.blockSize + 2,
           toHash.length - 2,
