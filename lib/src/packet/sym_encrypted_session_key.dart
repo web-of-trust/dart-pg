@@ -233,10 +233,11 @@ final class SymEncryptedSessionKeyPacket extends BasePacket {
               ),
             );
           final decrypted = cipher.process(encrypted);
-          final sessionKeySymmetric = SymmetricAlgorithm.values.firstWhere(
-            (algo) => algo.value == decrypted[0],
-          );
-          sessionKey = SessionKey(decrypted.sublist(1), sessionKeySymmetric);
+          sessionKey = SessionKey(
+              decrypted.sublist(1),
+              SymmetricAlgorithm.values.firstWhere(
+                (algo) => algo.value == decrypted[0],
+              ));
         }
       } else {
         sessionKey = SessionKey(key, symmetric);
