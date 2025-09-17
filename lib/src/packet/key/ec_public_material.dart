@@ -34,11 +34,7 @@ abstract class ECPublicMaterial implements KeyMaterialInterface {
       return 255;
     } else {
       final params = ECDomainParameters(curve.name.toLowerCase());
-      final key = ECPublicKey(
-        params.curve.decodePoint(q.toUnsignedBytes()),
-        params,
-      );
-      return key.Q!.curve.fieldSize;
+      return params.curve.fieldSize;
     }
   }
 
