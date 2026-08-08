@@ -17,7 +17,7 @@ final class PaddingPacket extends BasePacket {
 
   final Uint8List padding;
 
-  PaddingPacket(this.padding) : super(PacketType.marker);
+  PaddingPacket(this.padding) : super(PacketType.padding);
 
   factory PaddingPacket.createPadding(final int lengh) {
     assert(paddingMin <= lengh && lengh <= paddingMax);
